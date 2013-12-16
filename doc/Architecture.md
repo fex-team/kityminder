@@ -1,6 +1,30 @@
-# 脑图 Demo 功能点
+# Kity Minder 整体设计
 
-# 整体设计
+设计的脑图地址：
+[http://www.mindmeister.com/maps/show/357457330](http://www.mindmeister.com/maps/show/357457330)
+
+
+## `abstract` Command
+表示一条在 KityMinder 上执行的命令
+
+### `method` execute(Minder minder [,args...] )
+命令执行，如果该命令可撤销，应自行保存需要的状态
+
+### `method` revert()
+撤销命令的执行
+
+
+
+## `abstract` Module
+Module定义一个模块，表示控制脑图中一个功能的模块（布局、渲染、输入文字、图标叠加等）
+
+### `method` load(Minder minder) : this
+模块装载的时候被调用，此时应该绑定需要的事件，根据事件来触发命令，达到对 Minder 的控制。
+
+### `method` destroy() : this
+模块卸载时被调用，此时可以回收模块资源。
+
+
 
 ## MinderNode
 
@@ -53,25 +77,23 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 `node.getRenderContainer()` 返回当前节点的渲染容器
 
 
-## Minder
+## KityMinder
 脑图使用类
 
-### `static method` registerCommand( name, commandClass ) : this
+### `static method` registerCommand( name, commandClass )
 注册一个命令
 
-### `static method` registerModule( name, module )
+### `static method` registerModule( name, moduleClass )
 注册一个模块
 
-### `constructor` Minder()
-创建脑图画布
+### `constructor` KityMinder()
+创建脑图画布。KityMinder 实例化的时候，会从模块池中取出模块，并且实例化这些模块，然后加载。
 
 ### `method` getRoot() : MinderNode
 获取脑图根节点
 
-`option.execCommand` 给定一个方法，命令执行的时候去执行
-
 ### `method` execCommand( name [, params...] )
-执行指定的命令
+执行指定的命令。该方法执行的时候，会在命令池中去获取命令
 
 ### `method` update(MinderNode node) : this
 更新指定节点及其子树的呈现，如果不指定节点，则更新跟节点的呈现（整棵树）
@@ -88,6 +110,15 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 `e.command` 调用的命令实例
 
 `e.cancel` 是否要阻止命令的执行
+
+### `event` beforeselectionchange(e), preselectionchange(e), selectionchange(e), afterselectionchange(e)
+选区变化过程中发生的事件
+
+`e.currentSelection` 当前选中的节点列表
+
+`e.addNodes` 选区改变过程中添加的节点
+
+`e.removeNodes` 选区改变过程中移除的节点
 
 ### `event` beforeinsert(e), preinsert(e), insert(e), afterinsert(e)
 发生节点插入的前后触发的事件
@@ -132,21 +163,3 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 
 ### `event` keydown(evt)、keyup(evt)、keypress(evt)
 表示发生的键盘事件
-
-## `abstract` Module
-表示控制脑图中一个功能的模块（布局、渲染、输入文字、图标叠加等）
-
-### load(Minder minder) : this
-模块装载的时候被调用，此时应该注册命令、绑定事件
-
-### destroy() : this
-模块卸载时被调用
-
-## `abstract` Command
-表示命令
-
-### execute(Minder minder [,args...] )
-命令执行，如果该命令可撤销，应自行保存需要的状态
-
-### revert()
-撤销命令的执行
