@@ -49,7 +49,7 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 ### `method` registerCommands(Minder minder) : this
 模块注册命令的时候被调用，此时应该注册一些模块中需要调用的命令。
 ### `method` bindEvents(Minder minder) : this
-模块绑定事件的时候被调用，此时应该绑定需要的事件，根据事件来触发命令，达到对 Minder 的控制。
+模块绑定事件的时候被调用，此时应该在Minder上绑定模块相关的事件响应，通过事件响应来触发命令，达到对Minder的控制。
 
 ### `method` destroy() : this
 模块卸载时被调用，此时可以回收模块资源。
@@ -110,14 +110,14 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 ## KityMinder
 脑图使用类
 
-### `static method` registerCommand( name, commandClass )
-注册一个命令
-
 ### `static method` registerModule( name, moduleClass )
 注册一个模块
 
 ### `constructor` KityMinder()
 创建脑图画布。KityMinder 实例化的时候，会从模块池中取出模块，并且实例化这些模块，然后加载。
+
+### `method` registerCommand( name, commandClass )
+注册一个命令
 
 ### `method` getRoot() : MinderNode
 获取脑图根节点
