@@ -1,0 +1,3 @@
+[submodule "kity"]
+	path = kity
+	url = https://github.com/kitygraph/kity.git
