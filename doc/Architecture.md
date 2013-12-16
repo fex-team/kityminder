@@ -1,7 +1,33 @@
+# Kity Minder 目标设定
+
+## 第一期目标
+
+* 架构搭建
+* 自动布局
+* 双击节点文字编辑
+* 节点之间的连线（子节点向父节点）
+* 导入和导出（JSON格式）
+* 基本键盘导航：基于位置的选择导航；Tab插入子级；Enter插入同级
+* 上述功能的撤销操作
+
+## 第二期目标
+
+* 自由布局
+* 拖动修改子级
+* 子节点展开/收起
+* 思路连接线
+* 外观模板支持
+
+## 第三期目标
+
+* 协同操作
+* 云存储
+* 应用推广
+
+
 # Kity Minder 整体设计
 
-设计的脑图地址：
-[http://www.mindmeister.com/maps/show/357457330](http://www.mindmeister.com/maps/show/357457330)
+整体设计脑图地址：[Architectrue.mmap](Architectrue.mmap)
 
 
 ## `abstract` Command
