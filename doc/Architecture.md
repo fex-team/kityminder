@@ -45,7 +45,11 @@
 Module定义一个模块，表示控制脑图中一个功能的模块（布局、渲染、输入文字、图标叠加等）
 
 ### `method` load(Minder minder) : this
-模块装载的时候被调用，此时应该绑定需要的事件，根据事件来触发命令，达到对 Minder 的控制。
+模块装载的时候被调用，此时应该进行一些基本的初始化工作。
+### `method` registerCommands(Minder minder) : this
+模块注册命令的时候被调用，此时应该注册一些模块中需要调用的命令。
+### `method` bindEvents(Minder minder) : this
+模块绑定事件的时候被调用，此时应该绑定需要的事件，根据事件来触发命令，达到对 Minder 的控制。
 
 ### `method` destroy() : this
 模块卸载时被调用，此时可以回收模块资源。
