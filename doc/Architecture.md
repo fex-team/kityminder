@@ -39,11 +39,19 @@
 ```js
 var MyCommand = kity.createClass({
     base: Command,
+
     execute: function(Minder minder [,args...]){},
     revert: function(Minder minder){},
+
+    // 基类缺省实现：
     queryState: function(Minder minder){},
     queryValue: function(Minder minder){},
+
+    // 基类实现：
+    setContentChanged: function( bool ),
     isContentChanged: function() {},
+
+    setSelectionChanged: function( bool ) {},
     isSelectionChanged: function() {}
 }
 ```
@@ -82,30 +90,35 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 
 ```js
 KityMinder.registerModule("ModuleName", function() {
-    
+    // init or Command define
+    // this refers to KMinder instance
     return {
     
-        "init": function(){
+        "ready": function(){
             //todo:基本的初始化工作
         },
+
         "commands": {
             //todo:command字典，name－action  键值对模式编写
             "name": CommandClass
         },
+
         "events": {
             //todo:事件响应函数绑定列表,事件名-响应函数  键值对模式编写
             "click": function(e){
             
             },
-            "keydown": function(e){
+            "keydown keyup": function(e){
             
             }
         },
+
         "unload": function(){
             //todo:模块unload时的一些处理，可缺省
         }
+
     }
-}); //处理顺序为 init->commands->events顺次执行，在模块卸载时执行unload函数
+});
 ```
 
 ## MinderNode
@@ -214,13 +227,17 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 
 添加一个或多个节点到节点选择列表中
 
-`.unselect(MinderNode[] nodes | MinderNode node) : this`
+`.selectSingle(Minder node) : this`
 
-从节点选择列表中移除一个或多个节点
+唯一选中指定节点
 
-`.clearSelection() : this`
+`.toggleSelect(MinderNode[] nodes | MinderNode node)`
 
-清除节点选中列表
+切换一个或多个节点的选中状态
+
+`.clearSelect(MinderNode[] nodes | MinderNode node) : this`
+
+从节点选择列表中移除一个或多个节点，如果不传节点，全部取消选择
 
 ### 事件机制
 
@@ -260,7 +277,7 @@ KityMinder 的事件分为：
 
 对 import 事件：
 
-* `e.importData` 获取导入的数据
+* `e.getImportData()` 获取导入的数据
 
 对 selectionchange 事件：
 
