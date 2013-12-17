@@ -40,16 +40,18 @@
 					//todo:定义command执行时的一些操作，不可缺省
 				},
 				revert:function(km,args){
-					//todo:定义revert操作，，可缺省如果没有则为不可revert
+					//todo:定义revert操作，可缺省,如果没有则为不可revert
 				},
 				queryState:function(km){
 					//todo:用于返回当前命令的state，分为
 					//－1（不可执行）
 					//0（可执行）
 					//1（已执行）
+					//可缺省，如果没有则默认返回0
 				},
 				queryStateValue:function(km){
 					//todo:用于返回当前命令的状态相关值，（例如：进度条的进度百分比值等）
+					//可缺省
 				}
 			}
 
