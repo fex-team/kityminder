@@ -31,7 +31,27 @@
 
 
 ## `abstract` Command
-表示一条在 KityMinder 上执行的命令
+表示一条在 KityMinder 上执行的命令，以class的方式定义。
+
+## 命令定义结构：
+
+            define(function(){
+				execute:function(km,args){
+					//todo:定义command执行时的一些操作，不可缺省
+				},
+				revert:function(km,args){
+					//todo:定义revert操作，，可缺省如果没有则为不可revert
+				},
+				queryState:function(km){
+					//todo:用于返回当前命令的state，分为
+					//－1（不可执行）
+					//0（可执行）
+					//1（已执行）
+				},
+				queryStateValue:function(km){
+					//todo:用于返回当前命令的状态相关值，（例如：进度条的进度百分比值等）
+				}
+			}
 
 ### `method` execute(Minder minder [,args...] )
 命令执行，如果该命令可撤销，应自行保存需要的状态
@@ -52,18 +72,7 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 	    },
 		"commands":{
 			//todo:command字典，name－action键值对模式编写
-			"name":{
-				execute:function(km,args){
-					
-				},
-				revert:function(km,args){
-					
-				},
-				queryState:function(km){
-				},
-				queryValue:function(km){
-				}
-			},
+			"name": CommandClass
 		},
 		"events":{
 			//todo:事件响应函数绑定列表,事件名->响应函数键值对模式编写
@@ -75,7 +84,7 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 			}
 		},
 		"unload":function(){
-			//todo:模块unload时的一些处理
+			//todo:模块unload时的一些处理，可缺省
 		}
 	}//处理顺序为 init->commands->events顺次执行，在模块卸载时执行unload函数
 
@@ -133,7 +142,7 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 ## KityMinder
 脑图使用类
 
-### `static method` registerModule( name, moduleClass )
+### `static method` registerModule( name, module )
 注册一个模块
 
 ### `constructor` KityMinder()
