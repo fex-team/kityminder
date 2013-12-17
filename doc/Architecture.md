@@ -35,33 +35,39 @@
 
 ## 命令定义结构：
 
-            define(function(){
-				execute:function(km,args){
-					//todo:定义command执行时的一些操作，不可缺省
-				},
-				revert:function(km,args){
-					//todo:定义revert操作，可缺省,如果没有则为不可revert
-				},
-				queryState:function(km){
-					//todo:用于返回当前命令的state，分为
-					//－1（不可执行）
-					//0（可执行）
-					//1（已执行）
-					//可缺省，如果没有则默认返回0
-				},
-				queryStateValue:function(km){
-					//todo:用于返回当前命令的状态相关值，（例如：进度条的进度百分比值等）
-					//可缺省
-				}
+            define({
+				execute:function(Minder minder [,args...]){},
+				revert:function(Minder minder){},
+				queryState:function(Minder minder){},
+				queryValue:function(Minder minder){},
+				isContentChanged: function() {},
+				isSelectionChanged: function() {}
 			}
 
 ### `method` execute(Minder minder [,args...] )
-命令执行，如果该命令可撤销，应自行保存需要的状态
+定义command执行时的一些操作，不可缺省
 
-### `method` revert()
-撤销命令的执行
+### `method` revert(Minder minder)
+定义revert操作，可缺省,如果没有则为不可revert
 
+### `method` queryState(Minder minder)
+todo:用于返回当前命令的state，分为
+－1：不可执行
+0：可执行
+1：已执行
+可缺省，默认返回0
 
+### `method` queryValue(Minder minder)
+todo:用于返回当前命令的状态相关值，（例如：进度条的进度百分比值等）
+可缺省
+
+### `method` isContentChanged()
+返回命令是否对内容产生影响（true/false）
+可缺省
+
+### `method` isContentChanged()
+返回命令是否对选区产生影响（true/false）
+可缺省
 
 ## `abstract` Module
 Module定义一个模块，表示控制脑图中一个功能的模块（布局、渲染、输入文字、图标叠加等）
