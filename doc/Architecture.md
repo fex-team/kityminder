@@ -27,11 +27,11 @@
 
 # Kity Minder 整体设计
 
-整体设计脑图地址：[Architectrue.mmap](Architectrue.mmap)
+整体设计脑图地址：[Architecture.mmap](Architecture.mmap)
 
 
 ## `abstract` Command
-表示一条在 KityMinder 上执行的命令
+表示一条在 KityMinder 上执行的命令，以及其相关的查询接口
 
 ### `method` execute(Minder minder [,args...] )
 命令执行，如果该命令可撤销，应自行保存需要的状态
@@ -104,88 +104,107 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 
 
 ## KityMinder
+
 脑图使用类
 
-### `static method` registerCommand( name, commandClass )
-注册一个命令
+### 构造函数
 
-### `static method` registerModule( name, moduleClass )
-注册一个模块
+`constructor` KityMinder(id, option)
 
-### `constructor` KityMinder()
 创建脑图画布。KityMinder 实例化的时候，会从模块池中取出模块，并且实例化这些模块，然后加载。
 
-### `method` getRoot() : MinderNode
+`id` 实例的 id
+
+`option` 其他选项（当前没有）
+
+### 公开接口
+
+`.getRoot() : MinderNode` 
+
 获取脑图根节点
 
-### `method` execCommand( name [, params...] )
-执行指定的命令。该方法执行的时候，会在命令池中去获取命令
+`.execCommand( name [, params...] ) : this`
 
-### `method` update(MinderNode node) : this
+执行指定的命令。该方法执行的时候，会实例化指定类型的命令，并且把命令参数传给命令执行
+
+`.update(MinderNode node) : this`
+
 更新指定节点及其子树的呈现，如果不指定节点，则更新跟节点的呈现（整棵树）
 
-### `method` export() : object
+`.export() : object`
+
 以导出节点以及所有子树的数据（data上所有的字段会被导出）
 
-### `method` import(object data) : this
+`.import(object data) : this`
+
 导入节点数据，会节点以及所有子树结构以及子树数据
 
-### `event` beforecommand(e), precommand(e), command(e), aftercommand(e)
-执行命令前后触发的事件，其中 beforecommand 中可以取消命令的执行，而 precommand 已经确定了命令要执行
+`.getSelectedNodes() : MinderNode[]`
 
-`e.command` 调用的命令实例
+`.select(MinderNode[] nodes | MinderNode node) : this`
 
-`e.cancel` 是否要阻止命令的执行
+添加一个或多个节点到节点选择列表中
 
-### `event` beforeselectionchange(e), preselectionchange(e), selectionchange(e), afterselectionchange(e)
-选区变化过程中发生的事件
+`.unselect(MinderNode[] nodes | MinderNode node) : this`
 
-`e.currentSelection` 当前选中的节点列表
+从节点选择列表中移除一个或多个节点
 
-`e.addNodes` 选区改变过程中添加的节点
+`.clearSelection() : this`
 
-`e.removeNodes` 选区改变过程中移除的节点
+清除节点选中列表
 
-### `event` beforeinsert(e), preinsert(e), insert(e), afterinsert(e)
-发生节点插入的前后触发的事件
+### 事件机制
 
-`e.targetNode` 获取要插入新节点的目标节点
+#### 事件分类
 
-`e.insertNode` 获取插入的节点
+KityMinder 的事件分为：
 
-`e.insertIndex` 获取插入的位置
+* 交互事件: `click`, `dblclick`, `mousedown`, `mousemove`, `mouseup`, `keydown`, `keyup`, `keypress`, `touchstart`, `touchend`, `touchmove`
 
-`e.cancel` 是否要阻止节点的插入（仅在 before 的时候有效）
+* Command 事件: `beforecommand`, `precommand`, `aftercommand`
 
-### `event` beforeremove(e), preremove(e), remove(e), afterremove(e)
-发生节点移除的前后触发的事件
+* 交互事件：`selectionchange`, `contentchange`, `interactchange`
 
-`e.targetNode` 获取要移除节点的目标节点
+* 模块事件：模块自行触发与上述不同名的事件
 
-`e.removeNode` 获取将要被移除的节点
+#### 事件接口
 
-`e.removeIndex` 获取被移除的节点在目标节点的位置
+`.on(event, callback)` 侦听指定事件
 
-`e.cancel` 是否要阻止节点的移除（仅在 before 的时候有效）
+`.once(event, callback)` 侦听指定事件一次，当 callback 被调用之后，后面再发生该事件不再被调用
 
-### `event` beforedatachange(e), predatachange(e), datachange(e), afterdatachange(e)
+`.off(event, callback)` 取消对事件的侦听
 
-`e.targetNode` 发生数据改变的节点
+`.fire(event, params)` 触发指定的事件，params 是自定义的 JSON 数据，会合并到事件对象
 
-`e.dataField` 改变的数据的字段
 
-`e.oldDataValue` 改变前数据的值
+#### 回调函数接口
 
-`e.dataValue` 改变的数据的值
+回调函数接收唯一的参数 e
 
-`e.cancel` 是否要阻止数据的改变（仅在 before 的时候有效）
+对于交互事件，e 是原生 event 对象的一个拓展；对于需要坐标的事件，用 e.getPosition() 可以获得在 Kity Paper 上的坐标值
 
-### `event` click(evt)、mousedown(evt)、mouseup(evt)、mousemove(evt)
-表示节点点击的相关事件
+对 command 事件：
 
-`evt.targetNode` 表示事件发生的 Minder 节点
+* `e.commandName` 获取执行的命令的类型
+* `e.commandArgs` 获取命令执行的参数列表
 
-`evt.getPosition()` 获取事件发生时鼠标位置在 Paper 上的位置
+对 import 事件：
 
-### `event` keydown(evt)、keyup(evt)、keypress(evt)
-表示发生的键盘事件
+* `e.importData` 获取导入的数据
+
+对 selectionchange 事件：
+
+* `e.currentSelection` 获取当前选择的节点列表
+* `e.additionNodes` 添加到选择节点列表的那部分节点
+* `e.removalNodes` 从选择节点列表移除的那部分节点
+
+#### 事件触发时机
+
+`command` 事件只在顶级 command 执行的时候触发（Command 里调用 Command 不触发）
+
+`contentchange` 事件在顶级 command 之后会查询是否发生了内容的变化，如果发生了变化，则会触发；
+
+`selectionchange` 事件在顶级 command 之后会查询是否发生了选区的变化，如果发生了变化，则会触发
+
+`interactchange` 事件会在所有的鼠标、键盘、触摸操作后发生，并且会进行稀释；command 可以手动触发该事件，此时不会被稀释
