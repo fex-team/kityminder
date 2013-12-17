@@ -31,26 +31,82 @@
 
 
 ## `abstract` Command
-表示一条在 KityMinder 上执行的命令，以及其相关的查询接口
+
+表示一条在 KityMinder 上执行的命令，以class的方式定义，命令必须依附于模块，不允许单独存在。
+
+## 命令定义结构：
+
+```js
+var MyCommand = kity.createClass({
+    base: Command,
+    execute: function(Minder minder [,args...]){},
+    revert: function(Minder minder){},
+    queryState: function(Minder minder){},
+    queryValue: function(Minder minder){},
+    isContentChanged: function() {},
+    isSelectionChanged: function() {}
+}
+```
 
 ### `method` execute(Minder minder [,args...] )
-命令执行，如果该命令可撤销，应自行保存需要的状态
+定义command执行时的一些操作，不可缺省
 
-### `method` revert()
-撤销命令的执行
+### `method` revert(Minder minder)
+定义revert操作，可缺省,如果没有则为不可revert
 
+### `method` queryState(Minder minder)
+todo:用于返回当前命令的state，分为
 
+* -1：不可执行
+* 0：可执行
+* 1：已执行
 
-## `abstract` Module
+可缺省，默认返回0
+
+### `method` queryValue(Minder minder)
+todo:用于返回当前命令的状态相关值，（例如：进度条的进度百分比值等）
+可缺省
+
+### `method` isContentChanged()
+返回命令是否对内容产生影响（true/false）
+缺省为 true
+
+### `method` isContentChanged()
+返回命令是否对选区产生影响（true/false）
+缺省为 false
+
+## Module
 Module定义一个模块，表示控制脑图中一个功能的模块（布局、渲染、输入文字、图标叠加等）
 
-### `method` load(Minder minder) : this
-模块装载的时候被调用，此时应该绑定需要的事件，根据事件来触发命令，达到对 Minder 的控制。
+## 定义模式：
 
-### `method` destroy() : this
-模块卸载时被调用，此时可以回收模块资源。
-
-
+```js
+KityMinder.registerModule("ModuleName", function() {
+    
+    return {
+    
+        "init": function(){
+            //todo:基本的初始化工作
+        },
+        "commands": {
+            //todo:command字典，name－action  键值对模式编写
+            "name": CommandClass
+        },
+        "events": {
+            //todo:事件响应函数绑定列表,事件名-响应函数  键值对模式编写
+            "click": function(e){
+            
+            },
+            "keydown": function(e){
+            
+            }
+        },
+        "unload": function(){
+            //todo:模块unload时的一些处理，可缺省
+        }
+    }
+}); //处理顺序为 init->commands->events顺次执行，在模块卸载时执行unload函数
+```
 
 ## MinderNode
 
@@ -107,6 +163,9 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 
 脑图使用类
 
+### `static method` registerModule( name, module )
+注册一个模块
+
 ### 构造函数
 
 `constructor` KityMinder(id, option)
@@ -127,6 +186,14 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 
 执行指定的命令。该方法执行的时候，会实例化指定类型的命令，并且把命令参数传给命令执行
 
+`.queryCommandState( name )`
+
+查询命令的当前状态
+
+`.queryCommandValue( name )`
+
+查询命令的当前结果
+
 `.update(MinderNode node) : this`
 
 更新指定节点及其子树的呈现，如果不指定节点，则更新跟节点的呈现（整棵树）
@@ -140,6 +207,8 @@ MinderTreeNode 维护的树关系和数据只是作为一个脑图的结构和�
 导入节点数据，会节点以及所有子树结构以及子树数据
 
 `.getSelectedNodes() : MinderNode[]`
+
+返回选中的节点列表
 
 `.select(MinderNode[] nodes | MinderNode node) : this`
 
