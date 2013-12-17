@@ -73,11 +73,11 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 		    //todo:基本的初始化工作
 	    },
 		"commands":{
-			//todo:command字典，name－action键值对模式编写
+			//todo:command字典，name－action  键值对模式编写
 			"name": CommandClass
 		},
 		"events":{
-			//todo:事件响应函数绑定列表,事件名->响应函数键值对模式编写
+			//todo:事件响应函数绑定列表,事件名-响应函数  键值对模式编写
 			"click":function(e){
 			
 			},
