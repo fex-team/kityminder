@@ -47,18 +47,25 @@ Module定义一个模块，表示控制脑图中一个功能的模块（布局�
 ## 定义模式：
 
 ### function(){
-	return {
+	return{
 		"init":function(){
 		    //todo:基本的初始化工作
 	    },
 		"commands":{
 			//todo:command字典，name－action键值对模式编写
-			"name":function(km,args){
-				
-			},
-			"name1":function(km,args){
-			
-			}
+			"name":define(function(){
+				execute:function(km,args){
+					
+				},
+				revert:function(km,args){
+					
+				},
+				queryState:function(km){
+				},
+				queryValue:function(km){
+					
+				}
+			})
 		},
 		"events":{
 			//todo:事件响应函数绑定列表,事件名->响应函数键值对模式编写
