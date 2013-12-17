@@ -31,7 +31,7 @@
 
 
 ## `abstract` Command
-表示一条在 KityMinder 上执行的命令，以class的方式定义。
+表示一条在 KityMinder 上执行的命令，以class的方式定义，命令必须依附于模块，不允许单独存在。
 
 ## 命令定义结构：
 
