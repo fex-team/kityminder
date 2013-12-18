@@ -1,13 +1,23 @@
-var KityMinder = kity.createClass("KityMinder", {
+var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
+
     constructor: function (id, option) {
         // 初始化
+        this._initMinder(id, option || {});
         this._initModules();
         this._initEvents();
+    },
+
+    _initMinder: function(id, option) {
+        this.id = id;
+
+        this.rc = new kity.Group();
+        this.paper = new kity.Paper(option.renderTo || document.body);
+        this.paper.addShape(this.rc);
+
+        this.root = new MinderNode(this);
+        this.rc.addShape(this.root.getRenderContainer());
     }
 });
-
-KityMinder.version = '1.0.0.0';
-KityMinder.debug = true;
 
 // 模块注册
 KityMinder.registerModule = function( name, module ) {
@@ -60,12 +70,44 @@ kity.extendClass(KityMinder, {
 
 // 节点控制
 kity.extendClass(KityMinder, {
-    getRoot: function() {
 
+    getRoot: function() {
+        return this.root;
+    },
+
+    traverse: function( node, fn ) {
+        var children = node.getChildren();
+        for(var i = 0; i < children.length; i++) {
+            this.traverse(children[i], fn);
+        }
+        fn.call(this, node);
+    },
+
+    handelNodeInsert: function(node) {
+        this.traverse(node, function(current) {
+            this.rc.addShape(current.getRenderContainer());
+        });
+    },
+
+    handelNodeRemove: function(node) {
+        this.traverse(node, function(current) {
+            this.rc.removeShape(current.getRenderContainer());
+        });
     },
 
     update: function( node ) {
-
+        node = node || this.root;
+        this.traverse(node, function(current) {
+            var rc = current.getRenderContainer();
+            var x = current.getData('x') || 0,
+                y = current.getData('y') || 0;
+            rc.setTransform(new kity.Matrix().translate(x, y));
+            if(!rc.textContainer) {
+                rc.textContainer = new kity.Text();
+                rc.addShape(rc.textContainer);
+            }
+            rc.textContainer.setContent(current.getData('text') || '');
+        });
     }
 });
 

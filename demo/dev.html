@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="../kity/dist/kitygraph.all.js"></script>
+    <script src="../dist/dev.php"></script>
+</head>
+<body>
+    
+</body>
+<script>
+    var minder = new km.KityMinder();
+    var node1 = new km.MinderNode().pipe(function () {
+        this.setData('x', 100);
+        this.setData('y', 100);
+        this.setData('text', "this is a text");
+    });
+    minder.getRoot().insertChild(node1);
+    minder.update();
+</script>
+</html>

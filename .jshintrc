@@ -1,0 +1,16 @@
+{
+    "undef" : true,
+    "unused" : false,
+    "strict" : false,
+    "curly" : true,
+    "newcap" : true,
+    "trailing" : true,
+    "white": false,
+    "quotmark": false,
+    "predef" : [
+        "kity",
+        "MinderNode",
+        "require",
+        "km"
+    ]
+}
