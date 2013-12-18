@@ -30,8 +30,8 @@ KityMinder.registerModule = function( name, module ) {
 kity.extendClass(KityMinder, {
     _initModules: function() {
         var me = this;
-        //在对象上挂接command池子
-        me.commands = {};
+        me.commands = {};//command池子
+        me.actions = [];//操作记录栈
         var _modules = KityMinder._modules;
         if(_modules){
             for(var key in _modules){
@@ -133,7 +133,12 @@ kity.extendClass(KityMinder, {
 // 命令机制
 kity.extendClass(KityMinder, {
     execCommand: function( name ) {
-
+        var _action = new this.commands[name]();
+        console.log(_action);
+        var args = arguments;
+        arguments[0] = this;
+        _action["execute"]&&_action["execute"].apply(null,args);
+        this.actions.push(_action);
     },
 
     queryCommandState: function( name ) {

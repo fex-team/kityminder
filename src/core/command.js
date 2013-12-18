@@ -1,5 +1,9 @@
 var Command = kity.createClass( "Command", {
 
+    constructor:function(){
+
+    },
+
     execute: function (minder, args) {
 
     },
@@ -9,26 +13,26 @@ var Command = kity.createClass( "Command", {
     },
 
     queryState: function() {
-
+        return 0;
     },
 
     queryValue: function() {
-
+        return 0;
     },
 
-    setContentChanged: function() {
-
+    setContentChanged: function( val ) {
+        
     },
 
     isContentChanged: function() {
+        return false;
+    },  
 
-    },
-
-    setSelectionChanged: function() {
+    setSelectionChanged: function(val) {
 
     },
 
     isSelectionChanged: function() {
-        
+        return false;
     }
 });
