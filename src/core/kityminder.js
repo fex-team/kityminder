@@ -55,7 +55,6 @@ kity.extendClass(KityMinder, {
                 if(moduleDealsEvents){
                     for(var _key in moduleDealsEvents){
                         var bindEvs = _key.split(" ");
-                        console.log(bindEvs);
                         var func = moduleDealsEvents[_key];
                         for (var _i = 0; _i < bindEvs.length; _i++){
                             me.on(bindEvs[_i],func);
@@ -152,11 +151,11 @@ kity.extendClass(KityMinder, {
     },
 
     queryCommandState: function( name ) {
-
+        this.commands[name].queryState(this);
     },
 
     queryCommandValue: function( name ) {
-
+        this.commands[name].queryValue(this);
     }
 });
 

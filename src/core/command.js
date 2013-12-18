@@ -1,7 +1,7 @@
 var Command = kity.createClass( "Command", {
 
     constructor:function(){
-
+        
     },
 
     execute: function (minder, args) {
@@ -10,14 +10,6 @@ var Command = kity.createClass( "Command", {
 
     revert: function() {
 
-    },
-
-    queryState: function() {
-        return 0;
-    },
-
-    queryValue: function() {
-        return 0;
     },
 
     setContentChanged: function( val ) {
@@ -36,3 +28,11 @@ var Command = kity.createClass( "Command", {
         return false;
     }
 });
+
+Command.queryState: function(km) {
+        return 0;
+    }
+
+Command.queryValue: function(km) {
+        return 0;
+    }
