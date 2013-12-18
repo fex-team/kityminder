@@ -127,7 +127,7 @@ kity.extendClass(KityMinder, {
 
     },
     on: function( name, callback ) {
-
+        
     },
     once: function( name, callback ) {
 
