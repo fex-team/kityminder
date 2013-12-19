@@ -1,10 +1,18 @@
 var mindermoduleDefaultTest = function(){
 	console.log("test loaded");
 	var stroredData="stored";
+
+	var TestCommand = kity.createClass({
+
+	});
+
+	TestCommand.queryState = function() {};
+
 	return {
     	"commands": {
         //todo:command字典，name－action  键值对模式编写
         	"testCommand":kity.createClass("testCommand",{
+        			base:Command,
         			"execute":function(km,arg1,arg2,arg3){
         				console.log(arg1,arg2,arg3);
         			}

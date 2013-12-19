@@ -12,6 +12,8 @@
         "MinderNode",
         "MinderEvent",
         "require",
-        "km"
+        "km",
+        "console",
+        "Command"
     ]
 }
