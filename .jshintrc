@@ -11,6 +11,8 @@
         "kity",
         "MinderNode",
         "require",
-        "km"
+        "km",
+        "console",
+        "Command"
     ]
 }

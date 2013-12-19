@@ -29,10 +29,10 @@ var Command = kity.createClass( "Command", {
     }
 });
 
-Command.queryState: function(km) {
+Command.queryState = function(km) {
         return 0;
     }
 
-Command.queryValue: function(km) {
+Command.queryValue = function(km) {
         return 0;
     }

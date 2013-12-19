@@ -36,26 +36,29 @@ kity.extendClass(KityMinder, {
         if(_modules){
             for(var key in _modules){
                 //执行模块初始化，抛出后续处理对象
-                var moduleDeals = 
+                var moduleDeals =
                     _modules[key].call(me);
                 console.log(moduleDeals);
 
-                moduleDeals["ready"]&&moduleDeals["ready"].call(this);
+                if(moduleDeals.ready)
+                    {
+                        moduleDeals.ready.call(me);
+                    }
 
                 //command加入命令池子
-                var moduleDealsCommands = moduleDeals["commands"];
+                var moduleDealsCommands = moduleDeals.commands;
                 if(moduleDealsCommands){
-                    for(var _key in moduleDealsCommands){
-                        me.commands[_key] = moduleDealsCommands[_key];
+                    for(var _keyC in moduleDealsCommands){
+                        me.commands[_keyC] = moduleDealsCommands[_keyC];
                     }
                 }
                 
                 //绑定事件
-                var moduleDealsEvents = moduleDeals["events"];
+                var moduleDealsEvents = moduleDeals.events;
                 if(moduleDealsEvents){
-                    for(var _key in moduleDealsEvents){
-                        var bindEvs = _key.split(" ");
-                        var func = moduleDealsEvents[_key];
+                    for(var _keyE in moduleDealsEvents){
+                        var bindEvs = _keyE.split(" ");
+                        var func = moduleDealsEvents[_keyE];
                         for (var _i = 0; _i < bindEvs.length; _i++){
                             me.on(bindEvs[_i],func);
                         }
@@ -145,17 +148,20 @@ kity.extendClass(KityMinder, {
         var _action = new this.commands[name]();
         console.log(_action);
         var args = arguments;
-        arguments[0] = this;
-        _action["execute"]&&_action["execute"].apply(null,args);
+        args[0] = this;
+        if(_action.execute){
+            _action.execute.apply(null,args);
+        }
         this.actions.push(_action);
     },
 
     queryCommandState: function( name ) {
-        this.commands[name].queryState(this);
+        console.log(this.commands[name]);
+        (this.commands[name].queryState||Command.queryState)(this);
     },
 
     queryCommandValue: function( name ) {
-        this.commands[name].queryValue(this);
+        (this.commands[name].queryValue||Command.queryValue)(this);
     }
 });
 
