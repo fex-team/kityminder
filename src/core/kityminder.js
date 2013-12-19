@@ -62,11 +62,7 @@ kity.extendClass(KityMinder, (function(){
                     var moduleDealsEvents = moduleDeals.events;
                     if(moduleDealsEvents){
                         for(var _keyE in moduleDealsEvents){
-                            var bindEvs = _keyE.split(" ");
-                            var func = moduleDealsEvents[_keyE];
-                            for (var _i = 0; _i < bindEvs.length; _i++){
-                                me.on(bindEvs[_i],func);
-                            }
+                            me.on(_keyE,moduleDealsEvents[_keyE]);
                         }
                     }
 
