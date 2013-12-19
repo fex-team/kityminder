@@ -31,6 +31,7 @@ kity.extendClass(KityMinder, {
     _initModules: function() {
         var me = this;
         me.commands = {};//command池子
+        me._query = {};//query池子
         me.actions = [];//操作记录栈
         var _modules = KityMinder._modules;
         if(_modules){
@@ -156,12 +157,28 @@ kity.extendClass(KityMinder, {
     },
 
     queryCommandState: function( name ) {
-        console.log(this.commands[name]);
-        (this.commands[name].queryState||Command.queryState)(this);
+        if(!this.commands[name]){return false;}
+        if(!this._query[name]){
+            this._query[name] = new this.commands[name]();
+        }
+        if(this._query[name].queryState){
+            return this._query[name].queryState(this);
+        } else {
+            return 0;
+        }
     },
 
     queryCommandValue: function( name ) {
-        (this.commands[name].queryValue||Command.queryValue)(this);
+        if(!this.commands[name]){return false;}
+        if(!this._query[name]){
+            this._query[name] = new this.commands[name]();
+        }
+        if(this._query[name].queryValue){
+            return this._query[name].queryValue(this);
+        } else {
+            return 0;
+        }
+        
     }
 });
 
