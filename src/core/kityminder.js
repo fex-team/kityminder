@@ -130,6 +130,7 @@ kity.extendClass(KityMinder, {
         this._bindPaperEvents();
         this._bindKeyboardEvents();
     },
+    // TODO: mousemove lazy bind
     _bindPaperEvents: function() {
         var minder = this;
         this.paper.on('click mousedown mouseup mousemove', this._firePharse.bind(this));
@@ -151,19 +152,20 @@ kity.extendClass(KityMinder, {
     _firePharse: function(e) {
         var beforeEvent, preEvent, executeEvent;
         beforeEvent = new MinderEvent('before' + e.type, e, true);
-        if( !this._fire(beforeEvent) ) {
+        if( this._fire(beforeEvent) ) {
             return;
         }
         preEvent = new MinderEvent('pre' + e.type, e, false);
         executeEvent = new MinderEvent(e.type, e, false);
         this._fire(preEvent);
-        this._fire(beforeEvent);
+        this._fire(executeEvent);
         if(~'mousedown mouseup keydown keyup'.indexOf(e.type)) {
             this._interactChange(e);
         }
     },
     _interactChange: function(e) {
         var minder = this;
+        clearTimeout(this.interactTimeout);
         this.interactTimeout = setTimeout(function() {
             var canceled = minder._fire(new MinderEvent('beforeinteractchange'));
             if(canceled) {
@@ -171,7 +173,7 @@ kity.extendClass(KityMinder, {
             }
             minder._fire(new MinderEvent('preinteractchange'));
             minder._fire(new MinderEvent('interactchange'));
-        }, 500);
+        }, 300);
     },
     _listen: function( type, callback ) {
         var callbacks = this._eventCallbacks[type] || (this._eventCallbacks[type] = []);
@@ -179,6 +181,9 @@ kity.extendClass(KityMinder, {
     },
     _fire: function( e ) {
         var callbacks = this._eventCallbacks[e.type];
+        if(!callbacks) {
+            return false;
+        }
         for(var i = 0; i < callbacks.length; i++) {
             callbacks[i].call(this, e);
             if(e.shouldCancelImmediately()) {
@@ -213,9 +218,8 @@ kity.extendClass(KityMinder, {
         }
     },
     fire: function( type, params ) {
-        var e = params || {};
-        e.type = type;
-        this._firePharse(e);
+        var e = new MinderEvent(type, params);
+        this._fire(e);
         return this;
     }
 });
@@ -259,23 +263,33 @@ kity.extendClass(KityMinder, {
         return exported;
     },
 
-    importData: function(data) {
-        function importToNode(data, node) {
-            var children = data.children;
-            delete data.children;
+    importData: function( treeData ) {
+        function importToNode(treeData, node) {
+            var data = treeData.data;
             for(var field in data) {
                 node.setData(field, data[field]);
             }
-            for(var i = 0; i < children.length; i++) {
-                var child = new MinderNode();
-                importToNode(children[i], child);
-                node.appendChild(child);
+
+            var childrenTreeData = treeData.children;
+            if(!childrenTreeData) return;
+            for(var i = 0; i < childrenTreeData.length; i++) {
+                var childNode = new MinderNode();
+                importToNode(childrenTreeData[i], childNode);
+                node.appendChild(childNode);
             }
         }
+        var params = { importData: treeData };
+        var canceled = this._fire(new MinderEvent('beforeimport', params , true));
+        if(canceled) return this;
+
+        this._fire(new MinderEvent('preimport', params, false));
+
         while(this.root.getChildren().length) {
             this.root.removeChild(0);
         }
-        importToNode(data, this.root);
+        importToNode(treeData, this.root);
+
+        this._fire(new MinderEvent('import', params, false));
         return this;
     }
 });

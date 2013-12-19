@@ -1,8 +1,12 @@
 var MinderEvent = kity.createClass('MindEvent', {
     constructor: function (type, params, cancelable) {
-        kity.Utils.extend(this, params || {});
+        params = params || {};
+        kity.Utils.extend(this, params);
         this.type = type;
         this.cancelable = cancelable || false;
+        if(params.targetShape) {
+            this.targetNode = params.targetShape.minderNode || null;
+        }
     },
 
     cancel: function() {
