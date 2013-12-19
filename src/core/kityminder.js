@@ -2,8 +2,8 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
     constructor: function (id, option) {
         // 初始化
         this._initMinder(id, option || {});
-        this._initModules();
         this._initEvents();
+        this._initModules();
     },
 
     _initMinder: function(id, option) {
