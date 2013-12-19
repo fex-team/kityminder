@@ -19,7 +19,7 @@ var mindermoduleDefaultTest = function(){
                 window.alert("hahaha");
 	        },
 	        "keydown keyup": function(e){
-
+                window.alert("key");
 	        }
         }
 	};
