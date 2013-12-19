@@ -4,8 +4,8 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
     constructor: function (id, option) {
         // 初始化
         this._initMinder(id, option || {});
-        this._initModules();
         this._initEvents();
+        this._initModules();
     },
 
     _initMinder: function(id, option) {
@@ -22,9 +22,10 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
 
 //模块注册&暴露模块接口
 (function(){
-    var _modules = {};
+    var _modules;
     KityMinder.registerModule = function( name, module ) {
         //初始化模块列表
+        if(!_modules){_modules = {};}
         _modules[name] = module;
     };
     KityMinder.getModules = function(){
@@ -36,7 +37,6 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
 kity.extendClass(KityMinder, (function(){
     var _commands = {};//command池子
     var _query = {};//query池子
-        
     return {
         _initModules: function() {
             var _modules = KityMinder.getModules();
@@ -64,11 +64,7 @@ kity.extendClass(KityMinder, (function(){
                     var moduleDealsEvents = moduleDeals.events;
                     if(moduleDealsEvents){
                         for(var _keyE in moduleDealsEvents){
-                            var bindEvs = _keyE.split(" ");
-                            var func = moduleDealsEvents[_keyE];
-                            for (var _i = 0; _i < bindEvs.length; _i++){
-                                me.on(bindEvs[_i],func);
-                            }
+                            me.on(_keyE,moduleDealsEvents[_keyE]);
                         }
                     }
 
@@ -76,15 +72,16 @@ kity.extendClass(KityMinder, (function(){
             }
         },
         execCommand: function( name ) {
+            var me = this;
             var _action = new _commands[name]();
             console.log(_action);
             var args = arguments;
             args[0] = this;
             if(_action.execute){
-                _action.fire("beforecommand");
-                _action.on("precommand",function(e){
-                    _action.execute.apply(null,args);
-                    _action.fire("command");
+                me.fire("beforecommand",_action);
+                me.on("precommand",function(e){
+                    if(e.target===_action){_action.execute.apply(null,args);}
+                    me.fire("command",_action);
                 });
             }
         },
