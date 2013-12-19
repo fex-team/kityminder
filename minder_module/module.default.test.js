@@ -16,7 +16,7 @@ var mindermoduleDefaultTest = function(){
         "events": {
             //todo:事件响应函数绑定列表,事件名-响应函数  键值对模式编写
 	        "click": function(e){
-
+                window.alert("hahaha");
 	        },
 	        "keydown keyup": function(e){
 
