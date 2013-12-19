@@ -24,7 +24,7 @@
     }
 
     minder.on(allEvent(), function(e) {
-        console.log(e.type);
+        //console.log(e.type, e);
     });
     minder.importData({
         data: {
@@ -42,7 +42,7 @@
             data: {
                 x: 200,
                 y: 100,
-                text: 'child2'   
+                text: 'child2'
             },
             children: [{
                 data: {
@@ -53,7 +53,9 @@
             }]
         }]
     });
+    console.log(minder);
     minder.update();
+    m = minder;
     //console.log(minder.exportData());
 </script>
 </html>

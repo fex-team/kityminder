@@ -1,3 +1,5 @@
+
+var KityMinderId = 0;
 var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
     constructor: function (id, option) {
         // 初始化
@@ -7,14 +9,14 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
     },
 
     _initMinder: function(id, option) {
-        this.id = id;
+        this.id = id || KityMinderId++;
 
-        this.rc = new kity.Group();
-        this.paper = new kity.Paper(option.renderTo || document.body);
-        this.paper.addShape(this.rc);
+        this._rc = new kity.Group();
+        this._paper = new kity.Paper(option.renderTo || document.body);
+        this._paper.addShape(this._rc);
 
-        this.root = new MinderNode(this);
-        this.rc.addShape(this.root.getRenderContainer());
+        this._root = new MinderNode(this);
+        this._rc.addShape(this._root.getRenderContainer());
     }
 });
 
@@ -118,7 +120,7 @@ kity.extendClass(KityMinder, (function(){
 kity.extendClass(KityMinder, {
 
     getRoot: function() {
-        return this.root;
+        return this._root;
     },
 
     traverse: function( node, fn ) {
@@ -131,18 +133,18 @@ kity.extendClass(KityMinder, {
 
     handelNodeInsert: function(node) {
         this.traverse(node, function(current) {
-            this.rc.addShape(current.getRenderContainer());
+            this._rc.addShape(current.getRenderContainer());
         });
     },
 
     handelNodeRemove: function(node) {
         this.traverse(node, function(current) {
-            this.rc.removeShape(current.getRenderContainer());
+            this._rc.removeShape(current.getRenderContainer());
         });
     },
 
     update: function( node ) {
-        node = node || this.root;
+        node = node || this._root;
         this.traverse(node, function(current) {
             var rc = current.getRenderContainer();
             var x = current.getData('x') || 0,
@@ -177,7 +179,7 @@ kity.extendClass(KityMinder, {
     // TODO: mousemove lazy bind
     _bindPaperEvents: function() {
         var minder = this;
-        this.paper.on('click mousedown mouseup mousemove', this._firePharse.bind(this));
+        this._paper.on('click mousedown mouseup mousemove', this._firePharse.bind(this));
     },
     _bindKeyboardEvents: function() {
         var minder = this;
@@ -300,18 +302,22 @@ kity.extendClass(KityMinder, {
                 node.appendChild(childNode);
             }
         }
+
         var params = { importData: treeData };
+
         var canceled = this._fire(new MinderEvent('beforeimport', params , true));
+
         if(canceled) return this;
 
         this._fire(new MinderEvent('preimport', params, false));
 
-        while(this.root.getChildren().length) {
-            this.root.removeChild(0);
+        while(this._root.getChildren().length) {
+            this._root.removeChild(0);
         }
-        importToNode(treeData, this.root);
+        importToNode(treeData, this._root);
 
         this._fire(new MinderEvent('import', params, false));
+        this._firePharse( {type: 'contentchange'} );
         return this;
     }
 });
@@ -319,22 +325,52 @@ kity.extendClass(KityMinder, {
 // 选区管理
 kity.extendClass(KityMinder, {
     getSelectedNodes: function() {
-
+        return this._selectedNodes || (this._selectedNodes = []);
     },
 
     select: function( nodes ) {
-
+        var selection = this.getSelectedNodes();
+        if(false === nodes instanceof Array) nodes = [nodes];
+        for(var i = 0; i < nodes.length; i++) {
+            if(selection.indexOf(nodes[i]) !== -1) {
+                selection.push(nodes[i]);
+            }
+        }
+        return this;
     },
 
     selectSingle: function( node ) {
-
+        return this.clearSelect().select( node );
     },
 
     toggleSelect: function( nodes ) {
-
+        var selection = this.getSelectedNodes();
+        var needAdd = [], needRemove = [];
+        if(false === nodes instanceof Array) nodes = [nodes];
+        for(var i = 0; i < nodes.length; i++) {
+            if(selection.indexOf(nodes[i]) === -1) {
+                needAdd.push(nodes[i]);
+            } else {
+                needRemove.push(nodes[i]);
+            }
+        }
+        this.clearSelect( needRemove );
+        this.select( needAdd );
     },
 
     clearSelect: function( nodes ) {
-
+        if(!nodes) {
+            this._selectedNodes = [];
+            return this;
+        }
+        var originSelection = this.getSelectedNodes();
+        var newSelection = [];
+        for(var i = 0; i < originSelection.length; i++) {
+            if(nodes.indexOf(originSelection[i]) !== -1) {
+                newSelection.push(originSelection[i]);
+            }
+        }
+        this._selectedNodes = newSelection;
+        return this;
     }
 });

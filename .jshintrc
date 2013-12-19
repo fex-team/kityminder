@@ -2,7 +2,7 @@
     "undef" : true,
     "unused" : false,
     "strict" : false,
-    "curly" : true,
+    "curly" : false,
     "newcap" : true,
     "trailing" : true,
     "white": false,
