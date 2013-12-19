@@ -73,7 +73,7 @@ kity.extendClass( KityMinder, ( function () {
         execCommand: function ( name ) {
             var me = this;
             var _action = new _commands[ name ]();
-            console.log( _action );
+
             var args = arguments;
             args[ 0 ] = this;
             var _sendingArgs = ( function () {
@@ -83,7 +83,7 @@ kity.extendClass( KityMinder, ( function () {
                 }
                 return _args;
             } )();
-            console.log( args );
+
             var eventParams = {
                 command: _action,
                 commandName: name,
@@ -94,11 +94,12 @@ kity.extendClass( KityMinder, ( function () {
                 me._fire( new MinderEvent( "precommand", eventParams, false ) );
                 _action.execute.apply( _action, args );
                 me._fire( new MinderEvent( "command", eventParams, false ) );
+
                 if ( _action.isContentChanged() ) {
-                    me._firePharse( 'contentchange' );
+                    me._firePharse( new MinderEvent( 'contentchange' ) );
                 }
                 if ( _action.isSelectionChanged() ) {
-                    me._firePharse( 'selectionchange' );
+                    me._firePharse( new MinderEvent( 'selectionchange' ) );
                 }
             }
         },

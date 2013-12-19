@@ -23,10 +23,13 @@ var mindermoduleDefaultTest = function () {
             },
             "beforecommand": function ( e ) {
                 console.log( "precommand:", e );
-                e.cancel();
+                //e.cancel();
             },
             "command": function ( e ) {
                 console.log( "command exec!", e );
+            },
+            "contentchange": function ( e ) {
+                console.log( "contentchange!" );
             }
         }
     };
