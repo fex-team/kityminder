@@ -5,6 +5,7 @@ var MinderNode = km.MinderNode = kity.createClass("MinderNode", {
         this.data = {};
         this.tnh = treeNotifyHandler;
         this.rc = new kity.Group();
+        this.rc.minderNode = this;
     },
 
     getParent: function() {
