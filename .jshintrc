@@ -10,6 +10,7 @@
     "predef" : [
         "kity",
         "MinderNode",
+        "MinderEvent",
         "require",
         "km",
         "console",

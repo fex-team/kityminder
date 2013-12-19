@@ -171,31 +171,149 @@ kity.extendClass(KityMinder, {
 // 事件机制
 kity.extendClass(KityMinder, {
     _initEvents: function() {
-
+        this._eventCallbacks = {};
+        this._bindPaperEvents();
+        this._bindKeyboardEvents();
+    },
+    // TODO: mousemove lazy bind
+    _bindPaperEvents: function() {
+        var minder = this;
+        this.paper.on('click mousedown mouseup mousemove', this._firePharse.bind(this));
+    },
+    _bindKeyboardEvents: function() {
+        var minder = this;
+        var listen = function(name, callback) {
+            if(window.addEventListener) {
+                window.addEventListener(name, callback);
+            } else if(window.attachEvent) {
+                window.attachEvent(name, callback);
+            }
+        };
+        var events = 'keydown keyup keypress'.split(' ');
+        for(var i = 0; i < events.length; i++) {
+            listen(events[i], this._firePharse.bind(this));
+        }
+    },
+    _firePharse: function(e) {
+        var beforeEvent, preEvent, executeEvent;
+        beforeEvent = new MinderEvent('before' + e.type, e, true);
+        if( this._fire(beforeEvent) ) {
+            return;
+        }
+        preEvent = new MinderEvent('pre' + e.type, e, false);
+        executeEvent = new MinderEvent(e.type, e, false);
+        this._fire(preEvent);
+        this._fire(executeEvent);
+        if(~'mousedown mouseup keydown keyup'.indexOf(e.type)) {
+            this._interactChange(e);
+        }
+    },
+    _interactChange: function(e) {
+        var minder = this;
+        clearTimeout(this.interactTimeout);
+        this.interactTimeout = setTimeout(function() {
+            var canceled = minder._fire(new MinderEvent('beforeinteractchange'));
+            if(canceled) {
+                return;
+            }
+            minder._fire(new MinderEvent('preinteractchange'));
+            minder._fire(new MinderEvent('interactchange'));
+        }, 300);
+    },
+    _listen: function( type, callback ) {
+        var callbacks = this._eventCallbacks[type] || (this._eventCallbacks[type] = []);
+        callbacks.push( callback );
+    },
+    _fire: function( e ) {
+        var callbacks = this._eventCallbacks[e.type];
+        if(!callbacks) {
+            return false;
+        }
+        for(var i = 0; i < callbacks.length; i++) {
+            callbacks[i].call(this, e);
+            if(e.shouldCancelImmediately()) {
+                break;
+            }
+        }
+        return e.shouldCancel();
     },
     on: function( name, callback ) {
-        
-    },
-    once: function( name, callback ) {
-
+        var types = name.split(' ');
+        for(var i = 0; i < types.length; i++) {
+            this._listen( types[i], callback );
+        }
+        return this;
     },
     off: function( name, callback ) {
-
+        var types = name.split(' ');
+        var i, j, callbacks, removeIndex;
+        for(i = 0; i < types.length; i++) {
+            callbacks = this._eventCallbacks[ types[i] ];
+            if(callbacks) {
+                removeIndex = null;
+                for(j = 0; j < callbacks.length; j++) {
+                    if(callbacks[j] == callback) {
+                        removeIndex = j;
+                    }
+                }
+                if(removeIndex !== null) {
+                    callbacks.splice(removeIndex, 1);
+                }
+            }
+        }
     },
-    fire: function( name, params ) {
-
+    fire: function( type, params ) {
+        var e = new MinderEvent(type, params);
+        this._fire(e);
+        return this;
     }
 });
 
 
 // 导入导出
 kity.extendClass(KityMinder, {
-    export: function() {
-
+    exportData: function(node) {
+        var exported = {};
+        node = node || this.getRoot();
+        exported.data = node.getData();
+        var childNodes = node.getChildren();
+        if(childNodes.length) {
+            exported.children = [];
+            for(var i = 0; i < childNodes.length; i++) {
+                exported.children.push(this.exportData(childNodes[i]));
+            }
+        }
+        return exported;
     },
 
-    import: function() {
+    importData: function( treeData ) {
+        function importToNode(treeData, node) {
+            var data = treeData.data;
+            for(var field in data) {
+                node.setData(field, data[field]);
+            }
 
+            var childrenTreeData = treeData.children;
+            if(!childrenTreeData) return;
+            for(var i = 0; i < childrenTreeData.length; i++) {
+                var childNode = new MinderNode();
+                importToNode(childrenTreeData[i], childNode);
+                node.appendChild(childNode);
+            }
+        }
+        var params = { importData: treeData };
+        var canceled = this._fire(new MinderEvent('beforeimport', params , true));
+        if(canceled) return this;
+
+        this._fire(new MinderEvent('preimport', params, false));
+
+        while(this.root.getChildren().length) {
+            this.root.removeChild(0);
+        }
+        importToNode(treeData, this.root);
+
+        this._fire(new MinderEvent('import', params, false));
+        return this;
     }
 });
 
