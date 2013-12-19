@@ -10,12 +10,50 @@
 </body>
 <script>
     var minder = new km.KityMinder();
-    var node1 = new km.MinderNode().pipe(function () {
-        this.setData('x', 100);
-        this.setData('y', 100);
-        this.setData('text', "this is a text");
+
+    function allEvent () {
+        var events = 'click mousedown mouseup keydown keyup keypress dblclick interactchange contentchange selectionchange import'.split(' ');
+        var pharseEvents = [];
+
+        for(var i = 0; i < events.length; i++) {
+            pharseEvents.push('before' + events[i]);
+            pharseEvents.push('pre' + events[i]);
+            pharseEvents.push(events[i]);
+        }
+        return pharseEvents.join(' ');
+    }
+
+    minder.on(allEvent(), function(e) {
+        console.log(e.type);
     });
-    minder.getRoot().insertChild(node1);
+    minder.importData({
+        data: {
+            x: 50,
+            y: 50,
+            text: 'center',
+        },
+        children: [{
+            data: {
+                x: 200,
+                y: 50,
+                text: 'child1'
+            }
+        },{
+            data: {
+                x: 200,
+                y: 100,
+                text: 'child2'   
+            },
+            children: [{
+                data: {
+                    x: 350,
+                    y: 100,
+                    text: 'leaf'
+                }
+            }]
+        }]
+    });
     minder.update();
+    //console.log(minder.exportData());
 </script>
 </html>

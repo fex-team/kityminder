@@ -10,6 +10,8 @@ $dependency = Array(
 
 $content = "";
 
+header('Content-Type: text/javascript');
+
 foreach ($dependency as $index => $dep) {
     echo file_get_contents("../$dep")."\n\n";
 }
