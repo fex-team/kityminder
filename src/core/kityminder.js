@@ -45,7 +45,6 @@ kity.extendClass(KityMinder, (function(){
                 for(var key in _modules){
                     //执行模块初始化，抛出后续处理对象
                     var moduleDeals = _modules[key].call(me);
-                    console.log(moduleDeals);
 
                     if(moduleDeals.ready)
                         {
