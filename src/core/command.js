@@ -18,7 +18,7 @@ var Command = kity.createClass( "Command", {
 
     isContentChanged: function() {
         return false;
-    },  
+    },
 
     setSelectionChanged: function(val) {
 
@@ -26,13 +26,14 @@ var Command = kity.createClass( "Command", {
 
     isSelectionChanged: function() {
         return false;
+    },
+
+    queryState : function(km) {
+        return 0;
+    },
+
+    queryValue : function(km) {
+        return 0;
     }
 });
 
-Command.queryState = function(km) {
-        return 0;
-    }
-
-Command.queryValue = function(km) {
-        return 0;
-    }

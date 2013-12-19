@@ -1,5 +1,4 @@
 var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
-
     constructor: function (id, option) {
         // 初始化
         this._initMinder(id, option || {});
@@ -19,56 +18,101 @@ var KityMinder = km.KityMinder = kity.createClass("KityMinder", {
     }
 });
 
-// 模块注册
-KityMinder.registerModule = function( name, module ) {
-    //初始化模块列表
-    this._modules = this._modules||{};
-    this._modules[name] = module;
-};
+//模块注册&暴露模块接口
+(function(){
+    var _modules = {};
+    KityMinder.registerModule = function( name, module ) {
+        //初始化模块列表
+        _modules[name] = module;
+    };
+    KityMinder.getModules = function(){
+        return _modules;
+    };
+})();
 
 // 模块维护
-kity.extendClass(KityMinder, {
-    _initModules: function() {
-        var me = this;
-        me.commands = {};//command池子
-        me.actions = [];//操作记录栈
-        var _modules = KityMinder._modules;
-        if(_modules){
-            for(var key in _modules){
-                //执行模块初始化，抛出后续处理对象
-                var moduleDeals =
-                    _modules[key].call(me);
-                console.log(moduleDeals);
+kity.extendClass(KityMinder, (function(){
+    var _commands = {};//command池子
+    var _query = {};//query池子
+        
+    return {
+        _initModules: function() {
+            var _modules = KityMinder.getModules();
+            if(_modules){
+                var me = this;
+                for(var key in _modules){
+                    //执行模块初始化，抛出后续处理对象
+                    var moduleDeals = _modules[key].call(me);
+                    console.log(moduleDeals);
 
-                if(moduleDeals.ready)
-                    {
-                        moduleDeals.ready.call(me);
-                    }
+                    if(moduleDeals.ready)
+                        {
+                            moduleDeals.ready.call(me);
+                        }
 
-                //command加入命令池子
-                var moduleDealsCommands = moduleDeals.commands;
-                if(moduleDealsCommands){
-                    for(var _keyC in moduleDealsCommands){
-                        me.commands[_keyC] = moduleDealsCommands[_keyC];
-                    }
-                }
-                
-                //绑定事件
-                var moduleDealsEvents = moduleDeals.events;
-                if(moduleDealsEvents){
-                    for(var _keyE in moduleDealsEvents){
-                        var bindEvs = _keyE.split(" ");
-                        var func = moduleDealsEvents[_keyE];
-                        for (var _i = 0; _i < bindEvs.length; _i++){
-                            me.on(bindEvs[_i],func);
+                    //command加入命令池子
+                    var moduleDealsCommands = moduleDeals.commands;
+                    if(moduleDealsCommands){
+                        for(var _keyC in moduleDealsCommands){
+                            _commands[_keyC] = moduleDealsCommands[_keyC];
                         }
                     }
-                }
+                        
+                    //绑定事件
+                    var moduleDealsEvents = moduleDeals.events;
+                    if(moduleDealsEvents){
+                        for(var _keyE in moduleDealsEvents){
+                            var bindEvs = _keyE.split(" ");
+                            var func = moduleDealsEvents[_keyE];
+                            for (var _i = 0; _i < bindEvs.length; _i++){
+                                me.on(bindEvs[_i],func);
+                            }
+                        }
+                    }
 
+                }
             }
+        },
+        execCommand: function( name ) {
+            var _action = new _commands[name]();
+            console.log(_action);
+            var args = arguments;
+            args[0] = this;
+            if(_action.execute){
+                _action.fire("beforecommand");
+                _action.on("precommand",function(e){
+                    _action.execute.apply(null,args);
+                    _action.fire("command");
+                });
+            }
+        },
+
+        queryCommandState: function( name ) {
+            if(!_commands[name]){return false;}
+            if(!_query[name]){
+                _query[name] = new _commands[name]();
+            }
+            if(_query[name].queryState){
+                return _query[name].queryState(this);
+            } else {
+                return 0;
+            }
+        },
+
+        queryCommandValue: function( name ) {
+            if(!_commands[name]){return false;}
+            if(!_query[name]){
+                _query[name] = new _commands[name]();
+            }
+            if(_query[name].queryValue){
+                return _query[name].queryValue(this);
+            } else {
+                return 0;
+            }
+            
         }
-    }
-});
+    };
+})());
 
 // 节点控制
 kity.extendClass(KityMinder, {
@@ -224,28 +268,6 @@ kity.extendClass(KityMinder, {
     }
 });
 
-// 命令机制
-kity.extendClass(KityMinder, {
-    execCommand: function( name ) {
-        var _action = new this.commands[name]();
-        console.log(_action);
-        var args = arguments;
-        args[0] = this;
-        if(_action.execute){
-            _action.execute.apply(null,args);
-        }
-        this.actions.push(_action);
-    },
-
-    queryCommandState: function( name ) {
-        console.log(this.commands[name]);
-        (this.commands[name].queryState||Command.queryState)(this);
-    },
-
-    queryCommandValue: function( name ) {
-        (this.commands[name].queryValue||Command.queryValue)(this);
-    }
-});
 
 // 导入导出
 kity.extendClass(KityMinder, {
