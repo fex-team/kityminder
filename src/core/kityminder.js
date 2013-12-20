@@ -76,7 +76,7 @@ kity.extendClass( KityMinder, ( function () {
         },
         execCommand: function ( name ) {
             var me = this;
-            var _action = new _commands[ name ]();
+            var _action = new _commands[ name.toLowerCase() ]();
 
             var args = arguments;
             args[ 0 ] = this;
@@ -90,7 +90,7 @@ kity.extendClass( KityMinder, ( function () {
 
             var eventParams = {
                 command: _action,
-                commandName: name,
+                commandName: name.toLowerCase(),
                 commandArgs: _sendingArgs
             };
             var canceled = me._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
@@ -109,7 +109,7 @@ kity.extendClass( KityMinder, ( function () {
         },
 
         queryCommandState: function ( name ) {
-            if ( !_commands[ name ] ) {
+            if ( !_commands[ name.toLowerCase() ] ) {
                 return false;
             }
             if ( !_query[ name ] ) {
@@ -123,7 +123,7 @@ kity.extendClass( KityMinder, ( function () {
         },
 
         queryCommandValue: function ( name ) {
-            if ( !_commands[ name ] ) {
+            if ( !_commands[ name.toLowerCase() ] ) {
                 return false;
             }
             if ( !_query[ name ] ) {

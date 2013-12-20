@@ -1,11 +1,11 @@
-KityMinder.registerModule( "ConnectModule", function () {
-    return {
-        "commands": {
+var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
+	return {
+		"commands": {
 
-        },
+		},
 
-        "events": {
+		"events": {
 
-        }
-    };
+		}
+	};
 } );
