@@ -1,5 +1,4 @@
 KityMinder.registerModule( "RenderModule", function () {
-    console.log( "render loaded" );
 
     var DrawShapeCommand = kity.createClass( "DrawShapeCommand", {
         base: Command,

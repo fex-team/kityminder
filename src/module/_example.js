@@ -2,9 +2,10 @@
  * 模块初始化函数：模块名称大写，以 Module 作为后缀
  */
 KityMinder.registerModule( "ExampleModule", function () {
+    console.log( "You can cheat: 上下左右ABAB" );
 
     // TODO: 初始化模块静态变量
-    var moduleVar = "moduleValue";
+    var cheatCode = "38 40 37 39 65 66 65 66".split( ' ' );
 
     // TODO: 进行模块命令定义
     // HINT: 复杂的命令也可以在其它的文件中定义
@@ -19,6 +20,7 @@ KityMinder.registerModule( "ExampleModule", function () {
         execute: function ( km ) {
             // this.setContentChange(true) 可以告知 KM 命令的执行导致了内容的变化，KM会抛出 contentchange 事件
             // this.setSelectionChange(true) 可以告知 KM 命令的执行导致了选区的变化，KM会抛出 selectionchange 事件
+            window.alert( 'you cheat!' );
         },
 
         /**
@@ -49,7 +51,7 @@ KityMinder.registerModule( "ExampleModule", function () {
         "commands": {
 
             // 约定：命令名称全用小写
-            "example": ExampleCommand
+            "cheat": ExampleCommand
         },
 
         // TODO: 需要注册的事件
@@ -59,17 +61,29 @@ KityMinder.registerModule( "ExampleModule", function () {
                 // 支持的鼠标事件：mousedown, mouseup, mousemove, click
             },
 
-            "keydown keyup": function ( e ) {
+            "keydown": function ( e ) {
                 // 支持的键盘事件：keydown, keyup, keypress
+                if ( !this._cheated || this._cheated[ 0 ] != e.keyCode ) {
+                    this._cheated = cheatCode.slice( 0 );
+                }
+                if ( this._cheated[ 0 ] == e.keyCode ) {
+                    this._cheated.shift();
+                }
+                console.log( this._cheated );
+                if ( this._cheated.length === 0 ) {
+                    this.execCommand( 'cheat' );
+                }
             },
 
             "beforecommand": function ( e ) {
                 // e.cancel() 方法可以阻止 before 事件进入下个阶段
                 // e.cancelImmediately() 方法可以阻止当前回调后的回调执行，并且阻止事件进入下个阶段
+                console.log( e.type + ' fired' );
             },
 
             "command": function ( e ) {
                 // 命令执行后的事件
+                console.log( e.type + ' fired' );
             },
 
             "contentchange": function ( e ) {
