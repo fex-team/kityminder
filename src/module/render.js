@@ -6,6 +6,7 @@ KityMinder.registerModule( "RenderModule", ( function () {
                 radius: 5,
                 text: "Root",
                 fill: "#7ecef4",
+                stroke: "white"
             };
             var drawRectNode = function ( kR, node ) {
                 if ( !node ) {

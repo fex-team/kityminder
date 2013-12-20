@@ -78,25 +78,22 @@ kity.extendClass( KityMinder, ( function () {
             var me = this;
             var _action = new _commands[ name.toLowerCase() ]();
 
-            var args = arguments;
-            args[ 0 ] = this;
-            var _sendingArgs = ( function () {
-                var _args = [];
-                for ( var i = 1; i < args.length; i++ ) {
-                    _args.push( args[ i ] );
-                }
-                return _args;
-            } )();
+            var cmdArgs = Array.prototype.slice.call( arguments, 1 );
 
             var eventParams = {
                 command: _action,
                 commandName: name.toLowerCase(),
-                commandArgs: _sendingArgs
+                commandArgs: cmdArgs
             };
+
             var canceled = me._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
+
             if ( !canceled ) {
+
                 me._fire( new MinderEvent( "precommand", eventParams, false ) );
-                _action.execute.apply( _action, args );
+
+                _action.execute.apply( _action, [ this ].concat( cmdArgs ) );
+
                 me._fire( new MinderEvent( "command", eventParams, false ) );
 
                 if ( _action.isContentChanged() ) {
@@ -189,7 +186,7 @@ kity.extendClass( KityMinder, {
         var listen = function ( name, callback ) {
             if ( window.addEventListener ) {
                 window.addEventListener( name, callback );
-            } else if ( window.attachEvent ) {
+} else if ( window.attachEvent ) {
                 window.attachEvent( name, callback );
             }
         };
