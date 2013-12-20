@@ -16,6 +16,10 @@ var KityMinder = km.KityMinder = kity.createClass( "KityMinder", {
 
         this._root = new MinderNode( this );
         this._rc.addShape( this._root.getRenderContainer() );
+    },
+
+    getDrawingArea: function () {
+        return this._paper;
     }
 } );
 
