@@ -164,7 +164,7 @@ kity.extendClass( KityMinder, {
     },
 
     update: function ( node ) {
-        this.execCommand( 'render', node );
+        this.execCommand( 'renderroot', node );
         return this;
     }
 } );
@@ -186,7 +186,7 @@ kity.extendClass( KityMinder, {
         var listen = function ( name, callback ) {
             if ( window.addEventListener ) {
                 window.addEventListener( name, callback );
-} else if ( window.attachEvent ) {
+            } else if ( window.attachEvent ) {
                 window.attachEvent( name, callback );
             }
         };
