@@ -10,6 +10,12 @@ var mindermoduleDefaultTest = function () {
                 "execute": function ( km, arg1, arg2, arg3 ) {
                     console.log( arg1, arg2, arg3 );
                 }
+            } ),
+            "testCommand2": kity.createClass( "testCommand", {
+                base: Command,
+                "execute": function ( km, arg1, arg2, arg3 ) {
+                    console.log( arg1, arg2, arg3 );
+                }
             } )
         },
 
@@ -23,7 +29,7 @@ var mindermoduleDefaultTest = function () {
             },
             "beforecommand": function ( e ) {
                 console.log( "precommand:", e );
-                //e.cancel();
+                e.cancel();
             },
             "command": function ( e ) {
                 console.log( "command exec!", e );

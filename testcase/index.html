@@ -25,6 +25,7 @@
     KityMinder.registerModule("defaulttest",mindermoduleDefaultTest);
     var myMinder = new KityMinder();
     myMinder.execCommand("testCommand","test1",function(){alert(a)},{a:1,b:2});
+    myMinder.execCommand("testCommand1");
     console.log(myMinder.queryCommandState("testCommand"));
     console.log(myMinder.queryCommandValue("testCommand"));
 </script>
