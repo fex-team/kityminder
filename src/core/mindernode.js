@@ -1,4 +1,4 @@
-var MinderNode = km.MinderNode = kity.createClass("MinderNode", {
+var MinderNode = km.MinderNode = kity.createClass( "MinderNode", {
     constructor: function ( treeNotifyHandler ) {
         this.parent = null;
         this.children = [];
@@ -8,88 +8,89 @@ var MinderNode = km.MinderNode = kity.createClass("MinderNode", {
         this.rc.minderNode = this;
     },
 
-    getParent: function() {
+    getParent: function () {
         return this.parent;
     },
 
-    getRoot: function() {
+    getRoot: function () {
         var root = this;
-        while(root.parent) {
+        while ( root.parent ) {
             root = root.parent;
         }
         return root;
     },
 
-    getChildren: function() {
+    getChildren: function () {
         return this.children;
     },
 
-    getIndex: function() {
-        return this.parent ? this.parent.indexOf(this) : -1;
+    getIndex: function () {
+        return this.parent ? this.parent.indexOf( this ) : -1;
     },
 
-    insertChild: function(node, index) {
-        if(index === undefined) {
+    insertChild: function ( node, index ) {
+        if ( index === undefined ) {
             index = this.children.length;
         }
-        if(node.parent) {
-            node.parent.removeChild(node);
+        if ( node.parent ) {
+            node.parent.removeChild( node );
         }
         node.parent = this;
-        this.children.splice(index, 0, node);
-        this.handelInsert(node);
+        this.children.splice( index, 0, node );
+        this.handelInsert( node );
     },
 
-    handelInsert: function(node) {
+    handelInsert: function ( node ) {
         var root = this.getRoot();
-        if(root.tnh) {
+        if ( root.tnh ) {
             root.tnh.handelNodeInsert.call( root.tnh, node );
         }
     },
 
-    appendChild: function(node) {
-        return this.insertChild(node);
+    appendChild: function ( node ) {
+        return this.insertChild( node );
     },
 
-    prependChild: function(node) {
-        return this.insertChild(node, 0);
+    prependChild: function ( node ) {
+        return this.insertChild( node, 0 );
     },
 
-    removeChild: function(elem) {
-        var index = elem, removed;
-        if(elem instanceof MinderNode) {
-            index = this.children.indexOf(elem);
+    removeChild: function ( elem ) {
+        var index = elem,
+            removed;
+        if ( elem instanceof MinderNode ) {
+            index = this.children.indexOf( elem );
         }
-        if(index >= 0) {
-            removed = this.children.splice(index, 1)[0];
+        if ( index >= 0 ) {
+            removed = this.children.splice( index, 1 )[ 0 ];
             removed.parent = null;
-            this.handelRemove(removed);
+            this.handelRemove( removed );
         }
     },
 
-    handelRemove: function(node) {
+    handelRemove: function ( node ) {
         var root = this.getRoot();
-        if(root.tnh) {
+        if ( root.tnh ) {
             root.tnh.handelNodeRemove.call( root.tnh, node );
         }
     },
 
-    getChild: function(index) {
-        return this.children[index];
+    getChild: function ( index ) {
+        return this.children[ index ];
     },
 
-    getData: function(name) {
-        if(name === undefined) {
+    getData: function ( name ) {
+        if ( name === undefined ) {
             return this.data;
         }
-        return this.data[name];
+        return this.data[ name ];
     },
 
-    setData: function(name, value) {
-        this.data[name] = value;
+    setData: function ( name, value ) {
+        this.data[ name ] = value;
     },
 
-    getRenderContainer: function() {
+    getRenderContainer: function () {
         return this.rc;
     }
-});
+} );

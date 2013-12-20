@@ -9,23 +9,8 @@
     
 </body>
 <script>
-    var minder = new km.KityMinder();
+    minder = new km.KityMinder();
 
-    function allEvent () {
-        var events = 'click mousedown mouseup keydown keyup keypress dblclick interactchange contentchange selectionchange import'.split(' ');
-        var pharseEvents = [];
-
-        for(var i = 0; i < events.length; i++) {
-            pharseEvents.push('before' + events[i]);
-            pharseEvents.push('pre' + events[i]);
-            pharseEvents.push(events[i]);
-        }
-        return pharseEvents.join(' ');
-    }
-
-    minder.on(allEvent(), function(e) {
-        //console.log(e.type, e);
-    });
     minder.importData({
         data: {
             x: 50,
@@ -53,9 +38,6 @@
             }]
         }]
     });
-    console.log(minder);
     minder.update();
-    m = minder;
-    //console.log(minder.exportData());
 </script>
 </html>

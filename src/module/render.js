@@ -1,20 +1,16 @@
-var mindermoduleRender = function () {
-    console.log( "render loaded" );
+KityMinder.registerModule( "RenderModule", function () {
 
-    var commandDrawShape = kity.createClass( "commandDrawShape", {
+    var DrawShapeCommand = kity.createClass( "DrawShapeCommand", {
         base: Command,
-        "execute": function ( km, config ) {
-            var node = kity.createClass( {
-                base: kity.Group,
+        execute: function ( km, config ) {
 
-            } );
         }
     } );
 
     return {
         "commands": {
             //todo:command字典，name－action  键值对模式编写
-            ommandDrawRect: commandDrawShape
+            "drawrect": DrawShapeCommand
         },
 
         "events": {
@@ -27,4 +23,4 @@ var mindermoduleRender = function () {
             }
         }
     };
-};
+} );
