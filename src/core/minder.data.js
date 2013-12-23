@@ -1,5 +1,5 @@
 // 导入导出
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
     exportData: function ( node ) {
         var exported = {};
         node = node || this.getRoot();

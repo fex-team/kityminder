@@ -1,5 +1,5 @@
 // 事件机制
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
     _initEvents: function () {
         this._eventCallbacks = {};
         this._bindPaperEvents();

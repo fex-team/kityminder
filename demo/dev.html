@@ -9,8 +9,8 @@
     
 </body>
 <script>
-    minder = new km.KityMinder(null,{
-        modules:["test","test1","test2"]
+    minder = new KityMinder.Minder(null,{
+        modules:["ExampleModule"]
     });
 
     minder.importData({
@@ -40,6 +40,6 @@
             }]
         }]
     });
-    minder.execCommand( 'rendertree', node );
+    minder.execCommand( 'renderroot' );
 </script>
 </html>

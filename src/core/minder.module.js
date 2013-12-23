@@ -1,16 +1,16 @@
 // 模块声明周期维护
 kity.extendClass( Minder, {
-    _initModules: function () {
+    _initModules: function ( option ) {
         this._commands = {};
         this._query = {};
-        var _modules = Minder.getModules();
+        var _modules = KityMinder.getModules();
         var _modulesList = ( function () {
             var _list = [];
             for ( var key in _modules ) {
                 _list.push( key );
             }
         } )();
-        var _configModules = this.option.modules || _modulesList;
+        var _configModules = option.modules || _modulesList;
         if ( _modules ) {
             var me = this;
             for ( var i = 0; i < _configModules.length; i++ ) {

@@ -1,4 +1,4 @@
-var MinderNode = km.MinderNode = kity.createClass( "MinderNode", {
+var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     constructor: function ( treeNotifyHandler ) {
         this.parent = null;
         this.children = [];

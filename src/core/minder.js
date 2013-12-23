@@ -3,7 +3,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         // 初始化
         this._initMinder( id, option || {} );
         this._initEvents();
-        this._initModules();
+        this._initModules( option );
     },
 
     _initMinder: function ( id, option ) {
