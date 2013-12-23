@@ -11,7 +11,6 @@ kity.extendClass( Minder, {
             }
         } )();
         var _configModules = this.option.modules || _modulesList;
-        var _commands = this._commands;
         if ( _modules ) {
             var me = this;
             for ( var i = 0; i < _configModules.length; i++ ) {
@@ -27,7 +26,7 @@ kity.extendClass( Minder, {
                 var moduleDealsCommands = moduleDeals.commands;
                 if ( moduleDealsCommands ) {
                     for ( var _keyC in moduleDealsCommands ) {
-                        _commands[ _keyC ] = moduleDealsCommands[ _keyC ];
+                        this._commands[ _keyC ] = moduleDealsCommands[ _keyC ];
                     }
                 }
 

@@ -25,7 +25,6 @@ kity.extendClass( Minder, {
     },
 
     update: function ( node ) {
-        this.execCommand( 'renderroot', node );
         return this;
     }
 
