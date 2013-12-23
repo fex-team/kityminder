@@ -2,6 +2,8 @@
 kity.extendClass( Minder, {
     _initEvents: function () {
         this._eventCallbacks = {};
+    },
+    _bindEvents: function () {
         this._bindPaperEvents();
         this._bindKeyboardEvents();
     },
@@ -14,7 +16,7 @@ kity.extendClass( Minder, {
         var minder = this;
         var events = 'keydown keyup keypress'.split( ' ' );
         for ( var i = 0; i < events.length; i++ ) {
-            Utils.listen( events[ i ], this._firePharse.bind( this ) );
+            Utils.listen( this._renderTarget, events[ i ], this._firePharse.bind( this ) );
         }
     },
     _firePharse: function ( e ) {

@@ -1,7 +1,8 @@
 <?php
 
 $dependency = Array(
-    'src/core/km.js',
+    'src/core/kityminder.js',
+    'src/core/utils.js',
     'src/core/command.js',
     'src/core/node.js',
     'src/core/module.js',

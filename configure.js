@@ -1,0 +1,3 @@
+window.KITYMINDER_CONFIG = {
+
+};
