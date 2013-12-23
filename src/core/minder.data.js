@@ -49,6 +49,9 @@ kity.extendClass( Minder, {
         this._firePharse( {
             type: 'contentchange'
         } );
+        this._firePharse( {
+            type: 'interactchange'
+        } );
         return this;
     }
 } );

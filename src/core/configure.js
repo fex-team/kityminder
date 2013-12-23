@@ -1,3 +1,0 @@
-var KITYMINDER_CONFIG = window.KITYMINDER_CONFIG = {
-
-};
