@@ -1,38 +1,42 @@
-var Command = kity.createClass( "Command", {
+var Command = kity.createClass( "Command", ( function () {
+    var _isContentChange = true;
+    var _isSelectionChange = false;
+    return {
 
-    constructor: function () {
+        constructor: function () {
 
-    },
+        },
 
-    execute: function ( minder, args ) {
+        execute: function ( minder, args ) {
 
-    },
+        },
 
-    revert: function () {
+        revert: function () {
 
-    },
+        },
 
-    setContentChanged: function ( val ) {
+        setContentChanged: function ( val ) {
+            _isContentChange = typeof ( val ) === "boolean" ? val : _isContentChange;
+        },
 
-    },
+        isContentChanged: function () {
+            return _isContentChange;
+        },
 
-    isContentChanged: function () {
-        return true;
-    },
+        setSelectionChanged: function ( val ) {
+            _isSelectionChange = typeof ( val ) === "boolean" ? val : _isSelectionChange;
+        },
 
-    setSelectionChanged: function ( val ) {
+        isSelectionChanged: function () {
+            return _isSelectionChange;
+        },
 
-    },
+        queryState: function ( km ) {
+            return 0;
+        },
 
-    isSelectionChanged: function () {
-        return false;
-    },
-
-    queryState: function ( km ) {
-        return 0;
-    },
-
-    queryValue: function ( km ) {
-        return 0;
-    }
-} );
+        queryValue: function ( km ) {
+            return 0;
+        }
+    };
+} )() );

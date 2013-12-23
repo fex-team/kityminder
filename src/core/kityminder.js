@@ -20,6 +20,10 @@ var KityMinder = km.KityMinder = kity.createClass( "KityMinder", {
 
     getRenderContainer: function () {
         return this._rc;
+    },
+
+    getPaper: function () {
+        return this._paper;
     }
 } );
 

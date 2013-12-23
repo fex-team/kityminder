@@ -12,6 +12,10 @@ KityMinder.registerModule( "RenderModule", function () {
         var drawRectNode = function ( node ) {
             if ( !node ) {
                 node = node_default;
+            } else {
+                for ( var key in node_default ) {
+                    node[ key ] = node[ key ] || node_default[ key ];
+                }
             }
             var _node = new kity.Group();
             var _rect = new kity.Rect();
@@ -19,9 +23,11 @@ KityMinder.registerModule( "RenderModule", function () {
             _rect
                 .setRadius( node.radius )
                 .setSize( 100, 100 )
-                .setPosition( 20, 20 )
+                .setPosition( 0, 0 )
                 .fill( node.fill )
                 .stroke( node.stroke );
+            _text.setX( 30 ).setY( 30 );
+            console.log( _text.getWidth() );
             _node.addItems( [ _rect, _text ] );
             return _node;
         };
@@ -31,12 +37,11 @@ KityMinder.registerModule( "RenderModule", function () {
                 var kR = km.getRenderContainer();
                 var _root = km.getRoot() || new MinderNode();
                 var _node = drawRectNode( node );
-                console.log( _node );
-                kR.addShape( _node, "background" );
+                console.log( _node.getShapes()[ 1 ] );
+                kR.addShape( _node, "node" );
             }
         };
     } )() );
-
     // var DrawShapeCommand = kity.createClass( "DrawShapeCommand", {
     //     base: Command,
     //     execute: function ( km, node ) {
