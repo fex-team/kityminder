@@ -86,9 +86,9 @@ kity.extendClass( KityMinder, ( function () {
                 commandArgs: cmdArgs
             };
 
-            var canceled = me._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
+            var stoped = me._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
 
-            if ( !canceled ) {
+            if ( !stoped ) {
 
                 me._fire( new MinderEvent( "precommand", eventParams, false ) );
 
@@ -213,8 +213,8 @@ kity.extendClass( KityMinder, {
         var minder = this;
         clearTimeout( this.interactTimeout );
         this.interactTimeout = setTimeout( function () {
-            var canceled = minder._fire( new MinderEvent( 'beforeinteractchange' ) );
-            if ( canceled ) {
+            var stoped = minder._fire( new MinderEvent( 'beforeinteractchange' ) );
+            if ( stoped ) {
                 return;
             }
             minder._fire( new MinderEvent( 'preinteractchange' ) );
@@ -232,11 +232,11 @@ kity.extendClass( KityMinder, {
         }
         for ( var i = 0; i < callbacks.length; i++ ) {
             callbacks[ i ].call( this, e );
-            if ( e.shouldCancelImmediately() ) {
+            if ( e.shouldStopPropagationImmediately() ) {
                 break;
             }
         }
-        return e.shouldCancel();
+        return e.shouldStopPropagation();
     },
     on: function ( name, callback ) {
         var types = name.split( ' ' );
@@ -307,9 +307,9 @@ kity.extendClass( KityMinder, {
             importData: treeData
         };
 
-        var canceled = this._fire( new MinderEvent( 'beforeimport', params, true ) );
+        var stoped = this._fire( new MinderEvent( 'beforeimport', params, true ) );
 
-        if ( canceled ) return this;
+        if ( stoped ) return this;
 
         this._fire( new MinderEvent( 'preimport', params, false ) );
 

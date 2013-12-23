@@ -1,5 +1,5 @@
 var MinderEvent = kity.createClass( 'MindEvent', {
-    constructor: function ( type, params, cancelable ) {
+    constructor: function ( type, params, canstop ) {
         params = params || {};
         if ( params.getType && params.getType() == 'ShapeEvent' ) {
             this.kityEvent = params;
@@ -8,7 +8,7 @@ var MinderEvent = kity.createClass( 'MindEvent', {
             kity.Utils.extend( this, params );
         }
         this.type = type;
-        this._cancelable = cancelable || false;
+        this._canstop = canstop || false;
         if ( params.targetShape ) {
             this.getTargetNode = function () {
                 var findShape = params.targetShape;
@@ -20,20 +20,20 @@ var MinderEvent = kity.createClass( 'MindEvent', {
         }
     },
 
-    cancel: function () {
-        this._canceled = true;
+    stopPropagation: function () {
+        this._stoped = true;
     },
 
-    cancelImmediately: function () {
-        this._immediatelyCanceld = true;
-        this._canceled = true;
+    stopPropagationImmediately: function () {
+        this._immediatelyStoped = true;
+        this._stoped = true;
     },
 
-    shouldCancel: function () {
-        return this._cancelable && this._canceled;
+    shouldStopPropagation: function () {
+        return this._canstop && this._stoped;
     },
 
-    shouldCancelImmediately: function () {
-        return this._cancelable && this._immediatelyCanceld;
+    shouldStopPropagationImmediately: function () {
+        return this._canstop && this._immediatelyStoped;
     }
 } );
