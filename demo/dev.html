@@ -9,7 +9,9 @@
     
 </body>
 <script>
-    minder = new km.KityMinder();
+    minder = new KityMinder.Minder(null,{
+        
+    });
 
     minder.importData({
         data: {
@@ -38,6 +40,6 @@
             }]
         }]
     });
-    minder.update();
+    minder.execCommand( 'renderroot' );
 </script>
 </html>

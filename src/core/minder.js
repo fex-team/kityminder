@@ -16,6 +16,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         options = Utils.extend( KITYMINDER_CONFIG || {}, MinderDefaultOptions, options || {} );
         // 初始化
         this._initMinder( options );
+        this._initEvents();
         this._initModules( options );
     },
 
