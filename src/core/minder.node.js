@@ -1,4 +1,4 @@
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
 
     getRoot: function () {
         return this._root;
@@ -28,4 +28,5 @@ kity.extendClass( KityMinder, {
         this.execCommand( 'renderroot', node );
         return this;
     }
+
 } );

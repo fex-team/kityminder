@@ -1,6 +1,27 @@
 kity.extendClass( Minder, {
+	_getCommand: function ( name ) {
+		return this._commands[ name.toLowerCase() ];
+	},
+	_getQuery: function ( name ) {
+		if ( !this._query[ name ] ) {
+			var Cmd = this._getCommand( name );
+			this._query[ name ] = new Cmd();
+		}
+		return this._query[ name ];
+	},
+	_queryCommand: function ( name, type ) {
+		var me = this;
+		var query = this._getQuery( name );
+		var queryFunc = query[ name ][ "state" + type ];
+		if ( queryFunc ) {
+			return queryFunc( me );
+		} else {
+			return 0;
+		}
+	},
 	execCommand: function ( name ) {
 		var me = this;
+		var _commands = this._commands;
 		var _action = new _commands[ name.toLowerCase() ]();
 
 		var cmdArgs = Array.prototype.slice.call( arguments, 1 );
@@ -27,35 +48,15 @@ kity.extendClass( Minder, {
 			if ( _action.isSelectionChanged() ) {
 				me._firePharse( new MinderEvent( 'selectionchange' ) );
 			}
+			me._firePharse( new MinderEvent( 'interactchange' ) );
 		}
 	},
 
 	queryCommandState: function ( name ) {
-		if ( !_commands[ name.toLowerCase() ] ) {
-			return false;
-		}
-		if ( !_query[ name ] ) {
-			_query[ name ] = new _commands[ name ]();
-		}
-		if ( _query[ name ].queryState ) {
-			return _query[ name ].queryState( this );
-		} else {
-			return 0;
-		}
+		return this._queryCommand( name, "State" );
 	},
 
 	queryCommandValue: function ( name ) {
-		if ( !_commands[ name.toLowerCase() ] ) {
-			return false;
-		}
-		if ( !_query[ name ] ) {
-			_query[ name ] = new _commands[ name ]();
-		}
-		if ( _query[ name ].queryValue ) {
-			return _query[ name ].queryValue( this );
-		} else {
-			return 0;
-		}
-
+		return this._queryCommand( name, "Value" );
 	}
 } );

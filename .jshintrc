@@ -11,7 +11,7 @@
         "kity",
         "MinderNode",
         "MinderEvent",
-        "KityMinder",
+        "Minder",
         "require",
         "km",
         "console",
