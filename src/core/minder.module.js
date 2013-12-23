@@ -9,6 +9,7 @@ kity.extendClass( Minder, {
             for ( var key in _modules ) {
                 _list.push( key );
             }
+            return _list;
         } )();
         var _configModules = option.modules || _modulesList;
         if ( _modules ) {

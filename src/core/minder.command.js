@@ -21,9 +21,12 @@ kity.extendClass( Minder, {
 	},
 	execCommand: function ( name ) {
 		var me = this;
-		var _action = this._getCommand( name );
-		if ( !_action ) {
+		var Action = this._getCommand( name );
+		var _action;
+		if ( !Action ) {
 			return false;
+		} else {
+			_action = new Action();
 		}
 
 		var cmdArgs = Array.prototype.slice.call( arguments, 1 );
