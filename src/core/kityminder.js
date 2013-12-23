@@ -55,8 +55,8 @@ kity.extendClass( KityMinder, ( function () {
                     //执行模块初始化，抛出后续处理对象
                     var moduleDeals = _modules[ key ].call( me );
 
-                    if ( moduleDeals.ready ) {
-                        moduleDeals.ready.call( me );
+                    if ( moduleDeals.initial ) {
+                        moduleDeals.initial.call( me );
                     }
 
                     //command加入命令池子

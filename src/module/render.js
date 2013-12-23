@@ -72,6 +72,9 @@ KityMinder.registerModule( "RenderModule", function () {
     // } );
 
     return {
+        "initial": function ( config ) {
+
+        },
         "commands": {
             //todo:command字典，name－action  键值对模式编写
             "renderroot": RenderRootCommand
