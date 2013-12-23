@@ -120,7 +120,7 @@ KityMinder.registerModule( "HistoryModule", function () {
         "events": {
             "beforecommand": function ( e ) {
                 if ( isRedoing( this ) ) {
-                    e.cancel();
+                    e.stopPropagation();
                 }
             },
 
