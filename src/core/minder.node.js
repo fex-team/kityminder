@@ -1,4 +1,4 @@
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
 
     getRoot: function () {
         return this._root;

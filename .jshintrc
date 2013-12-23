@@ -8,13 +8,15 @@
     "white": false,
     "quotmark": false,
     "predef" : [
+        "require",
+        "console",
         "kity",
+        "KityMinder",
+        "Minder",
         "MinderNode",
         "MinderEvent",
-        "KityMinder",
-        "require",
-        "km",
-        "console",
-        "Command"
+        "Command",
+        "KITYMINDER_CONFIG",
+        "Utils"
     ]
 }

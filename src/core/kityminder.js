@@ -5,3 +5,7 @@ KityMinder.version = '1.0.0.0';
 KityMinder.createMinder = function ( id, option ) {
 
 };
+
+KityMinder.getMinder = function ( id ) {
+
+};

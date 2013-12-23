@@ -1,5 +1,5 @@
 // 导入导出
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
     exportData: function ( node ) {
         var exported = {};
         node = node || this.getRoot();
@@ -48,6 +48,9 @@ kity.extendClass( KityMinder, {
         this._fire( new MinderEvent( 'import', params, false ) );
         this._firePharse( {
             type: 'contentchange'
+        } );
+        this._firePharse( {
+            type: 'interactchange'
         } );
         return this;
     }

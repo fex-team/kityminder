@@ -1,5 +1,5 @@
 // 事件机制
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
     _initEvents: function () {
         this._eventCallbacks = {};
         this._bindPaperEvents();
@@ -12,16 +12,9 @@ kity.extendClass( KityMinder, {
     },
     _bindKeyboardEvents: function () {
         var minder = this;
-        var listen = function ( name, callback ) {
-            if ( window.addEventListener ) {
-                window.addEventListener( name, callback );
-            } else if ( window.attachEvent ) {
-                window.attachEvent( name, callback );
-            }
-        };
         var events = 'keydown keyup keypress'.split( ' ' );
         for ( var i = 0; i < events.length; i++ ) {
-            listen( events[ i ], this._firePharse.bind( this ) );
+            Utils.listen( events[ i ], this._firePharse.bind( this ) );
         }
     },
     _firePharse: function ( e ) {
@@ -40,8 +33,8 @@ kity.extendClass( KityMinder, {
     },
     _interactChange: function ( e ) {
         var minder = this;
-        clearTimeout( this.interactTimeout );
-        this.interactTimeout = setTimeout( function () {
+        clearTimeout( this._interactTimeout );
+        this._interactTimeout = setTimeout( function () {
             var stoped = minder._fire( new MinderEvent( 'beforeinteractchange' ) );
             if ( stoped ) {
                 return;

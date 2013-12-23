@@ -1,32 +1,43 @@
 kity.extendClass( Minder, {
 	execCommand: function ( name ) {
-		var me = this;
-		var _action = new _commands[ name.toLowerCase() ]();
+		var TargetCommand, command, cmdArgs, eventParams, stoped;
 
-		var cmdArgs = Array.prototype.slice.call( arguments, 1 );
+		TargetCommand = this._getCommand( name );
+		command = new TargetCommand();
 
-		var eventParams = {
-			command: _action,
+		cmdArgs = Array.prototype.slice.call( arguments, 1 );
+
+		eventParams = {
+			command: command,
 			commandName: name.toLowerCase(),
 			commandArgs: cmdArgs
 		};
 
-		var stoped = me._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
+		this._executingCommand = this._executingCommand || command;
 
-		if ( !stoped ) {
+		if ( this._executingCommand == command ) {
 
-			me._fire( new MinderEvent( "precommand", eventParams, false ) );
+			stoped = this._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
 
-			_action.execute.apply( _action, [ this ].concat( cmdArgs ) );
+			if ( !stoped ) {
 
-			me._fire( new MinderEvent( "command", eventParams, false ) );
+				this._fire( new MinderEvent( "precommand", eventParams, false ) );
 
-			if ( _action.isContentChanged() ) {
-				me._firePharse( new MinderEvent( 'contentchange' ) );
+				command.execute.apply( command, [ this ].concat( cmdArgs ) );
+
+				this._fire( new MinderEvent( "command", eventParams, false ) );
+
+				if ( command.isContentChanged() ) {
+					this._firePharse( new MinderEvent( 'contentchange' ) );
+				}
+				if ( command.isSelectionChanged() ) {
+					this._firePharse( new MinderEvent( 'selectionchange' ) );
+				}
 			}
-			if ( _action.isSelectionChanged() ) {
-				me._firePharse( new MinderEvent( 'selectionchange' ) );
-			}
+
+			this._executingCommand = null;
+		} else {
+			command.execute.apply( command, [ this ].concat( cmdArgs ) );
 		}
 	},
 

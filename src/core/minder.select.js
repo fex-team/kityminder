@@ -1,5 +1,5 @@
 // 选区管理
-kity.extendClass( KityMinder, {
+kity.extendClass( Minder, {
     getSelectedNodes: function () {
         return this._selectedNodes || ( this._selectedNodes = [] );
     },
