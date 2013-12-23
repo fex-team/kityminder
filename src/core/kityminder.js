@@ -20,6 +20,10 @@ var KityMinder = km.KityMinder = kity.createClass( "KityMinder", {
 
     getRenderContainer: function () {
         return this._rc;
+    },
+
+    getPaper: function () {
+        return this._paper;
     }
 } );
 
@@ -51,8 +55,8 @@ kity.extendClass( KityMinder, ( function () {
                     //执行模块初始化，抛出后续处理对象
                     var moduleDeals = _modules[ key ].call( me );
 
-                    if ( moduleDeals.ready ) {
-                        moduleDeals.ready.call( me );
+                    if ( moduleDeals.initial ) {
+                        moduleDeals.initial.call( me );
                     }
 
                     //command加入命令池子
@@ -76,13 +80,13 @@ kity.extendClass( KityMinder, ( function () {
         },
         execCommand: function ( name ) {
             var me = this;
-            var _action = new _commands[ name ]();
+            var _action = new _commands[ name.toLowerCase() ]();
 
             var cmdArgs = Array.prototype.slice.call( arguments, 1 );
 
             var eventParams = {
                 command: _action,
-                commandName: name,
+                commandName: name.toLowerCase(),
                 commandArgs: cmdArgs
             };
 
@@ -106,7 +110,7 @@ kity.extendClass( KityMinder, ( function () {
         },
 
         queryCommandState: function ( name ) {
-            if ( !_commands[ name ] ) {
+            if ( !_commands[ name.toLowerCase() ] ) {
                 return false;
             }
             if ( !_query[ name ] ) {
@@ -120,7 +124,7 @@ kity.extendClass( KityMinder, ( function () {
         },
 
         queryCommandValue: function ( name ) {
-            if ( !_commands[ name ] ) {
+            if ( !_commands[ name.toLowerCase() ] ) {
                 return false;
             }
             if ( !_query[ name ] ) {
@@ -164,7 +168,7 @@ kity.extendClass( KityMinder, {
     },
 
     update: function ( node ) {
-        this.execCommand( 'render', node );
+        this.execCommand( 'renderroot', node );
         return this;
     }
 } );

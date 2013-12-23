@@ -1,7 +1,7 @@
 var Command = kity.createClass( "Command", {
-
     constructor: function () {
-
+        this._isContentChange = true;
+        this._isSelectionChange = false;
     },
 
     execute: function ( minder, args ) {
@@ -13,19 +13,19 @@ var Command = kity.createClass( "Command", {
     },
 
     setContentChanged: function ( val ) {
-
+        this._isContentChange = typeof ( val ) === "boolean" ? val : this._isContentChange;
     },
 
     isContentChanged: function () {
-        return true;
+        return this._isContentChange;
     },
 
     setSelectionChanged: function ( val ) {
-
+        this._isSelectionChange = typeof ( val ) === "boolean" ? val : this._isContentChange;
     },
 
     isSelectionChanged: function () {
-        return false;
+        return this._isContentChange;
     },
 
     queryState: function ( km ) {
