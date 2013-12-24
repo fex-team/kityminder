@@ -23,7 +23,7 @@ kity.extendClass( Minder, {
                 var moduleDeals = _modules[ key ].call( me );
                 this._modules[ key ] = moduleDeals;
                 if ( moduleDeals.init ) {
-                    moduleDeals.init.call( me );
+                    moduleDeals.init.call( me, Utils.extend( moduleDeals.defaultOptions || {}, this._options ) );
                 }
 
                 //command加入命令池子

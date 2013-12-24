@@ -46,9 +46,13 @@ KityMinder.registerModule( "ExampleModule", function () {
     } );
 
     return {
+        // TODO: 默认属性
+        "defaultOptions": {
+            "test": 123
+        },
         // TODO: 初始化完成后执行的函数
-        "init": function () {
-
+        "init": function ( config ) {
+            console.log( "init", config );
         },
 
         // TODO: 需要注册的命令
