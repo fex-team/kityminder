@@ -7,6 +7,10 @@ kity.extendClass( Minder, {
         this._bindPaperEvents();
         this._bindKeyboardEvents();
     },
+    _resetEvents: function () {
+        this._initEvents();
+        this._bindEvents();
+    },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
         var minder = this;
