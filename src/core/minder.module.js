@@ -48,10 +48,10 @@ kity.extendClass( Minder, {
 
     destroy: function () {
         var me = this;
-        var _modulesList = this._options.modules;
-        var _modules = this._modules;
+        var _modulesList = me._options.modules;
+        var _modules = me._modules;
         //解除事件绑定
-        this._resetEvents();
+        me._resetEvents();
         for ( var key in _modules ) {
             if ( !_modules[ key ].destroy ) continue;
             _modules[ key ].destroy.call( me );
