@@ -12,15 +12,17 @@
 var MinderDefaultOptions = {};
 
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
-    constructor: function ( options ) {
-        this._options = options || {};
-        options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options || {} );
+    constructor: function ( arg0, arg1 ) {
+        var options = typeof ( arg0 ) === 'string' ? Utils.extend( arg1 || {}, {
+            renderTo: arg0
+        } ) : ( arg0 || {} );
+        this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options );
         this._initEvents();
-        this._initMinder( options );
-        this._initModules( options );
+        this._initMinder();
+        this._initModules();
     },
 
-    _initMinder: function ( option ) {
+    _initMinder: function () {
 
         this._rc = new kity.Group();
         this._paper = new kity.Paper();
@@ -29,8 +31,8 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._root = new MinderNode( this );
         this._rc.addShape( this._root.getRenderContainer() );
 
-        if ( option.renderTo ) {
-            this.renderTo( option.renderTo );
+        if ( this._options.renderTo ) {
+            this.renderTo( this._options.renderTo );
         }
     },
 
