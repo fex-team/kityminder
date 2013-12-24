@@ -23,6 +23,7 @@ kity.extendClass( Minder, {
 		var TargetCommand, command, cmdArgs, eventParams, stoped;
 
 		TargetCommand = this._getCommand( name );
+		console.log( TargetCommand );
 		if ( !TargetCommand ) {
 			return false;
 		}
