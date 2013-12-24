@@ -12,7 +12,7 @@ kity.extendClass( Minder, {
             }
             return _list;
         } )();
-        var _configModules = this._options.modules = this._options.modules || _modulesList;
+        var _configModules = this._options.modules || _modulesList;
         console.log( _configModules );
         if ( _modules ) {
             var me = this;
