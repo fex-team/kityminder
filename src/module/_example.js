@@ -93,6 +93,16 @@ KityMinder.registerModule( "ExampleModule", function () {
             "selectionchange": function ( e ) {
                 // 选区改变后的事件
             }
+        },
+
+        // TODO: 定义模块的destroy方法
+        "destroy": function () {
+
+        },
+
+        // TODO: 定义模块的reset方法
+        "reset": function () {
+
         }
     };
 } );
