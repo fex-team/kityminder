@@ -10,6 +10,7 @@
 </body>
 <script>
     minder = new KityMinder.Minder({
+        modules:["ExampleModule","RenderModule"],
         renderTo: document.body
     });
 
@@ -40,6 +41,7 @@
             }]
         }]
     });
-    minder.execCommand( 'renderroot' );
+    minder.execCommand( 'renderroot',minder);
+    minder.reset();
 </script>
 </html>

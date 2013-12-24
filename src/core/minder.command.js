@@ -26,6 +26,7 @@ kity.extendClass( Minder, {
 		if ( !TargetCommand ) {
 			return false;
 		}
+
 		command = new TargetCommand();
 
 		cmdArgs = Array.prototype.slice.call( arguments, 1 );
