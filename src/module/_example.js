@@ -46,6 +46,10 @@ KityMinder.registerModule( "ExampleModule", function () {
     } );
 
     return {
+        // TODO: 初始化完成后执行的函数
+        "init": function () {
+
+        },
 
         // TODO: 需要注册的命令
         "commands": {
