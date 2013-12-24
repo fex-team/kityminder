@@ -13,7 +13,7 @@ var MinderDefaultOptions = {};
 
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
-        this._options = options;
+        this._options = options || {};
         options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options || {} );
         this._initEvents();
         this._initMinder( options );

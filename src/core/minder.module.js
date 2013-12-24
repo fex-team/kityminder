@@ -3,6 +3,7 @@ kity.extendClass( Minder, {
     _initModules: function () {
         this._commands = {};
         this._query = {};
+        this._modules = {};
         var _modules = KityMinder.getModules();
         var _modulesList = ( function () {
             var _list = [];
@@ -11,15 +12,16 @@ kity.extendClass( Minder, {
             }
             return _list;
         } )();
-        var _configModules = ( this._options ? this._options.modules : false ) || _modulesList;
+        var _configModules = this._options.modules = this._options.modules || _modulesList;
         console.log( _configModules );
         if ( _modules ) {
             var me = this;
             for ( var i = 0; i < _configModules.length; i++ ) {
                 var key = _configModules[ i ];
+                if ( !_modules[ key ] ) continue;
                 //执行模块初始化，抛出后续处理对象
                 var moduleDeals = _modules[ key ].call( me );
-
+                this._modules[ key ] = moduleDeals;
                 if ( moduleDeals.initial ) {
                     moduleDeals.initial.call( me );
                 }
@@ -45,10 +47,23 @@ kity.extendClass( Minder, {
     },
 
     destroy: function () {
-
+        var me = this;
+        var _modulesList = this._options.modules;
+        var _modules = this._modules;
+        //解除事件绑定
+        this._resetEvents();
+        for ( var key in _modules ) {
+            if ( !_modules[ key ].destroy ) continue;
+            _modules[ key ].destroy.call( me );
+        }
     },
 
     reset: function () {
-
+        var me = this;
+        var _modules = this._modules;
+        for ( var key in _modules ) {
+            if ( !_modules[ key ].reset ) continue;
+            _modules[ key ].reset.call( me );
+        }
     }
 } );
