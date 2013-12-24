@@ -22,8 +22,8 @@ kity.extendClass( Minder, {
                 //执行模块初始化，抛出后续处理对象
                 var moduleDeals = _modules[ key ].call( me );
                 this._modules[ key ] = moduleDeals;
-                if ( moduleDeals.initial ) {
-                    moduleDeals.initial.call( me );
+                if ( moduleDeals.init ) {
+                    moduleDeals.init.call( me );
                 }
 
                 //command加入命令池子
