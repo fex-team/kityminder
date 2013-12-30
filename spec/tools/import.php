@@ -6,8 +6,7 @@
  * Time: 上午1:48
  * To change this template use File | Settings | File Templates.
  */
-header( "Content-type: text/html; charset=utf-8" );
-
+header('Content-Type: text/javascript');
 $import = 'import.js';
 function custom_strEmpty($s){
     $str = strlen(trim($s));
@@ -19,8 +18,7 @@ function custom_strEmpty($s){
 function importSrc(){
     require_once 'config.php';
     global $import;
-    require_once 'config.php';
-    if(file_exists(Config::$projroot.Config::$test_PATH.$import)){
+   if(file_exists(Config::$projroot.Config::$test_PATH.$import)){
         $cnt = file_get_contents(Config::$projroot.Config::$test_PATH.$import);
     }
     if($cnt == ''){
