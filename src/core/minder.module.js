@@ -1,69 +1,72 @@
 // 模块声明周期维护
 kity.extendClass( Minder, {
     _initModules: function () {
+        var modulesPool = KityMinder.getModules();
+        var modulesToLoad = this._options.modules || Utils.keys( modulesPool );
+
         this._commands = {};
         this._query = {};
         this._modules = {};
-        var _modules = KityMinder.getModules();
-        var _modulesList = ( function () {
-            var _list = [];
-            for ( var key in _modules ) {
-                _list.push( key );
+
+        var i, name, module, moduleDeals, dealCommands, dealEvents;
+
+        var me = this;
+        for ( i = 0; i < modulesToLoad.length; i++ ) {
+            name = modulesToLoad[ i ];
+
+            if ( !modulesPool[ name ] ) continue;
+
+            //执行模块初始化，抛出后续处理对象
+            moduleDeals = modulesPool[ name ].call( me );
+            this._modules[ name ] = moduleDeals;
+
+            if ( moduleDeals.init ) {
+                moduleDeals.init.call( me, Utils.extend( moduleDeals.defaultOptions || {}, this._options ) );
             }
-            return _list;
-        } )();
-        var _configModules = this._options.modules || _modulesList;
-        console.log( _configModules );
-        if ( _modules ) {
-            var me = this;
-            for ( var i = 0; i < _configModules.length; i++ ) {
-                var key = _configModules[ i ];
-                if ( !_modules[ key ] ) continue;
-                //执行模块初始化，抛出后续处理对象
-                var moduleDeals = _modules[ key ].call( me );
-                this._modules[ key ] = moduleDeals;
-                if ( moduleDeals.init ) {
-                    moduleDeals.init.call( me, Utils.extend( moduleDeals.defaultOptions || {}, this._options ) );
-                }
 
-                //command加入命令池子
-                var moduleDealsCommands = moduleDeals.commands;
-                if ( moduleDealsCommands ) {
-                    for ( var _keyC in moduleDealsCommands ) {
-                        this._commands[ _keyC ] = moduleDealsCommands[ _keyC ];
-                    }
-                }
+            //command加入命令池子
+            dealCommands = moduleDeals.commands;
+            Utils.extend( this._commands, dealCommands );
 
-                //绑定事件
-                var moduleDealsEvents = moduleDeals.events;
-                if ( moduleDealsEvents ) {
-                    for ( var _keyE in moduleDealsEvents ) {
-                        me.on( _keyE, moduleDealsEvents[ _keyE ] );
-                    }
+            //绑定事件
+            dealEvents = moduleDeals.events;
+            if ( dealEvents ) {
+                for ( var type in dealEvents ) {
+                    me.on( type, dealEvents[ type ] );
                 }
-
             }
+
+        }
+    },
+
+    _garbage: function () {
+        this.clearSelect();
+
+        while ( this._root.getChildren().length ) {
+            this._root.removeChild( 0 );
         }
     },
 
     destroy: function () {
-        var me = this;
-        var _modulesList = me._options.modules;
-        var _modules = me._modules;
-        //解除事件绑定
-        me._resetEvents();
-        for ( var key in _modules ) {
-            if ( !_modules[ key ].destroy ) continue;
-            _modules[ key ].destroy.call( me );
+        var modules = this._modules;
+
+        this._resetEvents();
+        this._garbage();
+
+        for ( var key in modules ) {
+            if ( !modules[ key ].destroy ) continue;
+            modules[ key ].destroy.call( this );
         }
     },
 
     reset: function () {
-        var me = this;
-        var _modules = this._modules;
-        for ( var key in _modules ) {
-            if ( !_modules[ key ].reset ) continue;
-            _modules[ key ].reset.call( me );
+        var modules = this._modules;
+
+        this._garbage();
+
+        for ( var key in modules ) {
+            if ( !modules[ key ].reset ) continue;
+            modules[ key ].reset.call( this );
         }
     }
 } );

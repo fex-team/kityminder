@@ -20,6 +20,26 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return root;
     },
 
+    preTraverse: function ( fn ) {
+        var children = this.getChildren();
+        fn( this );
+        for ( var i = 0; i < children.length; i++ ) {
+            children[ i ].preTraverse( fn );
+        }
+    },
+
+    postTraverse: function ( fn ) {
+        var children = this.getChildren();
+        for ( var i = 0; i < children.length; i++ ) {
+            children[ i ].postTraverse( fn );
+        }
+        fn( this );
+    },
+
+    traverse: function ( fn ) {
+        return this.postTraverse( fn );
+    },
+
     getChildren: function () {
         return this.children;
     },

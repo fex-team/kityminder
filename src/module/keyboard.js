@@ -1,11 +1,9 @@
 KityMinder.registerModule( "KeyboardModule", function () {
     return {
-        "commands": {
-
-        },
-
         "events": {
-
+            keydown: function ( e ) {
+                console.log( e );
+            }
         }
     };
 } );

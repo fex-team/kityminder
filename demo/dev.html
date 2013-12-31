@@ -9,9 +9,8 @@
     
 </body>
 <script>
-    minder = new KityMinder.Minder({
-        modules:["ExampleModule","RenderModule"],
-        renderTo: document.body
+    minder = new KM.createMinder( document.body, {
+        modules: [ "ExampleModule", "RenderModule", "KeyboardModule" ]
     });
 
     minder.importData({

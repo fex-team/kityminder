@@ -12,10 +12,7 @@
 var MinderDefaultOptions = {};
 
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
-    constructor: function ( arg0, arg1 ) {
-        var options = typeof ( arg0 ) === 'string' ? Utils.extend( arg1 || {}, {
-            renderTo: arg0
-        } ) : ( arg0 || {} );
+    constructor: function ( options ) {
         this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options );
         this._initEvents();
         this._initMinder();

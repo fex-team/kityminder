@@ -10,11 +10,10 @@ kity.extendClass( Minder, {
 		return this._query[ name ];
 	},
 	_queryCommand: function ( name, type ) {
-		var me = this;
 		var query = this._getQuery( name );
-		var queryFunc = query[ name ][ "state" + type ];
+		var queryFunc = query[ name ][ "query" + type ];
 		if ( queryFunc ) {
-			return queryFunc( me );
+			return queryFunc.call( query, this );
 		} else {
 			return 0;
 		}

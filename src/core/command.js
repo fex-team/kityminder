@@ -13,7 +13,7 @@ var Command = kity.createClass( "Command", {
     },
 
     setContentChanged: function ( val ) {
-        this._isContentChange = typeof ( val ) === "boolean" ? val : this._isContentChange;
+        this._isContentChange = !! val;
     },
 
     isContentChanged: function () {
@@ -21,7 +21,7 @@ var Command = kity.createClass( "Command", {
     },
 
     setSelectionChanged: function ( val ) {
-        this._isSelectionChange = typeof ( val ) === "boolean" ? val : this._isContentChange;
+        this._isSelectionChange = !! val;
     },
 
     isSelectionChanged: function () {
