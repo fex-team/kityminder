@@ -40,7 +40,21 @@
             }]
         }]
     });
-    minder.execCommand( 'renderroot',minder);
+    var minderWidth = document.body.clientWidth;
+    var minderHeight = document.body.clientHeight;
+
+    console.log(minderWidth,minderHeight);
+    minder.execCommand( 'rendernode',minder,{
+        centerX:minderWidth/2,
+        centerY:minderHeight/2,
+        radius:10,
+        fill:"yellow",
+        stroke:"white",
+        color:"black",
+        padding:[10,10,10,10],
+        text:"node",
+        fontSize:12
+    });
     minder.reset();
 </script>
 </html>
