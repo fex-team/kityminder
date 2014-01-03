@@ -1,10 +1,13 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
-
 		return {
 			base: Command,
-			execute: function ( km, parent, node ) {
-				parent.insertChild( node );
+			execute: function ( km, parent ) {
+				console.log( 'create!!!' );
+				var _node = new MinderNode();
+				parent.insertChild( _node );
+				km.execCommand( 'rendernode', _node );
+				return _node;
 			}
 		}
 	} )() );

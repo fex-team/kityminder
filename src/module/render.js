@@ -14,6 +14,7 @@ KityMinder.registerModule( "RenderModule", function () {
         };
         var renderNode = function ( km, node ) {
             var nodeD = Utils.extend( node_default, node.data );
+            node.data = nodeD;
             var _style = nodeD.style;
             var kR = node.getRenderContainer();
             var _node = node.shape = new kity.Group();
