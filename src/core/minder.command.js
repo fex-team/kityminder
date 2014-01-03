@@ -20,6 +20,7 @@ kity.extendClass( Minder, {
 	},
 	execCommand: function ( name ) {
 		var TargetCommand, command, cmdArgs, eventParams, stoped, isTopCommand, result;
+		var me = this;
 
 		TargetCommand = this._getCommand( name );
 		if ( !TargetCommand ) {
@@ -49,7 +50,7 @@ kity.extendClass( Minder, {
 		if ( !stoped ) {
 
 			this._fire( new MinderEvent( "precommand", eventParams, false ) );
-			result = command.execute.apply( command, [ this ].concat( cmdArgs ) );
+			result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
 			this._fire( new MinderEvent( "command", eventParams, false ) );
 
 			// 顶级命令才触发事件

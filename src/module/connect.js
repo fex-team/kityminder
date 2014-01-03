@@ -139,13 +139,11 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 				switch ( command.commandName ) {
 				case "rendernode":
 					( function () {
-						var minder = command.commandArgs[ 0 ];
-						var node = command.commandArgs[ 1 ];
+						var node = command.commandArgs[ 0 ];
 						if ( !node.getParent() ) {
 							return false;
 						} else {
 							var parent = node.getParent();
-							console.log( "parent", node.getParent() );
 							var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
 							_connect.stroke( new kity.Pen( node.data.style.stroke, node.data.style.strokeWidth ) );
 							node.connect = _connect;

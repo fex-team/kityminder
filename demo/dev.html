@@ -71,10 +71,8 @@
         },
         text:"node",
     };
-
-
-    console.log(minderWidth,minderHeight);
-    minder.execCommand("rendernode",minder,_node);
-    minder.execCommand("rendernode",minder,_childnode);
+    minder.execCommand("rendernode",_node);
+    console.log(_childnode);
+    minder.execCommand("rendernode",_childnode);
 </script>
 </html>

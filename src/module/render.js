@@ -38,7 +38,6 @@ KityMinder.registerModule( "RenderModule", function () {
         return {
             base: Command,
             execute: function ( km, node ) {
-                console.log( "minderHHH", km )
                 renderNode( km, node );
             }
         };
