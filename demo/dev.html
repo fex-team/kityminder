@@ -42,13 +42,14 @@
     });
     var minderWidth = document.body.clientWidth;
     var minderHeight = document.body.clientHeight;
-    var _node =  new MinderNode();
+    var _node =  minder.getRoot();
+
     _node.data = {
         centerX:minderWidth/2,
         centerY:minderHeight/2,
         style:{
             radius:10,
-            fill:"yellow",
+            fill:"blue",
             stroke:"orange",
             color:"black",
             padding:[10,10,10,10],
@@ -60,8 +61,8 @@
     var _childnode = new MinderNode();
     _node.insertChild(_childnode);
     _childnode.data = {
-        centerX:minderWidth/2+200,
-        centerY:minderHeight/2+200,
+        centerX:minderWidth/2+50,
+        centerY:minderHeight/2+50,
         style:{
             radius:10,
             fill:"yellow",
@@ -75,9 +76,7 @@
 
 
     console.log(minderWidth,minderHeight);
-    minder.execCommand("createchildnode",minder,minder.getRoot(),_node);
     minder.execCommand("rendernode",minder,_node);
     minder.execCommand("rendernode",minder,_childnode);
-    minder.reset();
 </script>
 </html>
