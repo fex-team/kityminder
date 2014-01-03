@@ -9,9 +9,7 @@
     
 </body>
 <script>
-    minder = new KM.createMinder( document.body, {
-        modules: [ "KeyboardModule" ]
-    });
+    minder = new KM.createMinder( document.body );
 
     minder.importData({
         data: {
@@ -40,7 +38,43 @@
             }]
         }]
     });
-    minder.execCommand( 'renderroot',minder);
-    minder.reset();
+    var minderWidth = document.body.clientWidth;
+    var minderHeight = document.body.clientHeight;
+    var _node =  minder.getRoot();
+
+    _node.data = {
+        centerX:minderWidth/2,
+        centerY:minderHeight/2,
+        style:{
+            radius:10,
+            fill:"orange",
+            stroke:"orange",
+            color:"black",
+            padding:[10,10,10,10],
+            fontSize:20
+        },
+        text:"I am the root",
+    };
+
+    var _childnode = new MinderNode();
+    _node.insertChild(_childnode);
+    _childnode.data = {
+        centerX:minderWidth/2+150,
+        centerY:minderHeight/2+100,
+        style:{
+            radius:10,
+            fill:"yellow",
+            stroke:"orange",
+            color:"black",
+            padding:[10,10,10,10],
+            fontSize:12
+        },
+        text:"node",
+    };
+
+
+    console.log(minderWidth,minderHeight);
+    minder.execCommand("rendernode",minder,_node);
+    minder.execCommand("rendernode",minder,_childnode);
 </script>
 </html>
