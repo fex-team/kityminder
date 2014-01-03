@@ -8,7 +8,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		}
 	} )() );
-	var CreateSiblingNodeCommand = kity.createClass( "reateSiblingNodeCommand", ( function () {
+	var CreateSiblingNodeCommand = kity.createClass( "CreateSiblingNodeCommand", ( function () {
 
 		return {
 			base: Command,
