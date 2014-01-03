@@ -147,7 +147,7 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 							var parent = node.getParent();
 							console.log( "parent", node.getParent() );
 							var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
-							_connect.stroke( new kity.Pen( node.data.stroke, node.data.strokeWidth ) );
+							_connect.stroke( new kity.Pen( node.data.style.stroke, node.data.style.strokeWidth ) );
 							node.connect = _connect;
 							console.log( _connect );
 							minder.getRenderContainer().addShape( _connect );
