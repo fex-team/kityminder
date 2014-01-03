@@ -2,7 +2,7 @@
  * 模块初始化函数：模块名称大写，以 Module 作为后缀
  */
 KityMinder.registerModule( "ExampleModule", function () {
-    console.log( "You can cheat: 上下左右ABAB" );
+    //console.log( "You can cheat: 上下左右ABAB" );
 
     // TODO: 初始化模块静态变量
     var cheatCode = "38 40 37 39 65 66 65 66".split( ' ' );

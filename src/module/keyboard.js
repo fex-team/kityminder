@@ -104,7 +104,8 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 case 8:
                 case 46:
                     // Backspace or Delete
-
+                    this.execCommand( 'removeNode', sNodes );
+                    break;
 
                 case 37:
                 case 38:
