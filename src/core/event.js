@@ -3,7 +3,10 @@ var MinderEvent = kity.createClass( 'MindEvent', {
         params = params || {};
         if ( params.getType && params.getType() == 'ShapeEvent' ) {
             this.kityEvent = params;
+            this.originEvent = params.originEvent;
             this.getPosition = params.getPosition.bind( params );
+        } else if ( params.target && params.preventDefault ) {
+            this.originEvent = params;
         } else {
             kity.Utils.extend( this, params );
         }

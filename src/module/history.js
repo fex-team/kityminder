@@ -24,7 +24,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             this.length = 0;
         },
         splice: function () {
-            // just to make stack array-like
+            // to make stack array-like
         }
     } );
 

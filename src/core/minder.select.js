@@ -15,6 +15,10 @@ kity.extendClass( Minder, {
         return this;
     },
 
+    isNodeSelected: function ( node ) {
+        return !!~this.getSelectedNodes().indexOf( node );
+    },
+
     selectSingle: function ( node ) {
         return this.clearSelect().select( node );
     },
