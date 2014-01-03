@@ -10,7 +10,7 @@
 </body>
 <script>
     minder = new KM.createMinder( document.body, {
-        modules: [ "ExampleModule", "RenderModule", "KeyboardModule" ]
+        modules: [ "ExampleModule","LayoutModule","RenderModule", "KeyboardModule","ConnectModule"]
     });
 
     minder.importData({
@@ -42,19 +42,42 @@
     });
     var minderWidth = document.body.clientWidth;
     var minderHeight = document.body.clientHeight;
-
-    console.log(minderWidth,minderHeight);
-    minder.execCommand( 'rendernode',minder,{
+    var _node =  new MinderNode();
+    _node.data = {
         centerX:minderWidth/2,
         centerY:minderHeight/2,
-        radius:10,
-        fill:"yellow",
-        stroke:"white",
-        color:"black",
-        padding:[10,10,10,10],
+        style:{
+            radius:10,
+            fill:"yellow",
+            stroke:"orange",
+            color:"black",
+            padding:[10,10,10,10],
+            fontSize:12
+        },
         text:"node",
-        fontSize:12
-    });
+    };
+
+    var _childnode = new MinderNode();
+    _node.insertChild(_childnode);
+    _childnode.data = {
+        centerX:minderWidth/2+200,
+        centerY:minderHeight/2+200,
+        style:{
+            radius:10,
+            fill:"yellow",
+            stroke:"orange",
+            color:"black",
+            padding:[10,10,10,10],
+            fontSize:12
+        },
+        text:"node",
+    };
+
+
+    console.log(minderWidth,minderHeight);
+    minder.execCommand("createchildnode",minder,minder.getRoot(),_node);
+    minder.execCommand("rendernode",minder,_node);
+    minder.execCommand("rendernode",minder,_childnode);
     minder.reset();
 </script>
 </html>

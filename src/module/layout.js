@@ -3,8 +3,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 		return {
 			base: Command,
-			execute: function ( km, parent ) {
-
+			execute: function ( km, parent, node ) {
+				parent.insertChild( node );
 			}
 		}
 	} )() );
@@ -12,8 +12,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 		return {
 			base: Command,
-			execute: function ( km, sibling ) {
-
+			execute: function ( km, sibling, node ) {
+				var parent = sibling.getParent();
+				parent.insertChild( node );
 			}
 		}
 	} )() );
@@ -22,7 +23,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, node ) {
-
+				var parent = sibling.getParent();
+				parent.removeChild( node );
 			}
 		}
 	} )() );
