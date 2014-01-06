@@ -144,11 +144,16 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 							return false;
 						} else {
 							var parent = node.getParent();
-							var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
-							var nodeD = node.getData( "data" );
-							_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
-							node.setData( "connect", _connect );
-							minder.getRenderContainer().addShape( _connect );
+							var connectExist = node.getData( "connect" );
+							if ( connectExist ) {
+								connectExist.updateConnection();
+							} else {
+								var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
+								var nodeD = node.getData( "data" );
+								_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
+								node.setData( "connect", _connect );
+								minder.getRenderContainer().addShape( _connect );
+							}
 						}
 					} )();
 					break;
