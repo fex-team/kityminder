@@ -140,19 +140,25 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 				case "rendernode":
 					( function () {
 						var node = command.commandArgs[ 0 ];
-						if ( !node.getParent() ) {
-							return false;
-						} else {
-							var parent = node.getParent();
-							var connectExist = node.getData( "connect" );
-							if ( connectExist ) {
-								connectExist.updateConnection();
+						if ( !( node instanceof Array ) ) {
+							node = [ node ];
+						}
+						for ( var i = 0; i < node.length; i++ ) {
+							var curnode = node[ i ];
+							if ( !curnode.getParent() ) {
+								return false;
 							} else {
-								var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
-								var nodeD = node.getData( "data" );
-								_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
-								node.setData( "connect", _connect );
-								minder.getRenderContainer().addShape( _connect );
+								var parent = curnode.getParent();
+								var connectExist = curnode.getData( "connect" );
+								if ( connectExist ) {
+									connectExist.updateConnection();
+								} else {
+									var _connect = new ConnectBezier( parent.getRenderContainer(), curnode.getRenderContainer() );
+									var nodeD = curnode.getData( "data" );
+									_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
+									curnode.setData( "connect", _connect );
+									minder.getRenderContainer().addShape( _connect );
+								}
 							}
 						}
 					} )();
