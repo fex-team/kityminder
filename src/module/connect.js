@@ -154,8 +154,8 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 									connectExist.updateConnection();
 								} else {
 									var _connect = new ConnectBezier( parent.getRenderContainer(), curnode.getRenderContainer() );
-									var nodeD = curnode.getData( "data" );
-									_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
+									var nodeD = curnode.getData( "style" );
+									_connect.stroke( new kity.Pen( nodeD.stroke, nodeD.strokeWidth ) );
 									curnode.setData( "connect", _connect );
 									minder.getRenderContainer().addShape( _connect );
 								}

@@ -7,10 +7,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				_node.setData( "x", parent.getData( "x" ) + 200 );
 				_node.setData( "y", Math.random() * 300 + 100 );
 				_node.setData( "align", "left" );
-				var _nodeD = {
-					text: "New Node",
-					align: "left"
-				};
+				_node.setData( "text", "New Node" );
 				switch ( parent.branchside ) {
 				case "left":
 					break;
@@ -22,7 +19,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 					} )();
 					break;
 				}
-				_node.setData( "data", _nodeD );
 				parent.insertChild( _node );
 				km.execCommand( 'rendernode', _node );
 				return _node;

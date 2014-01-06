@@ -19,25 +19,22 @@ KityMinder.registerModule( "RenderModule", function () {
         } )() );
 
         var renderNode = function ( km, node ) {
-            var node_default = {
-                text: "Root",
-                style: {
-                    radius: 10,
-                    fill: "yellow",
-                    stroke: "orange",
-                    color: "black",
-                    padding: [ 5, 5, 5, 5 ],
-                    fontSize: 12
-                }
+            var styledefault = {
+                radius: 5,
+                fill: "yellow",
+                stroke: "orange",
+                color: "black",
+                padding: [ 5, 5, 5, 5 ],
+                fontSize: 14
             };
             var kR = node.getRenderContainer();
             var nodeShape = new MinderNodeShape( kR );
-            var nd = JSON.parse( JSON.stringify( node_default ) );
-            var nodeD = Utils.extend( nd, node.getData( "data" ) );
-            node.setData( "data", nodeD );
-            var _style = nodeD.style;
+            var nd = JSON.parse( JSON.stringify( styledefault ) );
+            var nodeD = Utils.extend( nd, node.getData( "style" ) );
+            node.setData( "style", nodeD );
+            var _style = nodeD;
             nodeShape.text
-                .setContent( nodeD.text || "Node" )
+                .setContent( node.getData( "text" ) || "Node" )
                 .setSize( nodeD.fontSize )
                 .fill( nodeD.color );
             var txtWidth = nodeShape.text.getWidth();

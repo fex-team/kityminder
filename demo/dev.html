@@ -15,20 +15,18 @@
     var minderHeight = document.body.clientHeight;
     var _root =  minder.getRoot();
 
-    _root.setData("data",{
-        style:{
-            radius:10,
-            fill:"orange",
-            stroke:"orange",
-            color:"black",
-            padding:[10,10,10,10],
-            fontSize:20,
-        },
-        text:"I am the root",
+    _root.setData("style",{
+        radius:10,
+        fill:"orange",
+        stroke:"orange",
+        color:"black",
+        padding:[10,10,10,10],
+        fontSize:20,
     });
     _root.setData("x",minderWidth/2);
     _root.setData("y",minderHeight/2);
     _root.setData("align","center");
+    _root.setData("text","I am the root");
 
     minder.select(_root);
     minder.execCommand("rendernode",_root);
