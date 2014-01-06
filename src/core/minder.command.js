@@ -81,13 +81,9 @@ kity.extendClass( Minder, {
 		if ( !stoped ) {
 
 			this._fire( new MinderEvent( "precommand", eventParams, false ) );
-			try {
-				result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
-			} catch ( e ) {
-				if ( console ) {
-					console.warn( 'Command Exception: ', e );
-				}
-			}
+
+			result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
+
 			this._fire( new MinderEvent( "command", eventParams, false ) );
 
 		}

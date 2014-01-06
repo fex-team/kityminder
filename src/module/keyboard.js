@@ -15,7 +15,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
         }
     }
 
-    function calcQuad( p ) {
+    function quadOf( p ) {
         return p.x > 0 ?
             ( p.y > 0 ? 1 : 2 ) :
             ( p.y < 0 ? 3 : 4 );
@@ -30,7 +30,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             if ( i == iFind ) continue;
             current = matrix.transformPoint( pointIndexes[ i ].x, pointIndexes[ i ].y );
-            quad = calcQuad( current );
+            quad = quadOf( current );
             if ( !most[ quad ] || current.length() < most[ quad ].point.length ) {
                 most[ quad ] = {
                     point: current,
@@ -39,10 +39,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
             }
         }
         find.node.setData( 'nearestNodes', {
-            right: most[ 1 ] || null,
-            top: most[ 2 ] || null,
-            left: most[ 3 ] || null,
-            down: most[ 4 ] || null
+            right: most[ 1 ] && most[ 1 ].node || null,
+            top: most[ 2 ] && most[ 2 ].node || null,
+            left: most[ 3 ] && most[ 3 ].node || null,
+            down: most[ 4 ] && most[ 4 ].node || null
         } );
     }
 
@@ -65,7 +65,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
             var nextNode = referNode.getData( 'nearestNodes' )[ direction ];
             if ( nextNode ) {
                 km.toggleSelect( [ referNode, nextNode ] );
-                this.execCommand( 'rendernode', [ referNode, nextNode ] );
+                km.execCommand( 'rendernode', [ referNode, nextNode ] );
             }
         }
     } );
@@ -121,7 +121,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                             38: 'top',
                             39: 'right',
                             40: 'down'
-                        }[ e.keyCode ], sNodes[ 0 ] );
+                        }[ e.originEvent.keyCode ], sNodes[ 0 ] );
                     }
                     break;
                 }
