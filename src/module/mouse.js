@@ -1,16 +1,25 @@
 KityMinder.registerModule( "MouseModule", function () {
-
+    var SingleSelectCommand = kity.createClass( 'SingleSelectCommand', {
+        base: Command,
+        execute: function ( km, node ) {
+            var deltaNodes = km.getSelectedNodes();
+            km.clearSelect();
+            if ( node ) {
+                km.selectSingle( node );
+                deltaNodes.push( node );
+            }
+            km.execCommand( 'rendernode', deltaNodes );
+            this.setContentChanged( false );
+        }
+    } );
     return {
+        "commands": {
+            'selectsingle': SingleSelectCommand
+        },
         "events": {
             mousedown: function ( e ) {
                 var clickNode = e.getTargetNode();
-                var deltaNodes = this.getSelectedNodes();
-                this.clearSelect();
-                if ( clickNode ) {
-                    this.selectSingle( clickNode );
-                    deltaNodes.push( clickNode );
-                }
-                this.execCommand( 'rendernode', deltaNodes );
+                this.execCommand( 'selectsingle', clickNode );
             }
         }
     };

@@ -23,7 +23,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
     function findClosestPointsFor( pointIndexes, iFind ) {
         var find = pointIndexes[ iFind ];
-        var matrix = new kity.Matrix().translate( -find.x, -find.y ).rotate( -45 );
+        var matrix = new kity.Matrix().translate( -find.x, -find.y ).rotate( 45 );
         var most = {}, quad;
         var current;
 
@@ -31,7 +31,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
             if ( i == iFind ) continue;
             current = matrix.transformPoint( pointIndexes[ i ].x, pointIndexes[ i ].y );
             quad = quadOf( current );
-            if ( !most[ quad ] || current.length() < most[ quad ].point.length ) {
+            if ( !most[ quad ] || current.length() < most[ quad ].point.length() ) {
                 most[ quad ] = {
                     point: current,
                     node: pointIndexes[ i ].node
@@ -67,6 +67,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 km.toggleSelect( [ referNode, nextNode ] );
                 km.execCommand( 'rendernode', [ referNode, nextNode ] );
             }
+            this.setContentChanged( false );
         }
     } );
 
@@ -78,6 +79,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
         },
         "events": {
             contentchange: function () {
+                console.log( 'rebuild position network' );
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
