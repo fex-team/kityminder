@@ -49,9 +49,13 @@ KityMinder.registerModule( "KeyboardModule", function () {
     var KBCreateAndEditCommand = kity.createClass( {
         base: Command,
         execute: function ( km, type, referNode ) {
-            var node = km.execCommand( 'create' + type + 'node', referNode );
-            km.execCommand( 'edittext', node );
+            var node = this.createdNode = km.execCommand( 'create' + type + 'node', referNode );
+            km.execCommand( 'editText', node );
             this.setContentChanged( true );
+        },
+
+        revert: function ( km ) {
+            km.execCommand( 'removeNode', this.createdNode );
         }
     } );
 
