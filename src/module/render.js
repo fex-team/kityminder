@@ -48,7 +48,7 @@ KityMinder.registerModule( "RenderModule", function () {
 
             nodeShape.NormalInfo = new kity.Pen( _style.stroke, _style.strokeWidth );
             nodeShape.rect.setWidth( _rectWidth ).setHeight( _rectHeight ).stroke( nodeShape.NormalInfo ).fill( _style.fill ).setRadius( _style.radius );
-            switch ( node.align ) {
+            switch ( node.getData( "align" ) ) {
             case "center":
                 nodeShape.shape.translate( node.getData( "x" ) - _rectWidth / 2, node.getData( "y" ) - _rectHeight / 2 );
                 break;
@@ -63,7 +63,7 @@ KityMinder.registerModule( "RenderModule", function () {
             if ( km.isNodeSelected( node ) ) {
                 nodeShape.highlight();
             }
-        }
+        };
 
         return {
             base: Command,

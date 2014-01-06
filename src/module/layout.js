@@ -4,9 +4,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, parent ) {
 				var _node = new MinderNode();
-				_node.setData( "x", parent.getData( "x" ) + 200 );
 				_node.setData( "y", Math.random() * 300 + 100 );
-				_node.setData( "align", "left" );
 				_node.setData( "text", "New Node" );
 				switch ( parent.branchside ) {
 				case "left":
@@ -15,7 +13,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 					break;
 				default:
 					( function () {
-
+						var children = parent.getChildren();
+						if ( children.length < 5 ) {
+							_node.setData( "x", parent.getData( "x" ) + 200 );
+							_node.setData( "align", "left" );
+						} else {
+							_node.setData( "x", parent.getData( "x" ) - 200 );
+							_node.setData( "align", "right" );
+						}
 					} )();
 					break;
 				}
