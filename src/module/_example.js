@@ -50,9 +50,10 @@ KityMinder.registerModule( "ExampleModule", function () {
         "defaultOptions": {
             "test": 123
         },
+
         // TODO: 初始化完成后执行的函数
         "init": function ( config ) {
-            console.log( "init", config );
+            // console.log( "init", config );
         },
 
         // TODO: 需要注册的命令
@@ -77,7 +78,7 @@ KityMinder.registerModule( "ExampleModule", function () {
                 if ( this._cheated[ 0 ] == e.keyCode ) {
                     this._cheated.shift();
                 }
-                console.log( this._cheated );
+                // console.log( this._cheated );
                 if ( this._cheated.length === 0 ) {
                     this.execCommand( 'cheat' );
                 }

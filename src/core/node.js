@@ -107,6 +107,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     setData: function ( name, value ) {
+        if ( arguments.length == 1 && typeof ( arguments[ 0 ] ) == 'object' ) {
+            Utils.extend( this.data, arguments[ 0 ] );
+        }
         this.data[ name ] = value;
     },
 
