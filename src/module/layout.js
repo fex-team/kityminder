@@ -40,7 +40,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				console.log( sibling );
 				var parent = sibling.getParent();
 				if ( parent ) {
-					createChildNode( km, parent );
+					return createChildNode( km, parent );
 				}
 			}
 		};
