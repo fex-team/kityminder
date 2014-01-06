@@ -5,8 +5,9 @@ KityMinder.registerModule( "MouseModule", function () {
             mousedown: function ( e ) {
                 var clickNode = e.getTargetNode();
                 var deltaNodes = this.getSelectedNodes();
-                this.selectSingle( clickNode );
+                this.clearSelect();
                 if ( clickNode ) {
+                    this.selectSingle( clickNode );
                     deltaNodes.push( clickNode );
                 }
                 this.execCommand( 'rendernode', deltaNodes );
