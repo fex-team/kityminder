@@ -3,7 +3,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, parent ) {
-				console.log( "parentX", parent.getData( "data" ).x );
 				var _node = new MinderNode();
 				var _nodeD = {
 					text: "New Node",
@@ -12,7 +11,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 					align: "left"
 				};
 				_node.setData( "data", _nodeD );
-				console.log( "node", _node );
 				parent.insertChild( _node );
 				km.execCommand( 'rendernode', _node );
 				return _node;
