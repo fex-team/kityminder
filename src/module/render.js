@@ -86,14 +86,6 @@ KityMinder.registerModule( "RenderModule", function () {
         };
     } )() );
 
-    var EraseNodeCommand = kity.createClass( "EraseNodeCommand", ( function () {
-        return {
-            base: Command,
-            execute: function ( km, node ) {
-
-            }
-        }
-    } )() );
     return {
         "init": function ( config ) {
 
@@ -101,7 +93,6 @@ KityMinder.registerModule( "RenderModule", function () {
         "commands": {
             //todo:command字典，name－action  键值对模式编写
             "rendernode": RenderNodeCommand,
-            "erasenode": EraseNodeCommand
         },
 
         "events": {
