@@ -16,8 +16,6 @@
     var _root =  minder.getRoot();
 
     _root.setData("data",{
-        x:minderWidth/2,
-        y:minderHeight/2,
         style:{
             radius:10,
             fill:"orange",
@@ -25,10 +23,12 @@
             color:"black",
             padding:[10,10,10,10],
             fontSize:20,
-            align:"center"
         },
         text:"I am the root",
     });
+    _root.setData("x",minderWidth/2);
+    _root.setData("y",minderHeight/2);
+    _root.setData("align","center");
 
     minder.select(_root);
     minder.execCommand("rendernode",_root);
