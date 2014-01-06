@@ -57,9 +57,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 		return {
 			base: Command,
-			execute: function ( km, node ) {
-				var parent = node.getParent();
-				parent.removeChild( node );
+			execute: function ( km, nodes ) {
+				for ( var i = 0; i < nodes.length; i++ ) {
+					var parent = nodes[ i ].getParent();
+					if ( parent ) {
+						parent.removeChild( nodes[ i ] );
+					}
+				}
+				this.setContentChanged( true );
 			}
 		};
 	} )() );

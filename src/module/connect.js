@@ -136,6 +136,7 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 		"events": {
 			"command": function ( e ) {
 				var command = e;
+				var minder = this;
 				switch ( command.commandName ) {
 				case "rendernode":
 					( function () {
@@ -165,13 +166,24 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 					break;
 				case "removenode":
 					( function () {
-						var node = command.commandArgs[ 0 ];
-						node.getData( "connect" ).remove();
+						var nodes = command.commandArgs[ 0 ];
+						if ( ( nodes instanceof Array ) === false ) {
+							nodes = [ nodes ];
+						}
+
+						function removeConnect( node ) {
+							var connect = node.getData( "connect" );
+							if ( connect && connect.remove ) {
+								connect.remove();
+							}
+						}
+						for ( var i = 0; i < nodes.length; i++ ) {
+							nodes[ i ].traverse( removeConnect );
+						}
 					} )();
-				default:
-					break;
-				};
+				}
 			}
 		}
 	};
+
 } );

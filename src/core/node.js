@@ -12,6 +12,16 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this.parent;
     },
 
+    getDepth: function () {
+        var depth = 0,
+            p = this.parent;
+        while ( p ) {
+            p = p.parent;
+            depth++;
+        }
+        return depth;
+    },
+
     getRoot: function () {
         var root = this;
         while ( root.parent ) {
@@ -45,7 +55,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     getIndex: function () {
-        return this.parent ? this.parent.indexOf( this ) : -1;
+        return this.parent ? this.parent.children.indexOf( this ) : -1;
     },
 
     insertChild: function ( node, index ) {

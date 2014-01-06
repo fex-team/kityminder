@@ -46,6 +46,20 @@ KityMinder.registerModule( "KeyboardModule", function () {
         } );
     }
 
+    function findMinDepthNode( nodes ) {
+        var depth,
+            minDepth = Number.MAX_VALUE,
+            minDepthNode = null;
+        for ( var i = 0; i < nodes.length; i++ ) {
+            depth = nodes[ i ].getDepth();
+            if ( depth < minDepth ) {
+                minDepth = depth;
+                minDepthNode = nodes[ i ];
+            }
+        }
+        return minDepthNode;
+    }
+
     var KBCreateAndEditCommand = kity.createClass( {
         base: Command,
         execute: function ( km, type, referNode ) {
@@ -73,11 +87,37 @@ KityMinder.registerModule( "KeyboardModule", function () {
         }
     } );
 
+    var KBRemoveCommand = kity.createClass( {
+        base: Command,
+        execute: function ( km, nodes ) {
+            km.clearSelect( nodes );
+            var select = this.getNextSelection( km, nodes );
+            km.execCommand( 'removeNode', nodes );
+            km.select( select );
+            km.execCommand( 'rendernode', select );
+        },
+        getNextSelection: function ( km, removeNodes ) {
+            var minDepthNode = findMinDepthNode( removeNodes );
+            var parent = minDepthNode.getParent();
+            if ( !parent ) {
+                return km.getRoot();
+            }
+            var length = parent.getChildren().length;
+            if ( length > 1 ) {
+                var index = minDepthNode.getIndex() + 1;
+                return parent.getChild( index % length );
+            } else {
+                return parent;
+            }
+        }
+    } );
+
     return {
         // private usage
         "commands": {
             'kbCreateAndEdit': KBCreateAndEditCommand,
-            'kbNavigate': KBNavigateCommand
+            'kbNavigate': KBNavigateCommand,
+            'kbRemove': KBRemoveCommand
         },
         "events": {
             contentchange: function () {
@@ -108,10 +148,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                         this.execCommand( 'kbCreateAndEdit', 'child', sNodes[ 0 ] );
                     }
                     break;
+
                 case 8:
                 case 46:
                     // Backspace or Delete
-                    this.execCommand( 'removeNode', sNodes );
+                    this.execCommand( 'kbRemove', sNodes );
                     break;
 
                 case 37:
