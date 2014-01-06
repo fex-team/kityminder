@@ -1,22 +1,32 @@
 KityMinder.registerModule( "LayoutModule", function () {
-	var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
-		return {
-			base: Command,
-			execute: function ( km, parent ) {
-				var _node = new MinderNode();
-				var _nodeD = {
-					text: "New Node",
-					x: parent.getData( "data" ).x + 200,
-					y: Math.random() * 300 + 100,
-					align: "left"
-				};
-				_node.setData( "data", _nodeD );
-				parent.insertChild( _node );
-				km.execCommand( 'rendernode', _node );
-				return _node;
+		var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
+				return {
+					base: Command,
+					execute: function ( km, parent ) {
+						var _node = new MinderNode();
+						var _nodeD = {
+							text: "New Node",
+							x: parent.getData( "data" ).x + 200,
+							y: Math.random() * 300 + 100,
+							align: "left"
+						};
+						switch ( parent.branchside ) {
+						case "left":
+							break;
+						case "right":
+							break;
+						default:
+							if ( parent ) {} else {}
+							break;
+						}
+					}
+					_node.setData( "data", _nodeD );
+					parent.insertChild( _node );
+					km.execCommand( 'rendernode', _node );
+					return _node;
+				}
 			}
-		}
-	} )() );
+		} )() );
 	var CreateSiblingNodeCommand = kity.createClass( "CreateSiblingNodeCommand", ( function () {
 
 		return {
