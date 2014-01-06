@@ -81,7 +81,13 @@ kity.extendClass( Minder, {
 		if ( !stoped ) {
 
 			this._fire( new MinderEvent( "precommand", eventParams, false ) );
-			result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
+			try {
+				result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
+			} catch ( e ) {
+				if ( console ) {
+					console.warn( 'Command Exception: ', e );
+				}
+			}
 			this._fire( new MinderEvent( "command", eventParams, false ) );
 
 			// 顶级命令才触发事件
@@ -97,7 +103,7 @@ kity.extendClass( Minder, {
 		}
 
 
-		this._commandStack.pop();
+		this._popCommandStack();
 
 		return result || null;
 	}
