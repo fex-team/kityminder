@@ -148,8 +148,6 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 							var nodeD = node.getData( "data" );
 							_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
 							node.setData( "connect", _connect );
-
-							console.log( _connect );
 							minder.getRenderContainer().addShape( _connect );
 						}
 					} )();

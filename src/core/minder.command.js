@@ -69,7 +69,6 @@ kity.extendClass( Minder, {
 		this._pushCommandStack( command );
 
 		cmdArgs = Array.prototype.slice.call( arguments, 1 );
-		console.log( cmdArgs );
 
 		eventParams = {
 			command: command,
