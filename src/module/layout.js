@@ -37,7 +37,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				var parent = sibling.getParent();
 				parent.insertChild( node );
 			}
-		}
+		};
 	} )() );
 
 	var RemoveNodeCommand = kity.createClass( "RemoveNodeCommand", ( function () {
@@ -45,10 +45,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, node ) {
-				var parent = sibling.getParent();
+				var parent = node.getParent();
 				parent.removeChild( node );
 			}
-		}
+		};
 	} )() );
 	return {
 		"commands": {
