@@ -42,7 +42,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, sibling ) {
-				console.log( sibling );
 				var parent = sibling.getParent();
 				if ( parent ) {
 					return createChildNode( km, parent );

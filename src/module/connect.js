@@ -150,14 +150,14 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 								return false;
 							} else {
 								var parent = curnode.getParent();
-								var connectExist = curnode.getData( "connect" );
+								var connectExist = curnode._connect;
 								if ( connectExist ) {
 									connectExist.updateConnection();
 								} else {
 									var _connect = new ConnectBezier( parent.getRenderContainer(), curnode.getRenderContainer() );
 									var nodeD = curnode.getData( "style" );
 									_connect.stroke( new kity.Pen( nodeD.stroke, nodeD.strokeWidth ) );
-									curnode.setData( "connect", _connect );
+									curnode._connect = _connect;
 									minder.getRenderContainer().addShape( _connect );
 								}
 							}
@@ -172,7 +172,7 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 						}
 
 						function removeConnect( node ) {
-							var connect = node.getData( "connect" );
+							var connect = node._connect;
 							if ( connect && connect.remove ) {
 								connect.remove();
 							}

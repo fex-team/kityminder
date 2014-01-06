@@ -38,12 +38,12 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 };
             }
         }
-        find.node.setData( 'nearestNodes', {
+        find.node._nearestNodes = {
             right: most[ 1 ] && most[ 1 ].node || null,
             top: most[ 2 ] && most[ 2 ].node || null,
             left: most[ 3 ] && most[ 3 ].node || null,
             down: most[ 4 ] && most[ 4 ].node || null
-        } );
+        };
     }
 
     function findMinDepthNode( nodes ) {
@@ -64,9 +64,9 @@ KityMinder.registerModule( "KeyboardModule", function () {
         base: Command,
         execute: function ( km, type, referNode ) {
             var node = this.createdNode = km.execCommand( 'create' + type + 'node', referNode );
-            km.execCommand( 'editText', node );
             km.selectSingle( node );
-            km.execCommand( 'rendernode', [ referNode, node ] );
+            km.execCommand( 'editText', node );
+            km.execCommand( 'rendernode', referNode );
             this.setContentChanged( true );
         },
 
@@ -78,7 +78,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
     var KBNavigateCommand = kity.createClass( {
         base: Command,
         execute: function ( km, direction, referNode ) {
-            var nextNode = referNode.getData( 'nearestNodes' )[ direction ];
+            var nextNode = referNode._nearestNodes[ direction ];
             if ( nextNode ) {
                 km.toggleSelect( [ referNode, nextNode ] );
                 km.execCommand( 'rendernode', [ referNode, nextNode ] );
@@ -127,7 +127,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 var sNodes = this.getSelectedNodes(),
                     isSingleSelected = sNodes.length === 1,
                     isRootSelected = this.isNodeSelected( this.getRoot() );
-                console.log( e.originEvent.keyCode );
                 e.originEvent.preventDefault();
                 switch ( e.originEvent.keyCode ) {
 

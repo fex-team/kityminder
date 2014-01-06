@@ -16,10 +16,6 @@ kity.extendClass( Minder, {
         node.traverse( function ( current ) {
             rc.removeShape( current.getRenderContainer() );
         } );
-    },
-
-    update: function ( node ) {
-        return this;
     }
 
 } );
