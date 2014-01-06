@@ -145,15 +145,20 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 						} else {
 							var parent = node.getParent();
 							var _connect = new ConnectBezier( parent.getRenderContainer(), node.getRenderContainer() );
-							_connect.stroke( new kity.Pen( node.data.style.stroke, node.data.style.strokeWidth ) );
-							node.connect = _connect;
+							var nodeD = node.getData( "data" );
+							_connect.stroke( new kity.Pen( nodeD.style.stroke, nodeD.style.strokeWidth ) );
+							node.setData( "connect", _connect );
+
 							console.log( _connect );
 							minder.getRenderContainer().addShape( _connect );
 						}
 					} )();
 					break;
-				case "erasenode":
-					break;
+				case "removenode":
+					( function () {
+						var node = command.commandArgs[ 0 ];
+						node.getData( "connect" ).remove();
+					} )();
 				default:
 					break;
 				};

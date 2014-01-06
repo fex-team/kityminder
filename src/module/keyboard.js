@@ -86,7 +86,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     isRootSelected = this.isNodeSelected( this.getRoot() );
                 console.log( e.originEvent.keyCode );
                 e.originEvent.preventDefault();
-                switch ( e.keyCode ) {
+                switch ( e.originEvent.keyCode ) {
 
                 case 13:
                     // Enter

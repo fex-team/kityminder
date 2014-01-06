@@ -26,7 +26,9 @@ kity.extendClass( Minder, {
 
             //command加入命令池子
             dealCommands = moduleDeals.commands;
-            Utils.extend( this._commands, dealCommands );
+            for ( var name in dealCommands ) {
+                this._commands[ name.toLowerCase() ] = dealCommands[ name ];
+            }
 
             //绑定事件
             dealEvents = moduleDeals.events;
