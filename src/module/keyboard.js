@@ -79,7 +79,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
         },
         "events": {
             contentchange: function () {
-                console.log( 'rebuild position network' );
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
