@@ -1,10 +1,20 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var createChildNode = function ( km, parent ) {
 		var children = parent.getChildren();
+
+		var judgeDir = function ( num ) {
+			var devide = parseInt( num / 5 );
+			if ( devide % 2 ) {
+				return "left";
+			} else {
+				return "right";
+			}
+		};
+		var branchside = parent.getData( "branchside" ) || judgeDir( children.length );
 		var _node = new MinderNode();
 		_node.setData( "y", parent.getData( "y" ) + Math.random() * 100 - 100 );
 		_node.setData( "text", "New Node" );
-		switch ( parent.getData( "branchside" ) ) {
+		switch ( branchside ) {
 		case "left":
 			_node.setData( "branchside", "left" );
 			_node.setData( "x", parent.getData( "x" ) - 200 );
@@ -14,17 +24,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			_node.setData( "branchside", "right" );
 			break;
 		default:
-			( function () {
-				if ( children.length < 5 ) {
-					_node.setData( "x", parent.getData( "x" ) + 200 );
-					_node.setData( "align", "right" );
-					_node.setData( "branchside", "right" );
-				} else {
-					_node.setData( "x", parent.getData( "x" ) - 200 );
-					_node.setData( "align", "left" );
-					_node.setData( "branchside", "left" );
-				}
-			} )();
 			break;
 		}
 		parent.insertChild( _node );
