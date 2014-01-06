@@ -12,15 +12,15 @@ var MinderEvent = kity.createClass( 'MindEvent', {
         }
         this.type = type;
         this._canstop = canstop || false;
-        if ( params.targetShape ) {
-            this.getTargetNode = function () {
-                var findShape = params.targetShape;
-                while ( !findShape.minderNode && findShape.container ) {
-                    findShape = findShape.container;
-                }
-                return findShape.minderNode || null;
-            };
+    },
+
+    getTargetNode: function () {
+        var findShape = this.kityEvent && this.kityEvent.targetShape;
+        if ( !findShape ) return null;
+        while ( !findShape.minderNode && findShape.container ) {
+            findShape = findShape.container;
         }
+        return findShape.minderNode || null;
     },
 
     stopPropagation: function () {

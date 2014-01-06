@@ -17,6 +17,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initEvents();
         this._initMinder();
         this._initCommandStack();
+        this._initSelection();
         this._initModules();
     },
 

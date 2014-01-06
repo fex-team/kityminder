@@ -17,11 +17,11 @@ $dependency = Array(
     'src/module/connect.js',
     'src/module/history.js',
     'src/module/icon.js',
-    'src/module/keyboard.js',
     'src/module/layout.js',
     'src/module/render.js',
-    'src/module/textedit.js',
-    'src/module/_example.js'
+    'src/module/mouse.js',
+    'src/module/keyboard.js',
+    'src/module/textedit.js'
 );
 
 $content = "";
