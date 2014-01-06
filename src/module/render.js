@@ -50,13 +50,13 @@ KityMinder.registerModule( "RenderModule", function () {
             nodeShape.rect.setWidth( _rectWidth ).setHeight( _rectHeight ).stroke( nodeShape.NormalInfo ).fill( _style.fill ).setRadius( _style.radius );
             switch ( node.getData( "align" ) ) {
             case "center":
-                nodeShape.shape.translate( node.getData( "x" ) - _rectWidth / 2, node.getData( "y" ) - _rectHeight / 2 );
+                nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth / 2, node.getData( "y" ) - _rectHeight / 2 ) );
                 break;
             case "right":
-                nodeShape.shape.translate( node.getData( "x" ) - _rectWidth, node.getData( "y" ) - _rectHeight / 2 );
+                nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth, node.getData( "y" ) - _rectHeight / 2 ) );
                 break;
             default:
-                nodeShape.shape.translate( node.getData( "x" ), node.getData( "y" ) - _rectHeight / 2 );
+                nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ), node.getData( "y" ) - _rectHeight / 2 ) );
                 break;
             }
 
