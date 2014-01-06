@@ -154,6 +154,11 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 						}
 					} )();
 					break;
+				case "removenode":
+					( function () {
+						var node = command.commandArgs[ 0 ];
+						node.getData( "connect" ).remove();
+					} )();
 				default:
 					break;
 				};
