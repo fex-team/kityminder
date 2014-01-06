@@ -1,22 +1,26 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var createChildNode = function ( km, parent ) {
+		var children = parent.getChildren();
 		var _node = new MinderNode();
-		_node.setData( "y", Math.random() * 300 + 100 );
+		_node.setData( "y", Math.random() * 500 + 10 );
 		_node.setData( "text", "New Node" );
-		switch ( parent.branchside ) {
+		switch ( parent.getData( "branchside" ) ) {
 		case "left":
+			_node.setData( "branchside", "left" );
 			break;
 		case "right":
+			_node.setData( "branchside", "right" );
 			break;
 		default:
 			( function () {
-				var children = parent.getChildren();
 				if ( children.length < 5 ) {
 					_node.setData( "x", parent.getData( "x" ) + 200 );
 					_node.setData( "align", "left" );
+					_node.setData( "branchside", "left" );
 				} else {
 					_node.setData( "x", parent.getData( "x" ) - 200 );
 					_node.setData( "align", "right" );
+					_node.setData( "branchside", "right" );
 				}
 			} )();
 			break;
@@ -40,7 +44,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 				console.log( sibling );
 				var parent = sibling.getParent();
 				if ( parent ) {
-					createChildNode( km, parent );
+					return createChildNode( km, parent );
+				} else {
+					return false;
 				}
 			}
 		};
