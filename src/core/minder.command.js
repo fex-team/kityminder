@@ -90,20 +90,21 @@ kity.extendClass( Minder, {
 			}
 			this._fire( new MinderEvent( "command", eventParams, false ) );
 
-			// 顶级命令才触发事件
-			if ( this.isTopCommandExecuting() ) {
-				if ( command.isContentChanged() ) {
-					this._firePharse( new MinderEvent( 'contentchange' ) );
-				}
-				if ( command.isSelectionChanged() ) {
-					this._firePharse( new MinderEvent( 'selectionchange' ) );
-				}
-				this._firePharse( new MinderEvent( 'interactchange' ) );
-			}
 		}
 
-
-		this._popCommandStack();
+		// 顶级命令才触发事件
+		if ( !stoped && this.isTopCommandExecuting() ) {
+			this._popCommandStack();
+			if ( command.isContentChanged() ) {
+				this._firePharse( new MinderEvent( 'contentchange' ) );
+			}
+			if ( command.isSelectionChanged() ) {
+				this._firePharse( new MinderEvent( 'selectionchange' ) );
+			}
+			this._firePharse( new MinderEvent( 'interactchange' ) );
+		} else {
+			this._popCommandStack();
+		}
 
 		return result || null;
 	}
