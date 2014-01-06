@@ -28,7 +28,7 @@ KityMinder.registerModule( "RenderModule", function () {
                 fontSize: 14
             };
             var kR = node.getRenderContainer();
-            var nodeShape = new MinderNodeShape( kR );
+            var nodeShape = kR.nodeShape = kR.nodeShape || new MinderNodeShape( kR );
             var nd = JSON.parse( JSON.stringify( styledefault ) );
             var nodeD = Utils.extend( nd, node.getData( "style" ) );
             node.setData( "style", nodeD );
