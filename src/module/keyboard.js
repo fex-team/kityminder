@@ -49,6 +49,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
     var KBCreateAndEditCommand = kity.createClass( {
         base: Command,
         execute: function ( km, type, referNode ) {
+            console.log( "refer:", referNode );
             var node = km.execCommand( 'create' + type + 'node', referNode );
             km.execCommand( 'edittext', node );
             this.setContentChanged( true );

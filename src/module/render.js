@@ -1,40 +1,76 @@
 KityMinder.registerModule( "RenderModule", function () {
     var RenderNodeCommand = kity.createClass( "RenderNodeCommand", ( function () {
-        var node_default = {
-            centerX: 0,
-            centerY: 0,
-            text: "Root",
-            style: {
-                fill: "#7ecef4",
-                stroke: "white",
-                strokeWidth: 3,
-                padding: 5,
-                radius: 5
+        var MinderNodeShape = kity.createClass( "MinderNodeShape", ( function () {
+            return {
+                constructor: function ( container ) {
+                    this.rect = new kity.Rect();
+                    this.text = new kity.Text();
+                    this.shape = new kity.Group();
+                    this.shape.addShapes( [ this.rect, this.text ] );
+                    container.addShape( this.shape, "nodeShape" );
+                },
+                highlight: function () {
+                    this.rect.stroke( new kity.Pen( "white", 3 ) );
+                },
+                unhighlight: function () {
+                    this.rect.stroke( this.NormalInfo );
+                }
             }
-        };
+        } )() );
+
         var renderNode = function ( km, node ) {
-            var nodeD = Utils.extend( node_default, node.data );
-            node.data = nodeD;
-            var _style = nodeD.style;
+            var node_default = {
+                x: 0,
+                y: 0,
+                text: "Root",
+                style: {
+                    radius: 10,
+                    fill: "yellow",
+                    stroke: "orange",
+                    color: "black",
+                    padding: [ 5, 5, 5, 5 ],
+                    fontSize: 12,
+                    align: "left"
+                }
+            };
             var kR = node.getRenderContainer();
-            var _node = node.shape = new kity.Group();
-            var _txt = new kity.Text( nodeD.text || "Node" );
-            _txt.setSize( nodeD.fontSize ).fill( nodeD.color );
-            _node.addShape( _txt );
-            kR.addShape( _node );
-            var txtWidth = _txt.getWidth();
-            var txtHeight = _txt.getHeight();
+            var nodeShape = new MinderNodeShape( kR );
+            var nd = JSON.parse( JSON.stringify( node_default ) );
+            var nodeD = Utils.extend( nd, node.getData( "data" ) );
+            node.setData( "data", nodeD );
+            var _style = nodeD.style;
+            nodeShape.text
+                .setContent( nodeD.text || "Node" )
+                .setSize( nodeD.fontSize )
+                .fill( nodeD.color );
+            var txtWidth = nodeShape.text.getWidth();
+            var txtHeight = nodeShape.text.getHeight();
             var _padding = _style.padding;
+            nodeShape.text
+                .setX( _padding[ 3 ] ).setY( _padding[ 0 ] + txtHeight );
 
             var _rectWidth = txtWidth + _padding[ 1 ] + _padding[ 3 ];
             var _rectHeight = txtHeight + _padding[ 0 ] + _padding[ 2 ];
-            console.log( _rectWidth, _rectHeight );
-            var _rect = new kity.Rect( _rectWidth, _rectHeight, 0, 0, _style.radius );
-            _rect.stroke( new kity.Pen( _style.stroke, _style.strokeWidth ) ).fill( _style.fill );
-            _node.addShape( _rect ).bringTop( _txt );
-            _node.translate( nodeD.centerX - _rectWidth / 2, nodeD.centerY - _rectHeight / 2 );
-            _txt.setX( _padding[ 3 ] ).setY( _padding[ 0 ] + txtHeight );
-        };
+
+            nodeShape.NormalInfo = new kity.Pen( _style.stroke, _style.strokeWidth );
+            nodeShape.rect.setWidth( _rectWidth ).setHeight( _rectHeight ).stroke( nodeShape.NormalInfo ).fill( _style.fill ).setRadius( _style.radius );
+
+            switch ( nodeD.align ) {
+            case "center":
+                nodeShape.shape.translate( nodeD.x - _rectWidth / 2, nodeD.y - _rectHeight / 2 );
+                break;
+            case "right":
+                nodeShape.shape.translate( nodeD.x - _rectWidth, nodeD.y - _rectHeight / 2 );
+                break;
+            default:
+                nodeShape.shape.translate( nodeD.x, nodeD.y - _rectHeight / 2 );
+                break;
+            }
+
+            if ( km.isNodeSelected( node ) ) {
+                nodeShape.highlight();
+            }
+        }
 
         return {
             base: Command,

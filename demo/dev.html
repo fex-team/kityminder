@@ -11,52 +11,27 @@
 <script>
     minder = new KM.createMinder( document.body );
 
-    minder.importData({
-        data: {
-            x: 50,
-            y: 50,
-            text: 'center',
-        },
-        children: [{
-            data: {
-                x: 200,
-                y: 50,
-                text: 'child1'
-            }
-        },{
-            data: {
-                x: 200,
-                y: 100,
-                text: 'child2'
-            },
-            children: [{
-                data: {
-                    x: 350,
-                    y: 100,
-                    text: 'leaf'
-                }
-            }]
-        }]
-    });
     var minderWidth = document.body.clientWidth;
     var minderHeight = document.body.clientHeight;
-    var _node =  minder.getRoot();
+    var _root =  minder.getRoot();
 
-    _node.data = {
-        centerX:minderWidth/2,
-        centerY:minderHeight/2,
+    _root.setData("data",{
+        x:minderWidth/2,
+        y:minderHeight/2,
         style:{
             radius:10,
             fill:"orange",
             stroke:"orange",
             color:"black",
             padding:[10,10,10,10],
-            fontSize:20
+            fontSize:20,
+            align:"center"
         },
         text:"I am the root",
-    };
-    minder.select(_node);
-    minder.execCommand("rendernode",_node);
-    minder.execCommand("createchildnode",_node);
+    });
+
+    minder.select(_root);
+    minder.execCommand("rendernode",_root);
+
 </script>
 </html>
