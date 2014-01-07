@@ -1,6 +1,6 @@
 KityMinder.registerModule( "LayoutModule", function () {
 
-	var createChildNode = function ( km, parent ) {
+	var createChildNode = function ( km, parent, index ) {
 		var defaultHeight = 25;
 		var root = km.getRoot();
 		var appendSide = parent.getData( "appendside" );
@@ -14,16 +14,16 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		}
 		var _node = new MinderNode();
-		parent.appendChild( _node );
+		parent.insertChild( _node, index );
 		_node.setData( "appendside", appendSide );
 		var parentX = parent.getData( "x" );
 		switch ( appendSide ) {
 		case "left":
-			_node.setData( "x", parentX + 200 );
+			_node.setData( "x", parentX - 200 );
 			_node.setData( "align", "right" );
 			break;
 		case "right":
-			_node.setData( "x", parentX - 200 );
+			_node.setData( "x", parentX + 200 );
 			_node.setData( "align", "left" );
 			break;
 		default:
@@ -34,9 +34,29 @@ KityMinder.registerModule( "LayoutModule", function () {
 		var layerArray = root.getData( "layer" + appendSide );
 		layerArray[ layer ] = layerArray[ layer ] || [];
 
-		layerArray[ layer ].push( _node );
+		//layerArray[ layer ].push( _node );
 		var layerData = layerArray[ layer ];
-
+		var indexMin = layerData[ 0 ] ? layerData[ 0 ].getParent().getIndex() : 0;
+		var indexMax = layerData[ layerData.length - 1 ] ? layerData[ layerData.length - 1 ].getParent().getIndex() : 0;
+		var indexNode = _node.getParent().getIndex();
+		var insertPos;
+		if ( indexNode >= indexMax ) {
+			insertPos = layerData.length;
+		} else if ( indexNode < indexMin ) {
+			insertPos = 0;
+		} else {
+			insertPos = ( function () {
+				var pos = 0;
+				for ( var l = layerData.length - 1; l >= 0; l-- ) {
+					pos = l;
+					if ( indexNode === layerData[ l ].getParent().getIndex() ) {
+						break;
+					}
+				}
+				return pos + 1;
+			} )();
+		}
+		layerData.splice( insertPos, 0, _node );
 		_node.setData( "layer", layer );
 
 		//设置各节点Y坐标
@@ -76,8 +96,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, sibling ) {
 				var parent = sibling.getParent();
+				var index = sibling.getIndex() + 1;
 				if ( parent ) {
-					return createChildNode( km, parent );
+					return createChildNode( km, parent, index );
 				} else {
 					return false;
 				}
