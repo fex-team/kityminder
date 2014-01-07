@@ -33,29 +33,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		var layer = parent.getData( "layer" ) + 1;
 		var layerArray = root.getData( "layer" + appendSide );
 		layerArray[ layer ] = layerArray[ layer ] || [];
-
-		//layerArray[ layer ].push( _node );
 		var layerData = layerArray[ layer ];
-		var indexMin = layerData[ 0 ] ? layerData[ 0 ].getParent().getIndex() : 0;
-		var indexMax = layerData[ layerData.length - 1 ] ? layerData[ layerData.length - 1 ].getParent().getIndex() : 0;
-		var indexNode = _node.getParent().getIndex();
-		var insertPos;
-		if ( indexNode >= indexMax ) {
-			insertPos = layerData.length;
-		} else if ( indexNode < indexMin ) {
-			insertPos = 0;
-		} else {
-			insertPos = ( function () {
-				var pos = 0;
-				for ( var l = layerData.length - 1; l >= 0; l-- ) {
-					pos = l;
-					if ( indexNode === layerData[ l ].getParent().getIndex() ) {
-						break;
-					}
-				}
-				return pos + 1;
-			} )();
-		}
+		var insertPos = 0;
+
 		layerData.splice( insertPos, 0, _node );
 		_node.setData( "layer", layer );
 
