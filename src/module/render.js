@@ -17,7 +17,6 @@ KityMinder.registerModule( "RenderModule", function () {
                 }
             };
         } )() );
-
         var renderNode = function ( km, node ) {
             var styledefault = {
                 radius: 5,
@@ -25,7 +24,7 @@ KityMinder.registerModule( "RenderModule", function () {
                 stroke: "orange",
                 color: "black",
                 padding: [ 5, 5, 5, 5 ],
-                fontSize: 14
+                fontSize: 14,
             };
             var kR = node.getRenderContainer();
             var nodeShape = kR.nodeShape = kR.nodeShape || new MinderNodeShape( kR );
@@ -40,11 +39,11 @@ KityMinder.registerModule( "RenderModule", function () {
             var txtWidth = nodeShape.text.getWidth();
             var txtHeight = nodeShape.text.getHeight();
             var _padding = _style.padding;
-            nodeShape.text
-                .setX( _padding[ 3 ] ).setY( _padding[ 0 ] + txtHeight );
 
             var _rectWidth = txtWidth + _padding[ 1 ] + _padding[ 3 ];
             var _rectHeight = txtHeight + _padding[ 0 ] + _padding[ 2 ];
+            nodeShape.text
+                .setX( _padding[ 3 ] ).setY( _padding[ 0 ] + txtHeight );
 
             nodeShape.NormalInfo = new kity.Pen( _style.stroke, _style.strokeWidth );
             nodeShape.rect.setWidth( _rectWidth ).setHeight( _rectHeight ).stroke( nodeShape.NormalInfo ).fill( _style.fill ).setRadius( _style.radius );
@@ -64,18 +63,18 @@ KityMinder.registerModule( "RenderModule", function () {
                 nodeShape.highlight();
             }
         };
-
+        var renderNodes = function ( km, node ) {
+            if ( node instanceof Array ) {
+                for ( var i = 0; i < node.length; i++ ) {
+                    renderNode( km, node[ i ] );
+                }
+            } else {
+                renderNode( km, node );
+            }
+        };
         return {
             base: Command,
-            execute: function ( km, node ) {
-                if ( node instanceof Array ) {
-                    for ( var i = 0; i < node.length; i++ ) {
-                        renderNode( km, node[ i ] );
-                    }
-                } else {
-                    renderNode( km, node );
-                }
-            }
+            execute: renderNodes
         };
     } )() );
 

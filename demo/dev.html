@@ -15,18 +15,27 @@
     var minderHeight = document.body.clientHeight;
     var _root =  minder.getRoot();
 
+    //根节点初始化的数据（考虑整合）
     _root.setData("style",{
         radius:10,
         fill:"orange",
         stroke:"orange",
         color:"black",
         padding:[10,10,10,10],
-        fontSize:20,
+        fontSize:20
     });
     _root.setData("x",minderWidth/2);
     _root.setData("y",minderHeight/2);
+    _root.setData("layer",0);
     _root.setData("align","center");
     _root.setData("text","I am the root");
+    //标记左子树和右子树的元素
+    _root.setData("layerleft",[[_root]]);
+    _root.setData("layerright",[[_root]]);
+
+    //标记根节点以及添加子树的方向
+    _root.setData("appendside","left");
+    _root.setData("sidecount",0);
 
     minder.select(_root);
     minder.execCommand("rendernode",_root);
