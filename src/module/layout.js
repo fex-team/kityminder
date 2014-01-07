@@ -13,8 +13,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 				root.setData( "sidecount", sidecount + 1 );
 			}
 		}
+
 		var _node = new MinderNode();
 		parent.insertChild( _node, index );
+
 		_node.setData( "appendside", appendSide );
 		var parentX = parent.getData( "x" );
 		switch ( appendSide ) {
@@ -35,9 +37,43 @@ KityMinder.registerModule( "LayoutModule", function () {
 		layerArray[ layer ] = layerArray[ layer ] || [];
 		var layerData = layerArray[ layer ];
 		var insertPos = 0;
-
-		layerData.splice( insertPos, 0, _node );
 		_node.setData( "layer", layer );
+
+		//获取层级链
+		var getIndexList = function ( node ) {
+			var indexList = [];
+			var parent = node;
+			do {
+				indexList.push( parent.getIndex() );
+				parent = parent.getParent();
+			} while ( parent );
+			return indexList.reverse();
+		};
+
+		//比较两个层级链的大小
+		var indexLarger = function ( List1, List2 ) {
+			var larger = true;
+			for ( var i = 0; i < List1.length; i++ ) {
+				if ( List1[ i ] == List2[ i ] ) {
+					continue;
+				}
+				if ( List1[ i ] < List2[ i ] ) {
+					larger = false;
+				}
+				break;
+			}
+			return larger;
+		};
+
+		//选定合适的位置插入节点
+		for ( var l = layerData.length - 1; l >= 0; l-- ) {
+			if ( !indexLarger( getIndexList( layerData[ l ] ), getIndexList( _node ) ) ) {
+				insertPos = l + 1;
+				break;
+			}
+		}
+		console.log( layerData );
+		layerData.splice( insertPos, 0, _node );
 
 		//设置各节点Y坐标
 		var rootY = root.getData( "y" );
@@ -54,9 +90,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			layerData[ j ].setData( "y", sY );
 			var part1 = ( layerData[ j ].getRenderContainer().getHeight() || defaultHeight ) / 2 + 15;
 			var part2 = layerData[ j + 1 ] ? ( layerData[ j + 1 ].getRenderContainer().getHeight() || defaultHeight ) / 2 : 0;
-			if ( layerData[ j + 1 ] ) {
-				console.log( layerData[ j + 1 ].getRenderContainer().getHeight() );
-			}
 			sY += ( part1 + part2 );
 		}
 
