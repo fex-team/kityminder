@@ -45,6 +45,8 @@ KityMinder.registerModule( "MouseModule", function () {
                             paper.off( DRAG_MOVE_EVENT, dragFn );
                         }
 
+                        if ( e.originEvent.touches && e.originEvent.touches.length !== 1 ) return;
+
                         var currentPosition = e.getPosition();
                         var movement = {
                             x: currentPosition.x - startPosition.x,
@@ -106,15 +108,12 @@ KityMinder.registerModule( "MouseModule", function () {
                     paper.on( DRAG_END_EVENT, dragTarget._dragEndHandler = function ( e ) {
                         if ( dragging ) {
                             dragging = false;
-                            var dragInfo = {
-                                position: e.getPosition()
-                            };
                             if ( dragEnd ) {
-                                dragEnd.call( me, dragInfo );
+                                dragEnd.call( me );
                             }
 
                             paper.off( DRAG_MOVE_EVENT, dragFn );
-                            dragTarget.trigger( 'dragend', dragInfo );
+                            dragTarget.trigger( 'dragend' );
 
                             e.stopPropagation();
                             e.preventDefault();
@@ -151,6 +150,10 @@ KityMinder.registerModule( "MouseModule", function () {
             }
         } );
     } )();
+
+    function getTouchDistance( e ) {
+        return kity.Vector.fromPoints( e.kityEvent.getPosition( 0 ), e.kityEvent.getPosition( 1 ) ).length();
+    }
     return {
         "init": function () {
             kity.extendClass( kity.Paper, Draggable );
@@ -160,7 +163,9 @@ KityMinder.registerModule( "MouseModule", function () {
             'selectsingle': SingleSelectCommand
         },
         "events": {
-            mousedown: function ( e ) {
+            'mousedown touchstart': function ( e ) {
+                if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
+
                 var clickNode = e.getTargetNode();
                 this.execCommand( 'selectsingle', clickNode );
                 if ( +new Date() - this._lastMousedownTime < 300 ) {
@@ -169,6 +174,36 @@ KityMinder.registerModule( "MouseModule", function () {
                     }
                 }
                 this._lastMousedownTime = +new Date();
+            },
+            'touchstart': function ( e ) {
+                var me = this;
+                if ( e.originEvent.touches.length === 2 ) {
+                    this._lastTouchDistance = getTouchDistance( e );
+                    this._lastTouchViewport = this._paper.getViewPort();
+                    console.log( 'start: ', this._lastTouchDistance, this._lastTouchViewport );
+                } else if ( e.originEvent.touches.length === 1 ) {
+
+                    var node = e.getTargetNode();
+                    if ( !node ) return;
+                    this._touchTimeout = setTimeout( function () {
+                        me.clearSelect();
+                        me.execCommand( 'kbCreateAndEdit', 'child', node );
+                    }, 200 );
+                }
+            },
+            'touchend touchmove': function () {
+                clearTimeout( this._touchTimeout );
+            },
+            'touchmove': function ( e ) {
+                if ( e.originEvent.touches.length === 2 ) {
+                    var ld = this._lastTouchDistance,
+                        cd = getTouchDistance( e );
+                    var lv = this._lastTouchViewport,
+                        cv = this._paper.getViewPort();
+                    cv.zoom = lv.zoom * cd / ld;
+                    this._paper.setViewPort( cv );
+                    console.log( 'move: ', cv );
+                }
             }
         }
     };

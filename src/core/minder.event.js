@@ -14,7 +14,7 @@ kity.extendClass( Minder, {
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
         var minder = this;
-        this._paper.on( 'click mousedown mouseup mousemove', this._firePharse.bind( this ) );
+        this._paper.on( 'click mousedown mouseup mousemove touchstart touchmove touchend', this._firePharse.bind( this ) );
     },
     _bindKeyboardEvents: function () {
         var minder = this;
