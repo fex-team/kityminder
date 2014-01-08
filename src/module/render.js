@@ -65,6 +65,7 @@ KityMinder.registerModule( "RenderModule", function () {
         };
         var renderNodes = function ( km, node ) {
             if ( node instanceof Array ) {
+                if ( node.length === 0 ) return false;
                 for ( var i = 0; i < node.length; i++ ) {
                     renderNode( km, node[ i ] );
                 }
