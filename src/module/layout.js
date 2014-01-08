@@ -1,5 +1,9 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var defaultHeight = 25;
+
+	var isOdd = function ( num ) {
+		return num % 2 !== 0;
+	};
 	//更新分支的高度信息
 	var updateBranchHeight = function ( node, appendSide, root, isAdd, oldParent ) {
 		var siblings = ( function () {
@@ -71,15 +75,17 @@ KityMinder.registerModule( "LayoutModule", function () {
 		parent.insertChild( _node, index );
 
 		_node.setData( "appendside", appendSide );
+
 		if ( parent === root ) {
-			var sidecount = root.getData( "sidecount" );
-			if ( sidecount + 1 === 5 ) {
-				root.setData( "sidecount", 0 );
-				root.setData( "appendside", ( "leftright" ).replace( appendSide, "" ) );
+			var childCount = parent.getChildren().length;
+			console.log( childCount );
+			if ( isOdd( parseInt( childCount / 5 ) ) ) {
+				root.setData( "appendside", "left" );
 			} else {
-				root.setData( "sidecount", sidecount + 1 );
+				root.setData( "appendside", "right" );
 			}
 		}
+
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
 
@@ -197,6 +203,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 						console.log( layerArray );
 						if ( reAnal ) {
 							reAnalyze( km, layerArray, appendSide );
+						}
+						if ( parent === root ) {
+							var childCount = parent.getChildren().length;
+							if ( isOdd( parseInt( childCount / 5 ) ) ) {
+								root.setData( "appendside", "left" );
+							} else {
+								root.setData( "appendside", "right" );
+							}
 						}
 					}
 				}
