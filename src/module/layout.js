@@ -1,5 +1,5 @@
 KityMinder.registerModule( "LayoutModule", function () {
-	var defaultHeight = 25;
+	var defaultHeight = 35;
 
 	var isOdd = function ( num ) {
 		return num % 2 !== 0;

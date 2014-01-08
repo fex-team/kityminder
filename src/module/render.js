@@ -24,7 +24,7 @@ KityMinder.registerModule( "RenderModule", function () {
                 stroke: "orange",
                 color: "black",
                 padding: [ 5, 10, 5, 10 ],
-                fontSize: 14,
+                fontSize: 20,
             };
             var kR = node.getRenderContainer();
             var nodeShape = kR.nodeShape = kR.nodeShape || new MinderNodeShape( kR );
