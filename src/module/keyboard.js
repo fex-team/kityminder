@@ -90,6 +90,9 @@ KityMinder.registerModule( "KeyboardModule", function () {
     var KBRemoveCommand = kity.createClass( {
         base: Command,
         execute: function ( km, nodes ) {
+            if ( !nodes.length ) {
+                return;
+            }
             km.clearSelect( nodes );
             var select = this.getNextSelection( km, nodes );
             km.execCommand( 'removeNode', nodes );
@@ -151,6 +154,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 case 8:
                 case 46:
                     // Backspace or Delete
+                    var rootIndex = sNodes.indexOf( this.getRoot() );
+                    if ( rootIndex != -1 ) {
+                        sNodes.splice( rootIndex, 1 );
+                    }
                     this.execCommand( 'kbRemove', sNodes );
                     break;
 
