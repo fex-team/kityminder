@@ -15,23 +15,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 		if ( !isAdd && ( siblings.length === 0 || ( !oldParent.getParent() && oldParent !== root ) ) ) {
 			return false;
 		}
-		var parent = isAdd ? node : oldParent;
+		var parent = isAdd ? node.getParent() : oldParent;
+		node.setData( "branchheight", defaultHeight + 10 );
 		if ( isAdd ) {
 			var add = ( ( siblings.length === 1 && node.getParent() !== root ) ? 0 : ( defaultHeight + 10 ) );
 			console.log( add );
-			do {
+			while ( parent || ( parent === root ) ) {
 				var branchheight = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
 				if ( parent === root ) {
 					parent.setData( appendSide + "Height", branchheight + add );
 				} else {
-					if ( parent === node ) {
-						parent.setData( "branchheight", defaultHeight + 10 );
-					} else {
-						parent.setData( "branchheight", branchheight + add );
-					}
+					parent.setData( "branchheight", branchheight + add );
 				}
 				parent = parent.getParent();
-			} while ( parent || ( parent === root ) );
+			}
+
 			if ( siblings.length === 1 ) {
 				return false;
 			} else {
