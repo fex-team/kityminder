@@ -2,21 +2,36 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var defaultHeight = 25;
 	//更新分支的高度信息
 	var updateBranchHeight = function ( node, appendSide, root, isAdd, oldParent ) {
-		var siblings = isAdd ? node.getParent().getChildren() : oldParent.getChildren();
+		var siblings = ( function () {
+			if ( !isAdd ) {
+				return oldParent.getChildren();
+			} else if ( parent === root ) {
+				return root.getData( "layer" + appendSide )[ 1 ];
+			} else {
+				return node.getParent().getChildren();
+			}
+		} )();
+		console.log( siblings );
 		if ( !isAdd && ( siblings.length === 0 || ( !oldParent.getParent() && oldParent !== root ) ) ) {
 			return false;
 		}
 		var parent = isAdd ? node : oldParent;
 		if ( isAdd ) {
+			var add = ( ( siblings.length === 1 && node.getParent() !== root ) ? 0 : ( defaultHeight + 10 ) );
+			console.log( add );
 			do {
 				var branchheight = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
 				if ( parent === root ) {
-					parent.setData( appendSide + "Height", branchheight + defaultHeight + 10 );
+					parent.setData( appendSide + "Height", branchheight + add );
 				} else {
-					parent.setData( "branchheight", branchheight + defaultHeight + 10 );
+					if ( parent === node ) {
+						parent.setData( "branchheight", defaultHeight + 10 );
+					} else {
+						parent.setData( "branchheight", branchheight + add );
+					}
 				}
 				parent = parent.getParent();
-			} while ( parent && ( parent.getChildren().length >= 2 || parent === root ) );
+			} while ( parent || ( parent === root ) );
 			if ( siblings.length === 1 ) {
 				return false;
 			} else {
@@ -24,7 +39,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		} else {
 			var dec = node.getData( "branchheight" );
-			console.log( dec );
 			do {
 				var branchheight2 = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
 				if ( parent === root ) {
@@ -45,7 +59,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !children || children.length === 0 ) continue;
 				var branchheight = lvData[ i ].getData( appendSide + "Height" ) || lvData[ i ].getData( "branchheight" );
 				var sY = lvData[ i ].getData( "y" ) + ( children[ 0 ].getData( "branchheight" ) - branchheight ) / 2;
-				console.log( sY );
 				for ( var j = 0; j < children.length; j++ ) {
 					children[ j ].setData( "y", sY );
 					var part1 = ( children[ j ].getData( "branchheight" ) - 10 ) / 2 + 10;
