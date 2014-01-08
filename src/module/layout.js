@@ -11,10 +11,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 				return node.getParent().getChildren();
 			}
 		} )();
-		console.log( siblings );
-		if ( !isAdd && ( siblings.length === 0 || ( !oldParent.getParent() && oldParent !== root ) ) ) {
-			return false;
-		}
 		var parent = isAdd ? node.getParent() : oldParent;
 		node.setData( "branchheight", defaultHeight + 10 );
 		if ( isAdd ) {
