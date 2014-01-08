@@ -19,11 +19,11 @@ KityMinder.registerModule( "RenderModule", function () {
         } )() );
         var renderNode = function ( km, node ) {
             var styledefault = {
-                radius: 5,
+                radius: 10,
                 fill: "yellow",
                 stroke: "orange",
                 color: "black",
-                padding: [ 5, 5, 5, 5 ],
+                padding: [ 5, 10, 5, 10 ],
                 fontSize: 14,
             };
             var kR = node.getRenderContainer();
