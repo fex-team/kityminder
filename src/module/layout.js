@@ -49,6 +49,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return true;
 		}
 	};
+	var updateBranchWidth = function ( node, appendSide ) {
+
+	};
 	var reAnalyze = function ( km, layerArray, appendSide ) {
 		for ( var lv = 0; lv < layerArray.length; lv++ ) {
 			var lvData = layerArray[ lv ];
@@ -67,6 +70,19 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		}
 	};
+
+	var getX = function ( node ) {
+		var parent = node.getParent();
+		var parentX = parent.getData( "x" );
+		var parentWidth = parent.getRenderContainer().getWidth();
+		var side = node.getData( "appendside" );
+		if ( side === "left" ) {
+			node.setData( "x", parentX - parentWidth - 50 );
+		} else {
+			node.setData( "x", parentX + parentWidth + 50 );
+		}
+	};
+
 	var createChildNode = function ( km, parent, index ) {
 		var root = km.getRoot();
 		var appendSide = parent.getData( "appendside" );
@@ -75,16 +91,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		parent.insertChild( _node, index );
 
 		_node.setData( "appendside", appendSide );
-
-		if ( parent === root ) {
-			var childCount = parent.getChildren().length;
-			console.log( childCount );
-			if ( isOdd( parseInt( childCount / 5 ) ) ) {
-				root.setData( "appendside", "left" );
-			} else {
-				root.setData( "appendside", "right" );
-			}
-		}
 
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
@@ -145,6 +151,20 @@ KityMinder.registerModule( "LayoutModule", function () {
 		}
 
 		layerData.splice( insertPos, 0, _node );
+
+		if ( parent === root ) {
+			var leftCount = parent.getData( "layerleft" );
+			var rightCount = parent.getData( "layerright" );
+			leftCount = leftCount[ 1 ] ? leftCount[ 1 ].length : 0;
+			rightCount = rightCount[ 1 ] ? rightCount[ 1 ].length : 0;
+			console.log( leftCount, rightCount );
+			if ( rightCount > leftCount && rightCount > 1 ) {
+				parent.setData( "appendside", "left" );
+			} else {
+				parent.setData( "appendside", "right" );
+			}
+		}
+
 		var reAnal = updateBranchHeight( _node, appendSide, root, true );
 		//判断是重绘全部还是只是添加节点
 		if ( reAnal ) {
@@ -167,7 +187,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, sibling ) {
+				var root = km.getRoot();
 				var parent = sibling.getParent();
+				if ( parent === root ) {
+					parent.setData( "appendside", sibling.getData( "appendside" ) );
+				}
 				var index = sibling.getIndex() + 1;
 				if ( parent ) {
 					return createChildNode( km, parent, index );
@@ -218,11 +242,36 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		};
 	} )() );
+
+	var UpdateNodeCommand = kity.createClass( "UpdateNodeCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km, node, feature ) {
+				var _root = km.getRoot();
+				var rerender = false;
+				for ( var key in feature ) {
+					node.setData( "key", feature[ key ] );
+					if ( key === "text" ) {
+						rerender = true;
+					}
+				}
+				if ( rerender ) {
+					km.execCommand( "rendernode", node );
+					node.preTraverse( function ( subnode ) {
+						subnode.setData( "x", getX( subnode ) );
+						km.execCommand( "rendernode", subnode );
+					} );
+				}
+			}
+		};
+	} )() );
+
 	return {
 		"commands": {
 			"createchildnode": CreateChildNodeCommand,
 			"createsiblingnode": CreateSiblingNodeCommand,
-			"removenode": RemoveNodeCommand
+			"removenode": RemoveNodeCommand,
+			"updatenode": UpdateNodeCommand
 		},
 
 		"events": {
