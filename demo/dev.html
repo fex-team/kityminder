@@ -42,13 +42,13 @@
     minder.execCommand("rendernode",_root);
 
     //模拟生成一个初始图
-    // for(var j=0;j<20;j++){
-    //     var appendSide = Math.random()>0.5?"left":"right";
-    //     var layerArray = _root.getData("layer"+appendSide);
-    //     var layer = parseInt(Math.random()*layerArray.length);
-    //     var layerData = layerArray[layer];
-    //     var root = layerData[parseInt(Math.random()*layerData.length)]
-    //     minder.execCommand("createchildnode",root); 
-    // }
+    for(var j=0;j<20;j++){
+        var appendSide = Math.random()>0.5?"left":"right";
+        var layerArray = _root.getData("layer"+appendSide);
+        var layer = parseInt(Math.random()*layerArray.length);
+        var layerData = layerArray[layer];
+        var root = layerData[parseInt(Math.random()*layerData.length)]
+        minder.execCommand("createchildnode",root); 
+    }
 </script>
 </html>

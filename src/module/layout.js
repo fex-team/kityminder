@@ -19,7 +19,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		node.setData( "branchheight", defaultHeight + 10 );
 		if ( isAdd ) {
 			var add = ( ( siblings.length === 1 && node.getParent() !== root ) ? 0 : ( defaultHeight + 10 ) );
-			console.log( add );
 			while ( parent || ( parent === root ) ) {
 				var branchheight = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
 				if ( parent === root ) {
@@ -71,8 +70,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		}
 	};
 
-	var getX = function ( node ) {
+	var setX = function ( node ) {
 		var parent = node.getParent();
+		if ( !parent ) return false;
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
 		var side = node.getData( "appendside" );
@@ -158,7 +158,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			var rightCount = parent.getData( "layerright" );
 			leftCount = leftCount[ 1 ] ? leftCount[ 1 ].length : 0;
 			rightCount = rightCount[ 1 ] ? rightCount[ 1 ].length : 0;
-			console.log( leftCount, rightCount );
 			if ( rightCount > leftCount && rightCount > 1 ) {
 				parent.setData( "appendside", "left" );
 			} else {
@@ -225,7 +224,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 							}
 						}
 						var reAnal = updateBranchHeight( nodes[ i ], appendSide, root, false, parent );
-						console.log( layerArray );
 						if ( reAnal ) {
 							reAnalyze( km, layerArray, appendSide );
 						}
@@ -251,18 +249,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 				var root = km.getRoot();
 				var rerender = false;
 				for ( var key in feature ) {
-					node.setData( "key", feature[ key ] );
+					node.setData( key, feature[ key ] );
 					if ( key === "text" ) {
 						rerender = true;
 					}
 				}
-				if ( rerender && node !== root ) {
-					km.execCommand( "rendernode", node );
+
+				if ( rerender ) {
 					node.preTraverse( function ( subnode ) {
-						subnode.setData( "x", getX( subnode ) );
+						setX( subnode );
 						km.execCommand( "rendernode", subnode );
 					} );
+				} else {
+					km.execCommand( "rendernode", node );
 				}
+				return node;
 			}
 		};
 	} )() );
