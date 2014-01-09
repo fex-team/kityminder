@@ -21,7 +21,10 @@ $dependency = Array(
     'src/module/render.js',
     'src/module/mouse.js',
     'src/module/keyboard.js',
-    'src/module/textedit.js'
+    'src/module/editor.js',
+    'src/module/editor.cursor.js',
+    'src/module/editor.range.js',
+    'src/module/editor.receiver.js'
 );
 
 $content = "";

@@ -4,12 +4,18 @@
 <head>
     <script src="../kity/dist/kitygraph.all.js"></script>
     <script src="../dist/dev.php"></script>
+    <style>
+        .km_receiver{
+            width:300px;height:300px;
+        }
+    </style>
 </head>
 <body style="background:#262626; margin:0; padding:0">
-    
+    <div id="kityminder" style="height:1000px;width:100%"></div>
 </body>
 <script>
-    minder = new KM.createMinder( document.body );
+
+    minder = KM.createMinder(kityminder);
 
     var minderWidth = document.body.clientWidth;
     var minderHeight = document.body.clientHeight;
@@ -48,7 +54,7 @@
         var layer = parseInt(Math.random()*layerArray.length);
         var layerData = layerArray[layer];
         var root = layerData[parseInt(Math.random()*layerData.length)]
-        minder.execCommand("createchildnode",root); 
+        minder.execCommand("createchildnode",root);
     }
 </script>
 </html>
