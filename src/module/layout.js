@@ -247,7 +247,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, node, feature ) {
-				var _root = km.getRoot();
+				var root = km.getRoot();
 				var rerender = false;
 				for ( var key in feature ) {
 					node.setData( "key", feature[ key ] );
@@ -255,7 +255,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 						rerender = true;
 					}
 				}
-				if ( rerender ) {
+				if ( rerender && node !== root ) {
 					km.execCommand( "rendernode", node );
 					node.preTraverse( function ( subnode ) {
 						subnode.setData( "x", getX( subnode ) );
