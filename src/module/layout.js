@@ -1,9 +1,6 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var defaultHeight = 35;
 
-	var isOdd = function ( num ) {
-		return num % 2 !== 0;
-	};
 	//更新分支的高度信息
 	var updateBranchHeight = function ( node, appendSide, root, isAdd, oldParent ) {
 		var siblings = ( function () {
@@ -48,9 +45,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return true;
 		}
 	};
-	var updateBranchWidth = function ( node, appendSide ) {
 
-	};
 	var reAnalyze = function ( km, layerArray, appendSide ) {
 		for ( var lv = 0; lv < layerArray.length; lv++ ) {
 			var lvData = layerArray[ lv ];
@@ -75,6 +70,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		if ( !parent ) return false;
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
+		if ( parent.getData( "align" ) === "center" ) {
+			parentWidth = parentWidth / 2;
+		}
 		var side = node.getData( "appendside" );
 		if ( side === "left" ) {
 			node.setData( "x", parentX - parentWidth - 50 );
@@ -258,6 +256,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( rerender ) {
 					node.preTraverse( function ( subnode ) {
 						setX( subnode );
+						console.log( subnode );
 						km.execCommand( "rendernode", subnode );
 					} );
 				} else {
