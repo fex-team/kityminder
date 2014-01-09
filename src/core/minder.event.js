@@ -17,8 +17,10 @@ kity.extendClass( Minder, {
         this._paper.on( 'click mousedown mouseup mousemove touchstart touchmove touchend', this._firePharse.bind( this ) );
     },
     _bindKeyboardEvents: function () {
-        //只能在这里做，要不无法触发
-        Utils.listen( document.body,  'keydown keyup keypress', this._firePharse.bind( this ) );
+        if ( ( navigator.userAgent.indexOf( 'iPhone' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPod' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPad' ) == -1 ) ) {
+            //只能在这里做，要不无法触发
+            Utils.listen( document.body,  'keydown keyup keypress', this._firePharse.bind( this ) );
+        }
     },
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;

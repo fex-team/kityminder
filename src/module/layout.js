@@ -1,9 +1,6 @@
 KityMinder.registerModule( "LayoutModule", function () {
 	var defaultHeight = 35;
 
-	var isOdd = function ( num ) {
-		return num % 2 !== 0;
-	};
 	//更新分支的高度信息
 	var updateBranchHeight = function ( node, appendSide, root, isAdd, oldParent ) {
 		var siblings = ( function () {
@@ -19,7 +16,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		node.setData( "branchheight", defaultHeight + 10 );
 		if ( isAdd ) {
 			var add = ( ( siblings.length === 1 && node.getParent() !== root ) ? 0 : ( defaultHeight + 10 ) );
-			console.log( add );
 			while ( parent || ( parent === root ) ) {
 				var branchheight = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
 				if ( parent === root ) {
@@ -49,6 +45,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return true;
 		}
 	};
+
 	var reAnalyze = function ( km, layerArray, appendSide ) {
 		for ( var lv = 0; lv < layerArray.length; lv++ ) {
 			var lvData = layerArray[ lv ];
@@ -63,10 +60,30 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var part2 = ( children[ j + 1 ] ? ( children[ j + 1 ].getData( "branchheight" ) - 10 ) / 2 : 0 );
 					sY += ( part1 + part2 );
 				}
-				km.execCommand( "rendernode", children );
+				km.fire( "rendernode", {
+					nodes: children,
+					rerender: false
+				} );
 			}
 		}
 	};
+
+	var setX = function ( node ) {
+		var parent = node.getParent();
+		if ( !parent ) return false;
+		var parentX = parent.getData( "x" );
+		var parentWidth = parent.getRenderContainer().getWidth();
+		if ( parent.getData( "align" ) === "center" ) {
+			parentWidth = parentWidth / 2;
+		}
+		var side = node.getData( "appendside" );
+		if ( side === "left" ) {
+			node.setData( "x", parentX - parentWidth - 50 );
+		} else {
+			node.setData( "x", parentX + parentWidth + 50 );
+		}
+	};
+
 	var createChildNode = function ( km, parent, index ) {
 		var root = km.getRoot();
 		var appendSide = parent.getData( "appendside" );
@@ -76,18 +93,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 		_node.setData( "appendside", appendSide );
 
-		if ( parent === root ) {
-			var childCount = parent.getChildren().length;
-			console.log( childCount );
-			if ( isOdd( parseInt( childCount / 5 ) ) ) {
-				root.setData( "appendside", "left" );
-			} else {
-				root.setData( "appendside", "right" );
-			}
-		}
-
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
+		if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
 
 		switch ( appendSide ) {
 		case "left":
@@ -145,17 +153,40 @@ KityMinder.registerModule( "LayoutModule", function () {
 		}
 
 		layerData.splice( insertPos, 0, _node );
+
+		if ( parent === root ) {
+			var leftCount = parent.getData( "layerleft" );
+			var rightCount = parent.getData( "layerright" );
+			leftCount = leftCount[ 1 ] ? leftCount[ 1 ].length : 0;
+			rightCount = rightCount[ 1 ] ? rightCount[ 1 ].length : 0;
+			if ( rightCount > leftCount && rightCount > 1 ) {
+				parent.setData( "appendside", "left" );
+			} else {
+				parent.setData( "appendside", "right" );
+			}
+		}
+
 		var reAnal = updateBranchHeight( _node, appendSide, root, true );
 		//判断是重绘全部还是只是添加节点
 		if ( reAnal ) {
 			reAnalyze( km, layerArray, appendSide );
 		} else {
 			_node.setData( "y", _node.getParent().getData( "y" ) );
-			km.execCommand( "rendernode", _node );
+			km.fire( "rendernode", {
+				nodes: _node,
+				rerender: false
+			} );
 		}
 		return _node;
 	};
 
+	var updateNode = function ( km, node ) {
+		km.fire( "updatenode", {
+			node: node,
+			rerender: true
+		} );
+		return node;
+	};
 	var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
 		return {
 			base: Command,
@@ -167,7 +198,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, sibling ) {
+				var root = km.getRoot();
 				var parent = sibling.getParent();
+				if ( parent === root ) {
+					parent.setData( "appendside", sibling.getData( "appendside" ) );
+				}
 				var index = sibling.getIndex() + 1;
 				if ( parent ) {
 					return createChildNode( km, parent, index );
@@ -200,17 +235,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 							}
 						}
 						var reAnal = updateBranchHeight( nodes[ i ], appendSide, root, false, parent );
-						console.log( layerArray );
 						if ( reAnal ) {
 							reAnalyze( km, layerArray, appendSide );
-						}
-						if ( parent === root ) {
-							var childCount = parent.getChildren().length;
-							if ( isOdd( parseInt( childCount / 5 ) ) ) {
-								root.setData( "appendside", "left" );
-							} else {
-								root.setData( "appendside", "right" );
-							}
 						}
 					}
 				}
@@ -218,6 +244,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		};
 	} )() );
+
 	return {
 		"commands": {
 			"createchildnode": CreateChildNodeCommand,
@@ -226,7 +253,33 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 
 		"events": {
+			"contentupdate": function ( e ) {
+				var me = this;
+				updateNode( me, e.node );
+			},
+			"noderendercomplete": function ( e ) {
+				if ( !e.rerender ) return false;
+				var parent = e.node;
+				var nodes = [];
+				parent.preTraverse( function ( node ) {
+					var prt = node.getParent();
+					if ( !prt ) return false;
+					var parentWidth = prt.getData( "width" );
+					var parentX = prt.getData( "x" );
+					if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
 
+					if ( parent.getData( "appendside" ) === "left" ) {
+						node.setData( "x", parentX - parentWidth - 50 );
+					} else {
+						node.setData( "x", parentX + parentWidth + 50 );
+					}
+					nodes.push( node );
+				} );
+				this.fire( "rendernode", {
+					nodes: nodes,
+					rerender: false
+				} );
+			}
 		}
 	};
 } );
