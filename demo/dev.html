@@ -10,7 +10,7 @@
 </body>
 <script>
     minder = new KM.createMinder( document.body );
-
+    minder.fire('');
     var minderWidth = document.body.clientWidth;
     var minderHeight = document.body.clientHeight;
     var _root =  minder.getRoot();
@@ -39,7 +39,7 @@
     //标记根节点以及添加子树的方向
     _root.setData("appendside","right");
 
-    minder.execCommand("rendernode",_root);
+    minder.fire("rendernode",{nodes:_root,rerender:false});
 
     //模拟生成一个初始图
     for(var j=0;j<20;j++){
@@ -50,6 +50,5 @@
         var root = layerData[parseInt(Math.random()*layerData.length)]
         minder.execCommand("createchildnode",root); 
     }
-    minder.execCommand("updatenode",_root,{"text":"234567"});
 </script>
 </html>

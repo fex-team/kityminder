@@ -18,9 +18,11 @@ kity.extendClass( Minder, {
     },
     _bindKeyboardEvents: function () {
         var minder = this;
-        var events = 'keydown keyup keypress'.split( ' ' );
-        for ( var i = 0; i < events.length; i++ ) {
-            Utils.listen( this._renderTarget, events[ i ], this._firePharse.bind( this ) );
+        if ( ( navigator.userAgent.indexOf( 'iPhone' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPod' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPad' ) == -1 ) ) {
+            var events = 'keydown keyup keypress'.split( ' ' );
+            for ( var i = 0; i < events.length; i++ ) {
+                Utils.listen( this._renderTarget, events[ i ], this._firePharse.bind( this ) );
+            }
         }
     },
     _firePharse: function ( e ) {

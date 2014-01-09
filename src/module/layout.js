@@ -60,7 +60,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var part2 = ( children[ j + 1 ] ? ( children[ j + 1 ].getData( "branchheight" ) - 10 ) / 2 : 0 );
 					sY += ( part1 + part2 );
 				}
-				km.execCommand( "rendernode", children );
+				km.fire( "rendernode", {
+					nodes: children,
+					rerender: false
+				} );
 			}
 		}
 	};
@@ -169,11 +172,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 			reAnalyze( km, layerArray, appendSide );
 		} else {
 			_node.setData( "y", _node.getParent().getData( "y" ) );
-			km.execCommand( "rendernode", _node );
+			km.fire( "rendernode", {
+				nodes: _node,
+				rerender: false
+			} );
 		}
 		return _node;
 	};
 
+	var updateNode = function ( km, node ) {
+		km.fire( "updatenode", {
+			node: node,
+			rerender: true
+		} );
+		return node;
+	};
 	var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
 		return {
 			base: Command,
@@ -225,44 +238,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 						if ( reAnal ) {
 							reAnalyze( km, layerArray, appendSide );
 						}
-						if ( parent === root ) {
-							var childCount = parent.getChildren().length;
-							if ( isOdd( parseInt( childCount / 5 ) ) ) {
-								root.setData( "appendside", "left" );
-							} else {
-								root.setData( "appendside", "right" );
-							}
-						}
 					}
 				}
 				this.setContentChanged( true );
-			}
-		};
-	} )() );
-
-	var UpdateNodeCommand = kity.createClass( "UpdateNodeCommand", ( function () {
-		return {
-			base: Command,
-			execute: function ( km, node, feature ) {
-				var root = km.getRoot();
-				var rerender = false;
-				for ( var key in feature ) {
-					node.setData( key, feature[ key ] );
-					if ( key === "text" ) {
-						rerender = true;
-					}
-				}
-
-				if ( rerender ) {
-					node.preTraverse( function ( subnode ) {
-						setX( subnode );
-						console.log( subnode );
-						km.execCommand( "rendernode", subnode );
-					} );
-				} else {
-					km.execCommand( "rendernode", node );
-				}
-				return node;
 			}
 		};
 	} )() );
@@ -271,12 +249,37 @@ KityMinder.registerModule( "LayoutModule", function () {
 		"commands": {
 			"createchildnode": CreateChildNodeCommand,
 			"createsiblingnode": CreateSiblingNodeCommand,
-			"removenode": RemoveNodeCommand,
-			"updatenode": UpdateNodeCommand
+			"removenode": RemoveNodeCommand
 		},
 
 		"events": {
+			"contentupdate": function ( e ) {
+				var me = this;
+				updateNode( me, e.node );
+			},
+			"noderendercomplete": function ( e ) {
+				if ( !e.rerender ) return false;
+				var parent = e.node;
+				var nodes = [];
+				parent.preTraverse( function ( node ) {
+					var prt = node.getParent();
+					if ( !prt ) return false;
+					var parentWidth = prt.getData( "width" );
+					var parentX = prt.getData( "x" );
+					if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
 
+					if ( parent.getData( "appendside" ) === "left" ) {
+						node.setData( "x", parentX - parentWidth - 50 );
+					} else {
+						node.setData( "x", parentX + parentWidth + 50 );
+					}
+					nodes.push( node );
+				} );
+				this.fire( "rendernode", {
+					nodes: nodes,
+					rerender: false
+				} );
+			}
 		}
 	};
 } );
