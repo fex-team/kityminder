@@ -94,6 +94,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 		var parentX = parent.getData( "x" );
 		var parentWidth = parent.getRenderContainer().getWidth();
+		if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
 
 		switch ( appendSide ) {
 		case "left":
