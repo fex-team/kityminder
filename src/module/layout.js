@@ -60,13 +60,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var part2 = ( children[ j + 1 ] ? ( children[ j + 1 ].getData( "branchheight" ) - 10 ) / 2 : 0 );
 					sY += ( part1 + part2 );
 				}
-				km.fire( "rendernode", {
-					nodes: children,
-					rerender: false
-				} );
+                km.execCommand( "rendernode", children );
 			}
 		}
 	};
+
 
 	var setX = function ( node ) {
 		var parent = node.getParent();
@@ -172,10 +170,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			reAnalyze( km, layerArray, appendSide );
 		} else {
 			_node.setData( "y", _node.getParent().getData( "y" ) );
-			km.fire( "rendernode", {
-				nodes: _node,
-				rerender: false
-			} );
+            km.execCommand( "rendernode", _node );
 		}
 		return _node;
 	};
@@ -253,33 +248,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 
 		"events": {
-			"contentupdate": function ( e ) {
-				var me = this;
-				updateNode( me, e.node );
-			},
-			"noderendercomplete": function ( e ) {
-				if ( !e.rerender ) return false;
-				var parent = e.node;
-				var nodes = [];
-				parent.preTraverse( function ( node ) {
-					var prt = node.getParent();
-					if ( !prt ) return false;
-					var parentWidth = prt.getData( "width" );
-					var parentX = prt.getData( "x" );
-					if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
 
-					if ( parent.getData( "appendside" ) === "left" ) {
-						node.setData( "x", parentX - parentWidth - 50 );
-					} else {
-						node.setData( "x", parentX + parentWidth + 50 );
-					}
-					nodes.push( node );
-				} );
-				this.fire( "rendernode", {
-					nodes: nodes,
-					rerender: false
-				} );
-			}
 		}
 	};
 } );

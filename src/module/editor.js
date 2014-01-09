@@ -25,11 +25,13 @@ KityMinder.registerModule( "TextEditModule", function () {
 
 
                     receiver.setCursor(cursor)
+                        .setKityMinder(this)
+                        .setMinderNode(e.getTargetNode())
                         .setTextShape(targetShape)
                         .setCursorHeight()
                         .setCurrentIndex(position)
                         .updateCursor()
-                        .setRange(range)
+                        .setRange(range);
 
                 }
             },

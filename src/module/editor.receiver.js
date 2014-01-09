@@ -52,12 +52,23 @@ Minder.Receiver = kity.createClass('Receiver',{
         paper.addShape(this.textShape);
         return this;
     },
+    setKityMinder:function(km){
+        this.km = km;
+        return this;
+    },
+    setMinderNode:function(node){
+        this.minderNode = node;
+        return this;
+    },
     keyboardEvents : function(e){
         clearTimeout(this.timer);
         var me = this;
         switch(e.type){
             case 'keyup':
-                this.textShape.setContent((this.container.textContent || this.container.innerText).replace(/\u200b/g,''));
+                var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
+                this.textShape.setContent(text);
+                this.minderNode.setData('text',text);
+                this.km.execCommand('renderNode',this.minderNode);
                 this.updateTextData();
                 this.updateCursor();
                 this.timer = setTimeout(function(){
