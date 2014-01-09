@@ -17,11 +17,8 @@ kity.extendClass( Minder, {
         this._paper.on( 'click mousedown mouseup mousemove touchstart touchmove touchend', this._firePharse.bind( this ) );
     },
     _bindKeyboardEvents: function () {
-        var minder = this;
-        var events = 'keydown keyup keypress'.split( ' ' );
-        for ( var i = 0; i < events.length; i++ ) {
-            Utils.listen( this._renderTarget, events[ i ], this._firePharse.bind( this ) );
-        }
+        //只能在这里做，要不无法触发
+        Utils.listen( document.body,  'keydown keyup keypress', this._firePharse.bind( this ) );
     },
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;

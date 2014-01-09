@@ -134,7 +134,7 @@ var ConnectModule = KityMinder.registerModule( "ConnectModule", function () {
 	} )() );
 	return {
 		"events": {
-			"command": function ( e ) {
+			"rendernode": function ( e ) {
 				var command = e;
 				var minder = this;
 				switch ( command.commandName ) {

@@ -130,7 +130,8 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 var sNodes = this.getSelectedNodes(),
                     isSingleSelected = sNodes.length === 1,
                     isRootSelected = this.isNodeSelected( this.getRoot() );
-                e.originEvent.preventDefault();
+
+
                 switch ( e.originEvent.keyCode ) {
 
                 case 13:

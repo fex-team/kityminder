@@ -165,15 +165,9 @@ KityMinder.registerModule( "MouseModule", function () {
         "events": {
             'mousedown touchstart': function ( e ) {
                 if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
-
                 var clickNode = e.getTargetNode();
                 this.execCommand( 'selectsingle', clickNode );
-                if ( +new Date() - this._lastMousedownTime < 300 ) {
-                    if ( clickNode ) {
-                        this.execCommand( 'edittext', clickNode );
-                    }
-                }
-                this._lastMousedownTime = +new Date();
+
             },
             'touchstart': function ( e ) {
                 var me = this;

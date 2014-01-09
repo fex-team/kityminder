@@ -4,7 +4,7 @@ KityMinder.version = '1.0.0.0';
 
 KityMinder.createMinder = function ( renderTarget, options ) {
     options = options || {};
-    options.renderTo = renderTarget;
+    options.renderTo = utils.isString(renderTarget) ? document.getElementById(renderTarget) : renderTarget;
     return new Minder( options );
 };
 
@@ -20,5 +20,5 @@ KityMinder.addMinderInstance = function ( target, minder ) {
 };
 
 KityMinder.getMinder = function ( id ) {
-    return instanceMap[ id ] || null;
+    return instanceMap[ id ] ||  this.createMinder(id);
 };
