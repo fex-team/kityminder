@@ -8,10 +8,6 @@ var Command = kity.createClass( "Command", {
 
     },
 
-    revert: function () {
-
-    },
-
     setContentChanged: function ( val ) {
         this._isContentChange = !! val;
     },
@@ -34,5 +30,8 @@ var Command = kity.createClass( "Command", {
 
     queryValue: function ( km ) {
         return 0;
+    },
+    isNeedUndo:function(){
+        return true;
     }
 } );

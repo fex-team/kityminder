@@ -2,106 +2,72 @@ kity.extendClass( Minder, {
 	_getCommand: function ( name ) {
 		return this._commands[ name.toLowerCase() ];
 	},
-	_getQuery: function ( name ) {
-		if ( !this._query[ name ] ) {
-			var Cmd = this._getCommand( name );
-			this._query[ name ] = new Cmd();
-		}
-		return this._query[ name ];
-	},
-	_queryCommand: function ( name, type ) {
-		var query = this._getQuery( name );
-		var queryFunc = query[ name ][ "query" + type ];
-		if ( queryFunc ) {
-			return queryFunc.call( query, this );
-		} else {
-			return 0;
-		}
-	},
-	_initCommandStack: function () {
-		this._commandStack = [];
-	},
 
-	_pushCommandStack: function ( command ) {
-		this._commandStack.push( command );
-	},
-
-	_popCommandStack: function () {
-		this._commandStack.pop();
-	},
-
-	getCommandStack: function () {
-		// 返回副本防止被修改
-		return this._commandStack.slice( 0 );
-	},
-
-	getExecutingCommand: function () {
-		return this._commandStack[ this._commandStack.length - 1 ];
-	},
-
-	getTopExecutingCommand: function () {
-		return this._commandStack[ 0 ];
-	},
-
-	isTopCommandExecuting: function () {
-		return this._commandStack.length == 1;
+	_queryCommand: function ( name, type, args ) {
+		var cmd = this._getCommand( name );
+        if(cmd){
+            var queryCmd = cmd['query' + type];
+            if(queryCmd)
+                return queryCmd.apply(cmd,[this].concat(args))
+        }
+        return 0
 	},
 
 	queryCommandState: function ( name ) {
-		return this._queryCommand( name, "State" );
+		return this._queryCommand( name, "State",utils.argsToArray(1));
 	},
 
 	queryCommandValue: function ( name ) {
-		return this._queryCommand( name, "Value" );
+		return this._queryCommand( name, "Value",utils.argsToArray(1));
 	},
 
 	execCommand: function ( name ) {
-		var TargetCommand, command, cmdArgs, eventParams, stoped, isTopCommand, result;
+        name = name.toLowerCase();
+
+		var cmdArgs = utils.argsToArray(1), cmd, stoped, result, eventParams;
 		var me = this;
 
-		TargetCommand = this._getCommand( name );
-		if ( !TargetCommand ) {
+        cmd = this._getCommand( name );
+
+        eventParams = {
+            command: cmd,
+            commandName: name.toLowerCase(),
+            commandArgs: cmdArgs
+        };
+        if ( !cmd ) {
 			return false;
 		}
 
-		command = new TargetCommand();
+        if(!this._hasEnterExecCommand && cmd.isNeedUndo()){
+            this._hasEnterExecCommand = true;
+            stoped = this._fire( new MinderEvent( 'beforeExecCommand', eventParams, true ) );
 
-		this._pushCommandStack( command );
+            if ( !stoped ) {
+                //保存场景
+                this._fire(new MinderEvent( 'saveScene' ));
 
-		cmdArgs = Array.prototype.slice.call( arguments, 1 );
+                this._fire( new MinderEvent( "preExecCommand", eventParams, false ) );
 
-		eventParams = {
-			command: command,
-			commandName: name.toLowerCase(),
-			commandArgs: cmdArgs
-		};
+                result = cmd.execute.apply( cmd, [ me ].concat( cmdArgs ) );
 
-		stoped = this._fire( new MinderEvent( 'beforecommand', eventParams, true ) );
+                this._fire( new MinderEvent( 'execCommand', eventParams, false ) );
 
-		if ( !stoped ) {
+                //保存场景
+                this._fire(new MinderEvent( 'saveScene' ));
 
-			this._fire( new MinderEvent( "precommand", eventParams, false ) );
+                if ( cmd.isContentChanged() ) {
+                    this._firePharse( new MinderEvent( 'contentchange' ) );
+                }
+                if ( cmd.isSelectionChanged() ) {
+                    this._firePharse( new MinderEvent( 'selectionchange' ) );
+                }
+                this._firePharse( new MinderEvent( 'interactchange' ) );
+            }
+            this._hasEnterExecCommand = false;
+        }else{
+            result = cmd.execute.apply( cmd, [ me ].concat( cmdArgs ) );
+        }
 
-			result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
-
-            this._fire( new MinderEvent( "command", eventParams, false ) );
-
-		}
-
-		// 顶级命令才触发事件
-		if ( !stoped && this.isTopCommandExecuting() ) {
-			this._popCommandStack();
-			if ( command.isContentChanged() ) {
-				this._firePharse( new MinderEvent( 'contentchange' ) );
-			}
-			if ( command.isSelectionChanged() ) {
-				this._firePharse( new MinderEvent( 'selectionchange' ) );
-			}
-			this._firePharse( new MinderEvent( 'interactchange' ) );
-		} else {
-			this._popCommandStack();
-		}
-
-		return result || null;
+        return result === undefined ? null : result;
 	}
 } );

@@ -84,15 +84,16 @@ KityMinder.registerModule( "ExampleModule", function () {
                 }
             },
 
-            "beforecommand": function ( e ) {
+            "beforeExecCommand": function ( e ) {
                 // e.cancel() 方法可以阻止 before 事件进入下个阶段
                 // e.cancelImmediately() 方法可以阻止当前回调后的回调执行，并且阻止事件进入下个阶段
-                // console.log( e.type + ' fired' );
+                console.log( e.type + ' fired' );
+                e.stopPropagation();
             },
 
-            "command": function ( e ) {
+            "preExecCommand": function ( e ) {
                 // 命令执行后的事件
-                // console.log( e.type + ' fired' );
+                console.log( e.type + ' fired' );
             },
 
             "contentchange": function ( e ) {
