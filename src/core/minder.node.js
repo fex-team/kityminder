@@ -44,7 +44,7 @@ kity.extendClass( Minder, {
             stroke: "orange",
             color: "black",
             padding: [ 5, 10, 5, 10 ],
-            fontSize: 20,
+            fontSize: 20
         };
 
         var kR = node.getRenderContainer();
@@ -78,6 +78,11 @@ kity.extendClass( Minder, {
         default:
             nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ), node.getData( "y" ) - _rectHeight / 2 ) );
             break;
+        }
+        if ( node.getData( "highlight" ) ) {
+            nodeShape.highlight();
+        } else {
+            nodeShape.unhighlight();
         }
     },
     renderNodes: function ( nodes ) {

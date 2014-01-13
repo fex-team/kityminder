@@ -14,16 +14,21 @@ kity.extendClass( Minder, {
         for ( var i = 0; i < nodes.length; i++ ) {
             if ( selection.indexOf( nodes[ i ] ) === -1 ) {
                 selection.push( nodes[ i ] );
+                this.highlightNode( nodes[ i ] );
             }
         }
         return this;
     },
-
+    highlightNode: function ( node ) {
+        node.setData( "highlight", true );
+        this.renderNode( node );
+    },
     isNodeSelected: function ( node ) {
         return !!~this._selectedNodes.indexOf( node );
     },
 
     selectSingle: function ( node ) {
+        this.highlightNode( node );
         return this.clearSelect().select( node );
     },
 
@@ -35,8 +40,10 @@ kity.extendClass( Minder, {
         for ( var i = 0; i < nodes.length; i++ ) {
             if ( selection.indexOf( nodes[ i ] ) === -1 ) {
                 needAdd.push( nodes[ i ] );
+                this.highlightNode( nodes[ i ] );
             } else {
                 needRemove.push( nodes[ i ] );
+                this.unhighlightNode( nodes[ i ] );
             }
         }
         return this.clearSelect( needRemove ).select( needAdd );
@@ -57,5 +64,9 @@ kity.extendClass( Minder, {
         }
         this._selectedNodes = newSelection;
         return this;
+    },
+    unhighlightNode: function ( node ) {
+        node.setData( "highlight", false );
+        this.renderNode( node );
     }
 } );
