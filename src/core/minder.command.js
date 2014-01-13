@@ -1,31 +1,31 @@
 kity.extendClass( Minder, {
-	_getCommand: function ( name ) {
-		return this._commands[ name.toLowerCase() ];
-	},
+    _getCommand: function ( name ) {
+        return this._commands[ name.toLowerCase() ];
+    },
 
-	_queryCommand: function ( name, type, args ) {
-		var cmd = this._getCommand( name );
+    _queryCommand: function ( name, type, args ) {
+        var cmd = this._getCommand( name );
         if(cmd){
             var queryCmd = cmd['query' + type];
             if(queryCmd)
                 return queryCmd.apply(cmd,[this].concat(args))
         }
         return 0
-	},
+    },
 
-	queryCommandState: function ( name ) {
-		return this._queryCommand( name, "State",utils.argsToArray(1));
-	},
+    queryCommandState: function ( name ) {
+        return this._queryCommand( name, "State",utils.argsToArray(1));
+    },
 
-	queryCommandValue: function ( name ) {
-		return this._queryCommand( name, "Value",utils.argsToArray(1));
-	},
+    queryCommandValue: function ( name ) {
+        return this._queryCommand( name, "Value",utils.argsToArray(1));
+    },
 
-	execCommand: function ( name ) {
+    execCommand: function ( name ) {
         name = name.toLowerCase();
 
-		var cmdArgs = utils.argsToArray(1), cmd, stoped, result, eventParams;
-		var me = this;
+        var cmdArgs = utils.argsToArray(1), cmd, stoped, result, eventParams;
+        var me = this;
 
         cmd = this._getCommand( name );
 
@@ -35,8 +35,8 @@ kity.extendClass( Minder, {
             commandArgs: cmdArgs
         };
         if ( !cmd ) {
-			return false;
-		}
+            return false;
+        }
 
         if(!this._hasEnterExecCommand && cmd.isNeedUndo()){
             this._hasEnterExecCommand = true;
@@ -69,5 +69,5 @@ kity.extendClass( Minder, {
         }
 
         return result === undefined ? null : result;
-	}
+    }
 } );
