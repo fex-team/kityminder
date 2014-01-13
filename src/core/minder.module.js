@@ -17,6 +17,7 @@ kity.extendClass( Minder, {
             if ( !modulesPool[ name ] ) continue;
 
             //执行模块初始化，抛出后续处理对象
+            console.log( modulesPool[ name ] );
             moduleDeals = modulesPool[ name ].call( me );
             this._modules[ name ] = moduleDeals;
 
@@ -26,8 +27,8 @@ kity.extendClass( Minder, {
 
             //command加入命令池子
             dealCommands = moduleDeals.commands;
-            for ( var name in dealCommands ) {
-                this._commands[ name.toLowerCase() ] = dealCommands[ name ];
+            for ( var name1 in dealCommands ) {
+                this._commands[ name1.toLowerCase() ] = dealCommands[ name1 ];
             }
 
             //绑定事件
@@ -37,7 +38,6 @@ kity.extendClass( Minder, {
                     me.on( type, dealEvents[ type ] );
                 }
             }
-
         }
     },
 

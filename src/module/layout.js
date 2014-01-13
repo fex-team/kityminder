@@ -60,7 +60,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var part2 = ( children[ j + 1 ] ? ( children[ j + 1 ].getData( "branchheight" ) - 10 ) / 2 : 0 );
 					sY += ( part1 + part2 );
 				}
-                km.execCommand( "rendernode", children );
+				km.renderNodes( children );
 			}
 		}
 	};
@@ -83,6 +83,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 	};
 
 	var createChildNode = function ( km, parent, index ) {
+		console.log( "cc" );
 		var root = km.getRoot();
 		var appendSide = parent.getData( "appendside" );
 		var _node = new MinderNode();
@@ -170,7 +171,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			reAnalyze( km, layerArray, appendSide );
 		} else {
 			_node.setData( "y", _node.getParent().getData( "y" ) );
-            km.execCommand( "rendernode", _node );
+			km.renderNode( _node );
 		}
 		return _node;
 	};
@@ -239,7 +240,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		};
 	} )() );
-
 	return {
 		"commands": {
 			"createchildnode": CreateChildNodeCommand,

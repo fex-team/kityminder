@@ -84,7 +84,7 @@ kity.extendClass( Minder, {
 
 			result = command.execute.apply( command, [ me ].concat( cmdArgs ) );
 
-            this._fire( new MinderEvent( "command", eventParams, false ) );
+			this._fire( new MinderEvent( "command", eventParams, false ) );
 
 		}
 

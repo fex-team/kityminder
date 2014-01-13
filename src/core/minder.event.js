@@ -19,7 +19,7 @@ kity.extendClass( Minder, {
     _bindKeyboardEvents: function () {
         if ( ( navigator.userAgent.indexOf( 'iPhone' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPod' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPad' ) == -1 ) ) {
             //只能在这里做，要不无法触发
-            Utils.listen( document.body,  'keydown keyup keypress', this._firePharse.bind( this ) );
+            Utils.listen( document.body, 'keydown keyup keypress', this._firePharse.bind( this ) );
         }
     },
     _firePharse: function ( e ) {

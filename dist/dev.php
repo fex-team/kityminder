@@ -18,7 +18,6 @@ $dependency = Array(
     'src/module/history.js',
     'src/module/icon.js',
     'src/module/layout.js',
-    'src/module/render.js',
     'src/module/mouse.js',
     'src/module/keyboard.js',
     'src/module/editor.js',
