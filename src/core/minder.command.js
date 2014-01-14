@@ -5,29 +5,30 @@ kity.extendClass( Minder, {
 
     _queryCommand: function ( name, type, args ) {
         var cmd = this._getCommand( name );
-        if(cmd){
-            var queryCmd = cmd['query' + type];
-            if(queryCmd)
-                return queryCmd.apply(cmd,[this].concat(args))
+        if ( cmd ) {
+            var queryCmd = cmd[ 'query' + type ];
+            if ( queryCmd )
+                return queryCmd.apply( cmd, [ this ].concat( args ) );
         }
-        return 0
+        return 0;
     },
 
     queryCommandState: function ( name ) {
-        return this._queryCommand( name, "State",utils.argsToArray(1));
+        return this._queryCommand( name, "State", Utils.argsToArray( 1 ) );
     },
 
     queryCommandValue: function ( name ) {
-        return this._queryCommand( name, "Value",utils.argsToArray(1));
+        return this._queryCommand( name, "Value", Utils.argsToArray( 1 ) );
     },
 
     execCommand: function ( name ) {
         name = name.toLowerCase();
 
-        var cmdArgs = utils.argsToArray(1), cmd, stoped, result, eventParams;
+        var cmdArgs = Array.prototype.slice.call( arguments, 1 ),
+            cmd, stoped, result, eventParams;
         var me = this;
-
         cmd = this._getCommand( name );
+        console.log( cmdArgs );
 
         eventParams = {
             command: cmd,
@@ -38,13 +39,13 @@ kity.extendClass( Minder, {
             return false;
         }
 
-        if(!this._hasEnterExecCommand && cmd.isNeedUndo()){
+        if ( !this._hasEnterExecCommand && cmd.isNeedUndo() ) {
             this._hasEnterExecCommand = true;
             stoped = this._fire( new MinderEvent( 'beforeExecCommand', eventParams, true ) );
 
             if ( !stoped ) {
                 //保存场景
-                this._fire(new MinderEvent( 'saveScene' ));
+                this._fire( new MinderEvent( 'saveScene' ) );
 
                 this._fire( new MinderEvent( "preExecCommand", eventParams, false ) );
 
@@ -53,7 +54,7 @@ kity.extendClass( Minder, {
                 this._fire( new MinderEvent( 'execCommand', eventParams, false ) );
 
                 //保存场景
-                this._fire(new MinderEvent( 'saveScene' ));
+                this._fire( new MinderEvent( 'saveScene' ) );
 
                 if ( cmd.isContentChanged() ) {
                     this._firePharse( new MinderEvent( 'contentchange' ) );
@@ -64,7 +65,7 @@ kity.extendClass( Minder, {
                 this._firePharse( new MinderEvent( 'interactchange' ) );
             }
             this._hasEnterExecCommand = false;
-        }else{
+        } else {
             result = cmd.execute.apply( cmd, [ me ].concat( cmdArgs ) );
         }
 

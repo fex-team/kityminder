@@ -31,7 +31,7 @@ var Command = kity.createClass( "Command", {
     queryValue: function ( km ) {
         return 0;
     },
-    isNeedUndo:function(){
+    isNeedUndo: function () {
         return true;
     }
 } );

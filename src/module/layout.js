@@ -83,6 +83,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 	};
 
 	var createChildNode = function ( km, parent, index ) {
+		console.log( km, parent );
 		var root = km.getRoot();
 		var appendSide = parent.getData( "appendside" );
 		var _node = new MinderNode();
