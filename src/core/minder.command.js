@@ -23,8 +23,8 @@ kity.extendClass( Minder, {
 
     execCommand: function ( name ) {
         name = name.toLowerCase();
-
-        var cmdArgs = Array.prototype.slice.call( arguments, 1 ),
+        debugger
+        var cmdArgs = utils.argsToArray(arguments,1),
             cmd, stoped, result, eventParams;
         var me = this;
         cmd = this._getCommand( name );

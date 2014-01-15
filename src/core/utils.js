@@ -106,8 +106,8 @@ var utils = Utils = KityMinder.Utils = {
         } );
         return index;
     },
-    argsToArray: function ( index ) {
-        return Array.prototype.slice.call( arguments, index || 0 );
+    argsToArray: function ( args,index ) {
+        return Array.prototype.slice.call( args, index || 0 );
     }
 
 };
