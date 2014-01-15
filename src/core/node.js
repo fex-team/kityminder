@@ -1,13 +1,21 @@
 var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
-    constructor: function ( treeNotifyHandler ) {
+    constructor: function ( options ) {
         this.parent = null;
         this.children = [];
         this.data = {};
-        this.tnh = treeNotifyHandler;
+        if(utils.isString(options)){
+            this.setData('text',options)
+        }else{
+            this.setData(options);
+        }
         this.rc = new kity.Group();
         this.rc.minderNode = this;
+        this.root = null;
     },
-
+    //在创建root时给定handler
+    setNotifyHandler:function(treeNotifyHandler){
+        this.tnh = treeNotifyHandler;
+    },
     getParent: function () {
         return this.parent;
     },
@@ -23,11 +31,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     getRoot: function () {
-        var root = this;
-        while ( root.parent ) {
-            root = root.parent;
-        }
-        return root;
+        return this.root;
     },
 
     preTraverse: function ( fn ) {
@@ -66,8 +70,11 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             node.parent.removeChild( node );
         }
         node.parent = this;
+        node.root = parent.root;
+
         this.children.splice( index, 0, node );
         this.handelInsert( node );
+
     },
 
     handelInsert: function ( node ) {
@@ -108,7 +115,12 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     getChild: function ( index ) {
         return this.children[ index ];
     },
-
+    getFirstChild:function(){
+        return this.children[0]
+    },
+    getLastChild:function(){
+        return this.children[this.children.length-1]
+    },
     getData: function ( name ) {
         if ( name === undefined ) {
             return this.data;
