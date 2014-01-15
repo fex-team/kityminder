@@ -14,6 +14,7 @@ var MinderDefaultOptions = {};
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
         this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options );
+        this._layoutStyles = {};
         this._initEvents();
         this._initMinder();
         this._initSelection();
@@ -46,6 +47,15 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
     getPaper: function () {
         return this._paper;
+    },
+    addLayoutStyle: function ( name, style ) {
+        this._layoutStyles[ name ] = style;
+    },
+    getLayoutStyle: function ( name ) {
+        return this._layoutStyles[ name ];
+    },
+    getRenderTarget: function () {
+        return this._renderTarget;
     }
 } );
 

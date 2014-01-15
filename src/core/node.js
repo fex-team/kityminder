@@ -122,7 +122,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         }
         this.data[ name ] = value;
     },
-
+    clearData: function () {
+        this.data = {};
+    },
     getRenderContainer: function () {
         return this.rc;
     }

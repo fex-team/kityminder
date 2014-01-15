@@ -66,7 +66,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
             var node = this.createdNode = km.execCommand( 'create' + type + 'node', referNode );
             km.selectSingle( node );
             km.execCommand( 'editText', node );
-            km.execCommand( 'rendernode', referNode );
             this.setContentChanged( true );
         },
 

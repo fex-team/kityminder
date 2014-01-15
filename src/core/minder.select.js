@@ -28,7 +28,6 @@ kity.extendClass( Minder, {
     },
 
     selectSingle: function ( node ) {
-        this.highlightNode( node );
         return this.clearSelect().select( node );
     },
 
@@ -51,6 +50,9 @@ kity.extendClass( Minder, {
 
     clearSelect: function ( nodes ) {
         if ( !nodes ) {
+            for ( var _i = 0; _i < this._selectedNodes.length; _i++ ) {
+                this.unhighlightNode( this._selectedNodes[ _i ] );
+            }
             this._selectedNodes = [];
             return this;
         }

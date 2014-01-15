@@ -14,48 +14,7 @@
 <div id="kityminder" style="height:1000px;width:100%"></div>
 </body>
 <script>
-
     minder = KM.createMinder(kityminder);
-
-    var minderWidth = document.body.clientWidth;
-    var minderHeight = document.body.clientHeight;
-    var _root =  minder.getRoot();
-
-    //根节点初始化的数据（考虑整合）
-    _root.setData("style",{
-        radius:10,
-        fill:"orange",
-        stroke:"orange",
-        color:"black",
-        padding:[10,10,10,10],
-        fontSize:30
-    });
-    _root.setData("x",minderWidth/2);
-    _root.setData("y",minderHeight/2);
-    _root.setData("layer",0);
-    _root.setData("align","center");
-    _root.setData("text","I am the root");
-    //标记左子树和右子树的元素
-    _root.setData("layerleft",[[_root]]);
-    _root.setData("layerright",[[_root]]);
-    _root.setData("indexList",[0]);
-    _root.setData("leftHeight",0);
-    _root.setData("rightHeight",0);
-
-    //标记根节点以及添加子树的方向
-    _root.setData("appendside","right");
-
-    minder.renderNode(_root);
-    minder.execCommand("createchildnode",_root);
-
-    //模拟生成一个初始图
-    // for(var j=0;j<20;j++){
-    //     var appendSide = Math.random()>0.5?"left":"right";
-    //     var layerArray = _root.getData("layer"+appendSide);
-    //     var layer = parseInt(Math.random()*layerArray.length);
-    //     var layerData = layerArray[layer];
-    //     var root = layerData[parseInt(Math.random()*layerData.length)]
-    //     minder.execCommand("createchildnode",root);
-    // }
+    minder.execCommand("switchlayout","default");
 </script>
 </html>
