@@ -213,6 +213,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	};
 	//绘制node
 	var drawNode = function ( node ) {
+		console.log( node );
 		var container = node.getRenderContainer();
 		var shape = node.getData( "shape" );
 		if ( !shape ) new MinderNodeShape( node );
@@ -310,27 +311,32 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		return effectSet;
 	};
 
-	//以某个节点为seed对水平方向进行调整
+	//以某个节点为seed对水平方向进行调整(调整子树)
 	var updateLayoutHorizon = function ( node ) {
 		var effectSet = [];
-		if ( !node.getParent() ) {
-			return [ node ];
-		}
-		node.preTraverse( function ( n ) {
-			var _style = n.getData( "style" );
-			var parent = node.getParent();
-			var _parentStyle = parent.getData( "style" );
-			var parentX = parent.getData( "x" );
-			var parentAlign = parent.getData( "align" );
-			var parentWidth = parent.getRenderContainer().getWidth();
-			if ( parentAlign === "center" ) parentWidth = parentWidth / 2;
-			var selfAppendSide = n.getData( "appendside" );
-			if ( selfAppendSide === "right" )
-				n.setData( "x", parentX + parentWidth + _style.margin[ 3 ] + _parentStyle.margin[ 1 ] );
-			else
-				n.setData( "x", parentX - parentWidth - _style.margin[ 3 ] - _parentStyle.margin[ 1 ] );
-			effectSet.push( n );
-		} );
+		node.preTraverse(
+			function ( n ) {
+				var parent = n.getParent();
+				if ( !parent ) {
+					return false;
+				}
+				var sX = parent.getData( "x" );
+				var _style = n.getData( "style" );
+				var marginLeft = _style.margin[ 3 ];
+				var marginRight = _style.margin[ 1 ];
+				var parentWidth = parent.getRenderContainer().getWidth();
+				if ( parent.getData( "align" ) === "center" ) {
+					parentWidth = parentWidth / 2;
+				}
+				var selfAlign = n.getData( "align" );
+				if ( selfAlign === "left" ) {
+					n.setData( "x", sX + parentWidth + marginLeft + marginRight );
+				} else {
+					n.setData( "x", sX - parentWidth - marginLeft - marginRight );
+				}
+				effectSet.push( n );
+			}
+		);
 		return effectSet;
 	};
 
@@ -361,21 +367,20 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			} );
 			_root.setData( "x", minderWidth / 2 );
 			_root.setData( "y", minderHeight / 2 );
-			_root.setData( "layer", 0 );
 			_root.setData( "align", "center" );
 			_root.setData( "text", "I am the root" );
 
 			_root.setData( "appendside", "right" );
 			var children = _root.getChildren();
+			console.log( children );
 			_root.setData( "leftList", [] );
 			_root.setData( "rightList", [] );
-
-			minder.renderNode( _root );
 
 			var _rootRenderContainer = _root.getRenderContainer();
 			_root.setData( "leftHeight", _rootRenderContainer.getHeight() );
 			_root.setData( "rightHeight", _rootRenderContainer.getHeight() );
-			updateArrangement( _root );
+
+			minder.renderNode( _root );
 
 			//如果是从其他style切过来的，需要重新布局
 			var _buffer = _root.getChildren();

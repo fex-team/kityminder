@@ -75,7 +75,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         node.root = parent.root;
 
         this.children.splice( index, 0, node );
-//        this.handelInsert( node );
+        //        this.handelInsert( node );
 
     },
 //
