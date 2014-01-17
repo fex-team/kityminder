@@ -66,6 +66,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     case 13:
                         // Enter
                         this.execCommand('appendSiblingNode',new MinderNode('Topic'));
+
                         break;
                     case 9:
                         // Tab
@@ -88,8 +89,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                             }[ e.originEvent.keyCode ]);
                         }
                         break;
-                    }
+
+
                 }
+                e.preventDefault();
+            }
         }
-    };
+    }
 } );
