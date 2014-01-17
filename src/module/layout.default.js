@@ -329,17 +329,19 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		} );
 		return effectSet;
 	};
+
+	var updateArrangement = function ( node, action ) {
+		var set1 = updateLayoutHorizon( node );
+		var set2 = updateLayoutVertical( node, node.getParent(), action );
+		//获取水平方向和垂直方向受影响的点的并集然后进行统一translate
+		var set = uSet( set1, set2 );
+		for ( var i = 0; i < set.length; i++ ) {
+			translateNode( set[ i ] );
+		}
+	};
 	var _style = {
 		renderNode: function ( node ) {
 			drawNode( node );
-			var set1 = updateLayoutHorizon( node );
-			var set2 = updateLayoutVertical( node, node.getParent(), "append" );
-			//获取水平方向和垂直方向受影响的点的并集然后进行统一translate
-			var set = uSet( set1, set2 );
-			console.log( set );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-			}
 		},
 		initStyle: function () {
 			var _root = this.getRoot();
@@ -369,6 +371,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var _rootRenderContainer = _root.getRenderContainer();
 			_root.setData( "leftHeight", _rootRenderContainer.getHeight() );
 			_root.setData( "rightHeight", _rootRenderContainer.getHeight() );
+			updateArrangement( _root );
 
 			//如果是从其他style切过来的，需要重新布局
 			if ( children.length !== 0 ) {
@@ -406,14 +409,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setData( "align", "left" );
 			}
 			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node );
-			this.renderNode( node );
-			//this.select( node );
+			drawNode( node );
+			updateArrangement( node, "append" );
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var parent = sibling.getParent();
 			var index = sibling.getIndex() + 1;
 			parent.appendChild( node, index );
-			this.renderNode( node );
+			drawNode( node );
+			updateArrangement( node, "append" );
 		},
 		removeNode: function ( nodes ) {
 			var root = this.getRoot();

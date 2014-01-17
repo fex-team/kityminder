@@ -26,7 +26,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
-				return km.appendChildNode( parent, node );
+				km.appendChildNode( parent, node );
+				km.select( node );
+				return node;
 			}
 		};
 	} )() );
@@ -34,8 +36,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km, node ) {
+				//km.select( node );
 				var sibling = km.getSelectedNode();
-				return km.appendSiblingNode( sibling.getParent(), node );
+				km.appendSiblingNode( sibling, node );
+				km.select( node );
+				return node;
 			}
 		};
 	} )() );
