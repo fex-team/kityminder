@@ -10,12 +10,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         }
         this.rc = new kity.Group();
         this.rc.minderNode = this;
-        this.root = null;
     },
-    //在创建root时给定handler
-    setNotifyHandler:function(treeNotifyHandler){
-        this.tnh = treeNotifyHandler;
-    },
+
     getParent: function () {
         return this.parent;
     },
@@ -31,7 +27,11 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     getRoot: function () {
-        return this.root;
+        var root = this;
+        while(root.parent){
+           root = root.parent;
+        }
+        return root;
     },
 
     preTraverse: function ( fn ) {
@@ -73,16 +73,16 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         node.root = parent.root;
 
         this.children.splice( index, 0, node );
-        this.handelInsert( node );
+//        this.handelInsert( node );
 
     },
-
-    handelInsert: function ( node ) {
-        var root = this.getRoot();
-        if ( root.tnh ) {
-            root.tnh.handelNodeInsert.call( root.tnh, node );
-        }
-    },
+//
+//    handelInsert: function ( node ) {
+//        var root = this.getRoot();
+//        if ( root.tnh ) {
+//            root.tnh.handelNodeInsert.call( root.tnh, node );
+//        }
+//    },
 
     appendChild: function ( node ) {
         return this.insertChild( node );
@@ -101,16 +101,16 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         if ( index >= 0 ) {
             removed = this.children.splice( index, 1 )[ 0 ];
             removed.parent = null;
-            this.handelRemove( removed );
+//            this.handelRemove( removed );
         }
     },
 
-    handelRemove: function ( node ) {
-        var root = this.getRoot();
-        if ( root.tnh ) {
-            root.tnh.handelNodeRemove.call( root.tnh, node );
-        }
-    },
+//    handelRemove: function ( node ) {
+//        var root = this.getRoot();
+//        if ( root.tnh ) {
+//            root.tnh.handelNodeRemove.call( root.tnh, node );
+//        }
+//    },
 
     getChild: function ( index ) {
         return this.children[ index ];
