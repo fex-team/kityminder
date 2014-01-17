@@ -46,61 +46,13 @@ KityMinder.registerModule( "KeyboardModule", function () {
         };
     }
 
-    function findMinDepthNode( nodes ) {
-        var depth,
-            minDepth = Number.MAX_VALUE,
-            minDepthNode = null;
-        for ( var i = 0; i < nodes.length; i++ ) {
-            depth = nodes[ i ].getDepth();
-            if ( depth < minDepth ) {
-                minDepth = depth;
-                minDepthNode = nodes[ i ];
-            }
+
+    function KBNavigate(km,direction){
+        var nextNode = km.getSelectedNode()._nearestNodes[ direction ];
+        if ( nextNode ) {
+            km.select(nextNode);
         }
-        return minDepthNode;
     }
-
-
-    var KBNavigateCommand = kity.createClass( {
-        base: Command,
-        execute: function ( km, direction, referNode ) {
-            var nextNode = referNode._nearestNodes[ direction ];
-            if ( nextNode ) {
-                km.toggleSelect( [ referNode, nextNode ] );
-                km.execCommand( 'rendernode', [ referNode, nextNode ] );
-            }
-            this.setContentChanged( false );
-        }
-    } );
-
-    var KBRemoveCommand = kity.createClass( {
-        base: Command,
-        execute: function ( km, nodes ) {
-            if ( !nodes.length ) {
-                return;
-            }
-            km.clearSelect( nodes );
-            var select = this.getNextSelection( km, nodes );
-            km.execCommand( 'removeNode', nodes );
-            km.select( select );
-            km.execCommand( 'rendernode', select );
-        },
-        getNextSelection: function ( km, removeNodes ) {
-            var minDepthNode = findMinDepthNode( removeNodes );
-            var parent = minDepthNode.getParent();
-            if ( !parent ) {
-                return km.getRoot();
-            }
-            var length = parent.getChildren().length;
-            if ( length > 1 ) {
-                var index = minDepthNode.getIndex() + 1;
-                return parent.getChild( index % length );
-            } else {
-                return parent;
-            }
-        }
-    } );
-
     return {
 
         "events": {
@@ -111,40 +63,33 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
                 switch ( e.originEvent.keyCode ) {
 
-                case 13:
-                    // Enter
-                    this.execCommand('appendSiblingNode',new MinderNode('Topic'));
-                    break;
-                case 9:
-                    // Tab
-                    this.execCommand('appendChildNode',new MinderNode('Topic'));
-                    break;
-
-                case 8:
-                case 46:
-                    // Backspace or Delete
-                    var rootIndex = sNodes.indexOf( this.getRoot() );
-                    if ( rootIndex != -1 ) {
-                        sNodes.splice( rootIndex, 1 );
+                    case 13:
+                        // Enter
+                        this.execCommand('appendSiblingNode',new MinderNode('Topic'));
+                        break;
+                    case 9:
+                        // Tab
+                        this.execCommand('appendChildNode',new MinderNode('Topic'));
+                        break;
+                    case 8:
+                    case 46:
+                        this.execCommand('removenode');
+                        break;
+                    case 37:
+                    case 38:
+                    case 39:
+                    case 40:
+                        if ( this.isSingleSelect() ) {
+                            KBNavigate(this,{
+                                37: 'left',
+                                38: 'top',
+                                39: 'right',
+                                40: 'down'
+                            }[ e.originEvent.keyCode ]);
+                        }
+                        break;
                     }
-                    this.execCommand( 'kbRemove', sNodes );
-                    break;
-
-                case 37:
-                case 38:
-                case 39:
-                case 40:
-                    if ( isSingleSelected ) {
-                        this.execCommand( 'kbNavigate', {
-                            37: 'left',
-                            38: 'top',
-                            39: 'right',
-                            40: 'down'
-                        }[ e.originEvent.keyCode ], sNodes[ 0 ] );
-                    }
-                    break;
                 }
-            }
         }
     };
 } );
