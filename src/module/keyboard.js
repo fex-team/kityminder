@@ -60,19 +60,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
         return minDepthNode;
     }
 
-    var KBCreateAndEditCommand = kity.createClass( {
-        base: Command,
-        execute: function ( km, type, referNode ) {
-            var node = this.createdNode = km.execCommand( 'create' + type + 'node', referNode );
-            km.selectSingle( node );
-            km.execCommand( 'editText', node );
-            this.setContentChanged( true );
-        },
-
-        revert: function ( km ) {
-            km.execCommand( 'removeNode', this.createdNode );
-        }
-    } );
 
     var KBNavigateCommand = kity.createClass( {
         base: Command,
@@ -115,40 +102,22 @@ KityMinder.registerModule( "KeyboardModule", function () {
     } );
 
     return {
-        // private usage
-        "commands": {
-            'kbCreateAndEdit': KBCreateAndEditCommand,
-            'kbNavigate': KBNavigateCommand,
-            'kbRemove': KBRemoveCommand
-        },
+
         "events": {
             contentchange: function () {
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
-                var sNodes = this.getSelectedNodes(),
-                    isSingleSelected = sNodes.length === 1,
-                    isRootSelected = this.isNodeSelected( this.getRoot() );
-
 
                 switch ( e.originEvent.keyCode ) {
 
                 case 13:
                     // Enter
-                    if ( isSingleSelected ) {
-                        if ( isRootSelected ) {
-                            this.execCommand( 'kbCreateAndEdit', 'child', sNodes[ 0 ] );
-                        } else {
-                            this.execCommand( 'kbCreateAndEdit', 'sibling', sNodes[ 0 ] );
-                        }
-                    }
+                    this.execCommand('appendSiblingNode',new MinderNode('Topic'));
                     break;
-
                 case 9:
                     // Tab
-                    if ( isSingleSelected ) {
-                        this.execCommand( 'kbCreateAndEdit', 'child', sNodes[ 0 ] );
-                    }
+                    this.execCommand('appendChildNode',new MinderNode('Topic'));
                     break;
 
                 case 8:

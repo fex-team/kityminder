@@ -11,7 +11,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.rc = new kity.Group();
         this.rc.minderNode = this;
     },
-
+    isRoot:function(){
+        return this.getParent() == null ? true : false;
+    },
     getParent: function () {
         return this.parent;
     },
