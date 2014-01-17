@@ -7,8 +7,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !_style ) return false;
 				km.renderNode = _style.renderNode;
 				km.initStyle = _style.initStyle;
-				km.createChildNode = _style.createChildNode;
-				km.createSiblingNode = _style.createSiblingNode;
+				km.appendChildNode = _style.appendChildNode;
+				km.appendSiblingNode = _style.appendSiblingNode;
 				km.removeNode = _style.removeNode;
 				//清空节点上附加的数据
 				var _root = km.getRoot();
@@ -21,35 +21,42 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		};
 	} )() );
-	var CreateChildNodeCommand = kity.createClass( "CreateChildNodeCommand", ( function () {
+	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, parent ) {
-				return km.createChildNode( parent );
+			execute: function ( km, node ) {
+				var parent = km.getSelectedNode();
+				km.appendChildNode( parent, node );
+				km.select( node );
+				return node;
 			}
 		};
 	} )() );
-	var CreateSiblingNodeCommand = kity.createClass( "CreateSiblingNodeCommand", ( function () {
+	var AppendSiblingNodeCommand = kity.createClass( "AppendSiblingNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, sibling ) {
-				return km.createSiblingNode( sibling );
+			execute: function ( km, node ) {
+				//km.select( node );
+				var sibling = km.getSelectedNode();
+				km.appendSiblingNode( sibling, node );
+				km.select( node );
+				return node;
 			}
 		};
 	} )() );
 	var RemoveNodeCommand = kity.createClass( "RemoveNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, node ) {
-				km.removeNode( node );
+			execute: function ( km, nodes ) {
+				km.removeNode( nodes );
 			}
 		};
 	} )() );
 
 	return {
 		"commands": {
-			"createchildnode": CreateChildNodeCommand,
-			"createsiblingnode": CreateSiblingNodeCommand,
+			"appendchildnode": AppendChildNodeCommand,
+			"appendsiblingnode": AppendSiblingNodeCommand,
 			"removenode": RemoveNodeCommand,
 			"switchlayout": SwitchLayoutCommand
 		}
