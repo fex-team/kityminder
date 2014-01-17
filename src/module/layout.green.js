@@ -1,9 +1,8 @@
 KityMinder.registerModule( "LayoutGreen", function () {
-	var defaultHeight = 35;
 	var _target = this.getRenderTarget();
 	var minderWidth = _target.clientWidth;
 	var minderHeight = _target.clientHeight;
-
+	var minder = this;
 	var ConnectBezier = kity.createClass( "ConnectBezier", ( function () {
 		function mid( a, b ) {
 			return ( a + b ) / 2;
@@ -137,292 +136,216 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			}
 		};
 	} )() );
-
-	var updateConnect = function ( minder, nodes, action ) {
-		switch ( action ) {
-		case "rendernode":
-			( function () {
-				if ( !( nodes instanceof Array ) ) {
-					nodes = [ nodes ];
-				}
-				for ( var i = 0; i < nodes.length; i++ ) {
-					var curnode = nodes[ i ];
-					if ( !curnode.getParent() ) {
-						return false;
-					} else {
-						var parent = curnode.getParent();
-						var connectExist = curnode.getData( "connect" );
-						if ( connectExist ) {
-							connectExist.updateConnection();
-						} else {
-							var _connect = new ConnectBezier( parent.getRenderContainer(), curnode.getRenderContainer() );
-							var nodeD = curnode.getData( "style" );
-							_connect.stroke( new kity.Pen( nodeD.stroke, nodeD.strokeWidth ) );
-							curnode.setData( "connect", _connect );
-							minder.getRenderContainer().addShape( _connect );
-						}
-					}
-				}
-			} )();
-			break;
-		case "removenode":
-			( function () {
-				if ( ( nodes instanceof Array ) === false ) {
-					nodes = [ nodes ];
-				}
-
-				function removeConnect( node ) {
-					var connect = node._connect;
-					if ( connect && connect.remove ) {
-						connect.remove();
-					}
-				}
-				for ( var i = 0; i < nodes.length; i++ ) {
-					nodes[ i ].traverse( removeConnect );
-				}
-			} )();
-		}
+	var nodeDefautStyle = {
+		radius: 10,
+		fill: "green",
+		stroke: "orange",
+		strokeWidth: 1,
+		color: "black",
+		padding: [ 5, 10, 5, 10 ],
+		fontSize: 20,
+		margin: [ 0, 10, 10, 50 ]
 	};
-
-	var updateBranchHeight = function ( node, appendSide, root, isAdd, oldParent ) {
-		var siblings = ( function () {
-			if ( !isAdd ) {
-				return oldParent.getChildren();
-			} else if ( parent === root ) {
-				return root.getData( "layer" + appendSide )[ 1 ];
-			} else {
-				return node.getParent().getChildren();
-			}
-		} )();
-		var parent = isAdd ? node.getParent() : oldParent;
-		node.setData( "branchheight", defaultHeight + 10 );
-		if ( isAdd ) {
-			var add = ( ( siblings.length === 1 && node.getParent() !== root ) ? 0 : ( defaultHeight + 10 ) );
-			while ( parent || ( parent === root ) ) {
-				var branchheight = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
-				if ( parent === root ) {
-					parent.setData( appendSide + "Height", branchheight + add );
+	var MinderNodeShape = kity.createClass( "MinderNodeShape", ( function () {
+		return {
+			constructor: function ( node ) {
+				var txt = this._txt = new kity.Text();
+				var rect = this._rect = new kity.Rect();
+				this._node = node;
+				var container = node.getRenderContainer();
+				container.addShapes( [ rect, txt ] );
+				node.setData( "shape", this );
+				var ND = JSON.parse( JSON.stringify( nodeDefautStyle ) );
+				node.setData( "style", Utils.extend( ND, node.getData( "style" ) ) );
+				var _style = node.getData( "style" );
+				txt.setContent( node.getData( "text" ) || "新建节点" ).setSize( _style.fontSize ).fill( _style.color );
+				var _txtHeight = txt.getHeight();
+				txt.translate( _style.padding[ 3 ], _txtHeight + _style.padding[ 0 ] );
+				this.update();
+			},
+			update: function () {
+				var node = this._node;
+				var txt = this._txt;
+				var rect = this._rect;
+				var _style = node.getData( "style" );
+				txt.setContent( node.getData( "text" ) || "新建节点" ).setSize( _style.fontSize ).fill( _style.color );
+				var _txtHeight = txt.getHeight();
+				var _rectWidth = _style.padding[ 1 ] + _style.padding[ 3 ] + txt.getWidth();
+				var _rectHeight = _style.padding[ 0 ] + _style.padding[ 2 ] + _txtHeight;
+				rect.fill( _style.fill ).stroke( _style.stroke ).setRadius( _style.radius ).setWidth( _rectWidth ).setHeight( _rectHeight );
+				if ( node.getData( "highlight" ) ) {
+					rect.stroke( new kity.Pen( "white", 3 ) );
 				} else {
-					parent.setData( "branchheight", branchheight + add );
+					rect.stroke( new kity.Pen( _style.stroke, _style.strokeWidth ) );
 				}
-				parent = parent.getParent();
 			}
-
-			if ( siblings.length === 1 ) {
-				return false;
-			} else {
-				return true;
-			}
+		};
+	} )() );
+	var root = this.getRoot();
+	//更新连线
+	var updateConnect = function ( minder, node, action ) {
+		var _style = node.getData( "style" );
+		if ( !node.getParent() ) return false;
+		var start = node.getParent().getRenderContainer();
+		var end = node.getRenderContainer();
+		var _connect = node.getData( "connect" );
+		if ( action === "remove" ) {
+			_connect.remove();
 		} else {
-			var dec = node.getData( "branchheight" );
-			do {
-				var branchheight2 = parent.getData( appendSide + "Height" ) || parent.getData( "branchheight" ) || 0;
-				if ( parent === root ) {
-					parent.setData( appendSide + "Height", branchheight2 - dec );
-				} else {
-					parent.setData( "branchheight", branchheight2 - dec );
-				}
-				parent = parent.getParent();
-			} while ( parent );
-			return true;
-		}
-	};
-
-
-	var reAnalyze = function ( km, layerArray, appendSide ) {
-		for ( var lv = 0; lv < layerArray.length; lv++ ) {
-			var lvData = layerArray[ lv ];
-			for ( var i = 0; i < lvData.length; i++ ) {
-				var children = ( lv === 0 ? layerArray[ 1 ] : lvData[ i ].getChildren() );
-				if ( !children || children.length === 0 ) continue;
-				var branchheight = lvData[ i ].getData( appendSide + "Height" ) || lvData[ i ].getData( "branchheight" );
-				var sY = lvData[ i ].getData( "y" ) + ( children[ 0 ].getData( "branchheight" ) - branchheight ) / 2;
-				for ( var j = 0; j < children.length; j++ ) {
-					children[ j ].setData( "y", sY );
-					var part1 = ( children[ j ].getData( "branchheight" ) - 10 ) / 2 + 10;
-					var part2 = ( children[ j + 1 ] ? ( children[ j + 1 ].getData( "branchheight" ) - 10 ) / 2 : 0 );
-					sY += ( part1 + part2 );
-				}
-				km.renderNodes( children );
+			if ( _connect ) _connect.updateConnection();
+			else {
+				_connect = new ConnectBezier( start, end );
+				node.setData( "connect", _connect );
+				minder.getRenderContainer().addShape( _connect );
+				_connect.stroke( _style.stroke );
 			}
 		}
 	};
-	var createChildNode = function ( km, parent, index ) {
-		var root = km.getRoot();
-		var appendSide = parent.getData( "appendside" );
-		var _node = new MinderNode();
-		_node.setData( "branchheight", 0 );
-		parent.insertChild( _node, index );
+	//求并集
+	var uSet = function ( a, b ) {
+		for ( var i = 0; i < a.length; i++ ) {
+			var idx = b.indexOf( a[ i ] );
+			if ( idx !== -1 ) {
+				b.splice( idx, 1 );
+			}
+		}
+		return a.concat( b );
+	};
+	//绘制node
+	var drawNode = function ( node ) {
+		var container = node.getRenderContainer();
+		var shape = node.getData( "shape" );
+		if ( !shape ) new MinderNodeShape( node );
+		else shape.update();
+		updateConnect( minder, node );
+	};
 
-		_node.setData( "appendside", appendSide );
-
-		var parentX = parent.getData( "x" );
-		var parentWidth = parent.getRenderContainer().getWidth();
-		if ( parent.getData( "align" ) === "center" ) parentWidth = parentWidth / 2;
-
-		switch ( appendSide ) {
-		case "left":
-			_node.setData( "x", parentX - parentWidth - 50 );
-			_node.setData( "align", "right" );
-			break;
+	//调整node的位置
+	var translateNode = function ( node ) {
+		var _style = node._style;
+		var nodeShape = node.getRenderContainer();
+		var align = node.getData( "align" );
+		var _rectHeight = nodeShape.getHeight();
+		var _rectWidth = nodeShape.getWidth();
+		switch ( align ) {
 		case "right":
-			_node.setData( "x", parentX + parentWidth + 50 );
-			_node.setData( "align", "left" );
+			nodeShape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth, node.getData( "y" ) - _rectHeight / 2 ) );
+			break;
+		case "center":
+			nodeShape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth / 2, node.getData( "y" ) - _rectHeight / 2 ) );
 			break;
 		default:
+			nodeShape.setTransform( new kity.Matrix().translate( node.getData( "x" ), node.getData( "y" ) - _rectHeight / 2 ) );
 			break;
 		}
-
-		var layer = parent.getData( "layer" ) + 1;
-		var layerArray = root.getData( "layer" + appendSide );
-		layerArray[ layer ] = layerArray[ layer ] || [];
-		var layerData = layerArray[ layer ];
-		var insertPos = 0;
-		_node.setData( "layer", layer );
-
-		//遍历层级链
-		var getIndexList = function ( node ) {
-			var indexList = [];
-			var parent = node;
-			do {
-				indexList.push( parent.getIndex() );
-				parent = parent.getParent();
-			} while ( parent );
-			return indexList.reverse();
-		};
-
-		//比较两个层级链的大小
-		var indexLarger = function ( List1, List2 ) {
-			var larger = true;
-			for ( var i = 0; i < List1.length; i++ ) {
-				if ( List1[ i ] == List2[ i ] ) {
-					continue;
-				}
-				if ( List1[ i ] < List2[ i ] ) {
-					larger = false;
-				}
-				break;
-			}
-			return larger;
-		};
-
-		//选定合适的位置插入节点
-		for ( var l = layerData.length - 1; l >= 0; l-- ) {
-			var nodeIndexList = getIndexList( _node );
-			if ( !indexLarger( getIndexList( layerData[ l ] ), nodeIndexList ) ) {
-				insertPos = l + 1;
-				break;
-			}
-		}
-
-		layerData.splice( insertPos, 0, _node );
-
-		if ( parent === root ) {
-			var leftCount = parent.getData( "layerleft" );
-			var rightCount = parent.getData( "layerright" );
-			leftCount = leftCount[ 1 ] ? leftCount[ 1 ].length : 0;
-			rightCount = rightCount[ 1 ] ? rightCount[ 1 ].length : 0;
-			if ( rightCount > leftCount && rightCount > 1 ) {
-				parent.setData( "appendside", "left" );
-			} else {
-				parent.setData( "appendside", "right" );
-			}
-		}
-
-		var reAnal = updateBranchHeight( _node, appendSide, root, true );
-		//判断是重绘全部还是只是添加节点
-		if ( reAnal ) {
-			reAnalyze( km, layerArray, appendSide );
-		} else {
-			_node.setData( "y", _node.getParent().getData( "y" ) );
-			km.renderNode( _node );
-		}
-		return _node;
+		updateConnect( minder, node );
 	};
 
-	var setX = function ( node ) {
-		var parent = node.getParent();
-		if ( !parent ) return false;
-		var parentX = parent.getData( "x" );
-		var parentWidth = parent.getRenderContainer().getWidth();
-		if ( parent.getData( "align" ) === "center" ) {
-			parentWidth = parentWidth / 2;
+	//以某个节点为seed对整体高度进行更改计算
+	var updateLayoutVertical = function ( node, parent, action ) {
+		var effectSet = []; //用于返回受影响的节点集
+		if ( !parent ) {
+			return [ node ];
 		}
-		var side = node.getData( "appendside" );
-		if ( side === "left" ) {
-			node.setData( "x", parentX - parentWidth - 50 );
-		} else {
-			node.setData( "x", parentX + parentWidth + 50 );
+		var _style = node.getData( "style" );
+		var marginTop = _style.margin[ 0 ],
+			marginBottom = _style.margin[ 2 ];
+		var appendside = node.getData( "appendside" );
+		var branchheight = node.getData( "branchheight" ) || node.getRenderContainer().getHeight() + marginTop + marginBottom;
+		var countY = function ( node, appendside ) {
+			var centerY = node.getData( "y" );
+			var nodeBranchHeight = node.getData( appendside + "Height" ) || node.getData( "branchheight" );
+			var nodeChildren = node.getData( appendside + "List" ) || node.getChildren();
+			var sY = centerY - nodeBranchHeight / 2;
+			for ( var i = 0; i < nodeChildren.length; i++ ) {
+				var childBranchHeight = nodeChildren[ i ].getData( "branchheight" );
+				nodeChildren[ i ].setData( "y", sY + marginTop + childBranchHeight / 2 );
+				sY += childBranchHeight;
+			}
+			return nodeChildren;
+		};
+
+		if ( action !== "remove" ) {
+			node.setData( "branchheight", branchheight );
+		}
+		var siblings = parent.getData( appendside + "List" ) || parent.getChildren();
+		var getChildHeight = function ( node, appendside ) {
+			var sum = 0;
+			var children = node.getData( appendside + "List" ) || node.getChildren();
+			for ( var i = 0; i < children.length; i++ ) {
+				sum += children[ i ].getData( "branchheight" );
+			}
+			return sum;
+		};
+		//方案：
+		//增加节点时：1.节点和大于1
+		//删除节点时：1.剩余节点和大于等于1
+		if ( ( action === "remove" && siblings.length > 0 ) || siblings.length > 1 ) {
+			//更新branchheight
+			var prt = parent;
+			do {
+				var minH = prt.getRenderContainer().getHeight() + marginTop + marginBottom;
+				var childH = getChildHeight( prt, appendside );
+				var branchH = ( minH > childH ? minH : childH );
+
+				if ( prt.getParent() ) {
+					prt.setData( "branchheight", branchH );
+				} else {
+					prt.setData( appendside + "Height", branchH );
+				}
+				prt = prt.getParent();
+			} while ( prt );
+			//遍历
+			var effectRange = [ root ];
+			var _buffer = effectRange;
+			while ( _buffer.length !== 0 ) {
+				_buffer = _buffer.concat( countY( _buffer[ 0 ], appendside ) );
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
+		} else if ( action !== "remove" ) {
+			node.setData( "y", parent.getData( "y" ) );
+			effectSet = [ node ];
+		}
+		return effectSet;
+	};
+
+	//以某个节点为seed对水平方向进行调整
+	var updateLayoutHorizon = function ( node ) {
+		var effectSet = [];
+		if ( !node.getParent() ) {
+			return [ node ];
+		}
+		node.preTraverse( function ( n ) {
+			var _style = n.getData( "style" );
+			var parent = node.getParent();
+			var _parentStyle = parent.getData( "style" );
+			var parentX = parent.getData( "x" );
+			var parentAlign = parent.getData( "align" );
+			var parentWidth = parent.getRenderContainer().getWidth();
+			if ( parentAlign === "center" ) parentWidth = parentWidth / 2;
+			var selfAppendSide = n.getData( "appendside" );
+			if ( selfAppendSide === "right" )
+				n.setData( "x", parentX + parentWidth + _style.margin[ 3 ] + _parentStyle.margin[ 1 ] );
+			else
+				n.setData( "x", parentX - parentWidth - _style.margin[ 3 ] - _parentStyle.margin[ 1 ] );
+			effectSet.push( n );
+		} );
+		return effectSet;
+	};
+
+	var updateArrangement = function ( node, action ) {
+		var set1 = updateLayoutHorizon( node );
+		var set2 = updateLayoutVertical( node, node.getParent(), action );
+		//获取水平方向和垂直方向受影响的点的并集然后进行统一translate
+		var set = uSet( set1, set2 );
+		for ( var i = 0; i < set.length; i++ ) {
+			translateNode( set[ i ] );
 		}
 	};
 	var _style = {
 		renderNode: function ( node ) {
-			var km = this;
-			var styledefault = {
-				radius: 10,
-				fill: "green",
-				stroke: "orange",
-				color: "black",
-				padding: [ 5, 10, 5, 10 ],
-				fontSize: 20
-			};
-			var MinderNodeShape = kity.createClass( "MinderNodeShape", ( function () {
-				return {
-					constructor: function ( container ) {
-						this.rect = new kity.Rect();
-						this.text = new kity.Text();
-						this.shape = new kity.Group();
-						this.shape.addShapes( [ this.rect, this.text ] );
-						container.addShape( this.shape, "nodeShape" );
-					},
-					highlight: function () {
-						this.rect.stroke( new kity.Pen( "white", 3 ) );
-					},
-					unhighlight: function () {
-						this.rect.stroke( this.NormalInfo );
-					}
-				};
-			} )() );
-
-			var kR = node.getRenderContainer();
-			var nodeShape = node.getData( "nodeshape" ) || new MinderNodeShape( kR );
-			node.setData( "nodeshape", nodeShape );
-			var nd = JSON.parse( JSON.stringify( styledefault ) );
-			var nodeD = Utils.extend( nd, node.getData( "style" ) );
-			node.setData( "style", nodeD );
-			var _style = nodeD;
-			nodeShape.text
-				.setContent( node.getData( "text" ) || "Node" )
-				.setSize( nodeD.fontSize )
-				.fill( nodeD.color );
-			var txtWidth = nodeShape.text.getWidth();
-			var txtHeight = nodeShape.text.getHeight();
-			var _padding = _style.padding;
-
-			var _rectWidth = txtWidth + _padding[ 1 ] + _padding[ 3 ];
-			var _rectHeight = txtHeight + _padding[ 0 ] + _padding[ 2 ];
-			nodeShape.text
-				.setX( _padding[ 3 ] ).setY( _padding[ 0 ] + txtHeight );
-
-			nodeShape.NormalInfo = new kity.Pen( _style.stroke, _style.strokeWidth );
-			nodeShape.rect.setWidth( _rectWidth ).setHeight( _rectHeight ).stroke( nodeShape.NormalInfo ).fill( _style.fill ).setRadius( _style.radius );
-			switch ( node.getData( "align" ) ) {
-			case "center":
-				nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth / 2, node.getData( "y" ) - _rectHeight / 2 ) );
-				break;
-			case "right":
-				nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ) - _rectWidth, node.getData( "y" ) - _rectHeight / 2 ) );
-				break;
-			default:
-				nodeShape.shape.setTransform( new kity.Matrix().translate( node.getData( "x" ), node.getData( "y" ) - _rectHeight / 2 ) );
-				break;
-			}
-			if ( node.getData( "highlight" ) ) {
-				nodeShape.highlight();
-			} else {
-				nodeShape.unhighlight();
-			}
-			updateConnect( this, node, "rendernode" );
+			drawNode( node );
 		},
 		initStyle: function () {
 			var _root = this.getRoot();
@@ -433,70 +356,87 @@ KityMinder.registerModule( "LayoutGreen", function () {
 				stroke: "orange",
 				color: "black",
 				padding: [ 10, 10, 10, 10 ],
-				fontSize: 30
+				fontSize: 30,
+				margin: [ 0, 0, 0, 0 ]
 			} );
 			_root.setData( "x", minderWidth / 2 );
 			_root.setData( "y", minderHeight / 2 );
 			_root.setData( "layer", 0 );
 			_root.setData( "align", "center" );
 			_root.setData( "text", "I am the root" );
-			//标记左子树和右子树的元素
-			_root.setData( "layerleft", [
-				[ _root ]
-			] );
-			_root.setData( "layerright", [
-				[ _root ]
-			] );
-			_root.setData( "indexList", [ 0 ] );
-			_root.setData( "leftHeight", 0 );
-			_root.setData( "rightHeight", 0 );
 
-			//标记根节点以及添加子树的方向
 			_root.setData( "appendside", "right" );
-			_root.preTraverse( function ( node ) {
-				minder.renderNode( node );
-			} );
+			var children = _root.getChildren();
+			_root.setData( "leftList", [] );
+			_root.setData( "rightList", [] );
+
+			minder.renderNode( _root );
+
+			var _rootRenderContainer = _root.getRenderContainer();
+			_root.setData( "leftHeight", _rootRenderContainer.getHeight() );
+			_root.setData( "rightHeight", _rootRenderContainer.getHeight() );
+			updateArrangement( _root );
+
+			//如果是从其他style切过来的，需要重新布局
+			if ( children.length !== 0 ) {
+				_root.setData( "leftList", [] );
+				_root.setData( "rightList", [] );
+				var leftList = _root.getData( "leftList" );
+				var rightList = _root.getData( "rightList" );
+				for ( var i = 0; i < children.length; i++ ) {
+					if ( i % 2 === 0 ) {
+						rightList.push( children[ i ] );
+						children[ i ].setData( "appendside", "right" );
+					} else {
+						leftList.push( children[ i ] );
+						children[ i ].setData( "appendside", "left" );
+					}
+					drawNode( children[ i ] );
+					updateArrangement( children[ i ] );
+				}
+			}
 		},
-		createChildNode: function ( parent ) {
-			return createChildNode( this, parent );
-		},
-		createSiblingNode: function ( sibling ) {
-			var root = this.getRoot();
-			var parent = sibling.getParent();
+		appendChildNode: function ( parent, node, index ) {
+			var appendside = parent.getData( "appendside" );
 			if ( parent === root ) {
-				parent.setData( "appendside", sibling.getData( "appendside" ) );
+				var leftList = parent.getData( "leftList" );
+				var rightList = parent.getData( "rightList" );
+				var sibling = parent.getChildren();
+				if ( sibling.length >= 2 && rightList.length > leftList.length ) {
+					appendside = "left";
+				} else {
+					appendside = "right";
+				}
+				parent.setData( "appendside", appendside );
+				node.setData( "appendside", appendside );
+				parent.getData( appendside + "List" ).push( node );
 			}
-			var index = sibling.getIndex() + 1;
-			if ( parent ) {
-				return createChildNode( this, parent, index );
+			node.setData( "appendside", appendside );
+			if ( appendside === "left" ) {
+				node.setData( "align", "right" );
 			} else {
-				return false;
+				node.setData( "align", "left" );
 			}
+			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node, index );
+			drawNode( node );
+			updateArrangement( node, "append" );
+		},
+		appendSiblingNode: function ( sibling, node ) {
+			var parent = sibling.getParent();
+			var index = sibling.getIndex() + 1;
+			var appendside = sibling.getData( "appendside" );
+			node.setData( "appendside", appendside );
+			this.appendChildNode( parent, node, index );
 		},
 		removeNode: function ( nodes ) {
 			var root = this.getRoot();
 			for ( var i = 0; i < nodes.length; i++ ) {
 				var parent = nodes[ i ].getParent();
 				if ( parent ) {
-					var appendSide = nodes[ i ].getData( "appendside" );
-					var layer = nodes[ i ].getData( "layer" );
 					parent.removeChild( nodes[ i ] );
-					var layerArray = root.getData( "layer" + appendSide );
-					var layerData = layerArray[ layer ];
-					//移除层结构中的node
-					for ( var j = 0; j < layerData.length; j++ ) {
-						if ( layerData[ j ] === nodes[ i ] ) {
-							layerData.splice( j, 1 );
-							break;
-						}
-					}
-					var reAnal = updateBranchHeight( nodes[ i ], appendSide, root, false, parent );
-					if ( reAnal ) {
-						reAnalyze( this, layerArray, appendSide );
-					}
 				}
 			}
-			updateConnect( this, nodes, "removenode" );
+			this.setContentChanged( true );
 		}
 	};
 	this.addLayoutStyle( "green", _style );
