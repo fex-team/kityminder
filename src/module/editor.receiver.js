@@ -67,8 +67,9 @@ Minder.Receiver = kity.createClass('Receiver',{
             case 'keyup':
                 var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
                 this.textShape.setContent(text);
-                this.minderNode.setData('text',text);
-                this.km.execCommand('renderNode',this.minderNode);
+                this.minderNode.setText(text);
+                this.km.renderNode(this.minderNode);
+
                 this.updateTextData();
                 this.updateCursor();
                 this.timer = setTimeout(function(){

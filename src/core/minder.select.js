@@ -65,7 +65,7 @@ kity.extendClass( Minder, function () {
             this._selectedNodes = nodes;
         },
         isSingleSelect:function(){
-            return this.getSelectedNodes().length == 1
+            return this._selectedNodes.length == 1
         }
     }
 }() );

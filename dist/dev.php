@@ -19,7 +19,13 @@ $dependency = Array(
     'src/module/layout.default.js',
     'src/module/layout.green.js',
     'src/core/minder.select.js',
-    'src/module/keyboard.js'
+    'src/module/keyboard.js',
+    'src/module/mouse.js'
+//    'src/module/editor.js',
+//    'src/module/editor.range.js',
+//    'src/module/editor.receiver.js',
+//    'src/module/editor.cursor.js'
+
 );
 
 $content = "";

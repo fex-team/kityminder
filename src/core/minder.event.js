@@ -13,7 +13,6 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        var minder = this;
         this._paper.on( 'click mousedown mouseup mousemove touchstart touchmove touchend', this._firePharse.bind( this ) );
     },
     _bindKeyboardEvents: function () {
@@ -30,8 +29,11 @@ kity.extendClass( Minder, {
         }
         preEvent = new MinderEvent( 'pre' + e.type, e, false );
         executeEvent = new MinderEvent( e.type, e, false );
+
         this._fire( preEvent );
         this._fire( executeEvent );
+        this._fire(new MinderEvent('after' + e.type,e,false));
+
         if ( ~'mousedown mouseup keydown keyup'.indexOf( e.type ) ) {
             this._interactChange( e );
         }
