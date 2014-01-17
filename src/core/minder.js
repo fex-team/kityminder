@@ -9,7 +9,9 @@
  * @description KityMinder 使用类
  */
 
-var MinderDefaultOptions = {};
+var MinderDefaultOptions = {
+    "layoutstyle": "default"
+};
 
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
@@ -20,8 +22,11 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initMinder();
         this._initSelection();
         this._initModules();
+        this.fire( 'ready' );
     },
-
+    getOptions: function ( key ) {
+        return this._options[ key ];
+    },
     _initMinder: function () {
 
         this._rc = new kity.Group();

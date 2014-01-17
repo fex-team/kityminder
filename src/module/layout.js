@@ -1,24 +1,26 @@
 KityMinder.registerModule( "LayoutModule", function () {
+	var switchLayout = function ( km, style ) {
+		var _style = km.getLayoutStyle( style );
+		if ( !_style ) return false;
+		km.renderNode = _style.renderNode;
+		km.initStyle = _style.initStyle;
+		km.appendChildNode = _style.appendChildNode;
+		km.appendSiblingNode = _style.appendSiblingNode;
+		km.removeNode = _style.removeNode;
+		//清空节点上附加的数据
+		var _root = km.getRoot();
+
+		_root.preTraverse( function ( node ) {
+			node.clearData();
+			node.getRenderContainer().clear();
+		} );
+		km.initStyle();
+		return style;
+	};
 	var SwitchLayoutCommand = kity.createClass( "SwitchLayoutCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, style ) {
-				var _style = km.getLayoutStyle( style );
-				if ( !_style ) return false;
-				km.renderNode = _style.renderNode;
-				km.initStyle = _style.initStyle;
-				km.appendChildNode = _style.appendChildNode;
-				km.appendSiblingNode = _style.appendSiblingNode;
-				km.removeNode = _style.removeNode;
-				//清空节点上附加的数据
-				var _root = km.getRoot();
-				_root.preTraverse( function ( node ) {
-					node.clearData();
-					node.getRenderContainer().clear();
-				} );
-				km.initStyle();
-				return style;
-			}
+			execute: switchLayout
 		};
 	} )() );
 	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {
@@ -59,6 +61,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"appendsiblingnode": AppendSiblingNodeCommand,
 			"removenode": RemoveNodeCommand,
 			"switchlayout": SwitchLayoutCommand
+		},
+		"events": {
+			"ready": function () {
+				alert( "ready" );
+				switchLayout( this, this.getOptions( 'layoutstyle' ) );
+			}
 		}
 	};
 } );

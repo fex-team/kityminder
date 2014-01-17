@@ -391,12 +391,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						leftList.push( children[ i ] );
 						children[ i ].setData( "appendside", "left" );
 					}
+					children[ i ].getRenderContainer().clear();
+					children.setData( "shape", null );
 					drawNode( children[ i ] );
 					updateArrangement( children[ i ] );
 				}
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
+			var minder = this;
 			var appendside = parent.getData( "appendside" );
 			if ( parent === root ) {
 				var leftList = parent.getData( "leftList" );
@@ -417,7 +420,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			} else {
 				node.setData( "align", "left" );
 			}
-			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node, index );
+			if ( parent.getChildren().indexOf( node ) === -1 ) {
+				parent.appendChild( node, index );
+				minder.handelNodeInsert( node );
+			}
 			drawNode( node );
 			updateArrangement( node, "append" );
 		},
