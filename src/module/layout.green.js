@@ -349,6 +349,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		},
 		initStyle: function () {
 			var _root = this.getRoot();
+			console.log( _root );
 			var minder = this;
 			_root.setData( "style", {
 				radius: 10,
@@ -366,7 +367,6 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			_root.setData( "text", "I am the root" );
 
 			_root.setData( "appendside", "right" );
-			var children = _root.getChildren();
 			_root.setData( "leftList", [] );
 			_root.setData( "rightList", [] );
 
@@ -378,25 +378,16 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			updateArrangement( _root );
 
 			//如果是从其他style切过来的，需要重新布局
-			if ( children.length !== 0 ) {
-				_root.setData( "leftList", [] );
-				_root.setData( "rightList", [] );
-				var leftList = _root.getData( "leftList" );
-				var rightList = _root.getData( "rightList" );
-				for ( var i = 0; i < children.length; i++ ) {
-					if ( i % 2 === 0 ) {
-						rightList.push( children[ i ] );
-						children[ i ].setData( "appendside", "right" );
-					} else {
-						leftList.push( children[ i ] );
-						children[ i ].setData( "appendside", "left" );
-					}
-					drawNode( children[ i ] );
-					updateArrangement( children[ i ] );
-				}
+			var _buffer = _root.getChildren();
+			while ( _buffer.length !== 0 ) {
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				var parent = _buffer[ 0 ].getParent();
+				this.appendChildNode( parent, _buffer[ 0 ] );
+				_buffer.shift();
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
+			var minder = this;
 			var appendside = parent.getData( "appendside" );
 			if ( parent === root ) {
 				var leftList = parent.getData( "leftList" );
@@ -417,7 +408,10 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			} else {
 				node.setData( "align", "left" );
 			}
-			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node, index );
+			if ( parent.getChildren().indexOf( node ) === -1 ) {
+				parent.appendChild( node, index );
+				minder.handelNodeInsert( node );
+			}
 			drawNode( node );
 			updateArrangement( node, "append" );
 		},
