@@ -40,11 +40,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km, node ) {
 				//km.select( node );
 				var selectedNode = km.getSelectedNode();
-                if(selectedNode.isRoot()){
-                    km.appendChildNode( selectedNode, node );
-                }else{
-                    km.appendSiblingNode( selectedNode, node );
-                }
+				if ( selectedNode.isRoot() ) {
+					km.appendChildNode( selectedNode, node );
+				} else {
+					km.appendSiblingNode( selectedNode, node );
+				}
 				km.select( node );
 				return node;
 			}
@@ -53,8 +53,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var RemoveNodeCommand = kity.createClass( "RemoveNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, nodes ) {
-				km.removeNode( nodes );
+			execute: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				km.removeNode( selectedNodes );
 			}
 		};
 	} )() );

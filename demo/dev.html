@@ -17,11 +17,12 @@
 <script>
     minder = KM.createMinder(kityminder);
 
-    // minder.execCommand("appendchildnode",new MinderNode('dsf'));
-    // minder.execCommand("appendsiblingnode",new MinderNode('sdf'));
-    // minder.execCommand("appendchildnode",new MinderNode('sdf'));
-    // minder.execCommand("appendsiblingnode",new MinderNode('df'));
-    // minder.execCommand("appendsiblingnode",new MinderNode('sdfsdf'));
-    
+    minder.execCommand("appendchildnode",new MinderNode('dsf'));
+    minder.execCommand("appendsiblingnode",new MinderNode('sdf'));
+    minder.execCommand("appendchildnode",new MinderNode('sdf'));
+    minder.execCommand("appendsiblingnode",new MinderNode('df'));
+    var del = new MinderNode('sdfsdf');
+    minder.execCommand("appendsiblingnode",del);
+    minder.execCommand("removenode",del);
 </script>
 </html>

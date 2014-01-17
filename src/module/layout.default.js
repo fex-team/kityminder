@@ -378,24 +378,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateArrangement( _root );
 
 			//如果是从其他style切过来的，需要重新布局
-			if ( children.length !== 0 ) {
-				_root.setData( "leftList", [] );
-				_root.setData( "rightList", [] );
-				var leftList = _root.getData( "leftList" );
-				var rightList = _root.getData( "rightList" );
-				for ( var i = 0; i < children.length; i++ ) {
-					if ( i % 2 === 0 ) {
-						rightList.push( children[ i ] );
-						children[ i ].setData( "appendside", "right" );
-					} else {
-						leftList.push( children[ i ] );
-						children[ i ].setData( "appendside", "left" );
-					}
-					children[ i ].getRenderContainer().clear();
-					children.setData( "shape", null );
-					drawNode( children[ i ] );
-					updateArrangement( children[ i ] );
-				}
+			var _buffer = _root.getChildren();
+			while ( _buffer.length !== 0 ) {
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				var parent = _buffer[ 0 ].getParent();
+				this.appendChildNode( parent, _buffer[ 0 ] );
+				_buffer.shift();
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
@@ -436,13 +424,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		removeNode: function ( nodes ) {
 			var root = this.getRoot();
+			var minder = this;
 			for ( var i = 0; i < nodes.length; i++ ) {
 				var parent = nodes[ i ].getParent();
 				if ( parent ) {
+					nodes[ i ].getRenderContainer().remove();
+					updateConnect( minder, nodes[ i ], "remove" );
 					parent.removeChild( nodes[ i ] );
 				}
 			}
-			this.setContentChanged( true );
 		}
 	};
 	this.addLayoutStyle( "default", _style );
