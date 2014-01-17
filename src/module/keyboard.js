@@ -66,11 +66,12 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     case 13:
                         // Enter
                         this.execCommand('appendSiblingNode',new MinderNode('Topic'));
-
+                        e.preventDefault();
                         break;
                     case 9:
                         // Tab
                         this.execCommand('appendChildNode',new MinderNode('Topic'));
+                        e.preventDefault();
                         break;
                     case 8:
                     case 46:
@@ -88,11 +89,12 @@ KityMinder.registerModule( "KeyboardModule", function () {
                                 40: 'down'
                             }[ e.originEvent.keyCode ]);
                         }
+                        e.preventDefault();
                         break;
 
 
                 }
-                e.preventDefault();
+
             }
         }
     }

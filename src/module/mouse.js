@@ -1,17 +1,4 @@
 KityMinder.registerModule( "MouseModule", function () {
-    var SingleSelectCommand = kity.createClass( 'SingleSelectCommand', {
-        base: Command,
-        execute: function ( km, node ) {
-            var deltaNodes = km.getSelectedNodes();
-            km.clearSelect();
-            if ( node ) {
-                km.selectSingle( node );
-                deltaNodes.push( node );
-            }
-            km.execCommand( 'rendernode', deltaNodes );
-            this.setContentChanged( false );
-        }
-    } );
     var Draggable = ( function () {
         var Paper = kity.Paper;
 
@@ -156,17 +143,18 @@ KityMinder.registerModule( "MouseModule", function () {
     }
     return {
         "init": function () {
-            kity.extendClass( kity.Paper, Draggable );
-            this._paper.drag();
-        },
-        "commands": {
-            'selectsingle': SingleSelectCommand
+//            kity.extendClass( kity.Paper, Draggable );
+//            this._paper.drag();
         },
         "events": {
             'mousedown touchstart': function ( e ) {
                 if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
                 var clickNode = e.getTargetNode();
-                this.execCommand( 'selectsingle', clickNode );
+                if(clickNode){
+                    this.select(clickNode)
+                }else{
+                    this.removeAllSelectedNodes()
+                }
 
             },
             'touchstart': function ( e ) {

@@ -40,6 +40,6 @@ var MinderEvent = kity.createClass( 'MindEvent', {
         return this._canstop && this._immediatelyStoped;
     },
     preventDefault:function(){
-        e.originEvent.preventDefault();
+        this.originEvent.preventDefault();
     }
 } );
