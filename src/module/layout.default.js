@@ -256,7 +256,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			node.setData( "branchheight", branchheight );
 		}
 		var siblings = parent.getData( appendside + "List" ) || parent.getChildren();
-		var getActualHeight = function ( node, appendside ) {
+		var getChildHeight = function ( node, appendside ) {
 			var sum = 0;
 			var children = node.getData( appendside + "List" ) || node.getChildren();
 			for ( var i = 0; i < children.length; i++ ) {
@@ -272,8 +272,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var prt = parent;
 			do {
 				var minH = prt.getRenderContainer().getHeight() + marginTop + marginBottom;
-				var actualH = getActualHeight( prt, appendside );
-				var branchH = ( minH > actualH ? minH : actualH );
+				var childH = getChildHeight( prt, appendside );
+				var branchH = ( minH > childH ? minH : childH );
 
 				if ( prt.getParent() ) {
 					prt.setData( "branchheight", branchH );

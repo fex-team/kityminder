@@ -25,8 +25,9 @@ kity.extendClass( Minder, function () {
             return this.getSelectedNodes()[ 0 ];
         },
         removeAllSelectedNodes: function () {
+            var me = this;
             Utils.each( this.getSelectedNodes(), function ( i, n ) {
-                unhighlightNode( this, n );
+                unhighlightNode( me, n );
             } );
             this._selectedNodes = [];
         },
@@ -35,7 +36,7 @@ kity.extendClass( Minder, function () {
             var me = this;
             utils.each( utils.isArray( nodes ) ? nodes : [ nodes ], function ( i, n ) {
                 me._selectedNodes.push( n );
-                highlightNode( this, n );
+                highlightNode( me, n );
             } );
             return this;
         },

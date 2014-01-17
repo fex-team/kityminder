@@ -26,7 +26,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
-
 				return km.appendChildNode( parent, node );
 			}
 		};
