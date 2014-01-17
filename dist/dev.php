@@ -19,6 +19,7 @@ $dependency = Array(
     'src/module/layout.default.js',
     'src/module/layout.green.js',
     'src/core/minder.select.js',
+    'src/module/keyboard.js'
 );
 
 $content = "";
