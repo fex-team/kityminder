@@ -375,6 +375,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 
 			//如果是从其他style切过来的，需要重新布局
 			if ( children.length !== 0 ) {
+				_root.setData( "leftList", [] );
+				_root.setData( "rightList", [] );
 				var leftList = _root.getData( "leftList" );
 				var rightList = _root.getData( "rightList" );
 				for ( var i = 0; i < children.length; i++ ) {
@@ -385,6 +387,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						leftList.push( children[ i ] );
 						children[ i ].setData( "appendside", "left" );
 					}
+					drawNode( children[ i ] );
+					updateArrangement( children[ i ] );
 				}
 			}
 		},
