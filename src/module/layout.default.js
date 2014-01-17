@@ -140,6 +140,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		radius: 10,
 		fill: "skyblue",
 		stroke: "orange",
+		strokeWidth: 1,
 		color: "black",
 		padding: [ 5, 10, 5, 10 ],
 		fontSize: 20,
@@ -174,6 +175,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				rect.fill( _style.fill ).stroke( _style.stroke ).setRadius( _style.radius ).setWidth( _rectWidth ).setHeight( _rectHeight );
 				if ( node.getData( "highlight" ) ) {
 					rect.stroke( new kity.Pen( "white", 3 ) );
+				} else {
+					rect.stroke( new kity.Pen( _style.stroke, _style.strokeWidth ) );
 				}
 			}
 		};
@@ -216,6 +219,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		else shape.update();
 		updateConnect( minder, node );
 	};
+
 	//调整node的位置
 	var translateNode = function ( node ) {
 		var _style = node._style;
@@ -392,7 +396,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 			}
 		},
-		appendChildNode: function ( parent, node ) {
+		appendChildNode: function ( parent, node, index ) {
 			var appendside = parent.getData( "appendside" );
 			if ( parent === root ) {
 				var leftList = parent.getData( "leftList" );
@@ -407,21 +411,22 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setData( "appendside", appendside );
 				parent.getData( appendside + "List" ).push( node );
 			}
+			node.setData( "appendside", appendside );
 			if ( appendside === "left" ) {
 				node.setData( "align", "right" );
 			} else {
 				node.setData( "align", "left" );
 			}
-			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node );
+			if ( parent.getChildren().indexOf( node ) === -1 ) parent.appendChild( node, index );
 			drawNode( node );
 			updateArrangement( node, "append" );
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var parent = sibling.getParent();
 			var index = sibling.getIndex() + 1;
-			parent.appendChild( node, index );
-			drawNode( node );
-			updateArrangement( node, "append" );
+			var appendside = sibling.getData( "appendside" );
+			node.setData( "appendside", appendside );
+			this.appendChildNode( parent, node, index );
 		},
 		removeNode: function ( nodes ) {
 			var root = this.getRoot();
