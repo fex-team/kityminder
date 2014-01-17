@@ -64,7 +64,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		"events": {
 			"ready": function () {
-				alert( "ready" );
 				switchLayout( this, this.getOptions( 'layoutstyle' ) );
 			}
 		}
