@@ -148,20 +148,31 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var MinderNodeShape = kity.createClass( "MinderNodeShape", ( function () {
 		return {
 			constructor: function ( node ) {
-				var txt = new kity.Text();
-				var rect = new kity.Rect();
+				var txt = this._txt = new kity.Text();
+				var rect = this._rect = new kity.Rect();
+				this._node = node;
+				var container = node.getRenderContainer();
+				container.addShapes( [ rect, txt ] );
+				node.setData( "shape", this );
 				var ND = JSON.parse( JSON.stringify( nodeDefautStyle ) );
 				node.setData( "style", Utils.extend( ND, node.getData( "style" ) ) );
 				var _style = node.getData( "style" );
-				var container = node.getRenderContainer();
-				container.addShapes( [ rect, txt ] );
 				txt.setContent( node.getData( "text" ) || "新建节点" ).setSize( _style.fontSize ).fill( _style.color );
 				var _txtHeight = txt.getHeight();
 				txt.translate( _style.padding[ 3 ], _txtHeight + _style.padding[ 0 ] );
+				this.update();
+			},
+			update: function () {
+				var node = this._node;
+				var txt = this._txt;
+				var rect = this._rect;
+				var _style = node.getData( "style" );
+				txt.setContent( node.getData( "text" ) || "新建节点" ).setSize( _style.fontSize ).fill( _style.color );
+				var _txtHeight = txt.getHeight();
 				var _rectWidth = _style.padding[ 1 ] + _style.padding[ 3 ] + txt.getWidth();
 				var _rectHeight = _style.padding[ 0 ] + _style.padding[ 2 ] + _txtHeight;
 				rect.fill( _style.fill ).stroke( _style.stroke ).setRadius( _style.radius ).setWidth( _rectWidth ).setHeight( _rectHeight );
-				if ( node.highlight ) {
+				if ( node.getData( "highlight" ) ) {
 					rect.stroke( new kity.Pen( "white", 3 ) );
 				}
 			}
@@ -200,8 +211,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	//绘制node
 	var drawNode = function ( node ) {
 		var container = node.getRenderContainer();
-		container.clear();
-		var shape = new MinderNodeShape( node );
+		var shape = node.getData( "shape" );
+		if ( !shape ) new MinderNodeShape( node );
+		else shape.update();
 		updateConnect( minder, node );
 	};
 	//调整node的位置
@@ -240,9 +252,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var centerY = node.getData( "y" );
 			var nodeBranchHeight = node.getData( appendside + "Height" ) || node.getData( "branchheight" );
 			var nodeChildren = node.getData( appendside + "List" ) || node.getChildren();
-			if ( node === root ) {
-				console.log( nodeChildren );
-			}
 			var sY = centerY - nodeBranchHeight / 2;
 			for ( var i = 0; i < nodeChildren.length; i++ ) {
 				var childBranchHeight = nodeChildren[ i ].getData( "branchheight" );
@@ -327,6 +336,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var set2 = updateLayoutVertical( node, node.getParent(), "append" );
 			//获取水平方向和垂直方向受影响的点的并集然后进行统一translate
 			var set = uSet( set1, set2 );
+			console.log( set );
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );
 			}
