@@ -421,7 +421,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 				var sibling = parent.getChildren();
 				var aside = Layout.appendside;
 				if ( !aside ) {
-					if ( sibling.length > 2 && rightList.length > leftList.length ) {
+					if ( rightList.length > 1 && rightList.length > leftList.length ) {
 						aside = "left";
 					} else {
 						aside = "right";
