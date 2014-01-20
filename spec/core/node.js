@@ -20,7 +20,7 @@ describe("node", function () {
         it('first contain first',function(){
             expect(first.contains(first)).toBeTruthy();
         });
-    })
+    });
     describe('getCommonAncestor',function(){
         it('first second commonAncestor is root',function(){
             expect(first.getCommonAncestor(second)).toBe(root);
@@ -30,9 +30,30 @@ describe("node", function () {
         });
         it('second.first first.first commonAncestor is root',function(){
             var a = first.getFirstChild(),b=second.getFirstChild();
-            debugger
-            var c = a.getCommonAncestor(b);
             expect(a.getCommonAncestor(b)).toBe(root);
         });
-    })
+    });
+    describe('setData',function(){
+        it('name and value both exist',function(){
+            root.setData('test',1);
+            expect(root.getData('test')).toBe(1);
+        });
+        it('name only exist clear property',function(){
+            root.setData('test');
+            expect(root.getData('test')).toBeUndefined();
+        });
+        it('name is object',function(){
+            root.setData({
+                'test':1
+            });
+            expect(root.getData('test')).toBe(1);
+        });
+        it('name and value both empty',function(){
+            root.setData('test',1);
+            root.setData('test1',2);
+            root.setData();
+            expect(root.getData('test')).toBeUndefined();
+            expect(root.getData('test1')).toBeUndefined();
+        });
+    });
 });

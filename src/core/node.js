@@ -137,13 +137,19 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     setData: function ( name, value ) {
-        if ( arguments.length == 1 && typeof ( arguments[ 0 ] ) == 'object' ) {
-            Utils.extend( this.data, arguments[ 0 ] );
+        if(name === undefined){
+            this.data = {}
+
+        }else if(utils.isObject(name)){
+            utils.extend(this.data,name)
+        }else{
+            if(value === undefined){
+                this.data[name] = null;
+                delete this.data[name]
+            }else{
+                this.data[name] = value;
+            }
         }
-        this.data[ name ] = value;
-    },
-    clearData: function () {
-        this.data = {};
     },
     getRenderContainer: function () {
         return this.rc;
@@ -158,9 +164,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         if ( node.contains( this ) ) {
             return node
         }
-        var parent = node.parent;
+        var parent = this.parent;
         while ( !parent.contains( node ) ) {
-            parent = parent.parentNode;
+            parent = parent.parent;
         }
         return parent;
     },
