@@ -47,10 +47,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
     }
 
 
-    function KBNavigate(km,direction){
+    function KBNavigate( km, direction ) {
         var nextNode = km.getSelectedNode()._nearestNodes[ direction ];
         if ( nextNode ) {
-            km.select(nextNode);
+            km.select( nextNode );
         }
     }
     return {
@@ -63,34 +63,35 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
                 switch ( e.originEvent.keyCode ) {
 
-                    case 13:
-                        // Enter
-                        this.execCommand('appendSiblingNode',new MinderNode('Topic'));
-                        e.preventDefault();
-                        break;
-                    case 9:
-                        // Tab
-                        this.execCommand('appendChildNode',new MinderNode('Topic'));
-                        e.preventDefault();
-                        break;
-                    case 8:
-                    case 46:
-                        this.execCommand('removenode');
-                        break;
-                    case 37:
-                    case 38:
-                    case 39:
-                    case 40:
-                        if ( this.isSingleSelect() ) {
-                            KBNavigate(this,{
-                                37: 'left',
-                                38: 'top',
-                                39: 'right',
-                                40: 'down'
-                            }[ e.originEvent.keyCode ]);
-                        }
-                        e.preventDefault();
-                        break;
+                case 13:
+                    // Enter
+                    this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
+                    e.preventDefault();
+                    break;
+                case 9:
+                    // Tab
+                    this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
+                    e.preventDefault();
+                    break;
+                case 8:
+                case 46:
+                    this.execCommand( 'removenode' );
+                    e.preventDefault();
+                    break;
+                case 37:
+                case 38:
+                case 39:
+                case 40:
+                    if ( this.isSingleSelect() ) {
+                        KBNavigate( this, {
+                            37: 'left',
+                            38: 'top',
+                            39: 'right',
+                            40: 'down'
+                        }[ e.originEvent.keyCode ] );
+                    }
+                    e.preventDefault();
+                    break;
 
 
                 }

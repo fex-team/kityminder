@@ -11,7 +11,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 		var _root = km.getRoot();
 
 		_root.preTraverse( function ( node ) {
-			node.clearData();
+			node.setData( "style", {} );
+			node.setData( "shape", null );
 			node.getRenderContainer().clear();
 		} );
 		km.initStyle();
