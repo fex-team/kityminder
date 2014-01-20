@@ -1,4 +1,29 @@
 KityMinder.registerModule( "LayoutModule", function () {
+	kity.extendClass( MinderNode, {
+		setLayout: function ( k, v ) {
+			if ( this.setData( 'layout' ) === undefined ) {
+				this.setData( 'layout', {} );
+			}
+			var _pros = this.getLayout();
+			Utils.extend( _pros, {
+				k: v
+			} );
+			this.setData( 'layout', _pros );
+		},
+		getLayout: function ( k ) {
+			if ( k === undefined ) {
+				return this.getData( 'layout' );
+			}
+			return this.getData( 'layout' )[ k ];
+		},
+		clearLayout: function () {
+			this.setData( 'layout', {} );
+			this.getRenderContainer().clear();
+		},
+		updateLayout: function ( km ) {
+			km.updateLayout( this );
+		}
+	} );
 	var switchLayout = function ( km, style ) {
 		var _style = km.getLayoutStyle( style );
 		if ( !_style ) return false;
@@ -7,13 +32,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		km.appendChildNode = _style.appendChildNode;
 		km.appendSiblingNode = _style.appendSiblingNode;
 		km.removeNode = _style.removeNode;
+		km.updateLayout = _style.updateLayout;
 		//清空节点上附加的数据
 		var _root = km.getRoot();
-
 		_root.preTraverse( function ( node ) {
-			node.setData( "style", {} );
-			node.setData( "shape", null );
-			node.getRenderContainer().clear();
+			node.clearLayout();
 		} );
 		km.initStyle();
 		return style;
