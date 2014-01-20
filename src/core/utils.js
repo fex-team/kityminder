@@ -117,7 +117,7 @@ var utils = Utils = KityMinder.Utils = {
                 tmp = source[i];
                 if (utils.isObject(tmp) || utils.isArray(tmp)) {
                     target[i] = utils.isArray(tmp) ? [] : {};
-                    utils.clone(source[i], target[i])
+                    utils.clonePlainObject(source[i], target[i])
                 } else {
                     target[i] = tmp;
                 }
