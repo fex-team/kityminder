@@ -372,9 +372,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//清空节点上附加的数据;
 			var minder = this;
 			var _root = minder.getRoot();
-			_root.preTraverse( function ( node ) {
-				node.clearLayout();
-			} );
+			_root.setData( 'layout', {} );
+			minder.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 10,
@@ -400,14 +399,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			translateNode( _root );
 
 			//如果是从其他style切过来的，需要重新布局
-			// var _buffer = _root.getChildren();
-			// while ( _buffer.length !== 0 ) {
-			// 	_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-			// 	var prt = _buffer[ 0 ].getParent();
-			// 	_buffer[ 0 ].children = [];
-			// 	this.appendChildNode( prt, _buffer[ 0 ] );
-			// 	_buffer.shift();
-			// }
+			var _buffer = _root.getChildren();
+			while ( _buffer.length !== 0 ) {
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				var prt = _buffer[ 0 ].getParent();
+				_buffer[ 0 ].clearLayout();
+				_buffer[ 0 ].children = [];
+				console.log( _buffer[ 0 ] );
+				this.appendChildNode( prt, _buffer[ 0 ] );
+				_buffer.shift();
+			}
 		},
 		appendChildNode: function ( parent, node, index ) {
 			if ( !node.getData( "layout" ) ) node.setData( "layout", {} );

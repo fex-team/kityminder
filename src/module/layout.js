@@ -17,10 +17,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return this.getData( 'layout' )[ k ];
 		},
 		clearLayout: function () {
-			var nLayout = this.getData( 'layout' );
-			if ( nLayout && nLayout.connect ) nLayout.connect.remove();
 			this.setData( 'layout', {} );
-			this.getRenderContainer().clear();
 		}
 	} );
 	var switchLayout = function ( km, style ) {
@@ -32,11 +29,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		km.appendSiblingNode = _style.appendSiblingNode;
 		km.removeNode = _style.removeNode;
 		km.updateLayout = _style.updateLayout;
-		//清空节点上附加的数据
-		var _root = km.getRoot();
-		_root.preTraverse( function ( node ) {
-			node.clearLayout();
-		} );
 		km.initStyle();
 		return style;
 	};
