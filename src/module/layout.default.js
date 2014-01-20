@@ -247,6 +247,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			} else {
 				for ( var i = 0; i < nodeChildren.length; i++ ) {
 					var childrenLayout1 = nodeChildren[ i ].getData( "layout" );
+					if ( !childrenLayout1.shape ) break;
 					var childBranchHeight = childrenLayout1.branchheight;
 					childrenLayout1.y = sY + marginTop + childBranchHeight / 2;
 					sY += childBranchHeight;
@@ -263,7 +264,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var nodeLayout = node.getData( "layout" );
 			var children = nodeLayout[ appendside + "List" ] || node.getChildren();
 			for ( var i = 0; i < children.length; i++ ) {
-				sum += children[ i ].getData( "layout" ).branchheight;
+				var childLayout = children[ i ].getData( "layout" );
+				if ( childLayout.shape ) sum += childLayout.branchheight;
 			}
 			return sum;
 		};
@@ -398,6 +400,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			while ( _buffer.length !== 0 ) {
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				var prt = _buffer[ 0 ].getParent();
+				_buffer[ 0 ].children = [];
 				this.appendChildNode( prt, _buffer[ 0 ] );
 				_buffer.shift();
 			}
