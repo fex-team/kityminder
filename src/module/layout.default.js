@@ -449,10 +449,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		updateLayout: function ( node ) {
-			var prt = node;
-			prt.preTraverse( function ( n ) {
-
-			} );
+			drawNode( node );
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var siblingLayout = sibling.getData( "layout" );
