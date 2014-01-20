@@ -21,7 +21,8 @@ kity.extendClass( Minder, {
             this._modules[ name ] = moduleDeals;
 
             if ( moduleDeals.init ) {
-                moduleDeals.init.call( me, Utils.extend( moduleDeals.defaultOptions || {}, this._options ) );
+                this.setDefaultOptions( moduleDeals.defaultOptions || {});
+                moduleDeals.init.call( me, this._options );
             }
 
             //command加入命令池子

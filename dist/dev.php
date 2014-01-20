@@ -20,7 +20,8 @@ $dependency = Array(
     'src/module/layout.green.js',
     'src/core/minder.select.js',
     'src/module/keyboard.js',
-    'src/module/mouse.js'
+    'src/module/mouse.js',
+    'src/module/history.js'
 //    'src/module/editor.js',
 //    'src/module/editor.range.js',
 //    'src/module/editor.receiver.js',
