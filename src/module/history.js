@@ -1,7 +1,5 @@
 KityMinder.registerModule( "HistoryModule", function () {
 
-
-
     var Scene = kity.createClass('Scene',{
         constructor:function(root){
             this.data = root.clone();
