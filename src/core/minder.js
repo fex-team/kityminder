@@ -40,7 +40,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             this.renderTo( this._options.renderTo );
         }
     },
-
+    clearPaper:function(){
+        this._rc.clear();
+    },
     renderTo: function ( target ) {
         this._paper.renderTo( this._renderTarget = target );
         this._bindEvents();

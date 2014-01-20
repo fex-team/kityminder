@@ -108,6 +108,67 @@ var utils = Utils = KityMinder.Utils = {
     },
     argsToArray: function ( args,index ) {
         return Array.prototype.slice.call( args, index || 0 );
+    },
+    clone:function (source, target) {
+        var tmp;
+        target = target || {};
+        for (var i in source) {
+            if (source.hasOwnProperty(i)) {
+                tmp = source[i];
+                if (utils.isObject(tmp) || utils.isArray(tmp)) {
+                    target[i] = utils.isArray(tmp) ? [] : {};
+                    utils.clone(source[i], target[i])
+                } else {
+                    target[i] = tmp;
+                }
+            }
+        }
+        return target;
+    },
+    compareObject:function(source,target){
+        var tmp;
+        if(this.isEmptyObject(source) !== this.isEmptyObject(target)){
+            return false
+        }
+        if(this.getObjectLength(source) != this.getObjectLength(target)){
+            return false;
+        }
+        for(var p in source){
+            if(source.hasOwnProperty(p)){
+                tmp = source[p];
+                if(target[p] === undefined){
+                    return false;
+                }
+                if (this.isObject(tmp) || this.isArray(tmp)) {
+                    if(this.isObject(target[p]) !== this.isObject(tmp)){
+                        return false;
+                    }
+                    if(this.isArray(tmp) !== this.isArray(target[p])){
+                        return false;
+                    }
+                    if(this.compareObject(tmp, target[p]) === false){
+                        return false
+                    }
+                } else {
+                    if(tmp != target[p]){
+                        return false
+                    }
+                }
+            }
+        }
+        return true;
+    },
+    getObjectLength:function(obj){
+        if (this.isArray(obj) || this.isString(obj)) return obj.length;
+        var count = 0;
+        for (var key in obj) if (obj.hasOwnProperty(key)) count++;
+        return count;
+    },
+    isEmptyObject:function (obj) {
+        if (obj == null) return true;
+        if (this.isArray(obj) || this.isString(obj)) return obj.length === 0;
+        for (var key in obj) if (obj.hasOwnProperty(key)) return false;
+        return true;
     }
 
 };

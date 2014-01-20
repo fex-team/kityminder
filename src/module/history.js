@@ -1,65 +1,18 @@
 KityMinder.registerModule( "HistoryModule", function () {
 
-    var Stack = kity.createClass( "Stack", {
-        constructor: function ( size ) {
-            this.size = size || Number.MAX_VALUE;
-            this.length = 0;
+    var Scene = kity.createClass('Scene',{
+        constructor:function(root){
+
         },
-        push: function ( elem ) {
-            if ( this.length === this.size ) {
-                this.shift();
-            }
-            this[ this.length++ ] = elem;
-        },
-        top: function () {
-            return this[ this.length - 1 ];
-        },
-        pop: function () {
-            return this[ --this.length ];
-        },
-        empty: function () {
-            return this.length === 0;
-        },
-        clear: function () {
-            this.length = 0;
-        },
-        splice: function () {
-            // to make stack array-like
+        equals:function(scene){
+
         }
-    } );
-
-    function getStack( km, type ) {
-        var stacks = km._hisoryStacks || ( km._hisoryStacks = {} );
-        return stacks[ type ] || ( stacks[ type ] = new Stack() );
-    }
-
-    function markExecuting( km, command ) {
-        km._commandExecuting = command;
-    }
-
-    function getExecuting( km ) {
-        return km._commandExecuting || null;
-    }
-
-    function markRedoing( km, redoing ) {
-        km._redoing = redoing;
-    }
-
-    function isRedoing( km ) {
-        return km._redoing;
-    }
-
-    function shouldIgnore( cmdName ) {
-        return cmdName == 'undo' || cmdName == 'redo';
-    }
-
-    function getCommandContext( e ) {
-        return {
-            name: e.commandName,
-            args: e.commandArgs,
-            command: e.command
-        };
-    }
+    })
+    var UndoManager = kity.createClass('UndoManager',{
+        constructor : function(){
+            this.list = [];
+        }
+    })
 
     var UndoCommand = kity.createClass( "UndoCommand", {
         base: Command,
@@ -118,35 +71,8 @@ KityMinder.registerModule( "HistoryModule", function () {
         },
 
         "events": {
-            "beforecommand": function ( e ) {
-                if ( isRedoing( this ) ) {
-                    e.stopPropagation();
-                }
-            },
+            "saveScene": function ( e ) {
 
-            "precommand": function ( e ) {
-                if ( shouldIgnore( e.commandName ) ) return;
-
-                var undoStack = getStack( this, "undo" ),
-                    redoStack = getStack( this, "redo" ),
-                    contextStack;
-
-                if ( getExecuting( this ) === null ) {
-                    markExecuting( this, e.command );
-                    undoStack.push( new Stack() );
-                    redoStack.clear();
-                }
-
-                contextStack = undoStack.top();
-                contextStack.push( getCommandContext( e ) );
-            },
-
-            "command": function ( e ) {
-                if ( shouldIgnore( e.commandName ) ) return;
-
-                if ( getExecuting( this ) === e.command ) {
-                    markExecuting( this, null );
-                }
             }
         }
     };

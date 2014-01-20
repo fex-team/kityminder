@@ -186,5 +186,24 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } );
         return isContain;
 
+    },
+    clone:function(){
+        return utils.clone(this)
+    },
+    equals:function(node){
+        if(node.children.length != this.children.length){
+            return false;
+        }
+        if(utils.compareObject(node.getData(),this.getData()) === false){
+            return false;
+        }
+
+        for(var i= 0,ci;ci=this.children[i++];){
+            if(ci.equals(node)===false){
+                return false;
+            }
+        }
+        return true;
+
     }
 } );
