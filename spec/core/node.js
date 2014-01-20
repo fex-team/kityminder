@@ -3,10 +3,29 @@ describe("node", function () {
     var root = new KM.MinderNode('root');
     var first = new KM.MinderNode('first');
     first.appendChild(new KM.MinderNode('first.first'));
+    first.setData({
+        'layout':{
+            x:1,
+            y:1
+        }
+    })
     var second = new KM.MinderNode('second');
     second.appendChild(new KM.MinderNode('second.first'));
     root.appendChild(first);
     root.appendChild(second);
+    describe('clone',function(){
+        var _tmp = root.clone();
+        it('克隆的root有2级孩子',function(){
+            expect(_tmp.getFirstChild()).not.toBeNull();
+            expect(_tmp.getFirstChild().getFirstChild()).not.toBeNull();
+            expect(_tmp.getFirstChild().getData('text')).toBe('first');
+            expect(_tmp.getFirstChild().getFirstChild().getData('text')).toBe('first.first');
+        });
+        it('检测属性的深度复制',function(){
+            first.getData('layout').x = 2;
+            expect(_tmp.getFirstChild().getData('layout').x).toBe(1);
+        })
+    });
     describe('contains',function(){
         it('root contain first',function(){
             expect(root.contains(first)).toBeTruthy();
@@ -55,5 +74,18 @@ describe("node", function () {
             expect(root.getData('test')).toBeUndefined();
             expect(root.getData('test1')).toBeUndefined();
         });
+        it('layout:{x:1,y:1}',function(){
+            root.setData({
+                'layout':{
+                    x:1,
+                    y:1
+                }
+            });
+            expect(root.getData('layout').x).toBe(1);
+
+        });
+
     });
+
+
 });
