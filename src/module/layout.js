@@ -19,9 +19,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		clearLayout: function () {
 			this.setData( 'layout', {} );
 			this.getRenderContainer().clear();
-		},
-		updateLayout: function ( km ) {
-			km.updateLayout( this );
 		}
 	} );
 	var switchLayout = function ( km, style ) {

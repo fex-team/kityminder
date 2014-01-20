@@ -109,7 +109,7 @@ var utils = Utils = KityMinder.Utils = {
     argsToArray: function ( args,index ) {
         return Array.prototype.slice.call( args, index || 0 );
     },
-    clone:function (source, target) {
+    clonePlainObject:function (source, target) {
         var tmp;
         target = target || {};
         for (var i in source) {

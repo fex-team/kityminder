@@ -27,6 +27,15 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     getOptions: function ( key ) {
         return this._options[ key ];
     },
+    setDefaultOptions:function(key,val){
+        var obj = {};
+        if (utils.isString(key)) {
+            obj[key] = val
+        } else {
+            obj = key;
+        }
+        utils.extend(this._options, obj, true);
+    },
     _initMinder: function () {
 
         this._rc = new kity.Group();
@@ -39,9 +48,6 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );
         }
-    },
-    clearPaper:function(){
-        this._rc.clear();
     },
     renderTo: function ( target ) {
         this._paper.renderTo( this._renderTarget = target );

@@ -188,8 +188,19 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     clone:function(){
-        return utils.clone(this)
-    },
+        function cloneNode(parent,isClonedNode){
+            var _tmp = new KM.MinderNode(isClonedNode.getData());
+            _tmp.parent = parent;
+            for(var i= 0,ci;ci=isClonedNode.children[i++];){
+                cloneNode(_tmp,ci);
+            }
+            return _tmp;
+        }
+        return function(){
+            return cloneNode(null,this);
+
+        }
+    }(),
     equals:function(node){
         if(node.children.length != this.children.length){
             return false;
