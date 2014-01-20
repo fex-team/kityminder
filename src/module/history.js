@@ -85,7 +85,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             this.hasRedo = false;
         }
     });
-
+    //为km实例添加history管理
     this.historyManager = new HistoryManager(this);
 
     return {
