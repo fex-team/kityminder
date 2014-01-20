@@ -453,6 +453,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var siblingLayout = sibling.getData( "layout" );
+			console.log( sibling );
+			if ( !node.getData( "layout" ) ) {
+				node.setData( "layout", {} );
+			}
 			var Layout = node.getData( "layout" );
 			var parent = sibling.getParent();
 			var index = sibling.getIndex() + 1;
