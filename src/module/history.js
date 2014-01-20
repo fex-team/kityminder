@@ -15,7 +15,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             return this.getData().equals(scene.getData())
         }
     });
-    var HistoryManager = kity.createClass('UndoManager',{
+    var HistoryManager = kity.createClass('HistoryManager',{
         constructor : function(km){
             this.list = [];
             this.index = 0;
