@@ -369,8 +369,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			drawNode( node );
 		},
 		initStyle: function () {
-			var _root = this.getRoot();
+			//清空节点上附加的数据;
 			var minder = this;
+			var _root = minder.getRoot();
+			_root.setData( 'layout', {} );
+			minder.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 10,
@@ -400,7 +403,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			while ( _buffer.length !== 0 ) {
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				var prt = _buffer[ 0 ].getParent();
+				_buffer[ 0 ].clearLayout();
 				_buffer[ 0 ].children = [];
+				console.log( _buffer[ 0 ] );
 				this.appendChildNode( prt, _buffer[ 0 ] );
 				_buffer.shift();
 			}
@@ -449,10 +454,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		updateLayout: function ( node ) {
-			var prt = node;
-			prt.preTraverse( function ( n ) {
-
-			} );
+			drawNode( node );
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var siblingLayout = sibling.getData( "layout" );
