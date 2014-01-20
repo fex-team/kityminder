@@ -39,6 +39,11 @@ kity.extendClass( Minder, {
                 }
             }
 
+            //添加模块的快捷键
+            if(moduleDeals.addShortcutKeys){
+                this.addShortcutKeys(moduleDeals.addShortcutKeys)
+            }
+
         }
     },
 

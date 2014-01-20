@@ -103,7 +103,9 @@ KityMinder.registerModule( "HistoryModule", function () {
                 queryState: function ( km ) {
                     km.historyManager.hasUndo ? 0 : -1;
                 },
-                isNeedUndo : true
+                isNeedUndo : function(){
+                    return false;
+                }
             } ),
             "redo": kity.createClass( "RedoCommand", {
                 base: Command,
@@ -115,10 +117,15 @@ KityMinder.registerModule( "HistoryModule", function () {
                 queryState: function ( km ) {
                     return km.historyManager.hasRedo ? 0 : -1;
                 },
-                isNeedUndo : true
+                isNeedUndo : function(){
+                    return false;
+                }
             } )
         },
-
+        addShortcutKeys:{
+            "Undo":"ctrl+90", //undo
+            "Redo":"ctrl+89" //redo
+        },
         "events": {
             "saveScene": function ( e ) {
                 this.historyManager.saveScene();

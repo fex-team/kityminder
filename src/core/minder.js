@@ -21,7 +21,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initEvents();
         this._initMinder();
         this._initSelection();
+        this._initShortcutKey();
         this._initModules();
+
         this.fire( 'ready' );
     },
     getOptions: function ( key ) {
@@ -77,6 +79,47 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     },
     getRenderTarget: function () {
         return this._renderTarget;
+    },
+    _initShortcutKey:function(){
+        this._shortcutkeys = {};
+        this._bindshortcutKeys();
+    },
+    addShortcutKeys: function (cmd, keys) {
+        var obj = {};
+        if (keys) {
+            obj[cmd] = keys
+        } else {
+            obj = cmd;
+        }
+        utils.extend(this._shortcutkeys, obj)
+    },
+    _bindshortcutKeys: function () {
+        var me = this, shortcutkeys = this._shortcutkeys;
+        me.on('keydown', function (e) {
+
+            var originEvent = e.originEvent;
+            var keyCode = originEvent.keyCode || originEvent.which;
+            for (var i in shortcutkeys) {
+                var tmp = shortcutkeys[i].split(',');
+                for (var t = 0, ti; ti = tmp[t++];) {
+                    ti = ti.split(':');
+                    var key = ti[0], param = ti[1];
+                    if (/^(ctrl)(\+shift)?\+(\d+)$/.test(key.toLowerCase()) || /^(\d+)$/.test(key)) {
+                        if (( (RegExp.$1 == 'ctrl' ? (originEvent.ctrlKey || originEvent.metaKey) : 0)
+                            && (RegExp.$2 != "" ? originEvent[RegExp.$2.slice(1) + "Key"] : 1)
+                            && keyCode == RegExp.$3
+                            ) ||
+                            keyCode == RegExp.$1
+                            ) {
+                            if (me.queryCommandState(i,param) != -1)
+                                me.execCommand(i, param);
+                            e.preventDefault();
+                        }
+                    }
+                }
+
+            }
+        });
     }
 } );
 
