@@ -421,7 +421,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var sibling = parent.getChildren();
 				var aside = Layout.appendside;
 				if ( !aside ) {
-					if ( sibling.length > 2 && rightList.length > leftList.length ) {
+					if ( rightList.length > 1 && rightList.length > leftList.length ) {
 						aside = "left";
 					} else {
 						aside = "right";
@@ -456,7 +456,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var siblingLayout = sibling.getData( "layout" );
-			console.log( sibling );
 			if ( !node.getData( "layout" ) ) {
 				node.setData( "layout", {} );
 			}
