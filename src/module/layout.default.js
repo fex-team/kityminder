@@ -286,8 +286,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			prt = prt.getParent();
 		} while ( prt );
 		//遍历
-		var effectRange = [ root ];
-		var _buffer = effectRange;
+		var _buffer = [ root ];
 		while ( _buffer.length !== 0 ) {
 			_buffer = _buffer.concat( countY( _buffer[ 0 ], appendside ) );
 			effectSet.push( _buffer[ 0 ] );
@@ -299,9 +298,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 
 	//以某个节点为seed对水平方向进行调整(包括调整子树)
 	var updateLayoutHorizon = function ( node ) {
+		var nodeLayout = node.getData( "layout" );
 		var effectSet = [ node ]; //返回受影响（即需要进行下一步translate的节点）
 		var parent = node.getParent();
-		var appendside = node.getData( "appendside" );
+		var appendside = nodeLayout.appendside;
 		var selfWidth = node.getRenderContainer().getWidth();
 
 		var countX = function ( n ) {
@@ -333,13 +333,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			countX( node );
 		}
 		//判断是否存在已绘制的孩子并对孩子位置进行调整(用于外部调用renderNode，如文本编时)
-		var _buffer = node.getChildren();
-		while ( _buffer.length !== 0 ) {
-			countX( _buffer[ 0 ] );
-			effectSet.push( _buffer[ 0 ] );
-			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-			_buffer.shift();
-		}
+		// var _buffer = node.getChildren();
+		// while ( _buffer.length !== 0 ) {
+		// 	countX( _buffer[ 0 ] );
+		// 	effectSet.push( _buffer[ 0 ] );
+		// 	_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+		// 	_buffer.shift();
+		// }
 		return effectSet;
 	};
 
@@ -361,7 +361,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
 			break;
 		}
-		updateConnect( minder, node );
 	};
 	var _style = {
 		renderNode: function ( node ) {
@@ -411,8 +410,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( parent.getChildren().indexOf( node ) === -1 ) {
 				if ( !index ) parent.appendChild( node );
 				else parent.insertChild( node, index );
-				minder.handelNodeInsert( node );
 			}
+			minder.handelNodeInsert( node );
 			if ( parent === root ) {
 				var leftList = parentLayout.leftList;
 				var rightList = parentLayout.rightList;
@@ -437,6 +436,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			} else {
 				Layout.align = "left";
 			}
+
 			drawNode( node );
 			var set1 = updateLayoutVertical( node, parent, "append" );
 			var set2 = updateLayoutHorizon( node );
