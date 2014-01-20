@@ -1,7 +1,5 @@
 KityMinder.registerModule( "HistoryModule", function () {
 
-
-
     var Scene = kity.createClass('Scene',{
         constructor:function(root){
             this.data = root.clone();
@@ -17,7 +15,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             return this.getData().equals(scene.getData())
         }
     });
-    var HistoryManager = kity.createClass('UndoManager',{
+    var HistoryManager = kity.createClass('HistoryManager',{
         constructor : function(km){
             this.list = [];
             this.index = 0;
@@ -87,7 +85,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             this.hasRedo = false;
         }
     });
-
+    //为km实例添加history管理
     this.historyManager = new HistoryManager(this);
 
     return {
