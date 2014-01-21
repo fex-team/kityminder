@@ -185,18 +185,19 @@ KityMinder.registerModule( "LayoutGreen", function () {
 	var root = this.getRoot();
 	//更新连线
 	var updateConnect = function ( minder, node, action ) {
-		var _style = node.getData( "style" );
+		var Layout = node.getData( "layout" );
+		var _style = Layout.style;
 		if ( !node.getParent() ) return false;
 		var start = node.getParent().getRenderContainer();
 		var end = node.getRenderContainer();
-		var _connect = node.getData( "connect" );
+		var _connect = Layout.connect;
 		if ( action === "remove" ) {
 			_connect.remove();
 		} else {
 			if ( _connect ) _connect.updateConnection();
 			else {
 				_connect = new ConnectBezier( start, end );
-				node.setData( "connect", _connect );
+				Layout.connect = _connect;
 				minder.getRenderContainer().addShape( _connect );
 				_connect.stroke( _style.stroke );
 			}
@@ -219,6 +220,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		var shape = node.getData( "layout" ).shape;
 		if ( !shape ) new MinderNodeShape( node );
 		else shape.update();
+		updateConnect( minder, node );
 	};
 
 	//以某个节点为seed对整体高度进行更改计算
@@ -366,6 +368,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 					nodes[ i ].getRenderContainer().remove();
 					updateConnect( minder, nodes[ i ], "remove" );
 					parent.removeChild( nodes[ i ] );
+					updateLayoutHorizon( parent, nodes[ i ] );
 				}
 			}
 		},
