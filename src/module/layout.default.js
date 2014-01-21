@@ -373,7 +373,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var minder = this;
 			var _root = minder.getRoot();
 			_root.setData( 'layout', {} );
-			minder.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 10,
@@ -405,7 +404,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var prt = _buffer[ 0 ].getParent();
 				_buffer[ 0 ].clearLayout();
 				_buffer[ 0 ].children = [];
-				console.log( _buffer[ 0 ] );
 				this.appendChildNode( prt, _buffer[ 0 ] );
 				_buffer.shift();
 			}

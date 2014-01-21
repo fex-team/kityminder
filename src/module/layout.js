@@ -21,6 +21,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		}
 	} );
 	var switchLayout = function ( km, style ) {
+		var _root = km.getRoot();
+		km.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
+		_root.preTraverse( function ( n ) {
+			n.clearLayout();
+		} );
 		var _style = km.getLayoutStyle( style );
 		if ( !_style ) return false;
 		km.renderNode = _style.renderNode;
