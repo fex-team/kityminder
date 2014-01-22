@@ -1,4 +1,46 @@
 KityMinder.registerModule( "LayoutModule", function () {
+	kity.extendClass( Minder, {
+		addLayoutStyle: function ( name, style ) {
+			if ( !this._layoutStyles ) this._layoutStyles = {};
+			this._layoutStyles[ name ] = style;
+		},
+		getLayoutStyle: function ( name ) {
+			return this._layoutStyles[ name ];
+		},
+		getCurrentStyle: function () {
+			var _root = this.getRoot();
+			return _root.getData( "currentstyle" );
+		},
+		setCurrentStyle: function ( name ) {
+			var _root = this.getRoot();
+			_root.setData( "currentstyle", name );
+			return name;
+		},
+		renderNode: function ( node ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).renderNode.call( this, node );
+		},
+		initStyle: function () {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).initStyle.call( this );
+		},
+		appendChildNode: function ( parent, node, index ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).appendChildNode.call( this, parent, node, index );
+		},
+		appendSiblingNode: function ( sibling, node ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).appendSiblingNode.call( this, sibling, node );
+		},
+		removeNode: function ( nodes ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).appendChildNode.call( this, nodes );
+		},
+		updateLayout: function ( node ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).updateLayout.call( this, node );
+		}
+	} );
 	kity.extendClass( MinderNode, {
 		setLayout: function ( k, v ) {
 			if ( this.setData( 'layout' ) === undefined ) {
@@ -26,14 +68,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		_root.preTraverse( function ( n ) {
 			n.clearLayout();
 		} );
-		var _style = km.getLayoutStyle( style );
-		if ( !_style ) return false;
-		km.renderNode = _style.renderNode;
-		km.initStyle = _style.initStyle;
-		km.appendChildNode = _style.appendChildNode;
-		km.appendSiblingNode = _style.appendSiblingNode;
-		km.removeNode = _style.removeNode;
-		km.updateLayout = _style.updateLayout;
+		km.setCurrentStyle( style );
 		km.initStyle();
 		return style;
 	};
@@ -90,6 +125,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"ready": function () {
 				switchLayout( this, this.getOptions( 'layoutstyle' ) );
 			}
+		},
+		"defaultOptions": {
+			"layoutstyle": "default"
 		}
 	};
 } );
