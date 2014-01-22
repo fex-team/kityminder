@@ -345,8 +345,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 
 	//调整node的位置
 	var translateNode = function ( node ) {
-		var Layout = node.getData( "layout" );
 		var nodeShape = node.getRenderContainer();
+		// var nodePoint = node.getPoint();
+		// console.log( nodePoint );
+		// if ( nodePoint ) {
+		// 	nodeShape.setTransform( new kity.Matrix().translate( nodePoint.x, nodePoint.y ) );
+		// 	return false;
+		// }
+		var Layout = node.getData( "layout" );
 		var align = Layout.align;
 		var _rectHeight = nodeShape.getHeight();
 		var _rectWidth = nodeShape.getWidth();
@@ -361,6 +367,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
 			break;
 		}
+		return true;
 	};
 	var _style = {
 		renderNode: function ( node ) {
@@ -393,12 +400,28 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var _rootRenderContainer = _root.getRenderContainer();
 			var rootHeight = _rootRenderContainer.getHeight();
 			Layout.leftHeight = Layout.rightHeight = rootHeight;
-
 			drawNode( _root );
 			translateNode( _root );
 
-			//如果是从其他style切过来的，需要重新布局
+			var box = _root.getRenderContainer().getRenderBox();
 			var _buffer = _root.getChildren();
+			_root.setPoint( box.x, box.y );
+			if ( _buffer.length !== 0 ) {
+				for ( var i = 0; i < _buffer.length; i++ ) {
+					var point = _buffer[ i ].getPoint();
+					if ( point ) {
+						if ( point.x > Layout.x ) {
+							Layout.rightList.push( _buffer[ i ] );
+						} else {
+							Layout.leftList.push( _buffer[ i ] );
+						}
+					} else {
+						break;
+					}
+				}
+			}
+
+			//如果是从其他style切过来的，需要重新布局
 			while ( _buffer.length !== 0 ) {
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				var prt = _buffer[ 0 ].getParent();
@@ -432,11 +455,17 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					}
 					Layout.appendside = aside;
 				}
-				parentLayout.appendside = aside;
-				parentLayout[ aside + "List" ].push( node );
+				if ( leftList.indexOf( node ) !== -1 ) {
+					Layout.appendside = "left";
+				} else if ( rightList.indexOf( node ) !== -1 ) {
+					Layout.appendside = "right";
+				} else {
+					parentLayout.appendside = aside;
+					parentLayout[ aside + "List" ].push( node );
+				}
 			}
 
-			var appendside = parentLayout.appendside;
+			var appendside = Layout.appendside || parentLayout.appendside;
 			Layout.appendside = appendside;
 			if ( appendside === "left" ) {
 				Layout.align = "right";
@@ -450,6 +479,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var set = uSet( set1, set2 );
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );
+				var box = set[ i ].getRenderContainer().getRenderBox();
+				set[ i ].setPoint( box.x, box.y );
 			}
 		},
 		updateLayout: function ( node ) {

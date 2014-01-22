@@ -67,6 +67,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		km.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 		_root.preTraverse( function ( n ) {
 			n.clearLayout();
+			n.setPoint();
 		} );
 		km.setCurrentStyle( style );
 		km.initStyle();
