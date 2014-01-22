@@ -372,7 +372,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var minder = this;
 			_root.setData( "text", _root.getData( "text" ) || "I am the root" );
-			_root.setData("layout",{});
+			_root.setData( "layout", {} );
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 10,
