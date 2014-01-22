@@ -182,7 +182,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		};
 	} )() );
-	var root = this.getRoot();
 	//更新连线
 	var updateConnect = function ( minder, node, action ) {
 		var Layout = node.getData( "layout" );
@@ -288,7 +287,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			prt = prt.getParent();
 		} while ( prt );
 		//遍历
-		var _buffer = [ root ];
+		var _buffer = [ minder.getRoot() ];
 		while ( _buffer.length !== 0 ) {
 			_buffer = _buffer.concat( countY( _buffer[ 0 ], appendside ) );
 			effectSet.push( _buffer[ 0 ] );
@@ -369,10 +368,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			drawNode( node );
 		},
 		initStyle: function () {
-			//清空节点上附加的数据;
+			//绘制root并且调整到正确位置
+			var _root = this.getRoot();
+			this.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var minder = this;
-			var _root = minder.getRoot();
-			_root.setData( 'layout', {} );
+			_root.setData( "text", _root.getData( "text" ) || "I am the root" );
+			_root.setData("layout",{});
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 10,
@@ -409,6 +410,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
+			var _root = this.getRoot();
 			if ( !node.getData( "layout" ) ) node.setData( "layout", {} );
 			var Layout = node.getData( "layout" );
 			var parentLayout = parent.getData( "layout" );
@@ -418,7 +420,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				else parent.insertChild( node, index );
 			}
 			minder.handelNodeInsert( node );
-			if ( parent === root ) {
+			if ( parent === _root ) {
 				var leftList = parentLayout.leftList;
 				var rightList = parentLayout.rightList;
 				var sibling = parent.getChildren();
