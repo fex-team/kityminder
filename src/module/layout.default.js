@@ -328,7 +328,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				break;
 			}
 		};
-
 		//判断根据父节点位置定位还是自身已经带有位置属性
 		if ( parent ) {
 			countX( node );
