@@ -34,7 +34,7 @@ kity.extendClass( Minder, function () {
         select: function ( nodes ) {
             this.removeAllSelectedNodes();
             var me = this;
-            utils.each( utils.isArray( nodes ) ? nodes : [ nodes ], function ( i, n ) {
+            Utils.each( Utils.isArray( nodes ) ? nodes : [ nodes ], function ( i, n ) {
                 me._selectedNodes.push( n );
                 highlightNode( me, n );
             } );
@@ -42,15 +42,15 @@ kity.extendClass( Minder, function () {
         },
         addSelect: function ( node ) {
             var me = this;
-            me._selectedNodes.push( node );
+            if ( me._selectedNodes.indexOf( node ) === -1 ) me._selectedNodes.push( node );
             highlightNode( me, node );
         },
         isNodeSelected: function ( node ) {
-            return node.getData( 'highlight' ) === true
+            return node.getData( 'highlight' ) === true;
         },
         //当前选区中的节点在给定的节点范围内的保留选中状态，没在给定范围的取消选中，给定范围中的但没在当前选中范围的也做选中效果
         toggleSelect: function ( nodes ) {
-            nodes = utils.isArray( nodes ) ? nodes : [ nodes ];
+            nodes = Utils.isArray( nodes ) ? nodes : [ nodes ];
             var selectedNodes = this.getSelectedNodes().slice( 0 );
             this.removeAllSelectedNodes();
             for ( var i = 0, n; n = selectedNodes[ i ]; ) {
