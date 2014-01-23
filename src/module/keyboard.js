@@ -98,5 +98,5 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
             }
         }
-    }
+    };
 } );

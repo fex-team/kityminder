@@ -34,7 +34,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		removeNode: function ( nodes ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).appendChildNode.call( this, nodes );
+			this.getLayoutStyle( curStyle ).removeNode.call( this, nodes );
 		},
 		updateLayout: function ( node ) {
 			var curStyle = this.getCurrentStyle();
@@ -110,6 +110,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
+				console.log( selectedNodes );
 				km.removeNode( selectedNodes );
 			}
 		};
