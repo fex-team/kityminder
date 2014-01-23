@@ -11,7 +11,7 @@
     </style>
 </head>
 <body style="background:#262626; margin:0; padding:0">
-<div id="kityminder" style="height:1000px;width:100%">
+<div id="kityminder" style="height:1000px;width:100%" onselectstart="return false">
 <select id="StyleChange">
     <option value="default">Default</option>
     <option value="green">Green</option>
@@ -19,10 +19,10 @@
 </div>
 </body>
 <script>
+    var minder = KM.createMinder(kityminder);
     document.getElementById("StyleChange").addEventListener("change",function(e){
         var val = e.target.value;
         minder.execCommand("switchlayout",val);
     },false);
-    minder = KM.createMinder(kityminder);
 </script>
 </html>

@@ -40,6 +40,11 @@ kity.extendClass( Minder, function () {
             } );
             return this;
         },
+        addSelect: function ( node ) {
+            var me = this;
+            me._selectedNodes.push( node );
+            highlightNode( me, node );
+        },
         isNodeSelected: function ( node ) {
             return node.getData( 'highlight' ) === true
         },
@@ -64,7 +69,7 @@ kity.extendClass( Minder, function () {
             } );
             this._selectedNodes = nodes;
         },
-        isSingleSelect:function(){
+        isSingleSelect: function () {
             return this._selectedNodes.length == 1
         }
     }

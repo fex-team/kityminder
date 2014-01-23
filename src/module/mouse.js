@@ -1,161 +1,86 @@
 KityMinder.registerModule( "MouseModule", function () {
-    var Draggable = ( function () {
-        var Paper = kity.Paper;
-
-        var touchable = window.ontouchstart !== undefined;
-        var DRAG_START_EVENT = touchable ? 'touchstart' : 'mousedown',
-            DRAG_MOVE_EVENT = touchable ? 'touchmove' : 'mousemove',
-            DRAG_END_EVENT = touchable ? 'touchend' : 'mouseup';
-
-        return kity.createClass( {
-            drag: function ( opt ) {
-
-                if ( this.dragEnabled ) {
-                    return;
-                }
-
-                var dragStart = opt && opt.start || this.dragStart,
-                    dragMove = opt && opt.move || this.dragMove,
-                    dragEnd = opt && opt.end || this.dragEnd,
-                    dragTarget = opt && opt.target || this.dragTarget || this,
-                    me = this;
-
-                this.dragEnabled = true;
-                this.dragTarget = dragTarget;
-
-                function bindEvents( paper ) {
-
-                    var startPosition, lastPosition, dragging = false;
-
-                    var dragFn = function ( e ) {
-                        if ( !dragging ) {
-                            paper.off( DRAG_MOVE_EVENT, dragFn );
-                        }
-
-                        if ( e.originEvent.touches && e.originEvent.touches.length !== 1 ) return;
-
-                        var currentPosition = e.getPosition();
-                        var movement = {
-                            x: currentPosition.x - startPosition.x,
-                            y: currentPosition.y - startPosition.y
-                        };
-                        var delta = {
-                            x: currentPosition.x - lastPosition.x,
-                            y: currentPosition.y - lastPosition.y
-                        };
-                        var dragInfo = {
-                            position: currentPosition,
-                            movement: movement,
-                            delta: delta
-                        };
-                        lastPosition = currentPosition;
-
-                        if ( dragMove ) {
-                            dragMove.call( me, dragInfo );
-                        } else if ( me instanceof Paper ) {
-                            // treate paper drag different
-                            var view = me.getViewPort();
-                            view.center.x -= delta.x;
-                            view.center.y -= delta.y;
-                            me.setViewPort( view );
-                        } else {
-                            me.translate( delta.x, delta.y );
-                        }
-
-                        dragTarget.trigger( 'dragmove', dragInfo );
-                        e.stopPropagation();
-                        e.preventDefault();
-                    };
-
-                    dragTarget.on( DRAG_START_EVENT, dragTarget._dragStartHandler = function ( e ) {
-                        if ( e.originEvent.button ) {
-                            return;
-                        }
-                        dragging = true;
-
-                        var dragInfo = {
-                            position: lastPosition = startPosition = e.getPosition()
-                        };
-
-                        if ( dragStart ) {
-                            var cancel = dragStart.call( me, dragInfo ) === false;
-                            if ( cancel ) {
-                                return;
-                            }
-                        }
-
-                        paper.on( DRAG_MOVE_EVENT, dragFn );
-
-                        dragTarget.trigger( 'dragstart', dragInfo );
-
-                        e.stopPropagation();
-                        e.preventDefault();
-                    } );
-
-                    paper.on( DRAG_END_EVENT, dragTarget._dragEndHandler = function ( e ) {
-                        if ( dragging ) {
-                            dragging = false;
-                            if ( dragEnd ) {
-                                dragEnd.call( me );
-                            }
-
-                            paper.off( DRAG_MOVE_EVENT, dragFn );
-                            dragTarget.trigger( 'dragend' );
-
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }
-                    } );
-                }
-
-                if ( me instanceof Paper ) {
-                    bindEvents( me );
-                } else if ( me.getPaper() ) {
-                    bindEvents( me.getPaper() );
-                } else {
-                    var listener = function ( e ) {
-                        if ( e.targetShape.getPaper() ) {
-                            bindEvents( e.targetShape.getPaper() );
-                            me.off( 'add', listener );
-                            me.off( 'treeadd', listener );
-                        }
-                    };
-                    me.on( 'add treeadd', listener );
-                }
-                return this;
-            }, // end of drag
-
-
-            undrag: function () {
-                var target = this.dragTarget;
-                target.off( DRAG_START_EVENT, target._dragStartHandler );
-                target.getPaper().off( DRAG_END_EVENT, target._dragEndHandler );
-                delete target._dragStartHandler;
-                delete target._dragEndHandler;
-                this.dragEnabled = false;
-                return this;
-            }
-        } );
-    } )();
+    var minder = this;
 
     function getTouchDistance( e ) {
         return kity.Vector.fromPoints( e.kityEvent.getPosition( 0 ), e.kityEvent.getPosition( 1 ) ).length();
     }
+
+    var SelectArea = this.SelectArea = ( function () {
+        var startPos = null;
+        var selectRect = null;
+        var min = function ( a, b ) {
+            return a < b ? a : b;
+        };
+        var max = function ( a, b ) {
+            return a > b ? a : b;
+        };
+        var inArea = function ( p1, p2, p ) {
+            var minx = min( p1.x, p2.x );
+            var maxx = max( p1.x, p2.x );
+            var miny = min( p1.y, p2.y );
+            var maxy = max( p1.y, p2.y );
+            if ( p.x >= minx && p.x <= maxx && p.y >= miny && p.y <= maxy ) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        return {
+            selectStart: function ( e ) {
+                selectRect = new kity.Polygon();
+                minder.getRenderContainer().addShape( selectRect );
+                var p = e.getPosition();
+                startPos = {
+                    x: p.x,
+                    y: p.y
+                };
+            },
+            selectMove: function ( e ) {
+                var p = e.getPosition();
+                if ( startPos ) {
+                    var points = [ new kity.Point( startPos.x, startPos.y ),
+                        new kity.Point( p.x, startPos.y ),
+                        new kity.Point( p.x, p.y ),
+                        new kity.Point( startPos.x, p.y )
+                    ];
+                    selectRect.setPoints( points ).fill( "white" ).setOpacity( 0.5 );
+                    var _buffer = [ minder.getRoot() ];
+                    while ( _buffer.length !== 0 ) {
+                        _buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+                        var _buffer0Shape = _buffer[ 0 ].getRenderContainer().getRenderBox();
+                        var _bufferPoint = {
+                            x: _buffer0Shape.x,
+                            y: _buffer0Shape.y
+                        };
+                        if ( inArea( startPos, p, _bufferPoint ) ) {
+                            minder.addSelect( _buffer[ 0 ] );
+                        }
+                        _buffer.shift();
+                    }
+                }
+            },
+            selectEnd: function ( e ) {
+                if ( startPos ) selectRect.remove();
+                startPos = null;
+            }
+        };
+    } )();
     return {
         "init": function () {
-//            kity.extendClass( kity.Paper, Draggable );
-//            this._paper.drag();
+            // kity.extendClass( kity.Paper, Draggable );
+            // this._paper.drag();
         },
         "events": {
             'mousedown touchstart': function ( e ) {
                 if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
                 var clickNode = e.getTargetNode();
-                if(clickNode){
-                    this.select(clickNode)
-                }else{
-                    this.removeAllSelectedNodes()
+                if ( clickNode ) {
+                    this.select( clickNode );
+                } else {
+                    this.removeAllSelectedNodes();
+                    this.SelectArea.selectStart( e );
                 }
-
             },
             'touchstart': function ( e ) {
                 var me = this;
@@ -186,6 +111,12 @@ KityMinder.registerModule( "MouseModule", function () {
                     this._paper.setViewPort( cv );
                     console.log( 'move: ', cv );
                 }
+            },
+            'mousemove touchmove': function ( e ) {
+                this.SelectArea.selectMove( e );
+            },
+            'touchend mouseup': function ( e ) {
+                this.SelectArea.selectEnd( e );
             }
         }
     };
