@@ -510,6 +510,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 						_buffer[ 0 ].getRenderContainer().remove();
 						updateConnect( minder, _buffer[ 0 ], "remove" );
+						var prt = _buffer[ 0 ].getParent();
+						prt.removeChild( _buffer[ 0 ] );
 						_buffer.shift();
 					}
 					if ( parent === root ) {
@@ -525,7 +527,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						translateNode( set[ j ] );
 					}
 				}
-				minder.select( parent );
 			}
 		}
 	};

@@ -261,7 +261,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			prt = prt.getParent();
 		}
 
-		var _buffer = [minder.getRoot()];
+		var _buffer = [ minder.getRoot() ];
 		while ( _buffer.length !== 0 ) {
 			var childrenC = _buffer[ 0 ].getChildren();
 			var parentLayout = _buffer[ 0 ].getData( "layout" );
@@ -308,7 +308,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			this.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
 			var minder = this;
 			_root.setData( "text", _root.getData( "text" ) || "I am the root" );
-			_root.setData("layout",{});
+			_root.setData( "layout", {} );
 			var Layout = _root.getData( "layout" );
 			Layout.style = {
 				radius: 20,
@@ -331,13 +331,13 @@ KityMinder.registerModule( "LayoutGreen", function () {
 				var parent = _buffer[ 0 ].getParent();
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer[ 0 ].children = [];
-				_buffer[0].setData("layout",{});
+				_buffer[ 0 ].setData( "layout", {} );
 				this.appendChildNode( parent, _buffer[ 0 ] );
 				_buffer.shift();
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
-			node.setData("layout",{});
+			node.setData( "layout", {} );
 			var Layout = node.getData( "layout" );
 			var parentLayout = parent.getData( "layout" );
 			var minder = this;
