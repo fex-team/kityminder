@@ -409,7 +409,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( _buffer.length !== 0 ) {
 				for ( var i = 0; i < _buffer.length; i++ ) {
 					var point = _buffer[ i ].getPoint();
-					if ( point ) {
+					if ( point && point.x && point.y ) {
 						if ( point.x > Layout.x ) {
 							Layout.rightList.push( _buffer[ i ] );
 						} else {

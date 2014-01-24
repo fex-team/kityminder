@@ -31,20 +31,20 @@ kity.extendClass( Minder, function () {
             } );
             this._selectedNodes = [];
         },
-        removeSelectedNodes:function(nodes){
+        removeSelectedNodes: function ( nodes ) {
             var me = this;
             Utils.each( Utils.isArray( nodes ) ? nodes : [ nodes ], function ( i, n ) {
-                if ( me._selectedNodes.indexOf( n ) === -1 )return;
-                me._selectedNodes.splice(i,1);
+                if ( me._selectedNodes.indexOf( n ) === -1 ) return;
+                me._selectedNodes.splice( i, 1 );
                 unhighlightNode( me, n );
             } );
             return this;
         },
-        select: function ( nodes,isToggleSelect ) {
+        select: function ( nodes, isToggleSelect ) {
             isToggleSelect && this.removeAllSelectedNodes();
             var me = this;
             Utils.each( Utils.isArray( nodes ) ? nodes : [ nodes ], function ( i, n ) {
-                if ( me._selectedNodes.indexOf( n ) !== -1 )return;
+                if ( me._selectedNodes.indexOf( n ) !== -1 ) return;
                 me._selectedNodes.push( n );
                 highlightNode( me, n );
             } );

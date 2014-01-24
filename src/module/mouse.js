@@ -76,7 +76,7 @@ KityMinder.registerModule( "MouseModule", function () {
                 if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
                 var clickNode = e.getTargetNode();
                 if ( clickNode ) {
-                    this.select( clickNode );
+                    this.select( clickNode, true );
                 } else {
                     this.removeAllSelectedNodes();
                     this.SelectArea.selectStart( e );
