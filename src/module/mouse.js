@@ -48,13 +48,17 @@ KityMinder.registerModule( "MouseModule", function () {
                     var _buffer = [ minder.getRoot() ];
                     while ( _buffer.length !== 0 ) {
                         _buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-                        var _buffer0Shape = _buffer[ 0 ].getRenderContainer().getRenderBox();
-                        var _bufferPoint = {
-                            x: _buffer0Shape.x,
-                            y: _buffer0Shape.y
-                        };
-                        if ( inArea( startPos, p, _bufferPoint ) ) {
-                            minder.addSelect( _buffer[ 0 ] );
+                        var _bufferPoint = _buffer[ 0 ].getRenderContainer().getRenderBox().closurePoints;
+                        var sel = false;
+                        for ( var i = 0; i < _bufferPoint.length; i++ ) {
+                            if ( inArea( startPos, p, _bufferPoint[ i ] ) ) {
+                                minder.select( _buffer[ 0 ] );
+                                sel = true;
+                                break;
+                            }
+                        }
+                        if ( !sel ) {
+                            minder.removeSelectedNodes( _buffer[ 0 ] );
                         }
                         _buffer.shift();
                     }
