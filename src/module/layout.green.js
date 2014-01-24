@@ -375,7 +375,7 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			}
 		},
 		updateLayout: function ( node ) {
-
+			drawNode( node );
 		}
 	};
 	this.addLayoutStyle( "green", _style );
