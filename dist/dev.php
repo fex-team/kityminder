@@ -1,31 +1,31 @@
 <?php
 
 $dependency = Array(
-    'src/core/kityminder.js',
-    'src/core/utils.js',
-    'src/core/command.js',
-    'src/core/node.js',
-    'src/core/module.js',
-    'src/core/event.js',
-    'src/core/minder.js',
-    'src/core/minder.data.js',
-    'src/core/minder.event.js',
-    'src/core/minder.module.js',
-    'src/core/minder.command.js',
-    'src/core/minder.node.js',
-    'src/module/history.js',
-    'src/module/icon.js',
-    'src/module/layout.js',
-    'src/module/layout.default.js',
-    'src/module/layout.green.js',
-    'src/core/minder.select.js',
-    'src/module/keyboard.js',
-    'src/module/mouse.js',
-    'src/module/history.js'
-//    'src/module/editor.js',
-//    'src/module/editor.range.js',
-//    'src/module/editor.receiver.js',
-//    'src/module/editor.cursor.js'
+    'src/core/kityminder.js'
+    ,'src/core/utils.js'
+    ,'src/core/command.js'
+    ,'src/core/node.js'
+    ,'src/core/module.js'
+    ,'src/core/event.js'
+    ,'src/core/minder.js'
+    ,'src/core/minder.data.js'
+    ,'src/core/minder.event.js'
+    ,'src/core/minder.module.js'
+    ,'src/core/minder.command.js'
+    ,'src/core/minder.node.js'
+    ,'src/module/history.js'
+    ,'src/module/icon.js'
+    ,'src/module/layout.js'
+    ,'src/module/layout.default.js'
+    ,'src/module/layout.green.js'
+    ,'src/core/minder.select.js'
+    ,'src/module/keyboard.js'
+    ,'src/module/mouse.js'
+    ,'src/module/history.js'
+//    ,'src/module/editor.js'
+//    ,'src/module/editor.range.js'
+//    ,'src/module/editor.receiver.js'
+//    ,'src/module/editor.cursor.js'
 
 );
 
