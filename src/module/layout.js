@@ -85,7 +85,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
 				km.appendChildNode( parent, node );
-				km.select( node );
+				km.select( node,true );
 				return node;
 			}
 		};
@@ -100,7 +100,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				} else {
 					km.appendSiblingNode( selectedNode, node );
 				}
-				km.select( node );
+				km.select( node,true );
 				return node;
 			}
 		};
