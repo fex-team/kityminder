@@ -169,6 +169,22 @@ var utils = Utils = KityMinder.Utils = {
         if (this.isArray(obj) || this.isString(obj)) return obj.length === 0;
         for (var key in obj) if (obj.hasOwnProperty(key)) return false;
         return true;
+    },
+    getNodeCommonAncestor : function(nodeA,nodeB){
+        if ( nodeA === nodeB ) {
+            return nodeA.parent
+        }
+        if ( nodeA.contains( nodeB ) ) {
+            return this
+        }
+        if ( nodeB.contains( nodeA ) ) {
+            return nodeB
+        }
+        var parent = nodeA.parent;
+        while ( !parent.contains( nodeB ) ) {
+            parent = parent.parent;
+        }
+        return parent;
     }
 
 };

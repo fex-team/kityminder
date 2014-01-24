@@ -3,35 +3,30 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.parent = null;
         this.children = [];
         this.data = {};
-        if ( Utils.isString( options ) ) {
-            this.setData( 'text', options );
+        if ( utils.isString( options ) ) {
+            this.setData( 'text', options )
         } else {
             this.setData( options );
         }
         this.rc = new kity.Group();
         this.rc.minderNode = this;
     },
-    setPoint: function ( x, y ) {
-        if ( arguments.length === 0 ) {
-            this.setData( 'point', null );
-        } else {
-            this.setData( 'point', {
-                x: x,
-                y: y
-            } );
-        }
+    setPoint:function(x,y){
+        this.setData('point',{
+            x:x,y:y
+        })
     },
-    getPoint: function () {
-        return this.getData( 'point' );
+    getPoint:function(){
+        return this.getData('point')
     },
     setText: function ( text ) {
-        this.setData( 'text', text );
+        this.setData( 'text', text )
     },
     getText: function () {
-        return this.getData( 'text' );
+        return this.getData( 'text' )
     },
     isRoot: function () {
-        return this.getParent() === null ? true : false;
+        return this.getParent() == null ? true : false;
     },
     getParent: function () {
         return this.parent;
@@ -94,7 +89,17 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         node.root = parent.root;
 
         this.children.splice( index, 0, node );
+        //        this.handelInsert( node );
+
     },
+    //
+    //    handelInsert: function ( node ) {
+    //        var root = this.getRoot();
+    //        if ( root.tnh ) {
+    //            root.tnh.handelNodeInsert.call( root.tnh, node );
+    //        }
+    //    },
+
     appendChild: function ( node ) {
         return this.insertChild( node );
     },
@@ -112,17 +117,25 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         if ( index >= 0 ) {
             removed = this.children.splice( index, 1 )[ 0 ];
             removed.parent = null;
+            //            this.handelRemove( removed );
         }
     },
+
+    //    handelRemove: function ( node ) {
+    //        var root = this.getRoot();
+    //        if ( root.tnh ) {
+    //            root.tnh.handelNodeRemove.call( root.tnh, node );
+    //        }
+    //    },
 
     getChild: function ( index ) {
         return this.children[ index ];
     },
     getFirstChild: function () {
-        return this.children[ 0 ];
+        return this.children[ 0 ]
     },
     getLastChild: function () {
-        return this.children[ this.children.length - 1 ];
+        return this.children[ this.children.length - 1 ]
     },
     getData: function ( name ) {
         if ( name === undefined ) {
@@ -132,17 +145,17 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
 
     setData: function ( name, value ) {
-        if ( name === undefined ) {
-            this.data = {};
+        if(name === undefined){
+            this.data = {}
 
-        } else if ( Utils.isObject( name ) ) {
-            Utils.extend( this.data, name );
-        } else {
-            if ( value === undefined ) {
-                this.data[ name ] = null;
-                delete this.data[ name ];
-            } else {
-                this.data[ name ] = value;
+        }else if(utils.isObject(name)){
+            utils.extend(this.data,name)
+        }else{
+            if(value === undefined){
+                this.data[name] = null;
+                delete this.data[name]
+            }else{
+                this.data[name] = value;
             }
         }
     },
@@ -150,20 +163,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this.rc;
     },
     getCommonAncestor: function ( node ) {
-        if ( this === node ) {
-            return this.parent;
-        }
-        if ( this.contains( node ) ) {
-            return this;
-        }
-        if ( node.contains( this ) ) {
-            return node;
-        }
-        var parent = this.parent;
-        while ( !parent.contains( node ) ) {
-            parent = parent.parent;
-        }
-        return parent;
+       return utils.getNodeCommonAncestor(this,node)
     },
     contains: function ( node ) {
         if ( this === node ) {
@@ -173,44 +173,44 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             return true;
         }
         var isContain = false;
-        Utils.each( this.getChildren(), function ( i, n ) {
+        utils.each( this.getChildren(), function ( i, n ) {
             isContain = n.contains( node );
             if ( isContain === true ) {
-                return false;
+                return false
             }
         } );
         return isContain;
 
     },
-    clone: function () {
-        function cloneNode( parent, isClonedNode ) {
+    clone:function(){
+        function cloneNode(parent,isClonedNode){
             var _tmp = new KM.MinderNode();
 
-            _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
+            _tmp.data = utils.clonePlainObject(isClonedNode.getData());
             _tmp.parent = parent;
-            if ( parent ) {
-                parent.children.push( _tmp );
+            if(parent){
+                parent.children.push(_tmp);
             }
-            for ( var i = 0, ci; ci = isClonedNode.children[ i++ ]; ) {
-                cloneNode( _tmp, ci );
+            for(var i= 0,ci;ci=isClonedNode.children[i++];){
+                cloneNode(_tmp,ci);
             }
             return _tmp;
         }
-        return function () {
-            return cloneNode( null, this );
+        return function(){
+            return cloneNode(null,this);
 
         }
     }(),
-    equals: function ( node ) {
-        if ( node.children.length != this.children.length ) {
+    equals:function(node){
+        if(node.children.length != this.children.length){
             return false;
         }
-        if ( utils.compareObject( node.getData(), this.getData() ) === false ) {
+        if(utils.compareObject(node.getData(),this.getData()) === false){
             return false;
         }
 
-        for ( var i = 0, ci; ci = this.children[ i++ ]; ) {
-            if ( ci.equals( node ) === false ) {
+        for(var i= 0,ci;ci=this.children[i++];){
+            if(ci.equals(node)===false){
                 return false;
             }
         }
