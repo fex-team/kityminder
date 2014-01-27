@@ -22,10 +22,10 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this.getData( 'point' );
     },
     setType: function ( type ) {
-
+        this._type = type;
     },
     getType: function ( type ) {
-
+        return this._type;
     },
     setText: function ( text ) {
         this.setData( 'text', text );

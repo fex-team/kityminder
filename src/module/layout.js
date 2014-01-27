@@ -96,8 +96,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km, node ) {
 				var selectedNode = km.getSelectedNode();
 				if ( selectedNode.isRoot() ) {
+					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
 				} else {
+					node.setType( "sub" );
 					km.appendSiblingNode( selectedNode, node );
 				}
 				km.select( node, true );
