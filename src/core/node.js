@@ -215,5 +215,10 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         }
         return true;
 
+    },
+    getTextShape:function(){
+        var rc = this.getRenderContainer();
+        var text = rc.getElementsByTagName('text');
+
     }
 } );
