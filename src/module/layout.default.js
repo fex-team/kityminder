@@ -3,9 +3,25 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var minderWidth = _target.clientWidth;
 	var minderHeight = _target.clientHeight;
 	var minder = this;
-	var hideIcon = kity.createClass( "hideIcon", ( function () {
+	var shIcon = kity.createClass( "DefaultshIcon", ( function () {
 		return {
+			constructor: function ( node ) {
+				this._node = node;
+				var nodeLayout = node.getData( "layout" );
+				this.shape = new kity.Group();
+				this._circle = new kity.Circle();
+				this._plus = new kity.Path();
+				this._dec = new kity.Path();
+			},
+			switch: function ( show ) {
 
+			},
+			update: function () {
+
+			},
+			remove: function () {
+
+			}
 		};
 	} )() );
 	//主分支
@@ -23,9 +39,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				connect.addShapes( [ bezier, circle ] );
 				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var Layout = {
-					radius: 10,
-					fill: "gray",
-					stroke: new kity.Pen( "white", 2 ),
+					radius: 0,
+					fill: "white",
 					color: "black",
 					padding: [ 5.5, 20, 5.5, 20 ],
 					fontSize: 20,
@@ -48,7 +63,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _txtHeight = txt.getHeight();
 				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
 				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
+				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
 				this.updateConnect();
 			},
 			updateConnect: function () {
@@ -73,7 +88,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var endPosV = endPos.getVertex();
 				sPos.setVertex( rootX, rootY );
 				connect.bezier.setPoints( [ sPos, endPos ] ).stroke( "white" );
-				connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 5 : -5 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 3 );
+				connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 5 : -5 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 4 );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
@@ -94,10 +109,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var connect = this._connect = new kity.Path();
 				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var Layout = {
-					radius: 10,
-					fill: "skyblue",
-					stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ),
-					color: "#ccc",
+					stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ),
+					color: "white",
 					padding: [ 5, 10, 5, 10 ],
 					fontSize: 12,
 					margin: [ 0, 10, 20, 5 ],
@@ -107,7 +120,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				};
 				node.setData( "layout", Layout );
 				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 );
-				highlightshape.setRadius( 5 ).fill( "chocolate" ).translate( -1, 0 ).stroke( new kity.Pen( "white", 3 ) );
+				highlightshape.fill( "chocolate" ).translate( -1, 0 );
 				this.update();
 			},
 			update: function () {
@@ -188,8 +201,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					rightList: [],
 					color: "white",
 					fontSize: 20,
-					fill: "burlywood",
-					stroke: new kity.Pen( "white", 2 ),
+					fill: "cadetblue",
+					stroke: null,
 					padding: [ 10.5, 10, 10.5, 10 ],
 					radius: 15,
 					margin: [ 0, 0, 0, 0 ]
@@ -210,7 +223,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _txtHeight = txt.getHeight();
 				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
 				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
+				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
