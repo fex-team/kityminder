@@ -92,8 +92,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var underline = this._underline = new kity.Path();
 				var highlightshape = this._highlightshape = new kity.Rect();
 				container.addShapes( [ highlightshape, underline, txt ] );
-				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var connect = this._connect = new kity.Path();
+				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var Layout = {
 					radius: 10,
 					fill: "skyblue",
@@ -102,7 +102,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					color: "#ccc",
 					padding: [ 5, 10, 5, 10 ],
 					fontSize: 12,
-					margin: [ 0, 0, 5, 10 ],
+					margin: [ 0, 10, 20, 5 ],
 					shape: this,
 					align: ( "leftright" ).replace( node.getData( "layout" ).appendside, "" ),
 					appendside: node.getData( "layout" ).appendside
@@ -137,13 +137,26 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var connect = this._connect;
 				var node = this._node;
 				var parentShape = node.getParent().getRenderContainer();
+				var parentBox = parentShape.getRenderBox();
 				var parentLayout = node.getParent().getData( "layout" );
-				var sX, sY = parentLayout.y - parentShape.getHeight() / 2;
+				var Layout = node.getData( "layout" );
+				var Shape = node.getRenderContainer();
+				var sX, sY = parentLayout.y;
+				var nodeX, nodeY = Shape.getRenderBox().closurePoints[ 1 ].y;
 				if ( node.appendside === "left" ) {
-
+					sX = parentBox.closurePoints[ 1 ].x + parentLayout.margin[ 1 ];
+					nodeX = Shape.getRenderBox().closurePoints[ 0 ].x - 1;
 				} else {
-
+					sX = parentBox.closurePoints[ 0 ].x + parentLayout.margin[ 1 ];
+					nodeX = Shape.getRenderBox().closurePoints[ 1 ].x + 1;
 				}
+				connect.getDrawer()
+					.clear()
+					.moveTo( sX, sY )
+					.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
+				else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
+				connect.stroke( Layout.stroke );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
@@ -172,7 +185,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					fontSize: 20,
 					fill: "burlywood",
 					stroke: new kity.Pen( "white", 1 ),
-					padding: [ 10.5, 20, 10.5, 20 ],
+					padding: [ 10.5, 10, 10.5, 10 ],
 					radius: 15,
 					margin: [ 0, 0, 0, 0 ]
 				};
@@ -290,10 +303,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var parentX = parentLayout.x;
 			switch ( appendside ) {
 			case "left":
-				nodeLayout.x = parentX - parentWidth - nodeLayout.margin[ 1 ] - nodeLayout.margin[ 3 ];
+				nodeLayout.x = parentX - parentWidth - parentLayout.margin[ 1 ] - nodeLayout.margin[ 3 ];
 				break;
 			case "right":
-				nodeLayout.x = parentX + parentWidth + nodeLayout.margin[ 1 ] + nodeLayout.margin[ 3 ];
+				nodeLayout.x = parentX + parentWidth + parentLayout.margin[ 1 ] + nodeLayout.margin[ 3 ];
 				break;
 			default:
 				break;
