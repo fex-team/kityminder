@@ -88,7 +88,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var endPosV = endPos.getVertex();
 				sPos.setVertex( rootX, rootY );
 				connect.bezier.setPoints( [ sPos, endPos ] ).stroke( "white" );
-				connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 5 : -5 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 4 );
+				connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
