@@ -3,7 +3,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.parent = null;
         this.children = [];
         this.data = {};
-        this._type = "main";
         if ( Utils.isString( options ) ) {
             this.setData( 'text', options );
         } else {
@@ -22,10 +21,10 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this.getData( 'point' );
     },
     setType: function ( type ) {
-        this._type = type;
+        this.setData( 'type', type );
     },
     getType: function ( type ) {
-        return this._type;
+        return this.getData( 'type' );
     },
     setText: function ( text ) {
         this.setData( 'text', text );
@@ -216,9 +215,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return true;
 
     },
-    getTextShape:function(){
+    getTextShape: function () {
         var rc = this.getRenderContainer();
-        var text = rc.getElementsByTagName('text');
+        var text = rc.getElementsByTagName( 'text' );
 
     }
 } );

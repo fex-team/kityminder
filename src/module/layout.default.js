@@ -109,9 +109,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var connect = this._connect = new kity.Path();
 				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var Layout = {
-					stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ),
+					stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ).setLineJoin( "round" ),
 					color: "white",
-					padding: [ 5, 10, 5, 10 ],
+					padding: [ 5, 10, 5.5, 10 ],
 					fontSize: 12,
 					margin: [ 0, 10, 20, 5 ],
 					shape: this,
@@ -156,13 +156,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var nodeX, nodeY = Shape.getRenderBox().closurePoints[ 1 ].y;
 				if ( Layout.appendside === "left" ) {
 					sX = parentBox.closurePoints[ 1 ].x - parentLayout.margin[ 1 ];
-					nodeX = Shape.getRenderBox().closurePoints[ 0 ].x - 1;
+					nodeX = Shape.getRenderBox().closurePoints[ 0 ].x;
 					connect.getDrawer()
 						.clear()
 						.moveTo( sX, sY )
 						.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
-					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
-					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
+					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
+					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
 					connect.stroke( Layout.stroke );
 				} else {
 					sX = parentBox.closurePoints[ 0 ].x + parentLayout.margin[ 1 ];
@@ -171,8 +171,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						.clear()
 						.moveTo( sX, sY )
 						.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
-					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
-					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
+					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
+					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
 					connect.stroke( Layout.stroke );
 				}
 			},
@@ -373,6 +373,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		initStyle: function () {
 			//绘制root并且调整到正确位置
 			var _root = this.getRoot();
+			minder.getRenderContainer().clear();
 			minder.handelNodeInsert( _root );
 			var rc = new RootShape( _root );
 			translateNode( _root );
