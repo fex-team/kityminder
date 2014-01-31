@@ -25,8 +25,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var Layout = {
 					radius: 10,
 					fill: "gray",
-					stroke: new kity.Pen( "white", 1 ),
-					strokeWidth: 1,
+					stroke: new kity.Pen( "white", 2 ),
 					color: "black",
 					padding: [ 5.5, 20, 5.5, 20 ],
 					fontSize: 20,
@@ -49,7 +48,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _txtHeight = txt.getHeight();
 				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
 				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
+				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
 				this.updateConnect();
 			},
 			updateConnect: function () {
@@ -97,8 +96,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var Layout = {
 					radius: 10,
 					fill: "skyblue",
-					stroke: new kity.Pen( "#333", 2 ),
-					strokeWidth: 1,
+					stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ),
 					color: "#ccc",
 					padding: [ 5, 10, 5, 10 ],
 					fontSize: 12,
@@ -109,7 +107,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				};
 				node.setData( "layout", Layout );
 				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 );
-				highlightshape.setRadius( 5 ).fill( "#333" ).translate( -1, 0 ).stroke( new kity.Pen( "white", 1 ) );
+				highlightshape.setRadius( 5 ).fill( "chocolate" ).translate( -1, 0 ).stroke( new kity.Pen( "white", 3 ) );
 				this.update();
 			},
 			update: function () {
@@ -143,20 +141,27 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var Shape = node.getRenderContainer();
 				var sX, sY = parentLayout.y;
 				var nodeX, nodeY = Shape.getRenderBox().closurePoints[ 1 ].y;
-				if ( node.appendside === "left" ) {
-					sX = parentBox.closurePoints[ 1 ].x + parentLayout.margin[ 1 ];
+				if ( Layout.appendside === "left" ) {
+					sX = parentBox.closurePoints[ 1 ].x - parentLayout.margin[ 1 ];
 					nodeX = Shape.getRenderBox().closurePoints[ 0 ].x - 1;
+					connect.getDrawer()
+						.clear()
+						.moveTo( sX, sY )
+						.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
+					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
+					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
+					connect.stroke( Layout.stroke );
 				} else {
 					sX = parentBox.closurePoints[ 0 ].x + parentLayout.margin[ 1 ];
 					nodeX = Shape.getRenderBox().closurePoints[ 1 ].x + 1;
+					connect.getDrawer()
+						.clear()
+						.moveTo( sX, sY )
+						.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
+					if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
+					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
+					connect.stroke( Layout.stroke );
 				}
-				connect.getDrawer()
-					.clear()
-					.moveTo( sX, sY )
-					.lineTo( sX, nodeY > sY ? ( nodeY - Layout.margin[ 3 ] ) : ( nodeY + Layout.margin[ 3 ] ) );
-				if ( nodeY > sY ) connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY );
-				else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
-				connect.stroke( Layout.stroke );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
@@ -184,7 +189,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					color: "white",
 					fontSize: 20,
 					fill: "burlywood",
-					stroke: new kity.Pen( "white", 1 ),
+					stroke: new kity.Pen( "white", 2 ),
 					padding: [ 10.5, 10, 10.5, 10 ],
 					radius: 15,
 					margin: [ 0, 0, 0, 0 ]
@@ -205,7 +210,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _txtHeight = txt.getHeight();
 				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
 				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
+				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).stroke( node.getData( "highlight" ) ? new kity.Pen( "white", 3 ) : Layout.stroke ).setRadius( Layout.radius );
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
