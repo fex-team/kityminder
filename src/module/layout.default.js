@@ -3,21 +3,56 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var minderWidth = _target.clientWidth;
 	var minderHeight = _target.clientHeight;
 	var minder = this;
-	var shIcon = kity.createClass( "DefaultshIcon", ( function () {
+	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
 		return {
 			constructor: function ( node ) {
+				this._show = false;
 				this._node = node;
-				var nodeLayout = node.getData( "layout" );
-				this.shape = new kity.Group();
-				this._circle = new kity.Circle();
-				this._plus = new kity.Path();
-				this._dec = new kity.Path();
+				var iconShape = this.shape = new kity.Group();
+				iconShape.class = "shicon";
+				iconShape.icon = this;
+				var circle = this._circle = new kity.Circle().fill( "white" ).stroke( "gray" ).setRadius( 5 );
+				var plus = this._plus = new kity.Path();
+				plus.getDrawer()
+					.moveTo( -3, 0 )
+					.lineTo( 3, 0 )
+					.moveTo( 0, -3 )
+					.lineTo( 0, 3 );
+				plus.stroke( "gray" );
+				var dec = this._dec = new kity.Path();
+				dec.getDrawer()
+					.moveTo( -3, 0 )
+					.lineTo( 3, 0 );
+				dec.stroke( "gray" );
+				minder.getRenderContainer().addShape( iconShape );
+				iconShape.addShapes( [ circle, plus, dec ] );
+				node.setData( "shicon", this );
+				this.update();
+				this.switchState();
 			},
-			switch: function ( show ) {
-
+			switchState: function () {
+				if ( !this._show ) {
+					this._plus.setOpacity( 0 );
+					this._dec.setOpacity( 1 );
+					this._show = true;
+				} else {
+					this._plus.setOpacity( 1 );
+					this._dec.setOpacity( 0 );
+					this._show = false;
+				}
+				return this.show;
 			},
 			update: function () {
-
+				var node = this._node;
+				var Layout = node.getData( "layout" );
+				var nodeShape = node.getRenderContainer();
+				var nodeX, nodeY = ( node.getType() === "main" ? Layout.y : ( Layout.y + nodeShape.getHeight() / 2 - 5 ) );
+				if ( Layout.appendside === "left" ) {
+					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 5;
+				} else {
+					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 5;
+				}
+				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
 			},
 			remove: function () {
 
@@ -32,6 +67,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var container = node.getRenderContainer();
 				var txt = this._txt = new kity.Text();
 				var rect = this._rect = new kity.Rect();
+				var shicon = this._shicon = new ShIcon( node );
 				container.addShapes( [ rect, txt ] );
 				var connect = this._connect = new kity.Group();
 				var bezier = connect.bezier = new kity.Bezier();
@@ -65,6 +101,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
 				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
 				this.updateConnect();
+				this.updateShIcon();
 			},
 			updateConnect: function () {
 				var rootX = minder.getRoot().getData( "layout" ).x;
@@ -90,6 +127,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				connect.bezier.setPoints( [ sPos, endPos ] ).stroke( "white" );
 				connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
 			},
+			updateShIcon: function () {
+				this._shicon.update();
+			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
 				this._connect.remove();
@@ -104,6 +144,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var container = node.getRenderContainer();
 				var txt = this._txt = new kity.Text();
 				var underline = this._underline = new kity.Path();
+				var shicon = this._shicon = new ShIcon( node );
 				var highlightshape = this._highlightshape = new kity.Rect();
 				container.addShapes( [ highlightshape, underline, txt ] );
 				var connect = this._connect = new kity.Path();
@@ -143,6 +184,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					.setHeight( _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
 					.setOpacity( node.getData( "highlight" ) ? 1 : 0 );
 				this.updateConnect();
+				this.updateShIcon();
 			},
 			updateConnect: function () {
 				var connect = this._connect;
@@ -175,6 +217,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					else connect.getDrawer().carcTo( Layout.margin[ 3 ], nodeX, nodeY, 0, 1 );
 					connect.stroke( Layout.stroke );
 				}
+			},
+			updateShIcon: function () {
+				this._shicon.update();
 			},
 			clear: function () {
 				this._node.getRenderContainer().clear();
@@ -351,8 +396,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
 			break;
 		}
-		if ( Layout.shape && Layout.shape.updateConnect ) {
-			Layout.shape.updateConnect();
+		if ( Layout.shape ) {
+			if ( Layout.shape.updateConnect ) Layout.shape.updateConnect();
+			if ( Layout.shape.updateShIcon ) Layout.shape.updateShIcon();
 		}
 	};
 
@@ -453,6 +499,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var box = set[ i ].getRenderContainer().getRenderBox();
 				set[ i ].setPoint( box.x, box.y );
 			}
+			//var shicon = new ShIcon( node );
 		},
 		appendSiblingNode: function ( sibling, node ) {
 			var siblingLayout = sibling.getData( "layout" );
@@ -498,5 +545,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		}
 	};
 	this.addLayoutStyle( "default", _style );
-	return {};
+	return {
+		"events": {
+			"click": function ( e ) {
+				var ico = e.kityEvent.targetShape.container;
+				if ( ico.class === "shicon" ) {
+					var state = ico.icon.switchState();
+				}
+			}
+		}
+	};
 } );
