@@ -569,7 +569,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						Layout.branchheight = node.getRenderContainer().getHeight() + marginTop + marginBottom;
 						_buffer = node.getChildren();
 						while ( _buffer.length !== 0 ) {
-							_buffer[ 0 ].getData( "layout" ).shape.clear();
+							try {
+								_buffer[ 0 ].getData( "layout" ).shape.clear();
+							} catch ( error ) {}
 							_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 							_buffer.shift();
 						}
