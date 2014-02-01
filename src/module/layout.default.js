@@ -40,7 +40,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					this._dec.setOpacity( 0 );
 					this._show = false;
 				}
-				return this.show;
+				return this._show;
 			},
 			update: function () {
 				var node = this._node;
@@ -48,14 +48,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var nodeShape = node.getRenderContainer();
 				var nodeX, nodeY = ( node.getType() === "main" ? Layout.y : ( Layout.y + nodeShape.getHeight() / 2 - 5 ) );
 				if ( Layout.appendside === "left" ) {
-					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 5;
+					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 6;
 				} else {
-					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 5;
+					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 6;
 				}
 				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
 			},
 			remove: function () {
-
+				this.shape.remove();
 			}
 		};
 	} )() );
@@ -133,6 +133,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			clear: function () {
 				this._node.getRenderContainer().clear();
 				this._connect.remove();
+				this._shicon.remove();
 			}
 		};
 	} )() );
@@ -224,6 +225,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			clear: function () {
 				this._node.getRenderContainer().clear();
 				this._connect.remove();
+				this._shicon.remove();
 			}
 		};
 	} )() );
@@ -550,7 +552,32 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			"click": function ( e ) {
 				var ico = e.kityEvent.targetShape.container;
 				if ( ico.class === "shicon" ) {
-					var state = ico.icon.switchState();
+					var isShow = ico.icon.switchState();
+					var node = ico.icon._node;
+					var _buffer;
+					if ( isShow ) {
+						_buffer = node.getChildren();
+						while ( _buffer.length !== 0 ) {
+							minder.appendChildNode( _buffer[ 0 ].getParent(), _buffer[ 0 ] );
+							_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+							_buffer.shift();
+						}
+					} else {
+						var Layout = node.getData( "layout" );
+						var marginTop = Layout.margin[ 0 ];
+						var marginBottom = Layout.margin[ 2 ];
+						Layout.branchheight = node.getRenderContainer().getHeight() + marginTop + marginBottom;
+						_buffer = node.getChildren();
+						while ( _buffer.length !== 0 ) {
+							_buffer[ 0 ].getData( "layout" ).shape.clear();
+							_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+							_buffer.shift();
+						}
+						var set = updateLayoutVertical( node, node.getParent(), "append" );
+						for ( var i = 0; i < set.length; i++ ) {
+							translateNode( set[ i ] );
+						}
+					}
 				}
 			}
 		}

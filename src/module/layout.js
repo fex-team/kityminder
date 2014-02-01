@@ -60,6 +60,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		clearLayout: function () {
 			this.setData( 'layout', {} );
+		},
+		setHide: function ( isHide ) {
+			this.setData( "hide", isHide );
+		},
+		isHide: function () {
+			return this.getData( "hide" );
 		}
 	} );
 	var switchLayout = function ( km, style ) {
