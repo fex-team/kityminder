@@ -361,6 +361,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var parent = _buffer[ 0 ].getParent();
 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 			if ( !parent ) {
+				effectSet.push( _buffer[ 0 ] );
 				_buffer.shift();
 				continue;
 			}
