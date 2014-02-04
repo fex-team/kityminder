@@ -82,13 +82,16 @@ Minder.Receiver = kity.createClass('Receiver',{
 
             case 'beforekeyup':
                 if(this.isTextEditStatus()){
-
-                    if(keyCode == keymap.Enter){
-                        this.setTextEditStatus(false);
-                        this.clear();
-                        e.stopPropagation();
-                        return;
+                    switch(keyCode){
+                        case keymap.Enter:
+                        case keymap.Tab:
+                            this.setTextEditStatus(false);
+                            this.clear();
+                            e.stopPropagation();
+                            return;
                     }
+
+
 
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
                     this.textShape.setContent(text);
