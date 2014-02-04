@@ -21,16 +21,9 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
         utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
-//        utils.listen(_div,'keydown keypress keyup', utils.proxy(this.keyboardEvents,this));
         this.km.on('beforekeyup', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
-    },
-    setPosition : function(textShapeOffset){
-        this.container.style.top = textShapeOffset.x + 'px';
-        this.container.style.left = textShapeOffset.y + 'px';
-        this.textShape.setPosition(textShapeOffset.x,textShapeOffset.y + this.textShape.getSize());
-        return this;
     },
     setRange : function(range,index){
 
@@ -162,10 +155,11 @@ Minder.Receiver = kity.createClass('Receiver',{
     setContainerStyle : function(){
         var textShapeBox = this.textShape.getRenderBox();
         var size = this.textShape.getSize();
-        this.container.style.cssText += ";left:" + this.offset.x
-            + 'px;top:' + (this.offset.y + size)
+
+        this.container.style.cssText =  ";left:" + this.offset.x
+            + 'px;top:' + (this.offset.y+textShapeBox.height)
             + 'px;width:' + textShapeBox.width
-            + 'px;height:' + textShapeBox.height + 'px;font-size:' + size + 'px';
+            + 'px;height:' + textShapeBox.height + 'px;';
         return this;
     },
     getTextOffsetData:function(){
