@@ -419,9 +419,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			drawNode( node );
 		},
 		initStyle: function () {
+			minder.getRenderContainer().clear();
 			//绘制root并且调整到正确位置
 			var _root = this.getRoot();
-			minder.getRenderContainer().clear();
 			minder.handelNodeInsert( _root );
 			var rc = new RootShape( _root );
 			translateNode( _root );
@@ -452,6 +452,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				_buffer[ 0 ].children = [];
 				this.appendChildNode( prt, _buffer[ 0 ] );
 				_buffer.shift();
+			}
+		},
+		updateLayout: function ( node ) {
+			drawNode( node );
+			var set = updateLayoutHorizon( node );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
 			}
 		},
 		appendChildNode: function ( parent, node, index ) {
