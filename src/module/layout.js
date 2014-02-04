@@ -60,14 +60,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		clearLayout: function () {
 			this.setData( 'layout', {} );
+		},
+		setHide: function ( isHide ) {
+			this.setData( "hide", isHide );
+		},
+		isHide: function () {
+			return this.getData( "hide" );
 		}
 	} );
 	var switchLayout = function ( km, style ) {
 		var _root = km.getRoot();
-		km.getRenderContainer().clear().addShape( _root.getRenderContainer().clear() );
+		km.getRenderContainer().clear();
 		_root.preTraverse( function ( n ) {
 			n.clearLayout();
 			n.setPoint();
+			n.getRenderContainer().clear();
 		} );
 		km.setCurrentStyle( style );
 		km.initStyle();
@@ -96,8 +103,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km, node ) {
 				var selectedNode = km.getSelectedNode();
 				if ( selectedNode.isRoot() ) {
+					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
 				} else {
+					node.setType( "sub" );
 					km.appendSiblingNode( selectedNode, node );
 				}
 				km.select( node, true );
