@@ -83,10 +83,8 @@ Minder.Receiver = kity.createClass('Receiver',{
                             e.stopPropagation();
                             return;
                     }
-
-
-
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
+
                     this.textShape.setContent(text);
                     this.setContainerStyle();
                     this.minderNode.setText(text);
@@ -122,22 +120,8 @@ Minder.Receiver = kity.createClass('Receiver',{
                 x : this.textData[this.index-1].x + this.textData[this.index-1].width,
                 y : this.textData[this.index-1].y
             })
-        }else if(this.index == 0){
-            this.cursor.setPosition({
-                x : this.textShape.getX(),
-                y : this.textShape.getY()
-            })
         }else{
-            if(this.index + 1 == this.textData.length){
-                var lastChar = this.textData[this.index];
-                this.cursor.setPosition({
-                    x : lastChar.x + lastChar.width,
-                    y : lastChar.y
-                })
-            }else{
-                this.cursor.setPosition(this.textData[this.index])
-            }
-
+            this.cursor.setPosition(this.textData[this.index])
         }
         return this;
     },
@@ -154,7 +138,6 @@ Minder.Receiver = kity.createClass('Receiver',{
     },
     setContainerStyle : function(){
         var textShapeBox = this.textShape.getRenderBox();
-        var size = this.textShape.getSize();
 
         this.container.style.cssText =  ";left:" + this.offset.x
             + 'px;top:' + (this.offset.y+textShapeBox.height)
@@ -175,8 +158,6 @@ Minder.Receiver = kity.createClass('Receiver',{
                 height:box.height
             })
         }
-
-
         return this;
     },
     setCurrentIndex:function(offset){
@@ -184,6 +165,16 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.getTextOffsetData();
         var hadChanged = false;
         utils.each(this.textData,function(i,v){
+            //点击开始之前
+            if(i == 0 && offset.x <= v.x){
+                me.index = 0;
+                return false;
+            }
+
+            if(i == me.textData.length -1 && offset.x >= v.x){
+                me.index = me.textData.length;
+                return false;
+            }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
                 if(offset.x  - v.x > v.width/2){
                     me.index = i + 1;
