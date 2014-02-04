@@ -13,6 +13,7 @@ $dependency = Array(
     ,'src/core/minder.module.js'
     ,'src/core/minder.command.js'
     ,'src/core/minder.node.js'
+    ,'src/core/keymap.js'
     ,'src/module/history.js'
     ,'src/module/icon.js'
     ,'src/module/layout.js'
@@ -22,10 +23,10 @@ $dependency = Array(
     ,'src/module/keyboard.js'
     ,'src/module/mouse.js'
     ,'src/module/history.js'
-//    ,'src/module/editor.js'
-//    ,'src/module/editor.range.js'
-//    ,'src/module/editor.receiver.js'
-//    ,'src/module/editor.cursor.js'
+    ,'src/module/editor.js'
+    ,'src/module/editor.range.js'
+    ,'src/module/editor.receiver.js'
+    ,'src/module/editor.cursor.js'
 
 );
 

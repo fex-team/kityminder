@@ -23,6 +23,13 @@ Minder.Range = kity.createClass('Range',{
         this.nativeRange.setEnd(node,index);
         return this;
     },
+    getStart:function(){
+        var range = this.nativeSel.getRangeAt(0);
+        return {
+            startContainer:range.startContainer,
+            startOffset:range.startOffset
+        }
+    },
     collapse:function(toStart){
         this.nativeRange.collapse(toStart === true);
         return this;

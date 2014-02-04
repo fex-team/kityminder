@@ -2,16 +2,27 @@
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
+        this.cursor.setHide();
         this.index = 0;
         return this;
     },
-    constructor : function(){
+    setTextEditStatus : function(status){
+        this.textEditStatus = status || false;
+        return this;
+    },
+    isTextEditStatus:function(){
+        return this.textEditStatus;
+    },
+    constructor : function(km){
+        this.setKityMinder(km);
+        this.textEditStatus = false;
         var _div = document.createElement('div');
         _div.setAttribute('contenteditable',true);
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
-        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');
-        utils.listen(_div,'keydown keypress keyup', utils.proxy(this.keyboardEvents,this));
+        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
+//        utils.listen(_div,'keydown keypress keyup', utils.proxy(this.keyboardEvents,this));
+        this.km.on('beforekeyup', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
     },
@@ -26,7 +37,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.index = index || this.index;
 
         var text = this.container.firstChild;
-
+        this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
         setTimeout(function(){
             range.select()
@@ -61,28 +72,47 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
     },
     keyboardEvents : function(e){
+
         clearTimeout(this.timer);
         var me = this;
-        switch(e.type){
-            case 'keyup':
-                var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
-                this.textShape.setContent(text);
-                this.minderNode.setText(text);
-                this.km.renderNode(this.minderNode);
+        var keyCode = e.originEvent.keyCode;
 
-                this.updateTextData();
-                this.updateCursor();
-                this.timer = setTimeout(function(){
-                    me.cursor.setShow()
-                },500);
-                break;
-            case 'keypress':
-            case 'keyup':
+
+        switch(e.type){
+
+            case 'beforekeyup':
+                if(this.isTextEditStatus()){
+
+                    if(keyCode == keymap.Enter){
+                        this.setTextEditStatus(false);
+                        this.clear();
+                        e.stopPropagation();
+                        return;
+                    }
+
+                    var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
+                    this.textShape.setContent(text);
+                    this.setContainerStyle();
+                    this.minderNode.setText(text);
+                    this.km.renderNode(this.minderNode);
+                    this.km.updateLayout(this.minderNode);
+                    this.updateTextData();
+                    this.updateIndex();
+                    this.updateCursor();
+
+                    this.timer = setTimeout(function(){
+                        me.cursor.setShow()
+                    },500);
+                    return true;
+                }
+
         }
+    },
+    updateIndex:function(){
+        this.index = this.range.getStart().startOffset;
     },
     updateTextData : function(){
         this.textShape.textData =  this.getTextOffsetData();
-        this.index = this.index + 1;
     },
     setCursor : function(cursor){
         this.cursor = cursor;
@@ -115,17 +145,35 @@ Minder.Receiver = kity.createClass('Receiver',{
         }
         return this;
     },
+    setBaseOffset :function(){
+
+        var nodeOffset = this.minderNode.getRenderContainer().getRenderBox();
+        var textOffset = this.textShape.getRenderBox();
+
+        this.offset =   {
+            x : nodeOffset.x + textOffset.x,
+            y : nodeOffset.y + textOffset.y
+        };
+        return this;
+    },
+    setContainerStyle : function(){
+        var textShapeBox = this.textShape.getRenderBox();
+        var size = this.textShape.getSize();
+        this.container.style.cssText += ";left:" + this.offset.x
+            + 'px;top:' + (this.offset.y + size)
+            + 'px;width:' + textShapeBox.width
+            + 'px;height:' + textShapeBox.height + 'px;font-size:' + size + 'px';
+        return this;
+    },
     getTextOffsetData:function(){
         var text = this.textShape.getContent();
         this.textData = [];
-//                this.textShape.clearContent();
-        var containerOffset = this.textShape.container.getRenderBox();
 
         for(var i= 0,l = text.length;i<l;i++){
             var box = this.textShape.getExtentOfChar(i);
             this.textData.push({
-                x:box.x + containerOffset.x,
-                y:box.y + containerOffset.y,
+                x:box.x + this.offset.x,
+                y:this.offset.y,
                 width:box.width,
                 height:box.height
             })
@@ -155,7 +203,7 @@ Minder.Receiver = kity.createClass('Receiver',{
 
     },
     setCursorHeight:function(){
-        this.cursor.setHeight(this.getTextShapeHeight())
+        this.cursor.setHeight(this.getTextShapeHeight());
         return this;
     }
 });

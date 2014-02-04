@@ -1,6 +1,6 @@
 KityMinder.registerModule( "TextEditModule", function () {
     var cursor = new Minder.Cursor();
-    var receiver = new Minder.Receiver();
+    var receiver = new Minder.Receiver(this);
     var range = new Minder.Range();
 
 
@@ -14,39 +14,20 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(this.isSingleSelect()){
 
                     var node = this.getSelectedNode();
-                    var node_rc = node.getRenderContainer();
+                    var textShape = node.getTextShape();
 
-                    if(node_rc.getType() != 'Text'){
-                    var offset = e.getPosition();
-                    cursor.setShow().setPosition(offset);
-//                    receiver.clear()
-//                        .setTextShape()
-//                        .setTextShapeSize(cursor.height)
-//                        .appendTextShapeToPaper(this.getPaper())
-//                        .setPosition(position)
-//                        .setRange(range,0)
-//                        .setCursor(cursor)
-//                        receiver.setCursor(cursor)
-//                            .setKityMinder(this)
-//                            .setMinderNode(node)
-//                            .setTextShape(node_rc)
-//                            .setCursorHeight()
-//                            .setCurrentIndex(position)
-//                            .updateCursor()
-//                            .setRange(range,0);
-                    }else{
-
-
-//                        receiver.setCursor(cursor)
-//                            .setKityMinder(this)
-//                            .setMinderNode(e.getTargetNode())
-//                            .setTextShape(node_rc)
-//                            .setCursorHeight()
-//                            .setCurrentIndex(position)
-//                            .updateCursor()
-//                            .setRange(range);
-
-                    }
+//                    node.getRenderContainer().setStyle('cursor','text');
+                    receiver.setTextEditStatus(true)
+                        .setCursor(cursor)
+                        .setKityMinder(this)
+                        .setMinderNode(node)
+                        .setTextShape(textShape)
+                        .setBaseOffset()
+                        .setContainerStyle()
+                        .setCursorHeight()
+                        .setCurrentIndex(e.getPosition())
+                        .updateCursor()
+                        .setRange(range);
                 }
 
             }

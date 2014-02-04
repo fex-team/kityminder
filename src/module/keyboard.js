@@ -59,7 +59,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
             contentchange: function () {
                 buildPositionNetwork( this.getRoot() );
             },
-            keydown: function ( e ) {
+            keyup: function ( e ) {
 
                 switch ( e.originEvent.keyCode ) {
 

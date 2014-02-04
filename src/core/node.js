@@ -9,6 +9,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             this.setData( options );
         }
         this.rc = new kity.Group();
+        this.rc.addClass('km-minderNode');
+
         this.rc.minderNode = this;
     },
     setPoint:function(x,y){
@@ -218,8 +220,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     getTextShape:function(){
-        var rc = this.getRenderContainer();
-        var text = rc.getElementsByTagName('text');
-
+        return this.getRenderContainer().getShapesByType('text')[0]
     }
 } );
