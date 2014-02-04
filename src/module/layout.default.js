@@ -454,6 +454,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				_buffer.shift();
 			}
 		},
+		updateLayout: function ( node ) {
+			drawNode( node );
+			var set = updateLayoutHorizon( node );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+			}
+		},
 		appendChildNode: function ( parent, node, index ) {
 			minder.handelNodeInsert( node );
 			var _root = this.getRoot();
