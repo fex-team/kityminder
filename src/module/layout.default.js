@@ -355,12 +355,20 @@ KityMinder.registerModule( "LayoutDefault", function () {
 
 	//以某个节点为seed对水平方向进行调整(包括调整子树)
 	var updateLayoutHorizon = function ( node ) {
-		var nodeLayout = node.getData( "layout" );
-		var effectSet = [ node ]; //返回受影响（即需要进行下一步translate的节点）
-		var parent = node.getParent();
-		var appendside = nodeLayout.appendside;
-		var selfWidth = node.getRenderContainer().getWidth();
-		if ( parent ) {
+		var effectSet = []; //返回受影响（即需要进行下一步translate的节点）
+		var _buffer = [ node ];
+		while ( _buffer.length !== 0 ) {
+			var parent = _buffer[ 0 ].getParent();
+			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+			if ( !parent ) {
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
+				continue;
+			}
+			var nodeLayout = _buffer[ 0 ].getData( "layout" );
+			var appendside = nodeLayout.appendside;
+			var selfWidth = _buffer[ 0 ].getRenderContainer().getWidth();
+
 			var parentLayout = parent.getData( "layout" );
 			var parentWidth = parent.getRenderContainer().getWidth();
 			if ( parentLayout.align === "center" ) parentWidth = parentWidth / 2;
@@ -376,6 +384,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			default:
 				break;
 			}
+
+			effectSet.push( _buffer[ 0 ] );
+			_buffer.shift();
 		}
 		return effectSet;
 	};

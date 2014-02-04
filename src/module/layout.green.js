@@ -421,7 +421,6 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		initStyle: function () {
 			//绘制root并且调整到正确位置
 			var _root = this.getRoot();
-			minder.getRenderContainer().clear();
 			minder.handelNodeInsert( _root );
 			var rc = new RootShape( _root );
 			translateNode( _root );
