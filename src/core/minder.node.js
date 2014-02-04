@@ -30,4 +30,5 @@ kity.extendClass( Minder, {
             km.renderNode( nodes );
         }
     }
+
 } );

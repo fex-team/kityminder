@@ -11,25 +11,27 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'beforemousedown':function(e){
-                if(this.isSingleSelect()){
-
-                    var node = this.getSelectedNode();
+                var node = e.getTargetNode();
+                if(node){
                     var textShape = node.getTextShape();
-
-//                    node.getRenderContainer().setStyle('cursor','text');
-                    receiver.setTextEditStatus(true)
-                        .setCursor(cursor)
-                        .setKityMinder(this)
-                        .setMinderNode(node)
-                        .setTextShape(textShape)
-                        .setBaseOffset()
-                        .setContainerStyle()
-                        .setCursorHeight()
-                        .setCurrentIndex(e.getPosition())
-                        .updateCursor()
-                        .setRange(range);
+                    textShape.setStyle('cursor','default');
+                    if(node.isSelected()){
+                        node.getTextShape().setStyle('cursor','text');
+                        receiver.setTextEditStatus(true)
+                            .setCursor(cursor)
+                            .setKityMinder(this)
+                            .setMinderNode(node)
+                            .setTextShape(textShape)
+                            .setBaseOffset()
+                            .setContainerStyle()
+                            .setCursorHeight()
+                            .setCurrentIndex(e.getPosition())
+                            .updateCursor()
+                            .setRange(range);
+                    }
+                }else{
+                    receiver.clear();
                 }
-
             }
         }
     };
