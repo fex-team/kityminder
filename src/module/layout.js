@@ -70,11 +70,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 	} );
 	var switchLayout = function ( km, style ) {
 		var _root = km.getRoot();
-		km.getRenderContainer().clear();
 		_root.preTraverse( function ( n ) {
 			n.clearLayout();
 			n.setPoint();
-			n.getRenderContainer().clear();
 		} );
 		km.setCurrentStyle( style );
 		km.initStyle();
