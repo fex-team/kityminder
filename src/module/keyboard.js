@@ -63,25 +63,24 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
                 switch ( e.originEvent.keyCode ) {
 
-                case 13:
-                    // Enter
+                case keymap.Enter:
                     this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
                     e.preventDefault();
                     break;
-                case 9:
-                    // Tab
+                case keymap.Tab:
                     this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
                     e.preventDefault();
                     break;
-                case 8:
-                case 46:
+                case keymap.Backspace:
+                case keymap.Del:
                     this.execCommand( 'removenode' );
                     e.preventDefault();
                     break;
-                case 37:
-                case 38:
-                case 39:
-                case 40:
+
+                case keymap.Left:
+                case keymap.up:
+                case keymap.Right:
+                case keymap.Down:
                     if ( this.isSingleSelect() ) {
                         KBNavigate( this, {
                             37: 'left',
