@@ -11,6 +11,7 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'beforemousedown':function(e){
+                cursor.setHide();
                 var node = e.getTargetNode();
                 if(node){
                     var textShape = node.getTextShape();
