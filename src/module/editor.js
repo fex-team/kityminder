@@ -30,8 +30,6 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .updateCursor()
                             .setRange(range);
                     }
-                }else{
-                    receiver.clear();
                 }
             }
         }
