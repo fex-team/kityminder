@@ -90,6 +90,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                     this.minderNode.setText(text);
                     this.km.renderNode(this.minderNode);
                     this.km.updateLayout(this.minderNode);
+                    this.setBaseOffset();
                     this.updateTextData();
                     this.updateIndex();
                     this.updateCursor();
