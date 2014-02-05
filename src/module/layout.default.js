@@ -438,6 +438,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			translateNode( _root );
 			var box = _root.getRenderContainer().getRenderBox();
 			_root.setPoint( box.x, box.y );
+			minder.select( _root, true );
 			var _buffer = _root.getChildren();
 			var Layout = _root.getData( "layout" );
 			//根据保存的xy值初始化左右子树
