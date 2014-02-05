@@ -9,13 +9,9 @@
  * @description KityMinder 使用类
  */
 
-var MinderDefaultOptions = {
-    "layoutstyle": "default"
-};
-
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
-        this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, MinderDefaultOptions, options );
+        this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, options );
         this._initEvents();
         this._initMinder();
         this._initSelection();

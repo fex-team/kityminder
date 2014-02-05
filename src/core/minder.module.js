@@ -21,7 +21,6 @@ kity.extendClass( Minder, {
             this._modules[ name ] = moduleDeals;
 
             if ( moduleDeals.init ) {
-                this.setDefaultOptions( moduleDeals.defaultOptions || {});
                 moduleDeals.init.call( me, this._options );
             }
 
@@ -39,6 +38,9 @@ kity.extendClass( Minder, {
                 }
             }
 
+            if(moduleDeals.defaultOptions){
+                this.setDefaultOptions(moduleDeals.defaultOptions);
+            }
             //添加模块的快捷键
             if(moduleDeals.addShortcutKeys){
                 this.addShortcutKeys(moduleDeals.addShortcutKeys)
