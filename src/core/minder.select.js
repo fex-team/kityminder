@@ -14,15 +14,11 @@ kity.extendClass( Minder, function () {
             this._selectedNodes = [];
         },
         getSelectedNodes: function () {
-            //如果没有选中节点，默认是root节点
-            if ( this._selectedNodes.length === 0 ) {
-                this._selectedNodes.push( this.getRoot() );
-            }
             //不能克隆返回，会对当前选区操作，从而影响querycommand
             return this._selectedNodes;
         },
         getSelectedNode: function () {
-            return this.getSelectedNodes()[ 0 ];
+            return this.getSelectedNodes()[ 0 ] || null;
         },
         removeAllSelectedNodes: function () {
             var me = this;

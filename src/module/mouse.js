@@ -71,10 +71,7 @@ KityMinder.registerModule( "MouseModule", function () {
         };
     } )();
     return {
-        "init": function () {
-            // kity.extendClass( kity.Paper, Draggable );
-            // this._paper.drag();
-        },
+
         "events": {
             'mousedown touchstart': function ( e ) {
                 if ( e.originEvent.touches && e.originEvent.touches.length != 1 ) return;
@@ -97,8 +94,7 @@ KityMinder.registerModule( "MouseModule", function () {
                     var node = e.getTargetNode();
                     if ( !node ) return;
                     this._touchTimeout = setTimeout( function () {
-                        me.clearSelect();
-                        me.execCommand( 'kbCreateAndEdit', 'child', node );
+
                     }, 200 );
                 }
             },
