@@ -5,7 +5,7 @@ KityMinder.registerModule( "MouseModule", function () {
         return kity.Vector.fromPoints( e.kityEvent.getPosition( 0 ), e.kityEvent.getPosition( 1 ) ).length();
     }
 
-    var SelectArea = this.SelectArea = ( function () {
+    var SelectArea = ( function () {
         var startPos = null;
         var selectRect = null;
         var min = function ( a, b ) {
@@ -83,7 +83,7 @@ KityMinder.registerModule( "MouseModule", function () {
                     this.select( clickNode, true );
                 } else {
                     this.removeAllSelectedNodes();
-                    this.SelectArea.selectStart( e );
+                    SelectArea.selectStart( e );
                 }
             },
             'touchstart': function ( e ) {
@@ -117,10 +117,10 @@ KityMinder.registerModule( "MouseModule", function () {
                 }
             },
             'mousemove touchmove': function ( e ) {
-                this.SelectArea.selectMove( e );
+                SelectArea.selectMove( e );
             },
             'touchend mouseup': function ( e ) {
-                this.SelectArea.selectEnd( e );
+                SelectArea.selectEnd( e );
             }
         }
     };
