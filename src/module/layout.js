@@ -89,6 +89,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
+				if ( parent.length === 0 ) {
+					return false;
+				}
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
@@ -100,6 +103,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var selectedNode = km.getSelectedNode();
+				if ( selectedNode.length === 0 ) {
+					return false;
+				}
 				if ( selectedNode.isRoot() ) {
 					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
