@@ -3637,6 +3637,22 @@
                     this.node.setAttribute("fill", brush);
                 }
                 return this;
+            },
+            setAttr:function(a,v){
+                var me = this;
+                if(utils.isObject(a)){
+                    utils.each(a,function(val,key){
+                        me.setAttr(key,val)
+                    })
+                }
+                if(v === undefined || v === null || v === ''){
+                    this.node.removeAttribute(a);
+                }else {
+                    this.node.setAttribute(a,v);
+                }
+            },
+            getAttr:function(a){
+                return this.node.getAttribute(a)
             }
         });
     });
