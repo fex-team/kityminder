@@ -1,0 +1,37 @@
+KityMinder.registerModule( "fontmodule", function () {
+
+    return {
+
+        "commands": {
+            "fontcolor": kity.createClass( "fontcolorCommand", {
+                base: Command,
+
+                execute: function ( km,color ) {
+                    var nodes = km.getSelectedNodes();
+                    utils.each(nodes,function(i,n){
+                        n.setData('fontcolor',color);
+                        n.getTextShape().fill(color)
+                    })
+                }
+
+            } ),
+            "fontfamily": kity.createClass( "fontfamilyCommand", {
+                base: Command,
+
+                execute: function ( km,family) {
+                    var nodes = km.getSelectedNodes();
+                    utils.each(nodes,function(i,n){
+                        n.setData('fontfamily',family);
+                        n.getTextShape().setAttr('font-family',family);
+                    })
+                }
+            } )
+        },
+
+        "events": {
+            "beforerendernode": function ( e ) {
+
+            }
+        }
+    };
+} );
