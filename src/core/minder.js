@@ -1,5 +1,4 @@
-/**
- * @require <kityminder.js>
+/* @require <kityminder.js>
  * @require <module.js>
  * @require <event.js>
  * @require <node.js>
