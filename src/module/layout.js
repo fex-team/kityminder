@@ -73,7 +73,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		_root.preTraverse( function ( n ) {
 			n.clearLayout();
 			n.setPoint();
-			n.getRenderContainer().clear();
+			n.getBgRc().clear();
 		} );
 		km.setCurrentStyle( style );
 		km.initStyle();
@@ -152,7 +152,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"layoutstyle": "green"
+			"layoutstyle": "default"
 		}
 	};
 } );

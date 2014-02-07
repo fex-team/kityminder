@@ -233,10 +233,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var RootShape = kity.createClass( "DefaultRootShape", ( function () {
 		return {
 			constructor: function ( node ) {
-				var container = node.getRenderContainer();
-				var txt = this._txt = new kity.Text();
+				var bgRC = node.getBgRc();
+				var contRC = node.getContRc();
 				var rect = this._rect = new kity.Rect();
-				container.addShapes( [ rect, txt ] );
+				bgRC.addShape( rect );
 				this._node = node;
 				var Layout = {
 					shape: this,
@@ -256,20 +256,21 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				};
 				node.setData( "layout", Layout );
 				node.setData( "text", "Minder Root" );
-				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
 				this.update();
 			},
 			update: function () {
-				var txt = this._txt;
+				var node = this._node;
+				var txt = node.getTextShape();
+				var contRC = node.getContRc();
 				var rect = this._rect;
 				var connect = this._connect;
-				var node = this._node;
 				var Layout = node.getData( "layout" );
 				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
-				var _txtWidth = txt.getWidth();
-				var _txtHeight = txt.getHeight();
-				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
-				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
+				var _contRCWidth = contRC.getWidth();
+				var _contRCHeight = contRC.getHeight();
+				var _rectWidth = _contRCWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
+				var _rectHeight = _contRCHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
 				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
 			},
 			clear: function () {
@@ -548,7 +549,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					while ( _buffer.length !== 0 ) {
 						_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 						_buffer[ 0 ].getData( "layout" ).shape.clear();
-						_buffer[ 0 ].handelNodeRemove();
 						var prt = _buffer[ 0 ].getParent();
 						prt.removeChild( _buffer[ 0 ] );
 						_buffer.shift();
