@@ -8,10 +8,51 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } else {
             this.setData( options );
         }
+        this._createShapeDom()
+
+    },
+    _createShapeDom:function(){
         this.rc = new kity.Group();
         this.rc.addClass('km-minderNode');
-
         this.rc.minderNode = this;
+
+        this._createBgGroup();
+        this._createContGroup();
+        this._createTextShape();
+    },
+    _createGroup:function(type){
+        var g = new kity.Group();
+        g.setData('rctype',type);
+        this.rc.appendShape(g);
+    },
+    _createBgGroup:function(){
+        this._createGroup('bgrc')
+    },
+    _createContGroup:function(){
+        this._createGroup('contrc')
+    },
+    _createTextShape:function(){
+        this.getContRc().appendShape(new kity.Text(this.getData('text')||''));
+    },
+    getContRc:function(){
+        var groups = this.rc.getShapesByType('group'),result;
+        utils.each(groups,function(i,p){
+            if(p.getData('rctype') == 'contrc'){
+                result = p;
+                return false;
+            }
+        });
+        return result
+    },
+    getBgRc:function(){
+        var groups = this.rc.getShapesByType('group'),result;
+        utils.each(groups,function(i,p){
+            if(p.getData('rctype') == 'bgrc'){
+                result = p;
+                return false;
+            }
+        });
+        return result
     },
     setPoint: function ( x, y ) {
         this.setData( 'point', {
@@ -218,7 +259,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     getTextShape:function(){
-        return this.getRenderContainer().getShapesByType('text')[0]
+        return this.getContRc().getShapesByType('text')[0]
     },
     isSelected : function(){
         return this.getData( 'highlight' ) === true
