@@ -596,6 +596,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						while ( _buffer.length !== 0 ) {
 							try {
 								_buffer[ 0 ].getData( "layout" ).shape.clear();
+								_buffer[ 0 ].getRenderContainer().remove();
 							} catch ( error ) {}
 							_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 							_buffer.shift();
