@@ -55,7 +55,7 @@ kity.extendClass( Minder, {
         callbacks.push( callback );
     },
     _fire: function ( e ) {
-        var callbacks = this._eventCallbacks[ e.type ];
+        var callbacks = this._eventCallbacks[ e.type.toLowerCase() ];
         if ( !callbacks ) {
             return false;
         }
@@ -70,7 +70,7 @@ kity.extendClass( Minder, {
     on: function ( name, callback ) {
         var types = name.split( ' ' );
         for ( var i = 0; i < types.length; i++ ) {
-            this._listen( types[ i ], callback );
+            this._listen( types[ i ].toLowerCase(), callback );
         }
         return this;
     },
@@ -78,7 +78,7 @@ kity.extendClass( Minder, {
         var types = name.split( ' ' );
         var i, j, callbacks, removeIndex;
         for ( i = 0; i < types.length; i++ ) {
-            callbacks = this._eventCallbacks[ types[ i ] ];
+            callbacks = this._eventCallbacks[ types[ i ].toLowerCase() ];
             if ( callbacks ) {
                 removeIndex = null;
                 for ( j = 0; j < callbacks.length; j++ ) {
