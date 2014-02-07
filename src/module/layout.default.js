@@ -430,7 +430,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			drawNode( node );
 		},
 		initStyle: function () {
-			minder.getRenderContainer().clear();
 			//绘制root并且调整到正确位置
 			var _root = this.getRoot();
 			minder.handelNodeInsert( _root );
@@ -483,6 +482,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			var parentLayout = parent.getData( "layout" );
 			var Layout = node.getData( "layout" );
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: node
+			}, false ) );
 			if ( parent.getType() === "root" ) {
 				node.setType( "main" );
 				var leftList = parentLayout.leftList;
@@ -511,6 +513,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.appendside = parentLayout.appendside;
 				childbranch = new SubBranch( node );
 			}
+			this._fire( new MinderEvent( "afterRenderNode", {
+				node: node
+			}, false ) );
 			var set1 = updateLayoutVertical( node, parent, "append" );
 			var set2 = updateLayoutHorizon( node );
 			var set = uSet( set1, set2 );
@@ -543,7 +548,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					while ( _buffer.length !== 0 ) {
 						_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 						_buffer[ 0 ].getData( "layout" ).shape.clear();
-						_buffer[ 0 ].getRenderContainer().remove();
+						_buffer[ 0 ].handelNodeRemove();
 						var prt = _buffer[ 0 ].getParent();
 						prt.removeChild( _buffer[ 0 ] );
 						_buffer.shift();
