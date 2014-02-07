@@ -294,10 +294,10 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		var Layout = node.getData( "layout" );
 		var nodeShape = node.getRenderContainer();
 		nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
-		// if ( Layout.shape ) {
-		// 	if ( Layout.shape.updateConnect ) Layout.shape.updateConnect();
-		// 	if ( Layout.shape.updateShIcon ) Layout.shape.updateShIcon();
-		// }
+		if ( Layout.shape ) {
+			if ( Layout.shape.updateConnect ) Layout.shape.updateConnect();
+			if ( Layout.shape.updateShIcon ) Layout.shape.updateShIcon();
+		}
 	};
 	//求并集
 	var uSet = function ( a, b ) {
