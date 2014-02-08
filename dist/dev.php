@@ -27,6 +27,8 @@ $dependency = Array(
     ,'src/module/editor.range.js'
     ,'src/module/editor.receiver.js'
     ,'src/module/editor.cursor.js'
+    ,'src/module/basestyle.js'
+    ,'src/module/font.js'
 
 );
 
