@@ -86,7 +86,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
@@ -162,7 +162,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 ) );
 				highlightshape.fill( "chocolate" ).translate( -1, 0 );
 				this.update();
 			},
@@ -257,7 +257,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				};
 				node.setData( "layout", Layout );
 				node.setData( "text", "Minder Root" );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
