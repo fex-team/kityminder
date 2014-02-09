@@ -141,7 +141,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				var highlightshape = this._highlightshape = new kity.Rect();
 				bgRc.addShapes( [ highlightshape, underline ] );
 				var connect = this._connect = new kity.Path();
-				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
+				minder.getRenderContainer().addShape( connect );
 				var Layout = {
 					stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ).setLineJoin( "round" ),
 					color: "white",
@@ -181,15 +181,23 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				this.updateShIcon();
 			},
 			updateConnect: function () {
-				var connect = this._connect;
 				var node = this._node;
-				var parentShape = node.getParent().getRenderContainer();
-				var parentBox = parentShape.getRenderBox();
-				var parentLayout = node.getParent().getData( "layout" );
 				var Layout = node.getData( "layout" );
-				var Shape = node.getRenderContainer();
-				var sX, sY = parentLayout.y;
-				var nodeX, nodeY = Shape.getRenderBox().closurePoints[ 1 ].y;
+				if ( Layout.x && Layout.y ) {
+					var connect = this._connect;
+					var parent = node.getParent();
+					var parentLayout = parent.getData( "layout" );
+					var sX = parentLayout.x + 10.5,
+						pY = parentLayout.y + parent.getRenderContainer().getHeight() + 10.5,
+						sY = Layout.y + 0.5;
+					connect.getDrawer()
+						.clear()
+						.moveTo( sX, pY )
+						.lineTo( sX, sY )
+						.lineTo( Layout.x + 0.5, sY )
+						.lineTo( Layout.x + 0.5, Layout.y + node.getRenderContainer().getHeight() );
+					connect.stroke( "white" );
+				}
 			},
 			updateShIcon: function () {
 				this._shicon.update();
@@ -284,7 +292,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			} )();
 			Layout.branchwidth = ( nodewidth > nodeChildWidth ? nodewidth : nodeChildWidth );
 		};
-		countBranchWidth( node );
+		var parent = node;
+		while ( parent ) {
+			countBranchWidth( parent );
+			parent = parent.getParent();
+		}
 		while ( _buffer.length !== 0 ) {
 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 			var bufferLayout = _buffer[ 0 ].getData( "layout" );
