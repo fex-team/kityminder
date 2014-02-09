@@ -1,4 +1,4 @@
-KityMinder.registerModule( "LayoutGreen", function () {
+KityMinder.registerModule( "LayoutBottom", function () {
 	var minder = this;
 	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
 		return {
@@ -99,18 +99,25 @@ KityMinder.registerModule( "LayoutGreen", function () {
 				this.updateShIcon();
 			},
 			updateConnect: function () {
-				var rootX = minder.getRoot().getData( "layout" ).x;
-				var rootY = minder.getRoot().getData( "layout" ).y;
-				var connect = this._connect;
 				var node = this._node;
 				var Layout = node.getData( "layout" );
-				var parent = node.getParent();
-				var nodeShape = node.getRenderContainer();
-				var nodeClosurePoints = nodeShape.getRenderBox().closurePoints;
-				var sPos;
-				var endPos;
+				if ( Layout.x && Layout.y ) {
+					var connect = this._connect;
+					connect.circle.setCenter( Layout.x + 10, Layout.y - 3 ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
+					var parent = node.getParent();
+					var parentLayout = parent.getData( "layout" );
+					var sX = parentLayout.x + 10.5,
+						pY = parentLayout.y + parent.getRenderContainer().getHeight() + 0.5,
+						sY = parentLayout.y + parent.getRenderContainer().getHeight() + parentLayout.margin[ 2 ] + 0.5;
+					connect.path.getDrawer()
+						.clear()
+						.moveTo( sX, pY )
+						.lineTo( sX, sY )
+						.lineTo( Layout.x + 10.5, sY )
+						.lineTo( Layout.x + 10.5, Layout.y );
+					connect.path.stroke( "white" );
+				}
 
-				//connect.circle.setCenter( Layout.x + 10, Layout.y - 3 ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
 			},
 			updateShIcon: function () {
 				this._shicon.update();
@@ -324,7 +331,11 @@ KityMinder.registerModule( "LayoutGreen", function () {
 			translateNode( _root );
 		},
 		updateLayout: function ( node ) {
-
+			drawNode( node );
+			var set = updateLayoutHorizon( node );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+			}
 		},
 		appendChildNode: function ( parent, node, index ) {
 			minder.handelNodeInsert( node );
@@ -360,6 +371,6 @@ KityMinder.registerModule( "LayoutGreen", function () {
 
 		}
 	};
-	this.addLayoutStyle( "green", _style );
+	this.addLayoutStyle( "bottom", _style );
 	return {};
 } );
