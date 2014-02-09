@@ -57,11 +57,12 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		return {
 			constructor: function ( node ) {
 				this._node = node;
-				var container = node.getRenderContainer();
+				var bgRc = node.getBgRc();
+				var contRc = node.getContRc();
 				var txt = this._txt = new kity.Text();
 				var rect = this._rect = new kity.Rect();
 				var shicon = this._shicon = new ShIcon( node );
-				container.addShapes( [ rect, txt ] );
+				bgRc.addShape( rect );
 				var connect = this._connect = new kity.Group();
 				var path = connect.path = new kity.Path();
 				var circle = connect.circle = new kity.Circle();
@@ -79,19 +80,20 @@ KityMinder.registerModule( "LayoutGreen", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
-				var txt = this._txt;
 				var rect = this._rect;
 				var node = this._node;
+				var contRc = node.getContRc();
+				var txt = node.getTextShape();
 				var Layout = node.getData( "layout" );
 				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
-				var _txtWidth = txt.getWidth();
-				var _txtHeight = txt.getHeight();
-				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
-				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
+				var _contWidth = contRc.getWidth();
+				var _contHeight = contRc.getHeight();
+				var _rectWidth = _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
+				var _rectHeight = _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
 				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
 				this.updateConnect();
 				this.updateShIcon();
@@ -125,12 +127,12 @@ KityMinder.registerModule( "LayoutGreen", function () {
 		return {
 			constructor: function ( node ) {
 				this._node = node;
-				var container = node.getRenderContainer();
-				var txt = this._txt = new kity.Text();
+				var bgRc = node.getBgRc();
+				var contRc = node.getContRc();
 				var underline = this._underline = new kity.Path();
 				var shicon = this._shicon = new ShIcon( node );
 				var highlightshape = this._highlightshape = new kity.Rect();
-				container.addShapes( [ highlightshape, underline, txt ] );
+				bgRc.addShapes( [ highlightshape, underline ] );
 				var connect = this._connect = new kity.Path();
 				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
 				var Layout = {
@@ -144,28 +146,29 @@ KityMinder.registerModule( "LayoutGreen", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 );
+				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 ) );
 				highlightshape.fill( "chocolate" ).translate( -1, 0 );
 				this.update();
 			},
 			update: function () {
 				var node = this._node;
+				var contRc = node.getContRc();
 				var Layout = node.getData( "layout" );
 				var underline = this._underline;
 				var highlightshape = this._highlightshape;
-				var txt = this._txt;
+				var txt = node.getTextShape();
 				txt.setContent( node.getData( "text" ) ).fill( Layout.color ).setSize( Layout.fontSize );
-				var _txtWidth = txt.getWidth();
-				var _txtHeight = txt.getHeight();
-				var sY = Layout.padding[ 0 ] + _txtHeight / 2;
+				var _contWidth = contRc.getWidth();
+				var _contHeight = contRc.getHeight();
+				var sY = Layout.padding[ 0 ] + _contHeight / 2;
 				underline.getDrawer()
 					.clear()
-					.moveTo( 0, _txtHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] )
-					.lineTo( _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ], _txtHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] );
+					.moveTo( 0, _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] )
+					.lineTo( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ], _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] );
 				underline.stroke( Layout.stroke );
 				highlightshape
-					.setWidth( _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ] )
-					.setHeight( _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
+					.setWidth( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ] )
+					.setHeight( _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
 					.setOpacity( node.getData( "highlight" ) ? 1 : 0 );
 				this.updateConnect();
 				this.updateShIcon();
@@ -195,10 +198,10 @@ KityMinder.registerModule( "LayoutGreen", function () {
 	var RootShape = kity.createClass( "DefaultRootShape", ( function () {
 		return {
 			constructor: function ( node ) {
-				var container = node.getRenderContainer();
-				var txt = this._txt = new kity.Text();
+				var bgRc = node.getBgRc();
+				var contRc = node.getContRc();
 				var rect = this._rect = new kity.Rect();
-				container.addShapes( [ rect, txt ] );
+				bgRc.addShape( rect );
 				this._node = node;
 				var Layout = {
 					shape: this,
@@ -217,20 +220,21 @@ KityMinder.registerModule( "LayoutGreen", function () {
 				};
 				node.setData( "layout", Layout );
 				node.setData( "text", "Minder Root" );
-				txt.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
-				var txt = this._txt;
 				var rect = this._rect;
 				var connect = this._connect;
 				var node = this._node;
+				var txt = node.getTextShape();
+				var contRc = node.getContRc();
 				var Layout = node.getData( "layout" );
 				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
-				var _txtWidth = txt.getWidth();
-				var _txtHeight = txt.getHeight();
-				var _rectWidth = _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
-				var _rectHeight = _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
+				var _contWidth = contRc.getWidth();
+				var _contHeight = contRc.getHeight();
+				var _rectWidth = _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
+				var _rectHeight = _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
 				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill );
 			},
 			clear: function () {

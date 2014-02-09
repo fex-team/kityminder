@@ -152,7 +152,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"layoutstyle": "default"
+			"layoutstyle": "green"
 		}
 	};
 } );
