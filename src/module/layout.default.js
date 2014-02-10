@@ -86,16 +86,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
 				var rect = this._rect;
 				var node = this._node;
-				var txt = node.getTextShape();
 				var contRC = node.getContRc();
 				var Layout = node.getData( "layout" );
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
 				var _contRCWidth = contRC.getWidth();
 				var _contRCHeight = contRC.getHeight();
 				var _rectWidth = _contRCWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
@@ -162,28 +160,27 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					appendside: node.getData( "layout" ).appendside
 				};
 				node.setData( "layout", Layout );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 ) );
 				highlightshape.fill( "chocolate" ).translate( -1, 0 );
 				this.update();
 			},
 			update: function () {
 				var node = this._node;
+				var contRc = node.getContRc();
 				var Layout = node.getData( "layout" );
 				var underline = this._underline;
 				var highlightshape = this._highlightshape;
-				var txt = node.getTextShape();
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color ).setSize( Layout.fontSize );
-				var _txtWidth = txt.getWidth();
-				var _txtHeight = txt.getHeight();
-				var sY = Layout.padding[ 0 ] + _txtHeight / 2;
+				var _contWidth = contRc.getWidth();
+				var _contHeight = contRc.getHeight();
+				var sY = Layout.padding[ 0 ] + _contHeight / 2;
 				underline.getDrawer()
 					.clear()
-					.moveTo( 0, _txtHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] )
-					.lineTo( _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ], _txtHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] );
+					.moveTo( 0, _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] )
+					.lineTo( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ], _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] );
 				underline.stroke( Layout.stroke );
 				highlightshape
-					.setWidth( _txtWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ] )
-					.setHeight( _txtHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
+					.setWidth( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ] )
+					.setHeight( _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
 					.setOpacity( node.getData( "highlight" ) ? 1 : 0 );
 				this.updateConnect();
 				this.updateShIcon();
@@ -257,17 +254,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				};
 				node.setData( "layout", Layout );
 				node.setData( "text", "Minder Root" );
-				contRC.translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 );
+				contRC.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
 				this.update();
 			},
 			update: function () {
 				var node = this._node;
-				var txt = node.getTextShape();
 				var contRC = node.getContRc();
 				var rect = this._rect;
 				var connect = this._connect;
 				var Layout = node.getData( "layout" );
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
 				var _contRCWidth = contRC.getWidth();
 				var _contRCHeight = contRC.getHeight();
 				var _rectWidth = _contRCWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
@@ -515,7 +510,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.appendside = parentLayout.appendside;
 				childbranch = new SubBranch( node );
 			}
-			this._fire( new MinderEvent( "afterRenderNode", {
+			this._fire( new MinderEvent( "RenderNode", {
 				node: node
 			}, false ) );
 			var set1 = updateLayoutVertical( node, parent, "append" );

@@ -20,7 +20,7 @@ $dependency = Array(
     ,'src/module/icon.js'
     ,'src/module/layout.js'
     ,'src/module/layout.default.js'
-    ,'src/module/layout.green.js'
+    ,'src/module/layout.bottom.js'
     ,'src/core/minder.select.js'
     ,'src/module/keyboard.js'
     ,'src/module/mouse.js'

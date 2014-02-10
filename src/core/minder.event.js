@@ -32,7 +32,7 @@ kity.extendClass( Minder, {
 
         this._fire( preEvent );
         this._fire( executeEvent );
-        this._fire(new MinderEvent('after' + e.type,e,false));
+        this._fire( new MinderEvent( 'after' + e.type, e, false ) );
 
         if ( ~'mousedown mouseup keydown keyup'.indexOf( e.type ) ) {
             this._interactChange( e );

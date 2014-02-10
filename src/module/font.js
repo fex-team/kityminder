@@ -6,24 +6,24 @@ KityMinder.registerModule( "fontmodule", function () {
             "forecolor": kity.createClass( "fontcolorCommand", {
                 base: Command,
 
-                execute: function ( km,color ) {
+                execute: function ( km, color ) {
                     var nodes = km.getSelectedNodes();
-                    utils.each(nodes,function(i,n){
-                        n.setData('fontcolor',color);
-                        n.getTextShape().fill(color)
-                    })
+                    utils.each( nodes, function ( i, n ) {
+                        n.setData( 'fontcolor', color );
+                        n.getTextShape().fill( color )
+                    } )
                 }
 
             } ),
             "fontfamily": kity.createClass( "fontfamilyCommand", {
                 base: Command,
 
-                execute: function ( km,family) {
+                execute: function ( km, family ) {
                     var nodes = km.getSelectedNodes();
-                    utils.each(nodes,function(i,n){
-                        n.setData('fontfamily',family);
-                        n.getTextShape().setAttr('font-family',family);
-                    })
+                    utils.each( nodes, function ( i, n ) {
+                        n.setData( 'fontfamily', family );
+                        n.getTextShape().setAttr( 'font-family', family );
+                    } )
                 }
             } )
         },
@@ -31,11 +31,11 @@ KityMinder.registerModule( "fontmodule", function () {
         "events": {
             "beforeRenderNode": function ( e ) {
                 var val;
-                if(val = e.node.getData('fontfamily')){
-                    e.node.getTextShape().setAttr('font-family',val);
+                if ( val = e.node.getData( 'fontfamily' ) ) {
+                    e.node.getTextShape().setAttr( 'font-family', val );
                 }
-                if(val = e.node.getData('fontcolor')){
-                    e.node.getTextShape().fill(val);
+                if ( val = e.node.getData( 'fontcolor' ) ) {
+                    e.node.getTextShape().fill( val );
                 }
             }
         }
