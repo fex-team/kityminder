@@ -3,7 +3,7 @@ KityMinder.registerModule( "fontmodule", function () {
     return {
 
         "commands": {
-            "fontcolor": kity.createClass( "fontcolorCommand", {
+            "forecolor": kity.createClass( "fontcolorCommand", {
                 base: Command,
 
                 execute: function ( km,color ) {
