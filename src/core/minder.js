@@ -37,7 +37,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._paper = new kity.Paper();
         this._paper.addShape( this._rc );
         this._paper.getNode().setAttribute( 'contenteditable', true );
-        this._root = new MinderNode();
+        this._root = new MinderNode( "Main Topic" );
         this._root.setType( "root" );
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );

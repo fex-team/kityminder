@@ -380,7 +380,34 @@ KityMinder.registerModule( "LayoutBottom", function () {
 
 		},
 		removeNode: function ( nodes ) {
-
+			var root = this.getRoot();
+			for ( var i = 0; i < nodes.length; i++ ) {
+				var parent = nodes[ i ].getParent();
+				if ( parent ) {
+					var _buffer = [ nodes[ i ] ];
+					var parentLayout = parent.getData( "layout" );
+					while ( _buffer.length !== 0 ) {
+						_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+						_buffer[ 0 ].getData( "layout" ).shape.clear();
+						_buffer[ 0 ].getRenderContainer().remove();
+						var prt = _buffer[ 0 ].getParent();
+						prt.removeChild( _buffer[ 0 ] );
+						_buffer.shift();
+					}
+					if ( parent === root ) {
+						var Layout = nodes[ i ].getData( "layout" );
+						var appendside = Layout.appendside;
+						var sideList = parentLayout[ appendside + "List" ];
+						var idx = sideList.indexOf( nodes[ i ] );
+						sideList.splice( idx, 1 );
+					}
+					parent.removeChild( nodes[ i ] );
+					var set = updateLayoutHorizon( nodes[ i ], parent, "remove" );
+					for ( var j = 0; j < set.length; j++ ) {
+						translateNode( set[ j ] );
+					}
+				}
+			}
 		}
 	};
 	this.addLayoutStyle( "bottom", _style );
