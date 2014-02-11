@@ -8,8 +8,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } else {
             this.setData( options );
         }
-        this._createShapeDom()
-
+        this._createShapeDom();
+        this.setData( "layout", {} );
     },
     _createShapeDom: function () {
         this.rc = new kity.Group();
@@ -26,10 +26,10 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.rc.appendShape( g );
     },
     _createBgGroup: function () {
-        this._createGroup( 'bgrc' )
+        this._createGroup( 'bgrc' );
     },
     _createContGroup: function () {
-        this._createGroup( 'contrc' )
+        this._createGroup( 'contrc' );
     },
     _createTextShape: function () {
         this.getContRc().appendShape( new kity.Text( this.getData( 'text' ) || '' ) );
@@ -37,24 +37,24 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
             result;
-        utils.each( groups, function ( i, p ) {
+        Utils.each( groups, function ( i, p ) {
             if ( p.getData( 'rctype' ) == 'contrc' ) {
                 result = p;
                 return false;
             }
         } );
-        return result
+        return result;
     },
     getBgRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
             result;
-        utils.each( groups, function ( i, p ) {
+        Utils.each( groups, function ( i, p ) {
             if ( p.getData( 'rctype' ) == 'bgrc' ) {
                 result = p;
                 return false;
             }
         } );
-        return result
+        return result;
     },
     setPoint: function ( x, y ) {
         this.setData( 'point', {

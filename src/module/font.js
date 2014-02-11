@@ -64,6 +64,7 @@ KityMinder.registerModule( "fontmodule", function () {
                     e.node.getTextShape().setAttr( 'font-family', val );
                 }
                 if ( val = e.node.getData( 'fontcolor' ) ) {
+                    console.log( val );
                     e.node.getTextShape().fill( val );
                 }
             }
