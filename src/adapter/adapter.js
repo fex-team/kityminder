@@ -33,8 +33,11 @@ utils.extend(KityMinder,function(){
                         if(name == '|'){
                             $.kmuiseparator && btns.push($.kmuiseparator());
                         }else{
-                            var ui = _kityminderUI[name].call(km,name);
-                            ui && btns.push(ui);
+                            if(_kityminderUI[name]){
+                                var ui = _kityminderUI[name].call(km,name);
+                                ui && btns.push(ui);
+                            }
+
                         }
 
                     });
