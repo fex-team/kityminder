@@ -1,0 +1,48 @@
+.kmui-btn-toolbar .kmui-combobox{
+    border: 1px solid #CCC;
+    padding:0;
+    margin:0 2px;
+    line-height: 20px;
+}
+.kmui-combobox .kmui-button-label{
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    *display: inline ;
+    *zoom:1;
+    width:60px;
+    height:20px;
+    line-height: 20px;
+    padding: 2px;
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    cursor: default;
+}
+.kmui-combobox  .kmui-button-spacing{
+    position: relative;
+    display: inline-block ;
+    vertical-align: top;
+    *display: inline ;
+    *zoom:1;
+    height:20px;
+    margin: 0;
+    padding:0 3px;
+}
+.kmui-combobox .kmui-caret{
+    position: relative;
+    display: inline-block ;
+    vertical-align: top;
+    *display: inline ;
+    *zoom:1;
+    height:20px;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    background: url(../images/icons.png) -741px 0;
+    _background: url(../images/icons.gif) -741px 0;
+}
+.kmui-btn-toolbar .kmui-combobox.kmui-disabled{
+    opacity: 0.2;
+    filter: alpha(opacity = 20);
+}

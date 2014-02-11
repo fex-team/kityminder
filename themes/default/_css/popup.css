@@ -1,0 +1,20 @@
+.kmui-popup{
+    display: none;
+    background: url('../images/pop-bg.png') repeat #fff;
+    padding: 2px;
+}
+.kmui-popup .kmui-popup-body{
+    border: 1px solid #bfbfbf;
+    background-color: #fff;
+}
+.kmui-popup .kmui-popup-caret{
+    width: 21px;
+    height: 11px;
+}
+.kmui-popup .kmui-popup-caret.up{
+    background:url('../images/caret.png') no-repeat 0 0;
+}
+.kmui-popup .kmui-popup-caret.down{
+    background:url('../images/caret.png') no-repeat 0 0;
+}
+
