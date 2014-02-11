@@ -7,9 +7,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		getLayoutStyle: function ( name ) {
 			return this._layoutStyles[ name ];
 		},
-        getLayoutStyleItems : function(){
-            return this._layoutStyles
-        },
+		getLayoutStyleItems: function () {
+			return this._layoutStyles;
+		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();
 			return _root.getData( "currentstyle" );
@@ -151,7 +151,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		"events": {
 			"ready": function () {
-                this.setDefaultOptions('layoutstyle',this.getLayoutStyleItems());
+				this.setDefaultOptions( 'layoutstyle', this.getLayoutStyleItems() );
 				switchLayout( this, this.getOptions( 'defaultlayoutstyle' ) );
 			}
 		},

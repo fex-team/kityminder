@@ -398,6 +398,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );
+			var set1 = updateLayoutHorizon( node );
+			var set2 = updateLayoutVertical( node );
+			var set = uSet( set1, set2 );
 			updateConnectAndshIcon( node );
 		},
 		initStyle: function () {
@@ -487,8 +490,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var parent = sibling.getParent();
 			this.appendChildNode( parent, node, sibling );
 		},
-		removeNodes: function ( nodes ) {
-
+		removeNode: function ( nodes ) {
+			console.log( nodes );
+			for ( var i = 0; i < nodes.length; i++ ) {
+				minder.handelNodeRemove( nodes[ i ] );
+				var parent = nodes[ i ].getParent();
+			}
 		}
 	};
 	this.addLayoutStyle( "default", _style );
