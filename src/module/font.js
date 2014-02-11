@@ -39,6 +39,7 @@ KityMinder.registerModule( "fontmodule", function () {
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'fontfamily', family );
                         n.getTextShape().setAttr( 'font-family', family );
+                        km.updateLayout(n)
                     } )
                 }
             } ),
@@ -50,6 +51,7 @@ KityMinder.registerModule( "fontmodule", function () {
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'fontsize', size );
                         n.getTextShape().setSize(size);
+                        km.updateLayout(n)
                     } )
                 }
             } )

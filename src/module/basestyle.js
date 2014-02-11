@@ -13,11 +13,13 @@ KityMinder.registerModule( "basestylemodule", function () {
                         utils.each(nodes,function(i,n){
                             n.setData('bold');
                             n.getTextShape().setAttr('font-weight');
+                            km.updateLayout(n)
                         })
                     }else{
                         utils.each(nodes,function(i,n){
                             n.setData('bold',true);
                             n.getTextShape().setAttr('font-weight','bold');
+                            km.updateLayout(n)
                         })
                     }
                 },
@@ -43,11 +45,13 @@ KityMinder.registerModule( "basestylemodule", function () {
                         utils.each(nodes,function(i,n){
                             n.setData('italic');
                             n.getTextShape().setAttr('font-style');
+                            km.updateLayout(n)
                         })
                     }else{
                         utils.each(nodes,function(i,n){
                             n.setData('italic',true);
                             n.getTextShape().setAttr('font-style','italic');
+                            km.updateLayout(n)
                         })
                     }
                 },
