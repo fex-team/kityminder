@@ -16,9 +16,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			_root.setData( "currentstyle", name );
 			return name;
 		},
-		renderNode: function ( node ) {
+		highlightNode: function ( node ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).renderNode.call( this, node );
+			this.getLayoutStyle( curStyle ).highlightNode.call( this, node );
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();

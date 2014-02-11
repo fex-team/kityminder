@@ -2,12 +2,12 @@
 kity.extendClass( Minder, function () {
     function highlightNode( km, node ) {
         node.setData( "highlight", true );
-        km.renderNode( node );
+        km.highlightNode( node );
     }
 
     function unhighlightNode( km, node ) {
         node.setData( "highlight", false );
-        km.renderNode( node );
+        km.highlightNode( node );
     }
     return {
         _initSelection: function () {
