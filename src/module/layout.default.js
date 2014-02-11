@@ -206,7 +206,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			var parentLayout = parent.getData( "layout" );
 			var parentShape = parent.getRenderContainer();
-			var prt = node.getParent();
+			var prt = node.getParent() || parent;
 			//自底向上更新祖先元素的branchheight值
 			while ( prt ) {
 				var prtLayout = prt.getData( "layout" );
@@ -491,10 +491,25 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this.appendChildNode( parent, node, sibling );
 		},
 		removeNode: function ( nodes ) {
-			console.log( nodes );
 			for ( var i = 0; i < nodes.length; i++ ) {
 				minder.handelNodeRemove( nodes[ i ] );
+				var nodeLayout = nodes[ i ].getData( "layout" );
+				nodeLayout.connect.remove();
+				nodeLayout.shicon.remove();
 				var parent = nodes[ i ].getParent();
+				if ( parent ) {
+					parent.removeChild( nodes[ i ] );
+					if ( parent.getType() === "root" ) {
+						var sideList = parent.getData( "layout" )[ nodeLayout.appendside + "List" ];
+						var idx = sideList.indexOf( nodes[ i ] );
+						sideList.splice( idx, 1 );
+					}
+					var set = updateLayoutVertical( nodes[ i ], parent, "remove" );
+					for ( var j = 0; j < set.length; j++ ) {
+						translateNode( set[ j ] );
+						updateConnectAndshIcon( set[ j ] );
+					}
+				}
 			}
 		}
 	};
