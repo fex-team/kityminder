@@ -151,7 +151,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var _contWidth = contRc.getWidth();
 			var _contHeight = contRc.getHeight();
 			Layout.underline.getDrawer()
-				.clear()
 				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
 				.lineTo( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ], _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] );
 			Layout.underline.stroke( nodeStyle.stroke );
@@ -291,6 +290,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
 			break;
 		}
+		node.setPoint( Layout.x, Layout.y );
 	};
 	var updateConnectAndshIcon = function ( node ) {
 		var nodeType = node.getType();
@@ -417,7 +417,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//设置root的align
 			_root.getData( "layout" ).align = "center";
 			updateBg( _root );
-			console.log( _root.getData( "layout" ), _root.getRenderContainer() );
 			initLayout( _root );
 			this._fire( new MinderEvent( "beforeRenderNode", {
 				node: _root
@@ -429,11 +428,27 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
+			console.log( _root );
+			var _buffer = [ _root ];
+			var _cleanbuffer = [];
+			//打散结构
+			while ( _buffer.length !== 0 ) {
+				var children = _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( children );
+				for ( var i = 0; i < children.length; i++ ) {
+					children[ i ].getData( "layout" ).parent = _buffer[ 0 ];
+				}
+				_buffer[ 0 ].clearChildren();
+				if ( _buffer[ 0 ] !== _root ) _cleanbuffer.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
+			//重组结构
+			for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+				this.appendChildNode( _cleanbuffer[ j ].getData( "layout" ).parent, _cleanbuffer[ j ] );
+			}
 		},
 		appendChildNode: function ( parent, node, sibling ) {
 			minder.handelNodeInsert( node );
-			//设置align和appendside属性并在合适的位置插入节点
-			var insert = ( parent.getChildren().indexOf( node ) === -1 );
 			var Layout = node.getData( "layout" );
 			var parentLayout = parent.getData( "layout" );
 			if ( sibling ) {
@@ -451,24 +466,35 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					var prtLayout = parent.getData( "layout" );
 					Layout.appendside = prtLayout.appendside;
 					Layout.align = prtLayout.align;
+					parent.appendChild( node );
 				} else {
-					if ( parentLayout.rightList.length > 1 && parentLayout.rightList.length > parentLayout.leftList.length ) {
-						Layout.appendside = "left";
-						Layout.align = "right";
+					var nodeP = node.getPoint();
+					if ( nodeP && nodeP.x && nodeP.y ) {
+						if ( nodeP.x > parentLayout.x ) {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						} else {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						}
 					} else {
-						Layout.appendside = "right";
-						Layout.align = "left";
+						if ( parentLayout.rightList.length > 1 && parentLayout.rightList.length > parentLayout.leftList.length ) {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						} else {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						}
 					}
-				}
-				if ( insert ) {
-					if ( parent.getType() === "root" ) {
-						var sideList1 = parentLayout[ Layout.appendside + "List" ];
-						var idx1 = sideList1.length;
-						parent.insertChild( node, idx1 );
-						sideList1.push( node );
+					var sideList1 = parentLayout[ Layout.appendside + "List" ];
+					sideList1.push( node );
+					var idx1;
+					if ( Layout.appendside === "right" ) {
+						idx1 = sideList1.length;
 					} else {
-						parent.insertChild( node );
+						idx1 = parent.getChildren().length;
 					}
+					parent.insertChild( node, idx1 );
 				}
 			}
 			//设置分支类型
