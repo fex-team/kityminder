@@ -3,7 +3,7 @@ kity.extendClass( Minder, {
     getRoot: function () {
         return this._root;
     },
-    setRoot:function(root){
+    setRoot: function ( root ) {
         this._root = root;
     },
     handelNodeInsert: function ( node ) {

@@ -227,7 +227,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     clone: function () {
         function cloneNode( parent, isClonedNode ) {
-            var _tmp = new KM.MinderNode(isClonedNode.getText());
+            var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
             _tmp.parent = parent;
@@ -266,5 +266,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     isSelected: function () {
         return this.getData( 'highlight' ) === true;
+    },
+    clearChildren: function () {
+        this.children = [];
     }
 } );
