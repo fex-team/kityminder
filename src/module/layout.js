@@ -26,6 +26,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
 			this.getRenderContainer().clear();
+			var _root = this.getRoot();
+			_root.preTraverse( function ( n ) {
+				n.clearLayout();
+			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this );
 		},
 		appendChildNode: function ( parent, node, index ) {
@@ -79,7 +83,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var switchLayout = function ( km, style ) {
 		var _root = km.getRoot();
 		_root.preTraverse( function ( n ) {
-			n.clearLayout();
+			//n.clearLayout();
 			n.setPoint();
 			n.getBgRc().clear();
 		} );
