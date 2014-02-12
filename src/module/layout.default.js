@@ -170,6 +170,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var updateLayoutVertical = function ( node, parent, action ) {
 		var root = minder.getRoot();
 		var effectSet = [ node ];
+		if ( action === "remove" ) {
+			effectSet = [];
+		}
 		var Layout = node.getData( "layout" );
 		var nodeShape = node.getRenderContainer();
 		var nodeType = node.getType();
@@ -500,7 +503,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		removeNode: function ( nodes ) {
 			console.log( nodes );
 			while ( nodes.length !== 0 ) {
-				var _buffer = [ nodes[ 0 ] ];
 				var parent = nodes[ 0 ].getParent();
 				var nodeLayout = nodes[ 0 ].getData( "layout" );
 				if ( parent.getType() === "root" ) {
@@ -508,19 +510,19 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					var index = sideList.indexOf( nodes[ 0 ] );
 					sideList.splice( index, 1 );
 				}
+				parent.removeChild( nodes[ 0 ] );
 				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
 				for ( var j = 0; j < set.length; j++ ) {
 					translateNode( set[ j ] );
 					updateConnectAndshIcon( set[ j ] );
 				}
+				var _buffer = [ nodes[ 0 ] ];
 				while ( _buffer.length !== 0 ) {
 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 					_buffer[ 0 ].getRenderContainer().remove();
 					var Layout = _buffer[ 0 ].getData( "layout" );
 					Layout.connect.remove();
 					Layout.shicon.remove();
-					var prt = _buffer[ 0 ].getParent();
-					prt.removeChild( _buffer[ 0 ] );
 					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
 					var idx = nodes.indexOf( _buffer[ 0 ] );
 					if ( idx !== -1 ) {
