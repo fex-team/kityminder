@@ -107,15 +107,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		switch ( node.getType() ) {
 		case "root":
 		case "main":
-			if ( !Layout.bgRect ) {
-				node.getBgRc().addShape( Layout.bgRect = new kity.Rect() );
-			}
+			node.getBgRc().clear().addShape( Layout.bgRect = new kity.Rect() );
 			Layout.bgRect.fill( nodeStyle.fill ).setRadius( nodeStyle.radius );
 			break;
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
 			var highlightshape = Layout.highlightshape = new kity.Rect();
-			node.getBgRc().addShapes( [ highlightshape, underline ] );
+			node.getBgRc().clear().addShapes( [ highlightshape, underline ] );
 			break;
 		default:
 			break;
@@ -419,6 +417,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//设置root的align
 			_root.getData( "layout" ).align = "center";
 			updateBg( _root );
+			console.log( _root.getData( "layout" ), _root.getRenderContainer() );
 			initLayout( _root );
 			this._fire( new MinderEvent( "beforeRenderNode", {
 				node: _root
@@ -562,46 +561,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );
 			}
-
 		}
 	};
 	this.addLayoutStyle( "default", _style );
-	return {
-		// "events": {
-		// 	"click": function ( e ) {
-		// 		var ico = e.kityEvent.targetShape.container;
-		// 		if ( ico.class === "shicon" ) {
-		// 			var isShow = ico.icon.switchState();
-		// 			var node = ico.icon._node;
-		// 			var _buffer;
-		// 			if ( isShow ) {
-		// 				_buffer = node.getChildren();
-		// 				while ( _buffer.length !== 0 ) {
-		// 					minder.appendChildNode( _buffer[ 0 ].getParent(), _buffer[ 0 ] );
-		// 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-		// 					_buffer.shift();
-		// 				}
-		// 			} else {
-		// 				var Layout = node.getData( "layout" );
-		// 				var marginTop = Layout.margin[ 0 ];
-		// 				var marginBottom = Layout.margin[ 2 ];
-		// 				Layout.branchheight = node.getRenderContainer().getHeight() + marginTop + marginBottom;
-		// 				_buffer = node.getChildren();
-		// 				while ( _buffer.length !== 0 ) {
-		// 					try {
-		// 						_buffer[ 0 ].getData( "layout" ).shape.clear();
-		// 						_buffer[ 0 ].getRenderContainer().remove();
-		// 					} catch ( error ) {}
-		// 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-		// 					_buffer.shift();
-		// 				}
-		// 				var set = updateLayoutVertical( node, node.getParent(), "append" );
-		// 				for ( var i = 0; i < set.length; i++ ) {
-		// 					translateNode( set[ i ] );
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-	};
+	return {};
 } );

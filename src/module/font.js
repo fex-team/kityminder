@@ -1,22 +1,45 @@
 KityMinder.registerModule( "fontmodule", function () {
 
     return {
-        defaultOptions:{
-            'fontfamily': [
-                { name: 'songti', val: '宋体,SimSun'},
-                { name: 'yahei', val: '微软雅黑,Microsoft YaHei'},
-                { name: 'kaiti', val: '楷体,楷体_GB2312, SimKai'},
-                { name: 'heiti', val: '黑体, SimHei'},
-                { name: 'lishu', val: '隶书, SimLi'},
-                { name: 'andaleMono', val: 'andale mono'},
-                { name: 'arial', val: 'arial, helvetica,sans-serif'},
-                { name: 'arialBlack', val: 'arial black,avant garde'},
-                { name: 'comicSansMs', val: 'comic sans ms'},
-                { name: 'impact', val: 'impact,chicago'},
-                { name: 'timesNewRoman', val: 'times new roman'},
-                { name: 'sans-serif',val:'sans-serif'}
-            ],
-            'fontsize': [10, 12,  16, 18,24, 32,48]
+        defaultOptions: {
+            'fontfamily': [ {
+                name: 'songti',
+                val: '宋体,SimSun'
+            }, {
+                name: 'yahei',
+                val: '微软雅黑,Microsoft YaHei'
+            }, {
+                name: 'kaiti',
+                val: '楷体,楷体_GB2312, SimKai'
+            }, {
+                name: 'heiti',
+                val: '黑体, SimHei'
+            }, {
+                name: 'lishu',
+                val: '隶书, SimLi'
+            }, {
+                name: 'andaleMono',
+                val: 'andale mono'
+            }, {
+                name: 'arial',
+                val: 'arial, helvetica,sans-serif'
+            }, {
+                name: 'arialBlack',
+                val: 'arial black,avant garde'
+            }, {
+                name: 'comicSansMs',
+                val: 'comic sans ms'
+            }, {
+                name: 'impact',
+                val: 'impact,chicago'
+            }, {
+                name: 'timesNewRoman',
+                val: 'times new roman'
+            }, {
+                name: 'sans-serif',
+                val: 'sans-serif'
+            } ],
+            'fontsize': [ 10, 12, 16, 18, 24, 32, 48 ]
         },
         "commands": {
             "forecolor": kity.createClass( "fontcolorCommand", {
@@ -39,7 +62,7 @@ KityMinder.registerModule( "fontmodule", function () {
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'fontfamily', family );
                         n.getTextShape().setAttr( 'font-family', family );
-                        km.updateLayout(n)
+                        km.updateLayout( n )
                     } )
                 }
             } ),
@@ -50,8 +73,8 @@ KityMinder.registerModule( "fontmodule", function () {
                     var nodes = km.getSelectedNodes();
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'fontsize', size );
-                        n.getTextShape().setSize(size);
-                        km.updateLayout(n)
+                        n.getTextShape().setSize( size );
+                        km.updateLayout( n )
                     } )
                 }
             } )
