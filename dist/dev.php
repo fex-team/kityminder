@@ -48,9 +48,11 @@ $dependency = Array(
     ,'src/ui/tab.js'
     ,'src/ui/separator.js'
     ,'src/ui/scale.js'
+    ,'src/adapter/utils.js'
     ,'src/adapter/adapter.js'
     ,'src/adapter/button.js'
     ,'src/adapter/combobox.js'
+    ,'src/adapter/saveto.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
 );

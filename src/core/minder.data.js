@@ -8,6 +8,9 @@ Utils.extend( KityMinder, {
     },
     getSupportedProtocals: function () {
         return Utils.keys( KityMinder._protocals );
+    },
+    getAllRegisteredProtocals:function(){
+        return KityMinder._protocals
     }
 } );
 
