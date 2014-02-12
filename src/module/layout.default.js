@@ -27,7 +27,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				dec.stroke( "gray" );
 				minder.getRenderContainer().addShape( iconShape );
 				iconShape.addShapes( [ circle, plus, dec ] );
-				node.setData( "shicon", this );
 				this.update();
 				this.switchState();
 			},
@@ -205,7 +204,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		} else {
 			if ( action === "append" || action === "contract" ) {
 				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			} else if ( action === "expand" || action === "change" ) { //展开
+			} else if ( action === "change" ) { //展开
 				Layout.branchheight = countBranchHeight( node );
 			}
 			var parentLayout = parent.getData( "layout" );
@@ -564,12 +563,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var isExpand = ico.icon.switchState();
 			var node = ico.icon._node;
 			var _buffer = node.getChildren();
+			var _cleanbuffer = [];
 
 			while ( _buffer.length !== 0 ) {
 				var Layout = _buffer[ 0 ].getData( "layout" );
 				if ( isExpand ) {
 					var parent = _buffer[ 0 ].getParent();
-					minder.appendChildNode( parent, _buffer[ 0 ] );
+					Layout.parent = parent;
+					_cleanbuffer.push( _buffer[ 0 ] );
+					//minder.appendChildNode( parent, _buffer[ 0 ] );
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {
@@ -580,9 +582,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
 			}
-			var set;
-			if ( isExpand ) set = updateLayoutVertical( node, node.getParent(), "expand" );
-			else set = updateLayoutVertical( node, node.getParent(), "contract" );
+			if ( isExpand ) {
+				node.clearChildren();
+				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+					_cleanbuffer[ j ].clearChildren();
+					minder.appendChildNode( _cleanbuffer[ j ].getData( "layout" ).parent, _cleanbuffer[ j ] );
+				}
+			}
+			var set = [];
+			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );

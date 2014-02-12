@@ -25,9 +25,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
-			debugger;
 			this.getRenderContainer().clear();
-			debugger;
 			var _root = this.getRoot();
 			_root.preTraverse( function ( n ) {
 				n.clearLayout();
