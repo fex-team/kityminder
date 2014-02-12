@@ -51,7 +51,8 @@ $dependency = Array(
     ,'src/adapter/adapter.js'
     ,'src/adapter/button.js'
     ,'src/adapter/combobox.js'
-
+    ,'src/protocal/plain.js'
+    ,'src/protocal/json.js'
 );
 
 $content = "";
