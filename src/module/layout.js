@@ -25,7 +25,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
-			//this.getRenderContainer().clear();
 			this._rc.remove();
 			this._rc = new kity.Group();
 			this._paper.addShape( this._rc );
