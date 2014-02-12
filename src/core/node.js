@@ -9,7 +9,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             this.setData( options );
         }
         this._createShapeDom();
-
+        this.setData( "layout", {} );
     },
     _createShapeDom: function () {
         this.rc = new kity.Group();
@@ -37,7 +37,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
             result;
-        utils.each( groups, function ( i, p ) {
+        Utils.each( groups, function ( i, p ) {
             if ( p.getData( 'rctype' ) == 'contrc' ) {
                 result = p;
                 return false;
@@ -48,7 +48,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     getBgRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
             result;
-        utils.each( groups, function ( i, p ) {
+        Utils.each( groups, function ( i, p ) {
             if ( p.getData( 'rctype' ) == 'bgrc' ) {
                 result = p;
                 return false;

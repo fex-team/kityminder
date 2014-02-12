@@ -4,8 +4,10 @@
 <head>
     <script src="jquery-2.1.0.min.js"></script>
     <script src="kity.all.js"></script>
+    <script src="../configure.js"></script>
     <script src="../dist/dev.php"></script>
-    <link href="import.css" />
+    <script src="../lang/zh-cn/zh-cn.js" charset="utf-8"></script>
+    <link href="../themes/default/_css/import.css" type="text/css" rel="stylesheet">
     <style>
         .km_receiver{
             width:300px;height:300px;
@@ -15,25 +17,11 @@
         }
     </style>
 </head>
-<body style="background:#262626; margin:0; padding:0">
+<body >
 <div id="kityminder" style="height:1000px;width:100%" onselectstart="return false">
-<select id="StyleChange">
-    <option value="default">Default</option>
-    <option value="green" selected>Green</option>
-</select>
 </div>
 </body>
 <script>
-    var minder = KM.createMinder(kityminder);
-    document.getElementById("StyleChange").addEventListener("change",function(e){
-        var val = e.target.value;
-        minder.execCommand("switchlayout",val);
-    },false);
-    minder.select(minder.getRoot());
-    var node = new KM.MinderNode('test');
-    node.setData('fontcolor','red');
-    minder.execCommand('appendChildNode',node);
-    // var b = new kity.Bezier([new kity.BezierPoint(0,0).setVertex(100,100),new kity.BezierPoint(100,0).setVertex(100,100)]);
-    // minder.getRenderContainer().addShape(b.stroke("white"));
+    KM.getKityMinder('kityminder');
 </script>
 </html>

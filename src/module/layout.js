@@ -7,6 +7,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		getLayoutStyle: function ( name ) {
 			return this._layoutStyles[ name ];
 		},
+		getLayoutStyleItems: function () {
+			return this._layoutStyles;
+		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();
 			return _root.getData( "currentstyle" );
@@ -16,12 +19,13 @@ KityMinder.registerModule( "LayoutModule", function () {
 			_root.setData( "currentstyle", name );
 			return name;
 		},
-		renderNode: function ( node ) {
+		highlightNode: function ( node ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).renderNode.call( this, node );
+			this.getLayoutStyle( curStyle ).highlightNode.call( this, node );
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
+			this.getRenderContainer().clear();
 			this.getLayoutStyle( curStyle ).initStyle.call( this );
 		},
 		appendChildNode: function ( parent, node, index ) {
@@ -39,6 +43,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 		updateLayout: function ( node ) {
 			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).updateLayout.call( this, node );
+		},
+		expandNode: function ( ico ) {
+			var curStyle = this.getCurrentStyle();
+			this.getLayoutStyle( curStyle ).expandNode.call( this, ico );
 		}
 	} );
 	kity.extendClass( MinderNode, {
@@ -128,11 +136,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
 				}
-				while ( _buffer.length !== 1 ) {
+				do {
 					var parent = _buffer[ 0 ].getParent();
 					if ( parent && _buffer.indexOf( parent ) === -1 ) _buffer.push( parent );
 					_buffer.shift();
-				}
+				} while ( _buffer.length !== 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
 			}
@@ -148,11 +156,18 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		"events": {
 			"ready": function () {
-				switchLayout( this, this.getOptions( 'layoutstyle' ) );
+				this.setDefaultOptions( 'layoutstyle', this.getLayoutStyleItems() );
+				switchLayout( this, this.getOptions( 'defaultlayoutstyle' ) );
+			},
+			"click": function ( e ) {
+				var ico = e.kityEvent.targetShape.container;
+				if ( ico.class === "shicon" ) {
+					this.expandNode( ico );
+				}
 			}
 		},
 		"defaultOptions": {
-			"layoutstyle": "default"
+			"defaultlayoutstyle": "default"
 		}
 	};
 } );

@@ -1,0 +1,16 @@
+
+.kmui-btn-toolbar .kmui-btn .kmui-icon-undo {
+    background-position: -160px 0;
+}
+.kmui-btn-toolbar .kmui-btn .kmui-icon-redo {
+    background-position: -100px 0;
+}
+.kmui-btn-toolbar  .kmui-btn .kmui-icon-bold{
+    background-position: 0 0;
+}
+.kmui-btn-toolbar  .kmui-btn .kmui-icon-italic {
+    background-position: -60px 0;
+}
+.kmui-btn-toolbar .kmui-btn .kmui-icon-font, .kmui-btn-toolbar .kmui-btn .kmui-icon-forecolor {
+    background-position: -720px 0;
+}

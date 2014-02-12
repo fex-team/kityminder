@@ -11,6 +11,7 @@
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
         this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, options );
+        this.setDefaultOptions(KM.defaultOptions);
         this._initEvents();
         this._initMinder();
         this._initSelection();
@@ -29,7 +30,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         } else {
             obj = key;
         }
-        Utils.extend( this._options, obj, true );
+        utils.extend( this._options, obj, true );
     },
     _initMinder: function () {
 

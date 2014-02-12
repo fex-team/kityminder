@@ -60,37 +60,35 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
-
                 switch ( e.originEvent.keyCode ) {
+                case keymap.Enter:
+                    this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
+                    e.preventDefault();
+                    break;
+                case keymap.Tab:
+                    this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
+                    e.preventDefault();
+                    break;
+                case keymap.Backspace:
+                case keymap.Del:
+                    this.execCommand( 'removenode' );
+                    e.preventDefault();
+                    break;
 
-                    case keymap.Enter:
-                        this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
-                        e.preventDefault();
-                        break;
-                    case keymap.Tab:
-                        this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
-                        e.preventDefault();
-                        break;
-                    case keymap.Backspace:
-                    case keymap.Del:
-                        this.execCommand( 'removenode' );
-                        e.preventDefault();
-                        break;
-
-                    case keymap.Left:
-                    case keymap.up:
-                    case keymap.Right:
-                    case keymap.Down:
-                        if ( this.isSingleSelect() ) {
-                            KBNavigate( this, {
-                                37: 'left',
-                                38: 'top',
-                                39: 'right',
-                                40: 'down'
-                            }[ e.originEvent.keyCode ] );
-                        }
-                        e.preventDefault();
-                        break;
+                case keymap.Left:
+                case keymap.up:
+                case keymap.Right:
+                case keymap.Down:
+                    if ( this.isSingleSelect() ) {
+                        KBNavigate( this, {
+                            37: 'left',
+                            38: 'top',
+                            39: 'right',
+                            40: 'down'
+                        }[ e.originEvent.keyCode ] );
+                    }
+                    e.preventDefault();
+                    break;
                 }
 
             }

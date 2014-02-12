@@ -28,7 +28,9 @@ var KityMinder =
                     id = target.id || ( "KM_INSTANCE_" + instanceId++ );
                 }
                 return instanceMap[ id ] || this.createMinder(target,options);
-            }
+            },
+            //挂接多语言
+            LANG:{}
         }
     }();
 
