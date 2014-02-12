@@ -114,6 +114,7 @@ Minder.Receiver = kity.createClass('Receiver',{
     },
     updateCursor : function(){
         this.cursor.setShowHold();
+        this.km.getRenderContainer().bringFront(this.cursor);
         if(this.index == this.textData.length){
 
             this.cursor.setPosition({
