@@ -51,7 +51,6 @@ KityMinder.registerModule( "HistoryModule", function () {
         },
         restore: function () {
             var scene = this.list[ this.index ];
-            debugger;
             this.km.setRoot( scene.cloneData() );
             this.km.initStyle();
             this.update();
