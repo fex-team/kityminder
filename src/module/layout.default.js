@@ -498,24 +498,35 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this.appendChildNode( parent, node, sibling );
 		},
 		removeNode: function ( nodes ) {
-			for ( var i = 0; i < nodes.length; i++ ) {
-				minder.handelNodeRemove( nodes[ i ] );
-				var nodeLayout = nodes[ i ].getData( "layout" );
-				nodeLayout.connect.remove();
-				nodeLayout.shicon.remove();
-				var parent = nodes[ i ].getParent();
-				if ( parent ) {
-					parent.removeChild( nodes[ i ] );
-					if ( parent.getType() === "root" ) {
-						var sideList = parent.getData( "layout" )[ nodeLayout.appendside + "List" ];
-						var idx = sideList.indexOf( nodes[ i ] );
-						sideList.splice( idx, 1 );
+			console.log( nodes );
+			while ( nodes.length !== 0 ) {
+				var _buffer = [ nodes[ 0 ] ];
+				var parent = nodes[ 0 ].getParent();
+				var nodeLayout = nodes[ 0 ].getData( "layout" );
+				if ( parent.getType() === "root" ) {
+					var sideList = parent.getData( "layout" )[ nodeLayout.appendside + "List" ];
+					var index = sideList.indexOf( nodes[ 0 ] );
+					sideList.splice( index, 1 );
+				}
+				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
+				for ( var j = 0; j < set.length; j++ ) {
+					translateNode( set[ j ] );
+					updateConnectAndshIcon( set[ j ] );
+				}
+				while ( _buffer.length !== 0 ) {
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					_buffer[ 0 ].getRenderContainer().remove();
+					var Layout = _buffer[ 0 ].getData( "layout" );
+					Layout.connect.remove();
+					Layout.shicon.remove();
+					var prt = _buffer[ 0 ].getParent();
+					prt.removeChild( _buffer[ 0 ] );
+					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
+					var idx = nodes.indexOf( _buffer[ 0 ] );
+					if ( idx !== -1 ) {
+						nodes.splice( idx, 1 );
 					}
-					var set = updateLayoutVertical( nodes[ i ], parent, "remove" );
-					for ( var j = 0; j < set.length; j++ ) {
-						translateNode( set[ j ] );
-						updateConnectAndshIcon( set[ j ] );
-					}
+					_buffer.shift();
 				}
 			}
 		},
