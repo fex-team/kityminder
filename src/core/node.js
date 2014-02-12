@@ -227,7 +227,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     clone: function () {
         function cloneNode( parent, isClonedNode ) {
-            var _tmp = new KM.MinderNode();
+            var _tmp = new KM.MinderNode(isClonedNode.getText());
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
             _tmp.parent = parent;
