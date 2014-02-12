@@ -501,7 +501,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this.appendChildNode( parent, node, sibling );
 		},
 		removeNode: function ( nodes ) {
-			console.log( nodes );
 			while ( nodes.length !== 0 ) {
 				var parent = nodes[ 0 ].getParent();
 				var nodeLayout = nodes[ 0 ].getData( "layout" );
@@ -519,10 +518,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var _buffer = [ nodes[ 0 ] ];
 				while ( _buffer.length !== 0 ) {
 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-					_buffer[ 0 ].getRenderContainer().remove();
-					var Layout = _buffer[ 0 ].getData( "layout" );
-					Layout.connect.remove();
-					Layout.shicon.remove();
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						var Layout = _buffer[ 0 ].getData( "layout" );
+						Layout.connect.remove();
+						Layout.shicon.remove();
+					} catch ( error ) {
+						console.log( "isRemoved" );
+					}
 					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
 					var idx = nodes.indexOf( _buffer[ 0 ] );
 					if ( idx !== -1 ) {
@@ -532,7 +535,33 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 			}
 		},
-		expandNode: function ( node ) {
+		expandNode: function ( ico ) {
+			var isExpand = ico.icon.switchState();
+			var node = ico.icon._node;
+			var _buffer = node.getChildren();
+
+			while ( _buffer.length !== 0 ) {
+				var Layout = _buffer[ 0 ].getData( "layout" );
+				if ( isExpand ) {
+					var parent = _buffer[ 0 ].getParent();
+					minder.appendChildNode( parent, _buffer[ 0 ] );
+					Layout.connect = null;
+					Layout.shicon = null;
+				} else {
+					_buffer[ 0 ].getRenderContainer().remove();
+					Layout.connect.remove();
+					Layout.shicon.remove();
+				}
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				_buffer.shift();
+			}
+			var set;
+			if ( isExpand ) set = updateLayoutVertical( node, node.getParent(), "expand" );
+			else set = updateLayoutVertical( node, node.getParent(), "contract" );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
 
 		}
 	};
