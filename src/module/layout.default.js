@@ -518,6 +518,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					}
 				}
 			}
+		},
+		expandNode: function ( node ) {
+
 		}
 	};
 	this.addLayoutStyle( "default", _style );
