@@ -44,9 +44,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).updateLayout.call( this, node );
 		},
-		expandNode: function ( node ) {
+		expandNode: function ( ico ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).expandNode.call( this, node );
+			this.getLayoutStyle( curStyle ).expandNode.call( this, ico );
 		}
 	} );
 	kity.extendClass( MinderNode, {
@@ -162,7 +162,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"click": function ( e ) {
 				var ico = e.kityEvent.targetShape.container;
 				if ( ico.class === "shicon" ) {
-					this.expandNode( ico.icon._node );
+					this.expandNode( ico );
 				}
 			}
 		},
