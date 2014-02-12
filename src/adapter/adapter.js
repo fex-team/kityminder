@@ -55,7 +55,7 @@ utils.extend(KityMinder,function(){
             this._createToolbar(containers.$toolbar,km);
             this._createStatusbar(containers.$statusbar,km);
             km.$container = containers.$container;
-
+            return km;
         },
         registerWidget : function(name,pro,cb){
             _widgetData[name] = $.extend2(pro,{
