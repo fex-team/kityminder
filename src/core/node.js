@@ -234,15 +234,15 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             if ( parent ) {
                 parent.children.push( _tmp );
             }
-            for ( var i = 0, ci; ci = isClonedNode.children[ i++ ]; ) {
+            for ( var i = 0, ci;
+                ( ci = isClonedNode.children[ i++ ] ); ) {
                 cloneNode( _tmp, ci );
             }
             return _tmp;
         }
         return function () {
             return cloneNode( null, this );
-
-        }
+        };
     }(),
     equals: function ( node ) {
         if ( node.children.length != this.children.length ) {
@@ -252,7 +252,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             return false;
         }
 
-        for ( var i = 0, ci; ci = this.children[ i++ ]; ) {
+        for ( var i = 0, ci;
+            ( ci = this.children[ i++ ] ); ) {
             if ( ci.equals( node ) === false ) {
                 return false;
             }
@@ -261,9 +262,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     getTextShape: function () {
-        return this.getContRc().getShapesByType( 'text' )[ 0 ]
+        return this.getContRc().getShapesByType( 'text' )[ 0 ];
     },
     isSelected: function () {
-        return this.getData( 'highlight' ) === true
+        return this.getData( 'highlight' ) === true;
     }
 } );
