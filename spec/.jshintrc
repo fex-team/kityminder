@@ -18,8 +18,11 @@
         "MinderEvent",
         "Command",
         "KITYMINDER_CONFIG",
-        "keymap",
         "Utils",
-        "utils"
+        "utils",
+        "describe",
+        "it",
+        "beforeEach",
+        "expect"
     ]
 }

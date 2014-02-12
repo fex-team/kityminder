@@ -47,7 +47,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
     }
 
 
-    function KBNavigate( km, direction ) {
+    function navigateTo( km, direction ) {
         var nextNode = km.getSelectedNode()._nearestNodes[ direction ];
         if ( nextNode ) {
             km.select( nextNode );
@@ -60,33 +60,36 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
+                var keys = KityMinder.keymap;
                 switch ( e.originEvent.keyCode ) {
-                case keymap.Enter:
+                case keys.Enter:
                     this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
                     e.preventDefault();
                     break;
-                case keymap.Tab:
+                case keys.Tab:
                     this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
                     e.preventDefault();
                     break;
-                case keymap.Backspace:
-                case keymap.Del:
+                case keys.Backspace:
+                case keys.Del:
                     this.execCommand( 'removenode' );
                     e.preventDefault();
                     break;
 
-                case keymap.Left:
-                case keymap.up:
-                case keymap.Right:
-                case keymap.Down:
-                    if ( this.isSingleSelect() ) {
-                        KBNavigate( this, {
-                            37: 'left',
-                            38: 'top',
-                            39: 'right',
-                            40: 'down'
-                        }[ e.originEvent.keyCode ] );
-                    }
+                case keys.Left:
+                    navigateTo( this, 'left' );
+                    e.preventDefault();
+                    break;
+                case keys.Up:
+                    navigateTo( this, 'top' );
+                    e.preventDefault();
+                    break;
+                case keys.Right:
+                    navigateTo( this, 'right' );
+                    e.preventDefault();
+                    break;
+                case keys.Down:
+                    navigateTo( this, 'down' );
                     e.preventDefault();
                     break;
                 }
