@@ -51,7 +51,6 @@ KityMinder.registerModule( "HistoryModule", function () {
         },
         restore: function () {
             var scene = this.list[ this.index ];
-            debugger;
             this.km.setRoot( scene.cloneData() );
             this.km.initStyle();
             this.update();
@@ -60,7 +59,6 @@ KityMinder.registerModule( "HistoryModule", function () {
             return new Scene( this.km.getRoot() )
         },
         saveScene: function () {
-            debugger;
             var currentScene = this.getScene();
             var lastScene = this.list[ this.index ];
             if ( lastScene && lastScene.equals( currentScene ) ) {
