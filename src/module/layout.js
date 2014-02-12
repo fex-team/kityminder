@@ -131,11 +131,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
 				}
-				while ( _buffer.length !== 1 ) {
+				do {
 					var parent = _buffer[ 0 ].getParent();
 					if ( parent && _buffer.indexOf( parent ) === -1 ) _buffer.push( parent );
 					_buffer.shift();
-				}
+				} while ( _buffer.length !== 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
 			}
@@ -153,6 +153,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"ready": function () {
 				this.setDefaultOptions( 'layoutstyle', this.getLayoutStyleItems() );
 				switchLayout( this, this.getOptions( 'defaultlayoutstyle' ) );
+			},
+			"click": function ( e ) {
+
 			}
 		},
 		"defaultOptions": {
