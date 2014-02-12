@@ -60,7 +60,6 @@ KityMinder.registerModule( "HistoryModule", function () {
             return new Scene( this.km.getRoot() )
         },
         saveScene: function () {
-            debugger;
             var currentScene = this.getScene();
             var lastScene = this.list[ this.index ];
             if ( lastScene && lastScene.equals( currentScene ) ) {
