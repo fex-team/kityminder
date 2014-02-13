@@ -266,7 +266,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this.getContRc().getShapesByType( 'text' )[ 0 ];
     },
     isSelected: function () {
-        return this.getData( 'highlight' ) === true;
+        return this.getTmpData( 'highlight' ) === true;
     },
     clearChildren: function () {
         this.children = [];
