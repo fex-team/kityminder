@@ -81,6 +81,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			highlight: "chocolate"
 		},
 		"main": {
+			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
 			fill: "white",
 			color: "#333",
 			padding: [ 5.5, 20, 5.5, 20 ],
@@ -90,10 +91,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			highlight: "chocolate"
 		},
 		"sub": {
-			stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ).setLineJoin( "round" ),
+			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
 			color: "white",
 			fontSize: 12,
-			margin: [ 0, 10, 20, 5 ],
+			margin: [ 0, 10, 20, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
 			highlight: "chocolate"
 		}
@@ -296,6 +297,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	var updateConnectAndshIcon = function ( node ) {
 		var nodeType = node.getType();
 		var Layout = node.getLayout();
+		var nodeStyle = nodeStyles[ node.getType() ];
 		var connect;
 		//更新连线
 		if ( nodeType === "main" ) {
@@ -324,8 +326,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var sPosV = sPos.getVertex();
 			var endPosV = endPos.getVertex();
 			sPos.setVertex( rootX, rootY );
-			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( "white" );
-			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
+			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 3 );
 		} else if ( nodeType === "sub" ) {
 			if ( !Layout.connect ) {
 				connect = Layout.connect = new kity.Path();
@@ -335,7 +337,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var parentShape = node.getParent().getRenderContainer();
 			var parentBox = parentShape.getRenderBox();
 			var parentLayout = node.getParent().getLayout();
-			var nodeStyle = nodeStyles[ node.getType() ];
 			var parentStyle = nodeStyles[ node.getParent().getType() ];
 			var Shape = node.getRenderContainer();
 			var sX, sY = parentLayout.y;
