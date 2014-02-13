@@ -62,6 +62,23 @@ KityMinder.registerModule( "KeyboardModule", function () {
             },
             keydown: function ( e ) {
                 var keys = KityMinder.keymap;
+                if(this.receiver.isTextEditStatus()){
+                    switch ( e.originEvent.keyCode ) {
+                        case keys.Enter:
+                        case keys.Tab:
+                            this.fire('stopTextEdit');
+                            e.preventDefault();
+                            break;
+                        case keys.Backspace:
+                        case keys.Del:
+                        case keys.Left:
+                        case keys.Up:
+                        case keys.Right:
+                        case keys.Down:
+                            break;
+                    }
+                    return;
+                }
                 switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
                     this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );

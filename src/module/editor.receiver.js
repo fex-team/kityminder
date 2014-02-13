@@ -79,7 +79,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                         case keymap.Tab:
                             this.setTextEditStatus(false);
                             this.clear();
-                            e.stopPropagation();
+                            e.preventDefault();
                             return;
                         case keymap.Shift:
                         case keymap.Control:
@@ -90,9 +90,11 @@ Minder.Receiver = kity.createClass('Receiver',{
                     }
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
 
+
                     this.textShape.setContent(text);
                     this.setContainerStyle();
                     this.minderNode.setText(text);
+
                     this.km.updateLayout(this.minderNode);
                     this.setBaseOffset();
                     this.updateTextData();
