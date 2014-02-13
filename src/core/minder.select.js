@@ -1,12 +1,12 @@
 // 选区管理
 kity.extendClass( Minder, function () {
     function highlightNode( km, node ) {
-        node.setData( "highlight", true );
+        node.setAttr( "highlight", true );
         km.highlightNode( node );
     }
 
     function unhighlightNode( km, node ) {
-        node.setData( "highlight", false );
+        node.setAttr( "highlight", false );
         km.highlightNode( node );
     }
     return {
