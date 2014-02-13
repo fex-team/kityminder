@@ -58,35 +58,28 @@ KityMinder.registerModule( "LayoutModule", function () {
 	} );
 	kity.extendClass( MinderNode, {
 		setLayout: function ( k, v ) {
-			if ( this.setData( 'layout' ) === undefined ) {
-				this.setData( 'layout', {} );
+			if ( this._layout === undefined ) {
+				this._layout = {};
 			}
 			var _pros = this.getLayout();
 			Utils.extend( _pros, {
 				k: v
 			} );
-			this.setData( 'layout', _pros );
+			this._layout = _pros;
 		},
 		getLayout: function ( k ) {
 			if ( k === undefined ) {
-				return this.getData( 'layout' );
+				return this._layout;
 			}
-			return this.getData( 'layout' )[ k ];
+			return this._layout[ k ];
 		},
 		clearLayout: function () {
-			this.setData( 'layout', {} );
-		},
-		setHide: function ( isHide ) {
-			this.setData( "hide", isHide );
-		},
-		isHide: function () {
-			return this.getData( "hide" );
+			this._layout = {};
 		}
 	} );
 	var switchLayout = function ( km, style ) {
 		var _root = km.getRoot();
 		_root.preTraverse( function ( n ) {
-			//n.clearLayout();
 			n.setPoint();
 			n.getBgRc().clear();
 		} );
