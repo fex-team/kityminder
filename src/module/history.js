@@ -101,7 +101,7 @@ KityMinder.registerModule( "HistoryModule", function () {
                 },
 
                 queryState: function ( km ) {
-                    km.historyManager.hasUndo ? 0 : -1;
+                    return km.historyManager.hasUndo ? 0 : -1;
                 },
 
                 isNeedUndo: function () {

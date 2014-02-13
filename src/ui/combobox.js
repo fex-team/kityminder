@@ -77,6 +77,10 @@
                 this.initItemActive();
 
             },
+            setLabelWithDefaultValue : function(){
+                var $btn = this.data('button');
+                $btn.kmui().label($btn.data('original-title'))
+            },
             /**
              * 初始化选择项
              */
@@ -97,7 +101,7 @@
                     }).select( index );
 
                     me.hide();
-
+                    me.trigger('aftercomboboxselect');
                     return false;
 
                 });

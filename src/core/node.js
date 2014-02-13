@@ -253,8 +253,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         }
 
         for ( var i = 0, ci;
-            ( ci = this.children[ i++ ] ); ) {
-            if ( ci.equals( node ) === false ) {
+            ( ci = this.children[ i ] );i++ ) {
+            if ( ci.equals( node.children[i] ) === false ) {
                 return false;
             }
         }
