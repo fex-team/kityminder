@@ -59,6 +59,7 @@ KityMinder.registerModule( "HistoryModule", function () {
 
             this.update();
             this.km.fire('restoreScene');
+            this.km.fire('contentChange');
         },
         getScene: function () {
             return new Scene( this.km.getRoot() )

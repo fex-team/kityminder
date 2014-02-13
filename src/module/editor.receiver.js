@@ -74,7 +74,6 @@ Minder.Receiver = kity.createClass('Receiver',{
 
             case 'beforekeyup':
                 if(this.isTextEditStatus()){
-
                     switch(keyCode){
                         case keymap.Enter:
                         case keymap.Tab:
