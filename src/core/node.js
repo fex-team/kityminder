@@ -3,6 +3,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.parent = null;
         this.children = [];
         this.data = {};
+        this.tmpData = {};
         if ( Utils.isString( options ) ) {
             this.setData( 'text', options );
         } else {
@@ -271,22 +272,22 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.children = [];
     },
     isHighlight : function(){
-        return this.getAttr('highlight')
+        return this.getTmpData('highlight')
     },
-    setAttr : function(a,v){
+    setTmpData : function(a,v){
         var me = this;
         if(utils.isObject(a)){
             utils.each(a,function(val,key){
-                me.setAttr(key,val)
+                me.setTmpData(key,val)
             })
         }
         if(v === undefined || v === null || v === ''){
-            this.node.removeAttribute(a);
+            delete this.tmpData[a];
         }else {
-            this.node.setAttribute(a,v);
+            this.tmpData[a] = v;
         }
     },
-    getAttr:function(a){
-        return this.node.getAttribute(a)
+    getTmpData:function(a){
+        return this.tmpData[a]
     }
 } );
