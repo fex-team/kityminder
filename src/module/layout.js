@@ -160,10 +160,16 @@ KityMinder.registerModule( "LayoutModule", function () {
 				switchLayout( this, this.getOptions( 'defaultlayoutstyle' ) );
 			},
 			"click": function ( e ) {
-				var ico = e.kityEvent.targetShape.container;
-				if ( ico.class === "shicon" ) {
+				var ico = e.kityEvent.targetShape && e.kityEvent.targetShape.container;
+				if ( ico && ico.class === "shicon" ) {
 					this.expandNode( ico );
 				}
+			},
+			"resize": function ( e ) {
+				clearTimeout( this._lastStyleResetTimeout );
+				this._lastStyleResetTimeout = setTimeout( function () {
+					this.updateLayout( this.getRoot() );
+				}.bind( this ), 100 );
 			}
 		},
 		"defaultOptions": {

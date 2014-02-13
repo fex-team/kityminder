@@ -14,3 +14,6 @@
 .kmui-btn-toolbar .kmui-btn .kmui-icon-font, .kmui-btn-toolbar .kmui-btn .kmui-icon-forecolor {
     background-position: -720px 0;
 }
+.kmui-btn-toolbar .kmui-btn .kmui-icon-hand {
+    background: url(../images/hand.png) no-repeat 2px 2px;
+}

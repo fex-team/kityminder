@@ -12,9 +12,13 @@
     left: 10px;
     top: 10px;
     border-radius: 4px;
+    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
 }
 .kmui-container .kmui-editor-body{
     background-color: #333;
     line-height: 0;
     overflow: hidden;
+}
+svg {
+    font-family: 'Arial';
 }

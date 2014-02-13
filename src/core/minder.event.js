@@ -14,6 +14,9 @@ kity.extendClass( Minder, {
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
         this._paper.on( 'click mousedown mouseup mousemove touchstart touchmove touchend', this._firePharse.bind( this ) );
+        if ( window ) {
+            window.addEventListener( 'resize', this._firePharse.bind( this ) );
+        }
     },
     _bindKeyboardEvents: function () {
         if ( ( navigator.userAgent.indexOf( 'iPhone' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPod' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPad' ) == -1 ) ) {
@@ -23,6 +26,7 @@ kity.extendClass( Minder, {
     },
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;
+
         beforeEvent = new MinderEvent( 'before' + e.type, e, true );
         if ( this._fire( beforeEvent ) ) {
             return;

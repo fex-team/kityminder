@@ -22,6 +22,7 @@ $dependency = Array(
     ,'src/module/layout.default.js'
     ,'src/module/layout.bottom.js'
     ,'src/core/minder.select.js'
+    ,'src/module/draggable.js'
     ,'src/module/keyboard.js'
     ,'src/module/mouse.js'
     ,'src/module/history.js'
@@ -53,6 +54,7 @@ $dependency = Array(
     ,'src/adapter/button.js'
     ,'src/adapter/combobox.js'
     ,'src/adapter/saveto.js'
+    ,'src/adapter/hand.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
 );

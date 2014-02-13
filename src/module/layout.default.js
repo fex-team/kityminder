@@ -1,7 +1,12 @@
 KityMinder.registerModule( "LayoutDefault", function () {
 	var _target = this.getRenderTarget();
-	var minderWidth = _target.clientWidth;
-	var minderHeight = _target.clientHeight;
+
+	function getMinderSize() {
+		return {
+			width: _target.clientWidth,
+			height: _target.clientHeight
+		};
+	}
 	var minder = this;
 	//收缩-展开子树的节点
 	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
@@ -84,10 +89,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
 			fill: "white",
 			color: "#333",
-			padding: [ 5.5, 20, 5.5, 20 ],
-			fontSize: 14,
+			padding: [ 10.5, 20, 10.5, 20 ],
+			fontSize: 16,
 			margin: [ 0, 10, 30, 50 ],
-			radius: 5,
+			radius: 10,
 			highlight: "yellow"
 		},
 		"sub": {
@@ -125,7 +130,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var nodeType = node.getType();
 		var nodeStyle = nodeStyles[ nodeType ];
 		var txtShape = node.getTextShape();
-		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize );
+		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
 		if ( nodeType === "root" ) {
 			Layout.leftList = [];
 			Layout.rightList = [];
@@ -201,7 +206,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		};
 		if ( nodeType === "root" ) {
-			Layout.y = minderHeight / 2;
+			Layout.y = getMinderSize().height / 2;
 			effectSet.push( node );
 		} else {
 			if ( action === "append" || action === "contract" ) {
@@ -252,7 +257,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var prt = _buffer[ 0 ].getParent();
 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 			if ( !prt ) {
-				Layout.x = minderWidth / 2;
+				Layout.x = getMinderSize().width / 2;
 				_buffer.shift();
 				continue;
 			}

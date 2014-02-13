@@ -7,7 +7,7 @@ KityMinder.registerModule( "MouseModule", function () {
 
     var SelectArea = ( function () {
         var startPos = null;
-        var selectRect = null;
+        var selectRect = new kity.Path().fill( 'rgba(255,255,255,.5)' ).stroke( 'white' );
         var min = function ( a, b ) {
             return a < b ? a : b;
         };
@@ -28,23 +28,24 @@ KityMinder.registerModule( "MouseModule", function () {
 
         return {
             selectStart: function ( e ) {
-                selectRect = new kity.Polygon();
+                if ( e.originEvent.button ) return;
+                if ( startPos ) return this.selectEnd();
                 minder.getRenderContainer().addShape( selectRect );
                 var p = e.getPosition();
                 startPos = {
                     x: p.x,
                     y: p.y
                 };
+                selectRect.setOpacity( 0.8 ).getDrawer().clear();
             },
             selectMove: function ( e ) {
                 var p = e.getPosition();
                 if ( startPos ) {
-                    var points = [ new kity.Point( startPos.x, startPos.y ),
-                        new kity.Point( p.x, startPos.y ),
-                        new kity.Point( p.x, p.y ),
-                        new kity.Point( startPos.x, p.y )
-                    ];
-                    selectRect.setPoints( points ).fill( "white" ).setOpacity( 0.5 );
+                    var d = selectRect.getDrawer();
+                    d.clear().moveTo( startPos.x, startPos.y )
+                        .lineTo( p.x, startPos.y )
+                        .lineTo( p.x, p.y )
+                        .lineTo( startPos.x, p.y ).close();
                     var _buffer = [ minder.getRoot() ];
                     while ( _buffer.length !== 0 ) {
                         _buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
@@ -65,7 +66,9 @@ KityMinder.registerModule( "MouseModule", function () {
                 }
             },
             selectEnd: function ( e ) {
-                if ( startPos ) selectRect.remove();
+                if ( startPos ) {
+                    selectRect.fadeOut( 200, 'ease' );
+                }
                 startPos = null;
             }
         };
