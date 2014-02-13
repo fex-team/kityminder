@@ -231,6 +231,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
+            _tmp.tmpData =  Utils.clonePlainObject( isClonedNode.getTmpData() )
             _tmp.parent = parent;
             if ( parent ) {
                 parent.children.push( _tmp );
@@ -252,7 +253,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         if ( utils.compareObject( node.getData(), this.getData() ) === false ) {
             return false;
         }
-
+        if ( utils.compareObject( node.getTmpData(), this.getTmpData() ) === false ) {
+            return false;
+        }
         for ( var i = 0, ci;
             ( ci = this.children[ i ] );i++ ) {
             if ( ci.equals( node.children[i] ) === false ) {
@@ -288,6 +291,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         }
     },
     getTmpData:function(a){
+        if ( a === undefined ) {
+            return this.tmpData;
+        }
         return this.tmpData[a]
     }
 } );

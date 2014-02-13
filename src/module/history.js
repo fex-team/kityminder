@@ -5,7 +5,6 @@ KityMinder.registerModule( "HistoryModule", function () {
     var Scene = kity.createClass( 'Scene', {
         constructor: function ( root ) {
             this.data = root.clone();
-
         },
         getData: function () {
             return this.data;
@@ -147,6 +146,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             },
             "renderNode":function(e){
                 var node = e.node;
+
                 if(node.isHighlight()){
                     km.select(node);
                 }
