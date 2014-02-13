@@ -132,7 +132,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.leftHeight = 0;
 			Layout.rightHeight = 0;
 		}
-		minder.highlightNode( node );
 	};
 	//根据内容调整节点尺寸
 	var updateShapeByCont = function ( node ) {
@@ -451,6 +450,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		appendChildNode: function ( parent, node, sibling ) {
 			minder.handelNodeInsert( node );
+			node.clearLayout();
 			var Layout = node.getLayout();
 			var parentLayout = parent.getLayout();
 			if ( sibling ) {
