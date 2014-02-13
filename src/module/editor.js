@@ -3,7 +3,7 @@ KityMinder.registerModule( "TextEditModule", function () {
     var receiver = new Minder.Receiver(this);
     var range = new Minder.Range();
 
-
+    this.receiver = receiver;
     return {
         //插入光标
         "init":function(){
@@ -34,6 +34,10 @@ KityMinder.registerModule( "TextEditModule", function () {
             },
             'restoreScene':function(){
                 cursor.setHide();
+            },
+            'stopTextEdit':function(){
+                cursor.setHide();
+
             }
         }
     };
