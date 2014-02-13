@@ -32,6 +32,7 @@ $dependency = Array(
     ,'src/module/editor.cursor.js'
     ,'src/module/basestyle.js'
     ,'src/module/font.js'
+    ,'src/module/zoom.js'
     ,'src/ui/widget.js'
     ,'src/ui/button.js'
     ,'src/ui/toolbar.js'

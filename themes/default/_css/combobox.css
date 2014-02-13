@@ -7,7 +7,7 @@
 .kmui-combobox .kmui-button-label{
     position: relative;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: middle;
     *display: inline ;
     *zoom:1;
     width:60px;
@@ -22,7 +22,7 @@
 .kmui-combobox  .kmui-button-spacing{
     position: relative;
     display: inline-block ;
-    vertical-align: top;
+    vertical-align: middle;
     *display: inline ;
     *zoom:1;
     height:20px;
@@ -32,7 +32,7 @@
 .kmui-combobox .kmui-caret{
     position: relative;
     display: inline-block ;
-    vertical-align: top;
+    vertical-align: middle;
     *display: inline ;
     *zoom:1;
     height:20px;

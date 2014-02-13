@@ -2,7 +2,7 @@
 .kmui-btn-toolbar .kmui-btn{
     position: relative;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: middle;
     *display: inline;
     *zoom:1;
     width:auto;

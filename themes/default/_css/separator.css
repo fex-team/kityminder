@@ -5,7 +5,7 @@
     background: url(../images/icons.png) -179px 1px;
     background: url(../images/icons.gif) -179px 1px \9;
     display: inline-block ;
-    vertical-align: top;
+    vertical-align: middle;
     *display: inline ;
     *zoom:1;
     border:none;

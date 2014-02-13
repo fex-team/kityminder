@@ -1,18 +1,19 @@
 .kmui-combobox-menu{
     position: absolute;
     top: 100%;
-    left: 0;
+    left: 2px;
     display: none;
     list-style: none;
     text-decoration: none;
     margin: 0;
     padding:5px;
     background-color: #ffffff;
-    border: 1px solid #ccc;
     font-size: 12px;
-    box-shadow: 2px 2px 5px #d3d6da;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
     min-width: 160px;
     _width: 160px;
+    -webkit-transform: translateX(2px);
+    font-family: Arial;
 }
 
 .kmui-combobox-menu .kmui-combobox-item {

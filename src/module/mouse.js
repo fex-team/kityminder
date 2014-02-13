@@ -30,12 +30,8 @@ KityMinder.registerModule( "MouseModule", function () {
             selectStart: function ( e ) {
                 if ( e.originEvent.button ) return;
                 if ( startPos ) return this.selectEnd();
-                minder.getRenderContainer().addShape( selectRect );
-                var p = e.getPosition();
-                startPos = {
-                    x: p.x,
-                    y: p.y
-                };
+                minder._paper.addShape( selectRect );
+                startPos = e.getPosition();
                 selectRect.setOpacity( 0.8 ).getDrawer().clear();
             },
             selectMove: function ( e ) {
