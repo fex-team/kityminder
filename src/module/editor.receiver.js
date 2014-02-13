@@ -68,13 +68,13 @@ Minder.Receiver = kity.createClass('Receiver',{
 
         clearTimeout(this.timer);
         var me = this;
-        var keyCode = e.originEvent.keyCode;
-
-
+        var orgEvt = e.originEvent;
+        var keyCode = orgEvt.keyCode;
         switch(e.type){
 
             case 'beforekeyup':
                 if(this.isTextEditStatus()){
+
                     switch(keyCode){
                         case keymap.Enter:
                         case keymap.Tab:
@@ -82,6 +82,12 @@ Minder.Receiver = kity.createClass('Receiver',{
                             this.clear();
                             e.stopPropagation();
                             return;
+                        case keymap.Shift:
+                        case keymap.Control:
+                        case keymap.Alt:
+                        case keymap.Cmd:
+                            return;
+
                     }
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
 
@@ -96,7 +102,7 @@ Minder.Receiver = kity.createClass('Receiver',{
 
                     this.timer = setTimeout(function(){
                         me.cursor.setShow()
-                    },500);
+                },500);
                     return true;
                 }
 

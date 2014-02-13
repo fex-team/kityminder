@@ -31,6 +31,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setRange(range);
                     }
                 }
+            },
+            'restoreScene':function(){
+                cursor.setHide();
             }
         }
     };

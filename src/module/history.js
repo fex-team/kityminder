@@ -58,6 +58,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             this.km.initStyle();
 
             this.update();
+            this.km.fire('restoreScene');
         },
         getScene: function () {
             return new Scene( this.km.getRoot() )
@@ -93,8 +94,7 @@ KityMinder.registerModule( "HistoryModule", function () {
     this.historyManager = new HistoryManager( this );
 
     var keys = {
-            //  /*Backspace*/ 8:1, /*Delete*/ 46:1,
-            /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1,
+            /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1,/*Command*/91:1,
             37:1, 38:1, 39:1, 40:1
         },
         keycont = 0,
@@ -152,26 +152,26 @@ KityMinder.registerModule( "HistoryModule", function () {
                 }
             },
             "keydown":function(e){
-//                var orgEvt = e.originEvent;
-//                var keyCode = orgEvt.keyCode || orgEvt.which;
-//                if (!keys[keyCode] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
-//
-//
-//                    if (km.historyManager.list.length == 0) {
-//                        km.historyManager.saveScene();
-//                    }
-//                    clearTimeout(saveSceneTimer);
-//
-//                    saveSceneTimer = setTimeout(function(){
-//                        km.historyManager.saveScene();
-//                    },200);
-//
-//                    lastKeyCode = keyCode;
-//                    keycont++;
-//                    if (keycont >= km.getOptions('maxInputCount') ) {
-//                        km.historyManager.saveScene()
-//                    }
-//                }
+                var orgEvt = e.originEvent;
+                var keyCode = orgEvt.keyCode || orgEvt.which;
+                if (!keys[keyCode] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+
+
+                    if (km.historyManager.list.length == 0) {
+                        km.historyManager.saveScene();
+                    }
+                    clearTimeout(saveSceneTimer);
+
+                    saveSceneTimer = setTimeout(function(){
+                        km.historyManager.saveScene();
+                    },200);
+
+                    lastKeyCode = keyCode;
+                    keycont++;
+                    if (keycont >= km.getOptions('maxInputCount') ) {
+                        km.historyManager.saveScene()
+                    }
+                }
             }
         }
     };

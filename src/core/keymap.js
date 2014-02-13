@@ -26,5 +26,7 @@ var keymap = KityMinder.keymap  = {
 
     'Del':46,
 
-    'NumLock':144
+    'NumLock':144,
+
+    'Cmd':91
 };
