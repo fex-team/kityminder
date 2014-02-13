@@ -372,7 +372,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	};
 	var _style = {
 		highlightNode: function ( node ) {
-			var highlight = node.getData( "highlight" );
+			var highlight = node.isHighlight();
 			var nodeType = node.getType();
 			var nodeStyle = nodeStyles[ nodeType ];
 			var Layout = node.getLayout();
