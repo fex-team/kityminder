@@ -151,6 +151,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var _contWidth = contRc.getWidth();
 			var _contHeight = contRc.getHeight();
 			Layout.underline.getDrawer()
+				.clear()
 				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
 				.lineTo( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ], _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] );
 			Layout.underline.stroke( nodeStyle.stroke );
@@ -402,6 +403,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._fire( new MinderEvent( "RenderNode", {
 				node: node
 			}, false ) );
+
 			updateShapeByCont( node );
 			var set1 = updateLayoutHorizon( node );
 			var set2 = updateLayoutVertical( node, node.getParent(), "change" );
