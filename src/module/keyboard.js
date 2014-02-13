@@ -2,11 +2,12 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
     function buildPositionNetwork( root ) {
         var pointIndexes = [],
-            x, y;
+            p, x, y;
         root.traverse( function ( node ) {
+            p = node.getData( 'point' );
             pointIndexes.push( {
-                x: node.getData( 'x' ),
-                y: node.getData( 'y' ),
+                x: p.x,
+                y: p.y,
                 node: node
             } );
         } );
@@ -50,7 +51,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
     function navigateTo( km, direction ) {
         var nextNode = km.getSelectedNode()._nearestNodes[ direction ];
         if ( nextNode ) {
-            km.select( nextNode );
+            km.select( nextNode, true );
         }
     }
     return {
