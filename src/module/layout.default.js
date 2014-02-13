@@ -77,23 +77,23 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	//样式的配置（包括颜色、字号等）
 	var nodeStyles = {
 		"root": {
-			color: kity.Color.createHSL( 200, 50, 30 ),
-			fill: kity.Color.createHSL( 200, 30, 80 ),
-			fontSize: 20,
-			padding: [ 10.5, 10.5, 10.5, 10.5 ],
+			color: '#000',
+			fill: '#e9df98',
+			fontSize: 24,
+			padding: [ 15.5, 25.5, 15.5, 25.5 ],
 			margin: [ 0, 0, 0, 0 ],
-			radius: 20,
-			highlight: "lightgreen"
+			radius: 30,
+			highlight: 'rgb(254, 219, 0)'
 		},
 		"main": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
-			fill: "white",
+			fill: '#A4c5c0',
 			color: "#333",
-			padding: [ 10.5, 20, 10.5, 20 ],
+			padding: [ 6.5, 20, 6.5, 20 ],
 			fontSize: 16,
 			margin: [ 0, 10, 30, 50 ],
 			radius: 10,
-			highlight: "yellow"
+			highlight: 'rgb(254, 219, 0)'
 		},
 		"sub": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -101,7 +101,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 12,
 			margin: [ 0, 10, 20, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
-			highlight: kity.Color.createHSL( 200, 50, 60 )
+			highlight: 'rgb(254, 219, 0)'
 		}
 	};
 	//更新背景
@@ -393,8 +393,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			case "sub":
 				if ( highlight ) {
 					Layout.highlightshape.fill( nodeStyle.highlight ).setOpacity( 1 );
+					node.getTextShape().fill( 'black' );
 				} else {
 					Layout.highlightshape.setOpacity( 0 );
+					node.getTextShape().fill( 'white' );
 				}
 				break;
 			default:
