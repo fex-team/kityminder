@@ -72,13 +72,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	//样式的配置（包括颜色、字号等）
 	var nodeStyles = {
 		"root": {
-			color: "white",
-			fill: "cadetblue",
+			color: kity.Color.createHSL( 200, 50, 30 ),
+			fill: kity.Color.createHSL( 200, 30, 80 ),
 			fontSize: 20,
-			padding: [ 10.5, 10, 10.5, 10 ],
+			padding: [ 10.5, 10.5, 10.5, 10.5 ],
 			margin: [ 0, 0, 0, 0 ],
-			radius: 15,
-			highlight: "chocolate"
+			radius: 20,
+			highlight: "lightgreen"
 		},
 		"main": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -88,7 +88,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 14,
 			margin: [ 0, 10, 30, 50 ],
 			radius: 5,
-			highlight: "chocolate"
+			highlight: "yellow"
 		},
 		"sub": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -96,7 +96,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 12,
 			margin: [ 0, 10, 20, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
-			highlight: "chocolate"
+			highlight: kity.Color.createHSL( 200, 50, 60 )
 		}
 	};
 	//更新背景
