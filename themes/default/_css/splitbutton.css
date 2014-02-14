@@ -21,14 +21,24 @@
     _background: url(../images/icons.gif) -741px 0;
 }
 
-.kmui-btn-toolbar .kmui-splitbutton,
-.kmui-btn-toolbar .kmui-splitbutton{
-    _border: none;
+.kmui-btn-toolbar .kmui-splitbutton {
+    border: 1px solid transparent;
+}
+
+.kmui-btn-toolbar .kmui-splitbutton .kmui-dropdown-toggle {
+    padding: 1px 2px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+}
+.kmui-btn-toolbar .kmui-splitbutton .kmui-dropdown-toggle:hover {
+    border-left-color: #a3bde3;
+    background-color: #dbe7f8;
 }
 
 /*状态反射*/
-.kmui-btn-toolbar .kmui-splitbutton.kmui-hover .kmui-btn{
+.kmui-btn-toolbar .kmui-splitbutton.kmui-hover {
     background-color: #d5e1f2;
+    border: 1px solid #a3bde3;
 }
 
 .kmui-btn-toolbar .kmui-splitbutton.kmui-disabled{

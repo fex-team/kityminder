@@ -25,8 +25,8 @@
 .kmui-btn-toolbar .kmui-btn.kmui-hover,
 .kmui-btn-toolbar .kmui-btn.kmui-active{
     background-color: #d5e1f2;
-    padding: 0;
     border: 1px solid #a3bde3;
+    padding: 0;
     _z-index: 1;
 }
 .kmui-btn-toolbar .kmui-btn.kmui-disabled{

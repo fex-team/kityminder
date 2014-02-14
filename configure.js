@@ -1,7 +1,7 @@
 window.KITYMINDER_CONFIG = {
     //定义工具栏
     toolbars: [
-        'hand | undo redo | bold italic | forecolor | layoutstyle | fontfamily fontsize | saveto'
+        'hand | undo redo | layoutstyle | bold italic | fontfamily fontsize forecolor | saveto'
     ]
 
     //设置主题
