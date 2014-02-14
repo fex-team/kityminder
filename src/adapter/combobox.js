@@ -1,12 +1,12 @@
-KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
+KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 
     var me = this,
-        label = me.getLang('tooltips.' + name),
+        label = me.getLang( 'tooltips.' + name ),
         options = {
             label: label,
             title: label,
             comboboxName: name,
-            items: me.getOptions(name) || [],
+            items: me.getOptions( name ) || [],
             itemStyles: [],
             value: [],
             autowidthitem: []
@@ -14,66 +14,65 @@ KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
         $combox = null,
         comboboxWidget = null;
 
-    if(options.items.length == 0){
+    if ( options.items.length == 0 ) {
         return null;
     }
     switch ( name ) {
 
-        case 'layoutstyle':
-            options = transForLayoutstyle( options );
-            break;
+    case 'layoutstyle':
+        options = transForLayoutstyle( options );
+        break;
 
-        case 'fontfamily':
-            options = transForFontfamily( options );
-            break;
+    case 'fontfamily':
+        options = transForFontfamily( options );
+        break;
 
-        case 'fontsize':
-            options = transForFontsize( options );
-            break;
+    case 'fontsize':
+        options = transForFontsize( options );
+        break;
 
     }
 
     //实例化
-    $combox =  $.kmuibuttoncombobox(options).css('zIndex',me.getOptions('zIndex') + 1);
-    comboboxWidget =  $combox.kmui();
+    $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
+    comboboxWidget = $combox.kmui();
 
-    comboboxWidget.on('comboboxselect', function( evt, res ){
+    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         me.execCommand( name, res.value );
-    }).on("beforeshow", function(){
-        if( $combox.parent().length === 0 ) {
-            $combox.appendTo(  me.$container.find('.kmui-dialog-container') );
+    } ).on( "beforeshow", function () {
+        if ( $combox.parent().length === 0 ) {
+            $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
-    });
+    } );
 
 
     //状态反射
-    this.on('interactchange',function(  ){
-        var state  = this.queryCommandState( name ),
+    this.on( 'interactchange', function () {
+        var state = this.queryCommandState( name ),
             value = this.queryCommandValue( name );
         //设置按钮状态
         comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 
-        if(value){
+        if ( value ) {
             //设置label
-            value = value.replace(/['"]/g, '').toLowerCase().split(/['|"]?\s*,\s*[\1]?/);
+            value = value.replace( /['"]/g, '' ).toLowerCase().split( /['|"]?\s*,\s*[\1]?/ );
             comboboxWidget.selectItemByLabel( value );
         }
-    });
+    } );
 
-    return comboboxWidget.button().addClass('kmui-combobox');
-
-
+    return comboboxWidget.button().addClass( 'kmui-combobox' );
 
 
-    function transForLayoutstyle ( options ) {
+
+    function transForLayoutstyle( options ) {
 
         var tempItems = [];
 
-        utils.each(options.items,function(k,v){
-            options.value.push(k);
-            tempItems.push(k);
-            options.autowidthitem.push($.wordCountAdaptive( tempItems[ tempItems.length - 1 ] ) );
-        });
+        utils.each( options.items, function ( k, v ) {
+            options.value.push( k );
+            tempItems.push( k );
+            options.autowidthitem.push( $.wordCountAdaptive( tempItems[ tempItems.length - 1 ] ) );
+        } );
 
         options.items = tempItems;
 
@@ -82,16 +81,16 @@ KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
     }
 
     //字体参数转换
-    function transForFontfamily ( options ) {
+    function transForFontfamily( options ) {
 
         var temp = null,
             tempItems = [];
 
-        for( var i = 0, len = options.items.length; i < len; i++ ) {
+        for ( var i = 0, len = options.items.length; i < len; i++ ) {
 
             temp = options.items[ i ].val;
-            tempItems.push( temp.split(/\s*,\s*/)[0] );
-            options.itemStyles.push('font-family: ' + temp);
+            tempItems.push( temp.split( /\s*,\s*/ )[ 0 ] );
+            options.itemStyles.push( 'font-family: ' + temp );
             options.value.push( temp );
             options.autowidthitem.push( $.wordCountAdaptive( tempItems[ i ] ) );
 
@@ -104,7 +103,7 @@ KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
     }
 
     //字体大小参数转换
-    function transForFontsize ( options ) {
+    function transForFontsize( options ) {
 
         var temp = null,
             tempItems = [];
@@ -112,11 +111,11 @@ KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
         options.itemStyles = [];
         options.value = [];
 
-        for( var i = 0, len = options.items.length; i < len; i++ ) {
+        for ( var i = 0, len = options.items.length; i < len; i++ ) {
 
             temp = options.items[ i ];
             tempItems.push( temp );
-            options.itemStyles.push('font-size: ' + temp +'px');
+            options.itemStyles.push( 'font-size: ' + temp + 'px' );
 
         }
 
@@ -128,12 +127,12 @@ KM.registerUI('layoutstyle fontfamily fontsize', function( name ) {
 
     }
 
-});
+} );
 
 
-KM.registerUI('forecolor', function( name ) {
+KM.registerUI( 'forecolor', function ( name ) {
     function getCurrentColor() {
-        return $colorLabel.css('background-color');
+        return $colorLabel.css( 'background-color' );
     }
 
     var me = this,
@@ -141,52 +140,52 @@ KM.registerUI('forecolor', function( name ) {
         $colorLabel = null,
         $btn = null;
 
-    this.on('interactchange', function(){
+    this.on( 'interactchange', function () {
         var state = this.queryCommandState( name );
         $btn.kmui().disabled( state == -1 ).active( state == 1 );
-    });
+    } );
 
-    $btn = $.kmuicolorsplitbutton({
+    $btn = $.kmuicolorsplitbutton( {
         icon: name,
         caret: true,
         name: name,
-        title: this.getLang('tooltips')[name] || '',
-        click: function() {
+        title: this.getLang( 'tooltips' )[ name ] || '',
+        click: function () {
             me.execCommand( name, getCurrentColor() );
         }
-    });
+    } );
 
     $colorLabel = $btn.kmui().colorLabel();
 
-    $colorPickerWidget = $.kmuicolorpicker({
+    $colorPickerWidget = $.kmuicolorpicker( {
         name: name,
-        lang_clearColor: me.getLang('popupcolor')['clearColor']|| '',
-        lang_themeColor: me.getLang('popupcolor')['themeColor'] || '',
-        lang_standardColor: me.getLang('popupcolor')['standardColor'] || ''
-    }).on('pickcolor', function( evt, color ){
-        window.setTimeout( function(){
-            $colorLabel.css("backgroundColor", color);
+        lang_clearColor: me.getLang( 'popupcolor' )[ 'clearColor' ] || '',
+        lang_themeColor: me.getLang( 'popupcolor' )[ 'themeColor' ] || '',
+        lang_standardColor: me.getLang( 'popupcolor' )[ 'standardColor' ] || ''
+    } ).on( 'pickcolor', function ( evt, color ) {
+        window.setTimeout( function () {
+            $colorLabel.css( "backgroundColor", color );
             me.execCommand( name, color );
         }, 0 );
-    }).on('show',function(){
+    } ).on( 'show', function () {
         KM.setActiveWidget( $colorPickerWidget.kmui().root() );
-    }).css('zIndex',me.getOptions('zIndex') + 1);
+    } ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
 
-    $btn.kmui().on('arrowclick',function(){
-        if(!$colorPickerWidget.parent().length){
-            me.$container.find('.kmui-dialog-container').append($colorPickerWidget);
+    $btn.kmui().on( 'arrowclick', function () {
+        if ( !$colorPickerWidget.parent().length ) {
+            me.$container.find( '.kmui-dialog-container' ).append( $colorPickerWidget );
         }
-        $colorPickerWidget.kmui().show($btn,{
-            caretDir:"down",
-            offsetTop:-5,
-            offsetLeft:8,
-            caretLeft:11,
-            caretTop:-8
-        });
-    }).register('click', $btn, function () {
+        $colorPickerWidget.kmui().show( $btn, {
+            caretDir: "down",
+            offsetTop: -5,
+            offsetLeft: 8,
+            caretLeft: 11,
+            caretTop: -8
+        } );
+    } ).register( 'click', $btn, function () {
         $colorPickerWidget.kmui().hide()
-    });
+    } );
 
     return $btn;
 
-});
+} );

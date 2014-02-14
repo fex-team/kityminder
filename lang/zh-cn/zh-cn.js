@@ -7,8 +7,8 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'forecolor': '字体颜色',
         'fontfamily': '字体',
         'fontsize': '字号',
-        'layoutstyle': '选择主题',
-        'saveto': '另存为...'
+        'layoutstyle': '主题',
+        'saveto': '导出'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

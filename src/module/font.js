@@ -90,7 +90,7 @@ KityMinder.registerModule( "fontmodule", function () {
                     e.node.getTextShape().fill( val );
                 }
                 if ( val = e.node.getData( 'fontsize' ) ) {
-                    e.node.getTextShape().setSize(val);
+                    e.node.getTextShape().setSize( val );
                 }
             }
         }
