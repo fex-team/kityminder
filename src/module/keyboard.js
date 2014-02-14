@@ -49,7 +49,13 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
 
     function navigateTo( km, direction ) {
-        var nextNode = km.getSelectedNode()._nearestNodes[ direction ];
+        var referNode = km.getSelectedNode();
+        if ( !referNode ) {
+            km.select( km.getRoot() );
+            buildPositionNetwork( km.getRoot() );
+            return;
+        }
+        var nextNode = referNode._nearestNodes[ direction ];
         if ( nextNode ) {
             km.select( nextNode, true );
         }
@@ -62,20 +68,20 @@ KityMinder.registerModule( "KeyboardModule", function () {
             },
             keydown: function ( e ) {
                 var keys = KityMinder.keymap;
-                if(this.receiver.isTextEditStatus()){
+                if ( this.receiver.isTextEditStatus() ) {
                     switch ( e.originEvent.keyCode ) {
-                        case keys.Enter:
-                        case keys.Tab:
-                            this.fire('stopTextEdit');
-                            e.preventDefault();
-                            break;
-                        case keys.Backspace:
-                        case keys.Del:
-                        case keys.Left:
-                        case keys.Up:
-                        case keys.Right:
-                        case keys.Down:
-                            break;
+                    case keys.Enter:
+                    case keys.Tab:
+                        this.fire( 'stopTextEdit' );
+                        e.preventDefault();
+                        break;
+                    case keys.Backspace:
+                    case keys.Del:
+                    case keys.Left:
+                    case keys.Up:
+                    case keys.Right:
+                    case keys.Down:
+                        break;
                     }
                     return;
                 }
