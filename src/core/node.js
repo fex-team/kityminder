@@ -70,7 +70,18 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.setData( 'type', type );
     },
     getType: function ( type ) {
-        return this.getData( 'type' );
+        var cached = this.getData( 'type' );
+        if ( cached ) {
+            return cached;
+        }
+        var level = 0;
+        while ( this.parent ) {
+            level++;
+            if ( level > 1 ) break;
+        }
+        cached = [ 'root', 'main', 'sub' ][ level ];
+        this.setData( 'type', cached );
+        return cached;
     },
     setText: function ( text ) {
         this.setData( 'text', text );
@@ -231,7 +242,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
-            _tmp.tmpData =  Utils.clonePlainObject( isClonedNode.getTmpData() )
+            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() )
             _tmp.parent = parent;
             if ( parent ) {
                 parent.children.push( _tmp );
@@ -257,8 +268,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             return false;
         }
         for ( var i = 0, ci;
-            ( ci = this.children[ i ] );i++ ) {
-            if ( ci.equals( node.children[i] ) === false ) {
+            ( ci = this.children[ i ] ); i++ ) {
+            if ( ci.equals( node.children[ i ] ) === false ) {
                 return false;
             }
         }
@@ -274,26 +285,26 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     clearChildren: function () {
         this.children = [];
     },
-    isHighlight : function(){
-        return this.getTmpData('highlight')
+    isHighlight: function () {
+        return this.getTmpData( 'highlight' )
     },
-    setTmpData : function(a,v){
+    setTmpData: function ( a, v ) {
         var me = this;
-        if(utils.isObject(a)){
-            utils.each(a,function(val,key){
-                me.setTmpData(key,val)
-            })
+        if ( utils.isObject( a ) ) {
+            utils.each( a, function ( val, key ) {
+                me.setTmpData( key, val )
+            } )
         }
-        if(v === undefined || v === null || v === ''){
-            delete this.tmpData[a];
-        }else {
-            this.tmpData[a] = v;
+        if ( v === undefined || v === null || v === '' ) {
+            delete this.tmpData[ a ];
+        } else {
+            this.tmpData[ a ] = v;
         }
     },
-    getTmpData:function(a){
+    getTmpData: function ( a ) {
         if ( a === undefined ) {
             return this.tmpData;
         }
-        return this.tmpData[a]
+        return this.tmpData[ a ]
     }
 } );
