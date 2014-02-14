@@ -74,6 +74,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     setText: function ( text ) {
         this.setData( 'text', text );
+        this.getTextShape().setContent(text);
     },
     getText: function () {
         return this.getData( 'text' );
