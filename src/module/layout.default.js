@@ -112,12 +112,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		switch ( node.getType() ) {
 		case "root":
 		case "main":
-			node.getBgRc().clear().addShape( Layout.bgRect = new kity.Rect() );
+			var bg = node.getBgRc().clear();
+			bg.addShape( Layout.bgShadow = new kity.Rect() );
+			bg.addShape( Layout.bgRect = new kity.Rect() );
 			Layout.bgRect.fill( nodeStyle.fill ).setRadius( nodeStyle.radius );
+			Layout.bgShadow.fill( 'black' ).setOpacity( 0.2 ).setRadius( nodeStyle.radius ).translate( 3, 5 );
 			break;
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
-			var highlightshape = Layout.highlightshape = new kity.Rect();
+			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
 			node.getBgRc().clear().addShapes( [ highlightshape, underline ] );
 			break;
 		default:
@@ -149,8 +152,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		switch ( nodeType ) {
 		case "root":
 		case "main":
-			Layout.bgRect.setWidth( _contRCWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] );
-			Layout.bgRect.setHeight( _contRCHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+			var width = _contRCWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ],
+				height = _contRCHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
+			Layout.bgRect.setWidth( width ).setHeight( height );
+			Layout.bgShadow.setWidth( width ).setHeight( height );
 			break;
 		case "sub":
 			var _contWidth = contRc.getWidth();

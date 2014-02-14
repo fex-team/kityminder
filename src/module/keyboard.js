@@ -2,7 +2,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
 
     function buildPositionNetwork( root ) {
         var pointIndexes = [],
-            p, x, y;
+            p;
         root.traverse( function ( node ) {
             p = node.getData( 'point' );
             pointIndexes.push( {

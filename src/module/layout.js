@@ -170,6 +170,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 				this._lastStyleResetTimeout = setTimeout( function () {
 					this.updateLayout( this.getRoot() );
 				}.bind( this ), 100 );
+			},
+			"import": function ( e ) {
+				this.initStyle( this.getRoot() );
 			}
 		},
 		"defaultOptions": {

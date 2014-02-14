@@ -37,7 +37,6 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
 
-        this._addBackground();
         this._addRenderContainer();
 
         this._root = new MinderNode( "Main Topic" );
@@ -50,21 +49,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._rc = new kity.Group();
         this._paper.addShape( this._rc );
     },
-    _addBackground: function () {
-        var start = kity.Color.createHSL( 200, 8, 40 );
-        var end = start.dec( 'l', 5 );
-        var _paper = this._paper;
-        var _bg = this._background = new kity.Ellipse( 400, 300 ).fill( new kity.RadialGradientBrush().pipe( function () {
-            this.addStop( 0, start );
-            this.addStop( 1, end );
-            _paper.addResource( this );
-        } ) );
-        _paper.setStyle( 'background', end.toString() );
-        setTimeout( function () {
-            _bg.translate( _paper.getNode().clientWidth / 2, _paper.getNode().clientHeight / 2 );
-        }, 100 );
-        _paper.addShape( this._background );
-    },
+
     renderTo: function ( target ) {
         this._paper.renderTo( this._renderTarget = target );
         this._bindEvents();
