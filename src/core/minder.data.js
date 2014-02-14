@@ -9,7 +9,7 @@ Utils.extend( KityMinder, {
     getSupportedProtocals: function () {
         return Utils.keys( KityMinder._protocals );
     },
-    getAllRegisteredProtocals:function(){
+    getAllRegisteredProtocals: function () {
         return KityMinder._protocals
     }
 } );
@@ -33,6 +33,7 @@ function importNode( node, json ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
+    node.setText( data.text );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
