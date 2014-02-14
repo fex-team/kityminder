@@ -77,7 +77,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	//样式的配置（包括颜色、字号等）
 	var nodeStyles = {
 		"root": {
-			color: '#000',
+			color: '#430',
 			fill: '#e9df98',
 			fontSize: 24,
 			padding: [ 15.5, 25.5, 15.5, 25.5 ],
@@ -310,7 +310,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var bezier = Layout.connect.bezier = new kity.Bezier();
 				var circle = Layout.connect.circle = new kity.Circle();
 				connect.addShapes( [ bezier, circle ] );
-				minder.getRenderContainer().addShape( connect ).bringTop( minder.getRoot().getRenderContainer() );
+				minder.getRenderContainer().addShape( connect );
+				minder.getRoot().getRenderContainer().bringTop();
 			}
 			var parent = minder.getRoot();
 			var rootX = parent.getLayout().x;
