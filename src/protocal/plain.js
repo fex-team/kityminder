@@ -85,6 +85,8 @@ KityMinder.registerProtocal( "plain", function () {
 		return !!lastResult;
 	}
 	return {
+		fileDescription: '大纲文本',
+		fileExtension: '.txt',
 		encode: function ( json ) {
 			return encode( json, 0 );
 		},
