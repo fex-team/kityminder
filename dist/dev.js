@@ -36,8 +36,6 @@ var KityMinder =
 
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 var utils = Utils = KityMinder.Utils = {
     extend: kity.Utils.extend.bind( kity.Utils ),
 
@@ -235,8 +233,6 @@ Utils.each( [ 'String', 'Function', 'Array', 'Number', 'RegExp', 'Object' ], fun
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 var Command = kity.createClass( "Command", {
     constructor: function () {
         this._isContentChange = true;
@@ -275,8 +271,6 @@ var Command = kity.createClass( "Command", {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     constructor: function ( options ) {
         this.parent = null;
@@ -577,8 +571,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //模块注册&暴露模块接口
 ( function () {
     var _modules;
@@ -594,8 +586,6 @@ Warning: Cannot modify header information - headers already sent by (output star
     };
 } )();
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 var MinderEvent = kity.createClass( 'MindEvent', {
     constructor: function ( type, params, canstop ) {
         params = params || {};
@@ -642,8 +632,6 @@ var MinderEvent = kity.createClass( 'MindEvent', {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /* @require <kityminder.js>
  * @require <module.js>
  * @require <event.js>
@@ -761,8 +749,6 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
  * @include <minder.select.js>
  */
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 Utils.extend( KityMinder, {
     _protocals: {},
     registerProtocal: function ( name, protocalDeal ) {
@@ -877,8 +863,6 @@ kity.extendClass( Minder, {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 // 事件机制
 kity.extendClass( Minder, {
     _initEvents: function () {
@@ -984,8 +968,6 @@ kity.extendClass( Minder, {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 // 模块声明周期维护
 kity.extendClass( Minder, {
     _initModules: function () {
@@ -1069,8 +1051,6 @@ kity.extendClass( Minder, {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 kity.extendClass( Minder, {
     _getCommand: function ( name ) {
         return this._commands[ name.toLowerCase() ];
@@ -1145,8 +1125,6 @@ kity.extendClass( Minder, {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 kity.extendClass( Minder, {
 
     getRoot: function () {
@@ -1182,8 +1160,6 @@ kity.extendClass( Minder, {
 
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 var keymap = KityMinder.keymap  = {
     'Backspace' : 8,
     'Tab' : 9,
@@ -1217,8 +1193,6 @@ var keymap = KityMinder.keymap  = {
     'Cmd':91
 };
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //添加多语言模块
 kity.extendClass( Minder, {
     getLang:function(path){
@@ -1236,16 +1210,12 @@ kity.extendClass( Minder, {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //这里只放不是由模块产生的默认参数
 KM.defaultOptions = {
     zIndex : 1000,
     lang:'zh-cn'
 };
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "HistoryModule", function () {
 
     var km = this;
@@ -1426,8 +1396,6 @@ KityMinder.registerModule( "HistoryModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "IconModule", function () {
     return {
         "commands": {
@@ -1440,8 +1408,6 @@ KityMinder.registerModule( "IconModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "LayoutModule", function () {
 	kity.extendClass( Minder, {
 		addLayoutStyle: function ( name, style ) {
@@ -1625,8 +1591,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 	};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "LayoutDefault", function () {
 	var _target = this.getRenderTarget();
 
@@ -2246,8 +2210,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	return {};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "LayoutBottom", function () {
 	var minder = this;
 	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
@@ -2664,8 +2626,6 @@ KityMinder.registerModule( "LayoutBottom", function () {
 	return {};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 // 选区管理
 kity.extendClass( Minder, function () {
     function highlightNode( km, node ) {
@@ -2745,8 +2705,6 @@ kity.extendClass( Minder, function () {
     }
 }() );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 kity.Draggable = ( function () {
     var Paper = kity.Paper;
 
@@ -2886,8 +2844,6 @@ kity.Draggable = ( function () {
     } );
 } )();
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "DropFile", function () {
 
 	function init() {
@@ -2926,8 +2882,6 @@ KityMinder.registerModule( "DropFile", function () {
 	};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "KeyboardModule", function () {
 
     function buildPositionNetwork( root ) {
@@ -3053,8 +3007,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "MouseModule", function () {
     var minder = this;
 
@@ -3178,8 +3130,6 @@ KityMinder.registerModule( "MouseModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "HistoryModule", function () {
 
     var km = this;
@@ -3360,8 +3310,6 @@ KityMinder.registerModule( "HistoryModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "TextEditModule", function () {
     var sel = new Minder.Selection();
     var receiver = new Minder.Receiver(this);
@@ -3431,8 +3379,6 @@ KityMinder.registerModule( "TextEditModule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 Minder.Range = kity.createClass('Range',{
     constructor : function(){
         this.nativeRange = document.createRange();
@@ -3475,8 +3421,6 @@ Minder.Range = kity.createClass('Range',{
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //接收者
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
@@ -3751,8 +3695,6 @@ Minder.Receiver = kity.createClass('Receiver',{
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //模拟光标
 Minder.Selection = kity.createClass( 'Selection', {
     base: kity.Rect,
@@ -3866,8 +3808,6 @@ Minder.Selection = kity.createClass( 'Selection', {
     }
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "basestylemodule", function () {
     var km = this;
     return {
@@ -3957,8 +3897,6 @@ KityMinder.registerModule( "basestylemodule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( "fontmodule", function () {
 
     return {
@@ -4058,8 +3996,6 @@ KityMinder.registerModule( "fontmodule", function () {
     };
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerModule( 'Zoom', function () {
 	return {
 		events: {
@@ -4076,8 +4012,6 @@ KityMinder.registerModule( 'Zoom', function () {
 	};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 (function ($) {
     //对jquery的扩展
     $.parseTmpl = function parse(str, data) {
@@ -4254,8 +4188,6 @@ Warning: Cannot modify header information - headers already sent by (output star
     })
 })(jQuery);
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //button 类
 KM.ui.define('button', {
     tpl: '<<%if(!texttype){%>div class="kmui-btn kmui-btn-<%=icon%> <%if(name){%>kmui-btn-name-<%=name%><%}%>" unselectable="on" onmousedown="return false" <%}else{%>a class="kmui-text-btn"<%}%><% if(title) {%> data-original-title="<%=title%>" <%};%>> ' +
@@ -4338,8 +4270,6 @@ KM.ui.define('button', {
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //toolbar 类
 (function () {
     KM.ui.define('toolbar', {
@@ -4360,8 +4290,6 @@ Warning: Cannot modify header information - headers already sent by (output star
 })();
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //menu 类
 KM.ui.define('menu',{
     show : function($obj,dir,fnname,topOffset,leftOffset){
@@ -4406,8 +4334,6 @@ KM.ui.define('menu',{
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
@@ -4493,8 +4419,6 @@ KM.ui.define('dropmenu', {
     }
 }, 'menu');
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //splitbutton 类
 ///import button
 KM.ui.define('splitbutton',{
@@ -4567,8 +4491,6 @@ KM.ui.define('splitbutton',{
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /**
  * Created with JetBrains PhpStorm.
  * User: hn
@@ -4599,8 +4521,6 @@ KM.ui.define('colorsplitbutton',{
 
 }, 'splitbutton');
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //popup 类
 KM.ui.define('popup', {
     tpl: '<div class="kmui-dropdown-menu kmui-popup"'+
@@ -4665,8 +4585,6 @@ KM.ui.define('popup', {
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //scale 类
 KM.ui.define('scale', {
     tpl: '<div class="kmui-scale" unselectable="on">' +
@@ -4833,8 +4751,6 @@ KM.ui.define('scale', {
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //colorpicker 类
 KM.ui.define('colorpicker', {
     tpl: function (opt) {
@@ -4878,8 +4794,6 @@ KM.ui.define('colorpicker', {
     }
 }, 'popup');
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /**
  * Created with JetBrains PhpStorm.
  * User: hn
@@ -5175,8 +5089,6 @@ Warning: Cannot modify header information - headers already sent by (output star
 })();
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /**
  * Combox 抽象基类
  * User: hn
@@ -5233,8 +5145,6 @@ Warning: Cannot modify header information - headers already sent by (output star
 })();
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /*modal 类*/
 KM.ui.define('modal', {
     tpl: '<div class="kmui-modal" tabindex="-1" >' +
@@ -5392,8 +5302,6 @@ KM.ui.define('modal', {
 
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /*tooltip 类*/
 KM.ui.define('tooltip', {
     tpl: '<div class="kmui-tooltip" unselectable="on" onmousedown="return false"><div class="kmui-tooltip-arrow" unselectable="on" onmousedown="return false"></div><div class="kmui-tooltip-inner" unselectable="on" onmousedown="return false"></div></div>',
@@ -5465,8 +5373,6 @@ KM.ui.define('tooltip', {
 });
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /*tab 类*/
 KM.ui.define('tab', {
     init: function (options) {
@@ -5536,8 +5442,6 @@ KM.ui.define('tab', {
 
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //button 类
 KM.ui.define('separator', {
     tpl: '<div class="kmui-separator" unselectable="on" onmousedown="return false" ></div>',
@@ -5548,8 +5452,6 @@ KM.ui.define('separator', {
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 //scale 类
 KM.ui.define('scale', {
     tpl: '<div class="kmui-scale" unselectable="on">' +
@@ -5716,8 +5618,6 @@ KM.ui.define('scale', {
     }
 });
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 /**
  * 宽度自适应工具函数
  * @param word 单词内容
@@ -5753,8 +5653,6 @@ $.wordCountAdaptive  = function( word, hasSuffix ) {
     }
 };
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 utils.extend( KityMinder, function () {
     var _kityminderUI = {},
         _activeWidget = null,
@@ -5875,8 +5773,6 @@ utils.extend( KityMinder, function () {
     }
 }() );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KM.registerUI('bold italic redo undo',
     function(name) {
         var me = this;
@@ -5897,8 +5793,6 @@ KM.registerUI('bold italic redo undo',
 
 
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 
     var me = this,
@@ -6091,8 +5985,6 @@ KM.registerUI( 'forecolor', function ( name ) {
 
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KM.registerUI( 'saveto', function ( name ) {
 
     var me = this,
@@ -6145,8 +6037,6 @@ KM.registerUI( 'saveto', function ( name ) {
 
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KM.registerUI( 'hand',
     function ( name ) {
         var me = this;
@@ -6175,8 +6065,6 @@ KM.registerUI( 'hand',
     }
 );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerProtocal( "plain", function () {
 	var LINE_ENDING = '\n',
 		TAB_CHAR = '\t';
@@ -6279,8 +6167,6 @@ KityMinder.registerProtocal( "plain", function () {
 	};
 } );
 
-
-Warning: Cannot modify header information - headers already sent by (output started at /Users/techird/prj/km/dist/dev.php:70) in /Users/techird/prj/km/dist/dev.php on line 69
 KityMinder.registerProtocal( 'json', function () {
 	function filter( key, value ) {
 		if ( key == 'layout' || key == 'shicon' ) {
