@@ -2,7 +2,7 @@
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
-        this.cursor.setHide();
+        this.selection.setHide();
         this.index = 0;
         return this;
     },
@@ -99,10 +99,10 @@ Minder.Receiver = kity.createClass('Receiver',{
                     this.setBaseOffset();
                     this.updateTextData();
                     this.updateIndex();
-                    this.updateCursor();
+                    this.updateSelection();
 
                     this.timer = setTimeout(function(){
-                        me.cursor.setShow()
+                        me.selection.setShow()
                 },500);
                     return true;
                 }
@@ -115,21 +115,23 @@ Minder.Receiver = kity.createClass('Receiver',{
     updateTextData : function(){
         this.textShape.textData =  this.getTextOffsetData();
     },
-    setCursor : function(cursor){
-        this.cursor = cursor;
+    setSelection : function(selection){
+        this.selection = selection;
         return this;
     },
-    updateCursor : function(){
-        this.cursor.setShowHold();
-        this.cursor.bringTop();
+    updateSelection : function(){
+        this.selection.setShowHold();
+        this.selection.bringTop();
+        //更新模拟选区的范围
+        this.selection.setStartOffset(this.index).collapse(true);
         if(this.index == this.textData.length){
 
-            this.cursor.setPosition({
+            this.selection.setPosition({
                 x : this.textData[this.index-1].x + this.textData[this.index-1].width,
                 y : this.textData[this.index-1].y
             })
         }else{
-            this.cursor.setPosition(this.textData[this.index])
+            this.selection.setPosition(this.textData[this.index])
         }
         return this;
     },
@@ -199,8 +201,73 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
 
     },
-    setCursorHeight:function(){
-        this.cursor.setHeight(this.getTextShapeHeight());
+    setSelectionHeight:function(){
+        this.selection.setHeight(this.getTextShapeHeight());
         return this;
+    },
+    getIndexByMousePosition:function(offset,dir){
+        var me = this;
+        var currentIndex;
+        var hadChanged = false;
+        utils.each(this.textData,function(i,v){
+            //点击开始之前
+            if(i == 0 && offset.x <= v.x){
+                currentIndex = 0;
+                return false;
+            }
+
+            if(i == me.textData.length -1 && offset.x >= v.x){
+                currentIndex = me.textData.length;
+                return false;
+            }
+            if(offset.x >= v.x && offset.x <= v.x + v.width){
+                currentIndex = i + (dir == -1 ? 0 : 1);
+                return false;
+            }
+        });
+        return currentIndex;
+    },
+    updateSelectionByMousePosition:function(offset,dir){
+
+        var currentIndex = this.getIndexByMousePosition(offset,dir);
+
+        if(currentIndex == 0 || currentIndex == this.textData.length ){
+            this.selection.setEndOffset(currentIndex);
+        }else{
+            if(dir == -1 && currentIndex < this.selection.startOffset){
+                this.selection.setStartOffset(currentIndex)
+            }else{
+                this.selection.setEndOffset(currentIndex);
+            }
+
+            console.log(this.selection.startOffset + ':' + this.selection.endOffset)
+            console.log(this.selection.isCollapsed)
+        }
+
+
+        return this;
+    },
+    updateSelectionShow:function(dir){
+
+        var startOffset = this.textData[this.selection.startOffset],
+            endOffset = this.textData[this.selection.endOffset],
+            width = 0 ;
+        if(this.selection.isCollapsed){
+
+            this.selection.updateShow(startOffset,0);
+            return this;
+        }
+        if(!endOffset){
+            var lastOffset = this.textData[this.textData.length -1];
+            width = lastOffset.x - startOffset.x + lastOffset.width;
+        }else{
+            width = endOffset.x - startOffset.x;
+        }
+
+        this.selection.updateShow(startOffset,width);
+        return this;
+    },
+    updateNativeRange:function(){
+
     }
 });

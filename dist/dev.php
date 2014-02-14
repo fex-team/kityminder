@@ -29,7 +29,7 @@ $dependency = Array(
     ,'src/module/editor.js'
     ,'src/module/editor.range.js'
     ,'src/module/editor.receiver.js'
-    ,'src/module/editor.cursor.js'
+    ,'src/module/editor.selection.js'
     ,'src/module/basestyle.js'
     ,'src/module/font.js'
     ,'src/module/zoom.js'

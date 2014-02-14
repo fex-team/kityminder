@@ -31,5 +31,4 @@ $.wordCountAdaptive  = function( word, hasSuffix ) {
         return $.wordCountAdaptive( word + '...', true );
 
     }
-
 };
