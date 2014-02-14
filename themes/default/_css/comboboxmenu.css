@@ -13,7 +13,7 @@
     min-width: 160px;
     _width: 160px;
     -webkit-transform: translateX(2px);
-    font-family: Arial;
+    font-family: Arial, "Heiti SC", "Microsoft Yahei";
 }
 
 .kmui-combobox-menu .kmui-combobox-item {

@@ -3,7 +3,7 @@
     padding:0;
     margin:0 2px;
     line-height: 20px;
-    font-family: Arial, Microsoft Yahei;
+    font-family: Arial, "Heiti SC", "Microsoft Yahei";
 }
 .kmui-combobox .kmui-button-label{
     position: relative;
