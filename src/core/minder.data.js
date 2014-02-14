@@ -10,7 +10,7 @@ Utils.extend( KityMinder, {
         return Utils.keys( KityMinder._protocals );
     },
     getAllRegisteredProtocals: function () {
-        return KityMinder._protocals
+        return KityMinder._protocals;
     }
 } );
 
