@@ -15,7 +15,7 @@
     box-shadow: 3px 3px 8px rgba(0,0,0, .5);
 }
 .kmui-container .kmui-editor-body{
-    background-color: #333;
+    background: rgb(50, 60, 61) url(../images/grid.png) repeat;
     line-height: 0;
     overflow: hidden;
 }
