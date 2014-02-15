@@ -2,11 +2,11 @@ KityMinder.registerModule( "Select", function () {
     var minder = this;
     var g = KityMinder.Geometry;
 
+    // 框选控制
     var marqueeActivator = ( function () {
         var startPosition = null;
         var marqueeShape = new kity.Path().fill( 'rgba(255,255,255,.3)' ).stroke( 'white' );
-
-        minder.getPaper().addShape( marqueeShape );
+        var marqueeMode = false;
 
         return {
             selectStart: function ( e ) {
@@ -18,12 +18,21 @@ KityMinder.registerModule( "Select", function () {
                     return this.selectEnd();
                 }
                 startPosition = g.snapToSharp( e.getPosition() );
-                marqueeShape.setOpacity( 0.8 ).bringTop().getDrawer().clear();
+                minder.getPaper().addShape( marqueeShape );
+                marqueeShape.setOpacity( 0.8 ).getDrawer().clear();
             },
             selectMove: function ( e ) {
                 if ( !startPosition ) return;
                 var p1 = startPosition,
                     p2 = e.getPosition();
+
+                if ( !marqueeMode ) {
+                    if ( g.getDistance( p1, p2 ) < 10 ) {
+                        return;
+                    }
+                    marqueeMode = true;
+                }
+
                 var marquee = g.getBox( p1, p2 ),
                     selectedNodes = [];
 
@@ -52,8 +61,13 @@ KityMinder.registerModule( "Select", function () {
             },
             selectEnd: function ( e ) {
                 if ( startPosition ) {
-                    marqueeShape.fadeOut( 200, 'ease' );
                     startPosition = null;
+                }
+                if ( marqueeMode ) {
+                    marqueeShape.fadeOut( 200, 'ease', 0, function () {
+                        marqueeShape.remove();
+                    } );
+                    marqueeMode = false;
                 }
             }
         };
@@ -63,11 +77,13 @@ KityMinder.registerModule( "Select", function () {
         "events": {
             mousedown: function ( e ) {
                 var clickNode = e.getTargetNode();
-                if ( clickNode ) {
-                    this.select( clickNode, true );
-                } else {
+                if ( !clickNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
+                } else if ( e.originEvent.shiftKey ) {
+                    this.toggleSelect( clickNode );
+                } else if ( !clickNode.isSelected() ) {
+                    this.select( clickNode, true );
                 }
             },
             mousemove: marqueeActivator.selectMove,

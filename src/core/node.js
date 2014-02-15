@@ -69,23 +69,28 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     setType: function ( type ) {
         this.setData( 'type', type );
     },
+    getLevel: function () {
+        var level = 0,
+            parent = this.parent;
+        while ( parent ) {
+            level++;
+            parent = parent.parent;
+        }
+        return level;
+    },
     getType: function ( type ) {
         var cached = this.getData( 'type' );
         if ( cached ) {
             return cached;
         }
-        var level = 0;
-        while ( this.parent ) {
-            level++;
-            if ( level > 1 ) break;
-        }
+        var level = Math.min( this.getLevel(), 2 );
         cached = [ 'root', 'main', 'sub' ][ level ];
         this.setData( 'type', cached );
         return cached;
     },
     setText: function ( text ) {
         this.setData( 'text', text );
-        this.getTextShape().setContent(text);
+        this.getTextShape().setContent( text );
     },
     getText: function () {
         return this.getData( 'text' );
@@ -113,6 +118,15 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             root = root.parent;
         }
         return root;
+    },
+
+    isAncestorOf: function ( test ) {
+        var p = test.parent;
+        while ( p ) {
+            if ( p == this ) return true;
+            p = p.parent;
+        }
+        return false;
     },
 
     preTraverse: function ( fn ) {
