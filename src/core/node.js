@@ -19,6 +19,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
         this._createBgGroup();
         this._createContGroup();
+        this._createIconShape();
         this._createTextShape();
     },
     _createGroup: function ( type ) {
@@ -34,6 +35,11 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     _createTextShape: function () {
         this.getContRc().appendShape( new kity.Text( this.getData( 'text' ) || '' ) );
+    },
+    _createIconShape: function () {
+        var g = new kity.Group();
+        this.getContRc().appendShape( g );
+        this._iconRc = g;
     },
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
@@ -57,6 +63,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } );
         return result;
     },
+    getIconRc: function () {
+        return this._iconRc;
+    },
     setPoint: function ( x, y ) {
         this.setData( 'point', {
             x: x,
@@ -74,7 +83,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     setText: function ( text ) {
         this.setData( 'text', text );
-        this.getTextShape().setContent(text);
+        this.getTextShape().setContent( text );
     },
     getText: function () {
         return this.getData( 'text' );
@@ -232,7 +241,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
-            _tmp.tmpData =  Utils.clonePlainObject( isClonedNode.getTmpData() )
+            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() )
             _tmp.parent = parent;
             if ( parent ) {
                 parent.children.push( _tmp );
@@ -258,8 +267,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             return false;
         }
         for ( var i = 0, ci;
-            ( ci = this.children[ i ] );i++ ) {
-            if ( ci.equals( node.children[i] ) === false ) {
+            ( ci = this.children[ i ] ); i++ ) {
+            if ( ci.equals( node.children[ i ] ) === false ) {
                 return false;
             }
         }
@@ -275,26 +284,26 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     clearChildren: function () {
         this.children = [];
     },
-    isHighlight : function(){
-        return this.getTmpData('highlight')
+    isHighlight: function () {
+        return this.getTmpData( 'highlight' )
     },
-    setTmpData : function(a,v){
+    setTmpData: function ( a, v ) {
         var me = this;
-        if(utils.isObject(a)){
-            utils.each(a,function(val,key){
-                me.setTmpData(key,val)
-            })
+        if ( utils.isObject( a ) ) {
+            utils.each( a, function ( val, key ) {
+                me.setTmpData( key, val )
+            } )
         }
-        if(v === undefined || v === null || v === ''){
-            delete this.tmpData[a];
-        }else {
-            this.tmpData[a] = v;
+        if ( v === undefined || v === null || v === '' ) {
+            delete this.tmpData[ a ];
+        } else {
+            this.tmpData[ a ] = v;
         }
     },
-    getTmpData:function(a){
+    getTmpData: function ( a ) {
         if ( a === undefined ) {
             return this.tmpData;
         }
-        return this.tmpData[a]
+        return this.tmpData[ a ]
     }
 } );
