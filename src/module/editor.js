@@ -22,7 +22,11 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(node){
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
-                    if(node.isSelected()){
+                    // 进入编辑模式条件：
+                    // 1. 点击的节点是唯一选中的
+                    // 2. 点击的区域是文字区域
+                    if ( this.isSingleSelect() && node.isSelected() && textShape == e.kityEvent.targetShape ) {
+
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
                         receiver.setTextEditStatus(true)
