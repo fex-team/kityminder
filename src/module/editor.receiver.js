@@ -231,17 +231,18 @@ Minder.Receiver = kity.createClass('Receiver',{
 
         var currentIndex = this.getIndexByMousePosition(offset,dir);
 
-        if(currentIndex == 0 || currentIndex == this.textData.length ){
-            this.selection.setEndOffset(currentIndex);
+        if(currentIndex == 0){
+            this.selection.setStartOffset(0)
+        }else if(currentIndex == this.textData.length){
+            this.selection.setEndOffset(currentIndex)
         }else{
-            if(dir == -1 && currentIndex < this.selection.startOffset){
+            if(currentIndex > this.index){
+                this.selection.setEndOffset(currentIndex)
+            }else if(currentIndex < this.index){
                 this.selection.setStartOffset(currentIndex)
             }else{
-                this.selection.setEndOffset(currentIndex);
+                this.selection.collapse()
             }
-
-            console.log(this.selection.startOffset + ':' + this.selection.endOffset)
-            console.log(this.selection.isCollapsed)
         }
 
 
