@@ -5,13 +5,13 @@ KityMinder.registerModule( "IconModule", function () {
 			constructor: function ( node, value ) {
 				this._node = node;
 				this._bg = new kity.Rect().fill( colors[ value ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
-				// this._number = new kity.Text().setContent( value ).fill( "white" ).setSize( 12 );
+				this._number = new kity.Text().setContent( value ).fill( "white" ).setSize( 12 );
 				this._rc = new kity.Group();
-				this._rc.addShape( this._bg );
+				this._rc.addShapes( [ this._bg, this._number ] );
 				node.getIconRc().addShape( this._rc );
 			},
 			setValue: function ( val ) {
-				// this._number.setContent( val );
+				this._number.fill( colors[ val ] ).setContent( val );
 			},
 			getShape: function () {
 				return this._rc;
@@ -23,6 +23,7 @@ KityMinder.registerModule( "IconModule", function () {
 		};
 	} )() );
 	var ProgressIcon = kity.createClass( "PriorityIcon", ( function () {
+		var color = "blue";
 		return {
 			constructor: function ( node ) {
 				this._node = node;
