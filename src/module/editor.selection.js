@@ -10,7 +10,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.fill('#99C8FF');
         this.setHide();
         this.timer = null;
-        this.isCollapsed = true;
+        this.collapsed = true;
         this.startOffset = this.endOffset = 0;
         this.setOpacity(0.5)
     },
@@ -18,7 +18,7 @@ Minder.Selection = kity.createClass( 'Selection', {
 
         this.stroke( 'blue', 1 );
         this.width = 1;
-        this.isCollapsed = true;
+        this.collapsed = true;
         if(toEnd){
             this.startOffset = this.endOffset
         }else{
@@ -36,7 +36,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.collapse();
             return this;
         }
-        this.isCollapsed = false;
+        this.collapsed = false;
         this.stroke('none');
         return this;
     },
@@ -50,7 +50,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.collapse();
             return this;
         }
-        this.isCollapsed = false;
+        this.collapsed = false;
         this.stroke('none');
         return this;
     },

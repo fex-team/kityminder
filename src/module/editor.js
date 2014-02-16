@@ -42,19 +42,27 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'mouseup':function(e){
-
+                if(!sel.collapsed){
+                    receiver.updateRange(range)
+                }
                 mouseDownStatus = false;
                 oneTime = 0;
+
             },
             'mousemove':function(e){
-                if(mouseDownStatus){
-                    var offset = e.getPosition();
-                    dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
-                    receiver.updateSelectionByMousePosition(offset,dir)
-                        .updateSelectionShow(dir);
-                    sel.stroke('none',0);
-                    lastEvtPosition = e.getPosition();
-                }
+
+                setTimeout(function(){
+                    if(mouseDownStatus){
+
+                        var offset = e.getPosition();
+                        dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
+                        receiver.updateSelectionByMousePosition(offset,dir)
+                            .updateSelectionShow(dir);
+                        sel.stroke('none',0);
+                        lastEvtPosition = e.getPosition();
+                    }
+                },100)
+
             },
             'restoreScene':function(){
                 sel.setHide();

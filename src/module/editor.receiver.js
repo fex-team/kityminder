@@ -205,55 +205,42 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection.setHeight(this.getTextShapeHeight());
         return this;
     },
-    getIndexByMousePosition:function(offset,dir){
+
+    updateSelectionByMousePosition:function(offset,dir){
+
         var me = this;
-        var currentIndex;
-        var hadChanged = false;
         utils.each(this.textData,function(i,v){
             //点击开始之前
             if(i == 0 && offset.x <= v.x){
-                currentIndex = 0;
+                me.selection.setStartOffset(0);
                 return false;
             }
 
             if(i == me.textData.length -1 && offset.x >= v.x){
-                currentIndex = me.textData.length;
+                me.selection.setEndOffset(me.textData.length);
                 return false;
             }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
-                currentIndex = i + (dir == -1 ? 0 : 1);
+
+                if(me.index == i){
+                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                }else if(i > me.index){
+                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                }else{
+                    me.selection.setStartOffset(i + (dir == 1 ? 1 : 0))
+                }
+
                 return false;
             }
         });
-        return currentIndex;
-    },
-    updateSelectionByMousePosition:function(offset,dir){
-
-        var currentIndex = this.getIndexByMousePosition(offset,dir);
-
-        if(currentIndex == 0){
-            this.selection.setStartOffset(0)
-        }else if(currentIndex == this.textData.length){
-            this.selection.setEndOffset(currentIndex)
-        }else{
-            if(currentIndex > this.index){
-                this.selection.setEndOffset(currentIndex)
-            }else if(currentIndex < this.index){
-                this.selection.setStartOffset(currentIndex)
-            }else{
-                this.selection.collapse()
-            }
-        }
-
-
         return this;
     },
-    updateSelectionShow:function(dir){
+    updateSelectionShow:function(){
 
         var startOffset = this.textData[this.selection.startOffset],
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
-        if(this.selection.isCollapsed){
+        if(this.selection.collapsed){
 
             this.selection.updateShow(startOffset,0);
             return this;
@@ -268,7 +255,11 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection.updateShow(startOffset,width);
         return this;
     },
-    updateNativeRange:function(){
-
+    updateRange:function(range){
+        var node = this.container.firstChild;
+        range.setStart(node,this.selection.startOffset);
+        range.setEnd(node,this.selection.endOffset);
+        range.select();
+        return this;
     }
 });
