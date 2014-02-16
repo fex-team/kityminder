@@ -18,15 +18,11 @@ KityMinder.registerModule( "DropFile", function () {
 		var minder = this;
 		if ( e.dataTransfer.files ) {
 			var reader = new FileReader();
-			reader.onload = function () {};
-			var data = readFile( e.dataTransfer.files[ 0 ] );
-			minder.importData( data );
+			reader.onload = function ( e ) {
+				minder.importData( e.target.result );
+			};
+			reader.readAsText( e.dataTransfer.files[ 0 ] );
 		}
-	}
-
-	function readFile( e ) {
-		var reader = new FileReader();
-		return reader.readAsText();
 	}
 
 	return {

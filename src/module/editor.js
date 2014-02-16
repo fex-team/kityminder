@@ -1,4 +1,5 @@
 KityMinder.registerModule( "TextEditModule", function () {
+    var km = this;
     var sel = new Minder.Selection();
     var receiver = new Minder.Receiver(this);
     var range = new Minder.Range();
@@ -10,6 +11,9 @@ KityMinder.registerModule( "TextEditModule", function () {
     var oneTime = 0;
 
     var lastEvtPosition,dir = 1;
+
+
+
     return {
         //插入光标
         "init":function(){
@@ -22,7 +26,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(node){
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
-                    if(node.isSelected()){
+
+                    if ( node.isSelected() ) {
+
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
                         receiver.setTextEditStatus(true)
@@ -42,19 +48,27 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'mouseup':function(e){
-
+                if(!sel.collapsed){
+                    receiver.updateRange(range)
+                }
                 mouseDownStatus = false;
                 oneTime = 0;
             },
-            'mousemove':function(e){
+            'beforemousemove':function(e){
                 if(mouseDownStatus){
-                    var offset = e.getPosition();
-                    dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
-                    receiver.updateSelectionByMousePosition(offset,dir)
-                        .updateSelectionShow(dir);
-                    sel.stroke('none',0);
-                    lastEvtPosition = e.getPosition();
+                    e.stopPropagationImmediately();
+                    setTimeout(function(){
+
+                        var offset = e.getPosition();
+                        dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
+                        receiver.updateSelectionByMousePosition(offset,dir)
+                            .updateSelectionShow(dir);
+                        sel.stroke('none',0);
+                        lastEvtPosition = e.getPosition();
+                    },100)
                 }
+
+
             },
             'restoreScene':function(){
                 sel.setHide();
