@@ -100,6 +100,7 @@ KityMinder.registerModule( "IconModule", function () {
 				var iconWidth = iconRc.getWidth();
 				var textShape = node.getTextShape();
 				if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
+				else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
 			}
 		}
 	};
