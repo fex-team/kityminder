@@ -72,7 +72,7 @@ kity.extendClass( Minder, {
                 if ( test.recognize && test.recognize( local ) ) {
                     protocal = test;
                 }
-                return !test;
+                return !protocal;
             } );
         }
 

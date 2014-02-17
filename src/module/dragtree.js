@@ -105,6 +105,14 @@ function findAvailableParents( nodes, root ) {
 	return availables;
 }
 
+var lastActivedDropTarget = null;
+function activeDropTarget( node ) {
+	if(lastActivedDropTarget != node) {
+		node.getRenderContainer().fxScale(1.6, 1.6, 200, 'ease').fxScale(1/1.6, 1/1.6, 300, 'ease');
+		lastActivedDropTarget = node;
+	}
+}
+
 KityMinder.registerModule( "DragTree", function () {
 	var dragStartPosition, dragBox, dragTargets, dropTargets, dragTargetBoxes, dropTarget;
 
@@ -147,13 +155,18 @@ KityMinder.registerModule( "DragTree", function () {
 					dragBox.blue();
 					dropTarget = null;
 				}
+
 				dropTargets.forEach( function ( test ) {
-					if ( GM.isBoxIntersect( dragBox.getRenderBox(), test.getRenderContainer().getRenderBox() ) ) {
+					if ( !dropTarget && GM.isBoxIntersect( dragBox.getRenderBox(), test.getRenderContainer().getRenderBox() ) ) {
+						activeDropTarget(test);
 						//test.getRenderContainer().scale( 1.25 );
 						dropTarget = test;
 						dragBox.green();
 					}
 				} );
+				if( !dropTarget ) {
+					lastActivedDropTarget = null;
+				}
 			},
 			mouseup: function ( e ) {
 				dragStartPosition = null;
@@ -161,12 +174,13 @@ KityMinder.registerModule( "DragTree", function () {
 					dragBox.remove();
 					dragBox = null;
 					if ( dropTarget ) {
-						dragTargets.forEach( function ( target ) {
+						for(var i = dragTargets.length - 1, target; i >= 0; i--) {
+							target = dragTargets[i];
 							if ( target.parent ) {
 								target.parent.removeChild( target );
 								dropTarget.appendChild( target );
 							}
-						} );
+						}
 						this.removeAllSelectedNodes();
 						this.initStyle( this.getRoot() );
 					}
