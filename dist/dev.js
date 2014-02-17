@@ -6332,7 +6332,10 @@ KM.registerUI( 'forecolor', function ( name ) {
         name: name,
         title: this.getLang( 'tooltips' )[ name ] || '',
         click: function () {
-            me.execCommand( name, getCurrentColor() );
+            var color =   kity.Color.parse(getCurrentColor()).toHEX();
+            if(!color == '#000000'){
+                me.execCommand( name, color );
+            }
         }
     } );
 
