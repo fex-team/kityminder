@@ -40,25 +40,25 @@ KityMinder.registerModule( "IconModule", function () {
 		if ( val < 5 ) d.close();
 		_percent.fill( "#29A6BD" );
 	};
-	var ChangeIconCommand = kity.createClass( "AddIconCommand", ( function () {
+	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, iconType, value ) {
+			execute: function ( km, value ) {
 				var nodes = km.getSelectedNodes();
 				for ( var i = 0; i < nodes.length; i++ ) {
-					nodes[ i ].setData( iconType, value );
+					nodes[ i ].setData( "PriorityIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
 			}
 		};
 	} )() );
-	var RemoveIconCommand = kity.createClass( "RemoveIconCommand", ( function () {
+	var setProgressCommand = kity.createClass( "SetProgressCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, iconType ) {
+			execute: function ( km, value ) {
 				var nodes = km.getSelectedNodes();
 				for ( var i = 0; i < nodes.length; i++ ) {
-					nodes[ i ].setData( iconType, null );
+					nodes[ i ].setData( "ProgressIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
 			}
@@ -66,13 +66,10 @@ KityMinder.registerModule( "IconModule", function () {
 	} )() );
 	return {
 		"commands": {
-			"changeicon": ChangeIconCommand,
-			"removeicon": RemoveIconCommand
+			"setpriority": setPriorityCommand,
+			"setprogress": setProgressCommand
 		},
 		"events": {
-			"": function ( e ) {
-
-			},
 			"RenderNode": function ( e ) {
 				var node = e.node;
 				var iconRc = node.getIconRc();

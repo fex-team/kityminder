@@ -5,13 +5,16 @@ KM.ui.define( 'modal', {
         '<div class="kmui-close" data-hide="modal"></div>' +
         '<h3 class="kmui-title"><%=title%></h3>' +
         '</div>' +
-        '<div>' +
-        '<h3>优先级</h3>' +
-        '<ul class="icon-list" id="icon-priority"><li value="1">1</li><li value="2">2</li><li value="3">3</li><li value="4">4</li><li value="5">5</li></ul>' +
-        '<h3>进程</h3>' +
-        '<ul class="icon-list" id="icon-progress"><li value="1">1</li><li value="2">2</li><li value="3">3</li><li value="4">4</li><li value="5">5</li></ul>' +
+        '<div class="kmui-modal-body"  style="<%if(width){%>width:<%=width%>px;<%}%>' +
+        '<%if(height){%>height:<%=height%>px;<%}%>">' +
+        ' </div>' +
+        '<% if(cancellabel || oklabel) {%>' +
+        '<div class="kmui-modal-footer">' +
+        '<div class="kmui-modal-tip"></div>' +
+        '<%if(oklabel){%><div class="kmui-btn kmui-btn-primary" data-ok="modal"><%=oklabel%></div><%}%>' +
+        '<%if(cancellabel){%><div class="kmui-btn" data-hide="modal"><%=cancellabel%></div><%}%>' +
         '</div>' +
-        '</div>',
+        '<%}%></div>',
     defaultOpt: {
         title: "",
         cancellabel: "",

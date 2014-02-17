@@ -37,10 +37,10 @@ KM.registerUI( 'markers', function ( name ) {
                 var $this = $( this );
                 var val = $this.val();
                 me.execCommand( "changeicon", "PriorityIcon", val );
-            } ).on( "click", "#icon-progress li", function () {
+            } ).on( "click", "#icon-priority li", function () {
                 var $this = $( this );
                 var val = $this.val();
-                me.execCommand( "changeicon", "ProgressIcon", val );
+                me.execCommand( "changeicon", "PriorityIcon", val );
             } );
         } ).attachTo( $btn )
     } );
