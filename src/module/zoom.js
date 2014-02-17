@@ -1,5 +1,5 @@
 KityMinder.registerModule( 'Zoom', function () {
-
+	/*
 	return {
 		events: {
 			'mousewheel': function ( e ) {
@@ -18,5 +18,6 @@ KityMinder.registerModule( 'Zoom', function () {
 				this._zoom = 1;
 			}
 		}
-	};
+	};*/
+	return {};
 } );

@@ -19,6 +19,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
         this._createBgGroup();
         this._createContGroup();
+        this._createIconShape();
         this._createTextShape();
     },
     _createGroup: function ( type ) {
@@ -33,7 +34,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this._createGroup( 'contrc' );
     },
     _createTextShape: function () {
-        this.getContRc().appendShape( new kity.Text( this.getData( 'text' ) || '' ) );
+        var textShape = new kity.Text( this.getData( 'text' ) || '' );
+        textShape.setAttr('_nodeTextShape',true);
+        this.getContRc().appendShape( textShape );
+    },
+    _createIconShape: function () {
+        var g = new kity.Group();
+        this.getContRc().appendShape( g );
+        this._iconRc = g;
     },
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
@@ -56,6 +64,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             }
         } );
         return result;
+    },
+    getIconRc: function () {
+        return this._iconRc;
     },
     setPoint: function ( x, y ) {
         this.setData( 'point', {
@@ -292,7 +303,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     getTextShape: function () {
-        return this.getContRc().getShapesByType( 'text' )[ 0 ];
+        var textShape;
+        utils.each(this.getContRc().getShapesByType( 'text' ),function(i,t){
+            if(t.getAttr('_nodeTextShape')){
+                textShape = t;
+                return false;
+            }
+        });
+        return textShape;
     },
     isSelected: function () {
         return this.getTmpData( 'highlight' ) === true;
