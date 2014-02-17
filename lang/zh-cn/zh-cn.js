@@ -9,14 +9,13 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'fontsize': '字号',
         'layoutstyle': '主题',
         'saveto': '导出',
-        'markers':'标示'
+        'hand': '允许拖拽'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
         'standardColor': '标准颜色',
         'themeColor': '主题颜色'
     },
-    'hand': '允许拖拽',
     'dialogs':{
         'markers':{
             'static':{
@@ -29,4 +28,5 @@ KityMinder.LANG[ 'zh-cn' ] = {
             'httpPrompt':'您输入的超链接中不包含http等协议名称，默认将为您添加http://前缀'
         }
     }
+
 };
