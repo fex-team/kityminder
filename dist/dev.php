@@ -59,7 +59,7 @@ $dependency = Array(
     ,'src/adapter/combobox.js'
     ,'src/adapter/saveto.js'
     ,'src/adapter/hand.js'
-    ,'src/adapter/icon.js'
+    ,'src/adapter/dialog.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
 );
