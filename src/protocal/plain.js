@@ -96,6 +96,7 @@ KityMinder.registerProtocal( "plain", function () {
 			}
 			return decode( local );
 		},
-		recognize: recognize
+		recognize: recognize,
+		recognizePriority: -1
 	};
 } );

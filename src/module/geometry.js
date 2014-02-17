@@ -95,5 +95,17 @@ KityMinder.Geometry = ( function () {
 		return unknown;
 	};
 
+	g.expandBox = function( box, sizeX, sizeY ) {
+		if(sizeY === undefined) {
+			sizeY = sizeX;
+		}
+		return wrapBox( {
+			left: box.left - sizeX,
+			top: box.top - sizeY,
+			right: box.right + sizeX,
+			bottom: box.bottom + sizeY
+		} );
+	};
+
 	return g;
 } )();
