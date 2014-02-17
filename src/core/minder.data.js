@@ -7,7 +7,9 @@ Utils.extend( KityMinder, {
         return KityMinder._protocals[ name ] || null;
     },
     getSupportedProtocals: function () {
-        return Utils.keys( KityMinder._protocals );
+        return Utils.keys( KityMinder._protocals ).sort(function(a, b) {
+            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
+        });
     },
     getAllRegisteredProtocals: function () {
         return KityMinder._protocals;
@@ -70,7 +72,7 @@ kity.extendClass( Minder, {
                 if ( test.recognize && test.recognize( local ) ) {
                     protocal = test;
                 }
-                return !test;
+                return !protocal;
             } );
         }
 

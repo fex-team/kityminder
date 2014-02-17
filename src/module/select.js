@@ -73,6 +73,7 @@ KityMinder.registerModule( "Select", function () {
         };
     } )();
 
+    var singleSelectOnUp = null;
     return {
         "events": {
             mousedown: function ( e ) {
@@ -84,13 +85,16 @@ KityMinder.registerModule( "Select", function () {
                     this.toggleSelect( clickNode );
                 } else if ( !clickNode.isSelected() ) {
                     this.select( clickNode, true );
+                } else if ( !this.isSingleSelect() ) {
+                    singleSelectOnUp = clickNode;
                 }
             },
             mousemove: marqueeActivator.selectMove,
             mouseup: function ( e ) {
                 var clickNode = e.getTargetNode();
-                if ( clickNode && clickNode.isSelected() && !this.isSingleSelect() ) {
-                    this.select( clickNode, true );
+                if ( clickNode && singleSelectOnUp == clickNode ) {
+                    this.select( singleSelectOnUp, true );
+                    singleSelectOnUp = null;
                 }
                 marqueeActivator.selectEnd( e );
             }
