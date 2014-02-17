@@ -49,6 +49,10 @@ KityMinder.registerModule( "IconModule", function () {
 					nodes[ i ].setData( "PriorityIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
+			},
+			queryValue: function ( km ) {
+				var node = km.getSelectedNode();
+				return node.getData( "PriorityIcon" );
 			}
 		};
 	} )() );
@@ -61,6 +65,10 @@ KityMinder.registerModule( "IconModule", function () {
 					nodes[ i ].setData( "ProgressIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
+			},
+			queryValue: function ( km ) {
+				var node = km.getSelectedNode();
+				return node.getData( "ProgressIcon" );
 			}
 		};
 	} )() );
