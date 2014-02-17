@@ -14,7 +14,7 @@ KM.registerUI( 'hand',
                     me._paper.undrag();
                 }
             },
-            title: this.getLang( 'hand' )[ name ] || ''
+            title: this.getLang( 'tooltips.' )[ name ] || ''
         } );
         me.on( 'beforemousemove', function ( e ) {
             if ( this._onDragMode ) {

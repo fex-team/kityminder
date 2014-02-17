@@ -1,6 +1,6 @@
 KityMinder.registerModule( "IconModule", function () {
 	var renderPriorityIcon = function ( node, val ) {
-		var colors = [ "", "red", "blue", "green", "orange", "purple" ];
+		var colors = [ "", "#A92E24", "#29A6BD", "#1E8D54", "orange", "#876DDA" ];
 		var _bg = new kity.Rect().fill( colors[ val ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
 		var _number = new kity.Text().setContent( val ).fill( "white" ).setSize( 12 );
 		var _rc = new kity.Group();
@@ -10,7 +10,7 @@ KityMinder.registerModule( "IconModule", function () {
 	};
 	var renderProgressIcon = function ( node, val, left ) {
 		var _rc = new kity.Group();
-		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "blue", 2 ) );
+		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "#29A6BD", 2 ) );
 		var _percent, d;
 		if ( val < 5 ) {
 			_percent = new kity.Path();
@@ -34,11 +34,11 @@ KityMinder.registerModule( "IconModule", function () {
 			d.carcTo( 6, 0, 6, 1, 0 );
 			break;
 		case 5:
-			_percent.addShape( new kity.Circle().setRadius( 6 ).fill( "blue" ) );
+			_percent.addShape( new kity.Circle().setRadius( 6 ).fill( "#29A6BD" ) );
 			break;
 		}
 		if ( val < 5 ) d.close();
-		_percent.fill( "blue" );
+		_percent.fill( "#29A6BD" );
 	};
 	var ChangeIconCommand = kity.createClass( "AddIconCommand", ( function () {
 		return {
@@ -70,6 +70,9 @@ KityMinder.registerModule( "IconModule", function () {
 			"removeicon": RemoveIconCommand
 		},
 		"events": {
+			"": function ( e ) {
+
+			},
 			"RenderNode": function ( e ) {
 				var node = e.node;
 				var iconRc = node.getIconRc();
