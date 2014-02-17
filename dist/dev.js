@@ -292,6 +292,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
         this._createBgGroup();
         this._createContGroup();
+        this._createIconShape();
         this._createTextShape();
     },
     _createGroup: function ( type ) {
@@ -306,7 +307,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this._createGroup( 'contrc' );
     },
     _createTextShape: function () {
-        this.getContRc().appendShape( new kity.Text( this.getData( 'text' ) || '' ) );
+        var textShape = new kity.Text( this.getData( 'text' ) || '' );
+        textShape.setAttr('_nodeTextShape',true);
+        this.getContRc().appendShape( textShape );
+    },
+    _createIconShape: function () {
+        var g = new kity.Group();
+        this.getContRc().appendShape( g );
+        this._iconRc = g;
     },
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
@@ -329,6 +337,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             }
         } );
         return result;
+    },
+    getIconRc: function () {
+        return this._iconRc;
     },
     setPoint: function ( x, y ) {
         this.setData( 'point', {
@@ -565,7 +576,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     getTextShape: function () {
-        return this.getContRc().getShapesByType( 'text' )[ 0 ];
+        var textShape;
+        utils.each(this.getContRc().getShapesByType( 'text' ),function(i,t){
+            if(t.getAttr('_nodeTextShape')){
+                textShape = t;
+                return false;
+            }
+        });
+        return textShape;
     },
     isSelected: function () {
         return this.getTmpData( 'highlight' ) === true;
@@ -1523,15 +1541,99 @@ KityMinder.registerModule( "HistoryModule", function () {
 } );
 
 KityMinder.registerModule( "IconModule", function () {
-    return {
-        "commands": {
-
-        },
-
-        "events": {
-
-        }
-    };
+	var renderPriorityIcon = function ( node, val ) {
+		var colors = [ "", "red", "blue", "green", "orange", "purple" ];
+		var _bg = new kity.Rect().fill( colors[ val ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
+		var _number = new kity.Text().setContent( val ).fill( "white" ).setSize( 12 );
+		var _rc = new kity.Group();
+		_rc.addShapes( [ _bg, _number ] );
+		node.getIconRc().addShape( _rc );
+		_number.setTransform( new kity.Matrix().translate( 6, 15 ) );
+	};
+	var renderProgressIcon = function ( node, val, left ) {
+		var _rc = new kity.Group();
+		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "blue", 2 ) );
+		var _percent, d;
+		if ( val < 5 ) {
+			_percent = new kity.Path();
+			d = _percent.getDrawer();
+			d.moveTo( 0, 0 ).lineTo( 6, 0 );
+		} else _percent = new kity.Group();
+		_rc.addShapes( [ _bg, _percent ] );
+		node.getIconRc().addShape( _rc );
+		_rc.setTransform( new kity.Matrix().translate( left, 10 ) );
+		_percent.setTransform( 10, 10 );
+		switch ( val ) {
+		case 1:
+			break;
+		case 2:
+			d.carcTo( 6, 0, -6 );
+			break;
+		case 3:
+			d.carcTo( 6, -6, 0 );
+			break;
+		case 4:
+			d.carcTo( 6, 0, 6, 1, 0 );
+			break;
+		case 5:
+			_percent.addShape( new kity.Circle().setRadius( 6 ).fill( "blue" ) );
+			break;
+		}
+		if ( val < 5 ) d.close();
+		_percent.fill( "blue" );
+	};
+	var ChangeIconCommand = kity.createClass( "AddIconCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km, iconType, value ) {
+				var nodes = km.getSelectedNodes();
+				for ( var i = 0; i < nodes.length; i++ ) {
+					nodes[ i ].setData( iconType, value );
+					km.updateLayout( nodes[ i ] );
+				}
+			}
+		};
+	} )() );
+	var RemoveIconCommand = kity.createClass( "RemoveIconCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km, iconType ) {
+				var nodes = km.getSelectedNodes();
+				for ( var i = 0; i < nodes.length; i++ ) {
+					nodes[ i ].setData( iconType, null );
+					km.updateLayout( nodes[ i ] );
+				}
+			}
+		};
+	} )() );
+	return {
+		"commands": {
+			"changeicon": ChangeIconCommand,
+			"removeicon": RemoveIconCommand
+		},
+		"events": {
+			"RenderNode": function ( e ) {
+				var node = e.node;
+				var iconRc = node.getIconRc();
+				var PriorityIconVal = node.getData( "PriorityIcon" );
+				var ProgressIconVal = node.getData( "ProgressIcon" );
+				//依次排布图标、文字
+				iconRc.setTransform( new kity.Matrix().translate( 0, -20 ) );
+				iconRc.clear();
+				var PriorityIconWidth = 0;
+				if ( PriorityIconVal ) {
+					renderPriorityIcon( node, PriorityIconVal );
+					PriorityIconWidth = 22;
+				}
+				if ( ProgressIconVal ) {
+					renderProgressIcon( node, ProgressIconVal, PriorityIconWidth + 10 );
+				}
+				var iconWidth = iconRc.getWidth();
+				var textShape = node.getTextShape();
+				if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
+			}
+		}
+	};
 } );
 
 KityMinder.registerModule( "LayoutModule", function () {
@@ -3389,7 +3491,13 @@ KityMinder.registerModule( "Select", function () {
                 }
             },
             mousemove: marqueeActivator.selectMove,
-            mouseup: marqueeActivator.selectEnd
+            mouseup: function ( e ) {
+                var clickNode = e.getTargetNode();
+                if ( clickNode && clickNode.isSelected() && !this.isSingleSelect() ) {
+                    this.select( clickNode, true );
+                }
+                marqueeActivator.selectEnd( e );
+            }
         }
     };
 } );
@@ -3575,8 +3683,9 @@ KityMinder.registerModule( "HistoryModule", function () {
 } );
 
 KityMinder.registerModule( "TextEditModule", function () {
+    var km = this;
     var sel = new Minder.Selection();
-    var receiver = new Minder.Receiver( this );
+    var receiver = new Minder.Receiver(this);
     var range = new Minder.Range();
 
     this.receiver = receiver;
@@ -3585,61 +3694,70 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var oneTime = 0;
 
-    var lastEvtPosition, dir = 1;
+    var lastEvtPosition,dir = 1;
+
+
+
     return {
         //插入光标
-        "init": function () {
-            this.getPaper().addShape( sel );
+        "init":function(){
+            this.getPaper().addShape(sel);
         },
         "events": {
-            'beforemousedown': function ( e ) {
+            'beforemousedown':function(e){
                 sel.setHide();
                 var node = e.getTargetNode();
-                if ( node ) {
+                if(node){
                     var textShape = node.getTextShape();
-                    textShape.setStyle( 'cursor', 'default' );
+                    textShape.setStyle('cursor','default');
 
-                    // 进入编辑模式条件：
-                    // 1. 点击的节点是唯一选中的
-                    // 2. 点击的区域是文字区域
-                    if ( this.isSingleSelect() && node.isSelected() && textShape == e.kityEvent.targetShape ) {
+                    if ( this.isSingleSelect() && node.isSelected() ) {
+
                         sel.collapse();
-                        node.getTextShape().setStyle( 'cursor', 'text' );
-                        receiver.setTextEditStatus( true )
-                            .setSelection( sel )
-                            .setKityMinder( this )
-                            .setMinderNode( node )
-                            .setTextShape( textShape )
+                        node.getTextShape().setStyle('cursor','text');
+                        receiver.setTextEditStatus(true)
+                            .setSelection(sel)
+                            .setKityMinder(this)
+                            .setMinderNode(node)
+                            .setTextShape(textShape)
                             .setBaseOffset()
                             .setContainerStyle()
                             .setSelectionHeight()
-                            .setCurrentIndex( e.getPosition() )
+                            .setCurrentIndex(e.getPosition())
                             .updateSelection()
-                            .setRange( range );
+                            .setRange(range);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition();
                     }
                 }
             },
-            'mouseup': function ( e ) {
-
+            'mouseup':function(e){
+                if(!sel.collapsed){
+                    receiver.updateRange(range)
+                }
                 mouseDownStatus = false;
                 oneTime = 0;
             },
-            'mousemove': function ( e ) {
-                if ( mouseDownStatus ) {
-                    var offset = e.getPosition();
-                    dir = offset.x > lastEvtPosition.x ? 1 : ( offset.x < lastEvtPosition.x ? -1 : dir );
-                    receiver.updateSelectionByMousePosition( offset, dir )
-                        .updateSelectionShow( dir );
-                    sel.stroke( 'none', 0 );
-                    lastEvtPosition = e.getPosition();
+            'beforemousemove':function(e){
+                if(mouseDownStatus){
+                    e.stopPropagationImmediately();
+                    setTimeout(function(){
+
+                        var offset = e.getPosition();
+                        dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
+                        receiver.updateSelectionByMousePosition(offset,dir)
+                            .updateSelectionShow(dir);
+                        sel.stroke('none',0);
+                        lastEvtPosition = e.getPosition();
+                    },100)
                 }
+
+
             },
-            'restoreScene': function () {
+            'restoreScene':function(){
                 sel.setHide();
             },
-            'stopTextEdit': function () {
+            'stopTextEdit':function(){
                 sel.setHide();
 
             }
@@ -3896,55 +4014,42 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection.setHeight(this.getTextShapeHeight());
         return this;
     },
-    getIndexByMousePosition:function(offset,dir){
+
+    updateSelectionByMousePosition:function(offset,dir){
+
         var me = this;
-        var currentIndex;
-        var hadChanged = false;
         utils.each(this.textData,function(i,v){
             //点击开始之前
             if(i == 0 && offset.x <= v.x){
-                currentIndex = 0;
+                me.selection.setStartOffset(0);
                 return false;
             }
 
             if(i == me.textData.length -1 && offset.x >= v.x){
-                currentIndex = me.textData.length;
+                me.selection.setEndOffset(me.textData.length);
                 return false;
             }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
-                currentIndex = i + (dir == -1 ? 0 : 1);
+
+                if(me.index == i){
+                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                }else if(i > me.index){
+                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                }else{
+                    me.selection.setStartOffset(i + (dir == 1 ? 1 : 0))
+                }
+
                 return false;
             }
         });
-        return currentIndex;
-    },
-    updateSelectionByMousePosition:function(offset,dir){
-
-        var currentIndex = this.getIndexByMousePosition(offset,dir);
-
-        if(currentIndex == 0){
-            this.selection.setStartOffset(0)
-        }else if(currentIndex == this.textData.length){
-            this.selection.setEndOffset(currentIndex)
-        }else{
-            if(currentIndex > this.index){
-                this.selection.setEndOffset(currentIndex)
-            }else if(currentIndex < this.index){
-                this.selection.setStartOffset(currentIndex)
-            }else{
-                this.selection.collapse()
-            }
-        }
-
-
         return this;
     },
-    updateSelectionShow:function(dir){
+    updateSelectionShow:function(){
 
         var startOffset = this.textData[this.selection.startOffset],
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
-        if(this.selection.isCollapsed){
+        if(this.selection.collapsed){
 
             this.selection.updateShow(startOffset,0);
             return this;
@@ -3959,8 +4064,12 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection.updateShow(startOffset,width);
         return this;
     },
-    updateNativeRange:function(){
-
+    updateRange:function(range){
+        var node = this.container.firstChild;
+        range.setStart(node,this.selection.startOffset);
+        range.setEnd(node,this.selection.endOffset);
+        range.select();
+        return this;
     }
 });
 
@@ -3976,7 +4085,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.fill('#99C8FF');
         this.setHide();
         this.timer = null;
-        this.isCollapsed = true;
+        this.collapsed = true;
         this.startOffset = this.endOffset = 0;
         this.setOpacity(0.5)
     },
@@ -3984,7 +4093,7 @@ Minder.Selection = kity.createClass( 'Selection', {
 
         this.stroke( 'blue', 1 );
         this.width = 1;
-        this.isCollapsed = true;
+        this.collapsed = true;
         if(toEnd){
             this.startOffset = this.endOffset
         }else{
@@ -4002,7 +4111,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.collapse();
             return this;
         }
-        this.isCollapsed = false;
+        this.collapsed = false;
         this.stroke('none');
         return this;
     },
@@ -4016,7 +4125,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.collapse();
             return this;
         }
-        this.isCollapsed = false;
+        this.collapsed = false;
         this.stroke('none');
         return this;
     },
@@ -4266,7 +4375,7 @@ KityMinder.registerModule( "fontmodule", function () {
 } );
 
 KityMinder.registerModule( 'Zoom', function () {
-
+	/*
 	return {
 		events: {
 			'mousewheel': function ( e ) {
@@ -4285,7 +4394,8 @@ KityMinder.registerModule( 'Zoom', function () {
 				this._zoom = 1;
 			}
 		}
-	};
+	};*/
+	return {};
 } );
 
 (function ($) {
