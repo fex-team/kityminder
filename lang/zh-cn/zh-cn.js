@@ -15,6 +15,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'standardColor': '标准颜色',
         'themeColor': '主题颜色'
     },
-    'hand': '允许拖拽'
-
+    'hand': '允许拖拽',
+    'flag': '优先级',
+    'clock': '完成度'
 };

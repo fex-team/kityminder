@@ -1,9 +1,8 @@
 window.KITYMINDER_CONFIG = {
     //定义工具栏
     toolbars: [
-        'hand | undo redo | bold italic | fontfamily fontsize forecolor | saveto'
+        'hand flag clock | undo redo | bold italic | fontfamily fontsize forecolor | saveto'
     ]
-
     //设置主题
     //,defaultlayoutstyle : 'default' //设置默认的主题
     //,layoutstyle : []   //添加有那些主图
