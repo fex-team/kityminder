@@ -34,7 +34,10 @@ KityMinder.registerModule( "IconModule", function () {
 			d.carcTo( 6, 0, 6, 1, 0 );
 			break;
 		case 5:
-			_percent.addShape( new kity.Circle().setRadius( 6 ).fill( "#29A6BD" ) );
+			var check = new kity.Path();
+			_percent.addShapes( [ new kity.Circle().setRadius( 6 ).fill( "#29A6BD" ), check ] );
+			check.getDrawer().moveTo( -3, 0 ).lineTo( -1, 3 ).lineTo( 3, -2 );
+			check.stroke( new kity.Pen( "white", 2 ).setLineCap( "round" ) );
 			break;
 		}
 		if ( val < 5 ) d.close();
