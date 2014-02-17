@@ -223,6 +223,9 @@ Minder.Receiver = kity.createClass('Receiver',{
             if(offset.x >= v.x && offset.x <= v.x + v.width){
 
                 if(me.index == i){
+                    if(i == 0){
+                        me.selection.setStartOffset(i)
+                    }
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
                 }else if(i > me.index){
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
@@ -236,7 +239,6 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
     },
     updateSelectionShow:function(){
-
         var startOffset = this.textData[this.selection.startOffset],
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;

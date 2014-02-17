@@ -27,7 +27,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
 
-                    if ( this.isSingleSelect() && node.isSelected() ) {
+                    if ( this.isSingleSelect() && node.isSelected() && e.kityEvent.targetShape.getType().toLowerCase()== 'text') {
 
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
@@ -57,18 +57,26 @@ KityMinder.registerModule( "TextEditModule", function () {
             'beforemousemove':function(e){
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
-                    setTimeout(function(){
-
-                        var offset = e.getPosition();
-                        dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
-                        receiver.updateSelectionByMousePosition(offset,dir)
-                            .updateSelectionShow(dir);
-                        sel.stroke('none',0);
-                        lastEvtPosition = e.getPosition();
-                    },100)
+                    var offset = e.getPosition();
+                    dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
+                    receiver.updateSelectionByMousePosition(offset,dir)
+                        .updateSelectionShow(dir);
+                    sel.stroke('none',0);
+                    lastEvtPosition = e.getPosition();
                 }
+            },
+            'dblclick':function(e){
 
+                var text =  e.kityEvent.targetShape;
+                if ( text.getType().toLowerCase()== 'text') {
 
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(text.getContent().length);
+                    sel.setShow();
+                    receiver.updateSelectionShow(1)
+                        .updateRange(range);
+
+                }
             },
             'restoreScene':function(){
                 sel.setHide();
