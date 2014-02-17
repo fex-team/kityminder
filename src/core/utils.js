@@ -185,7 +185,89 @@ var utils = Utils = KityMinder.Utils = {
             parent = parent.parent;
         }
         return parent;
-    }
+    },
+    loadFile:function () {
+        var tmpList = [];
+
+        function getItem(doc, obj) {
+            try {
+                for (var i = 0, ci; ci = tmpList[i++];) {
+                    if (ci.doc === doc && ci.url == (obj.src || obj.href)) {
+                        return ci;
+                    }
+                }
+            } catch (e) {
+                return null;
+            }
+
+        }
+
+        return function (doc, obj, fn) {
+            var item = getItem(doc, obj);
+            if (item) {
+                if (item.ready) {
+                    fn && fn();
+                } else {
+                    item.funs.push(fn)
+                }
+                return;
+            }
+            tmpList.push({
+                doc:doc,
+                url:obj.src || obj.href,
+                funs:[fn]
+            });
+            if (!doc.body) {
+                var html = [];
+                for (var p in obj) {
+                    if (p == 'tag')continue;
+                    html.push(p + '="' + obj[p] + '"')
+                }
+                doc.write('<' + obj.tag + ' ' + html.join(' ') + ' ></' + obj.tag + '>');
+                return;
+            }
+            if (obj.id && doc.getElementById(obj.id)) {
+                return;
+            }
+            var element = doc.createElement(obj.tag);
+            delete obj.tag;
+            for (var p in obj) {
+                element.setAttribute(p, obj[p]);
+            }
+            element.onload = element.onreadystatechange = function () {
+                if (!this.readyState || /loaded|complete/.test(this.readyState)) {
+                    item = getItem(doc, obj);
+                    if (item.funs.length > 0) {
+                        item.ready = 1;
+                        for (var fi; fi = item.funs.pop();) {
+                            fi();
+                        }
+                    }
+                    element.onload = element.onreadystatechange = null;
+                }
+            };
+            element.onerror = function () {
+                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file umeditor.config.js ')
+            };
+            doc.getElementsByTagName("head")[0].appendChild(element);
+        }
+    }(),
+    clone:function (source, target) {
+        var tmp;
+        target = target || {};
+        for (var i in source) {
+            if (source.hasOwnProperty(i)) {
+                tmp = source[i];
+                if (typeof tmp == 'object') {
+                    target[i] = utils.isArray(tmp) ? [] : {};
+                    utils.clone(source[i], target[i])
+                } else {
+                    target[i] = tmp;
+                }
+            }
+        }
+        return target;
+    },
 
 };
 
