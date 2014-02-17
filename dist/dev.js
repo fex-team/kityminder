@@ -802,7 +802,9 @@ Utils.extend( KityMinder, {
         return KityMinder._protocals[ name ] || null;
     },
     getSupportedProtocals: function () {
-        return Utils.keys( KityMinder._protocals );
+        return Utils.keys( KityMinder._protocals ).sort(function(a, b) {
+            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
+        });
     },
     getAllRegisteredProtocals: function () {
         return KityMinder._protocals;
@@ -1355,6 +1357,18 @@ KityMinder.Geometry = ( function () {
 			}
 		} );
 		return unknown;
+	};
+
+	g.expandBox = function( box, sizeX, sizeY ) {
+		if(sizeY === undefined) {
+			sizeY = sizeX;
+		}
+		return wrapBox( {
+			left: box.left - sizeX,
+			top: box.top - sizeY,
+			right: box.right + sizeX,
+			bottom: box.bottom + sizeY
+		} );
 	};
 
 	return g;
@@ -6552,7 +6566,8 @@ KityMinder.registerProtocal( "plain", function () {
 			}
 			return decode( local );
 		},
-		recognize: recognize
+		recognize: recognize,
+		recognizePriority: -1
 	};
 } );
 
@@ -6574,7 +6589,8 @@ KityMinder.registerProtocal( 'json', function () {
 		},
 		recognize: function ( local ) {
 			return Utils.isString( local ) && local.charAt( 0 ) == '{' && local.charAt( local.length - 1 ) == '}';
-		}
+		},
+		recognizePriority: 0
 	};
 } );
 
