@@ -1,6 +1,6 @@
 KityMinder.registerModule( "IconModule", function () {
 	var renderPriorityIcon = function ( node, val ) {
-		var colors = [ "", "#A92E24", "#29A6BD", "#1E8D54", "orange", "#876DDA" ];
+		var colors = [ "", "#A92E24", "#29A6BD", "#1E8D54", "#eb6100", "#876DDA" ];
 		var _bg = new kity.Rect().fill( colors[ val ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
 		var _number = new kity.Text().setContent( val ).fill( "white" ).setSize( 12 );
 		var _rc = new kity.Group();
