@@ -16,6 +16,7 @@ KityMinder.registerProtocal( 'json', function () {
 		},
 		recognize: function ( local ) {
 			return Utils.isString( local ) && local.charAt( 0 ) == '{' && local.charAt( local.length - 1 ) == '}';
-		}
+		},
+		recognizePriority: 0
 	};
 } );
