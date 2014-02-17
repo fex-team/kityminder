@@ -87,7 +87,13 @@ KityMinder.registerModule( "Select", function () {
                 }
             },
             mousemove: marqueeActivator.selectMove,
-            mouseup: marqueeActivator.selectEnd
+            mouseup: function ( e ) {
+                var clickNode = e.getTargetNode();
+                if ( clickNode && clickNode.isSelected() && !this.isSingleSelect() ) {
+                    this.select( clickNode, true );
+                }
+                marqueeActivator.selectEnd( e );
+            }
         }
     };
 } );
