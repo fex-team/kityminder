@@ -377,7 +377,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		}
 		//更新收放icon
-		if ( nodeType !== "root" ) {
+		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
 			}
@@ -610,7 +610,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				} else {
 					_buffer[ 0 ].getRenderContainer().remove();
 					Layout.connect.remove();
-					Layout.shicon.remove();
+					if ( Layout.shicon ) Layout.shicon.remove();
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
