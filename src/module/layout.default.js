@@ -121,7 +121,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
 			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
-			node.getBgRc().clear().addShapes( [ highlightshape, underline ] );
+			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius(4), highlightshape, underline ] );
 			break;
 		default:
 			break;
@@ -160,6 +160,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var _contWidth = contRc.getWidth();
 			var _contHeight = contRc.getHeight();
+			width = _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ];
+			height = _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
 			Layout.underline.getDrawer()
 				.clear()
 				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
@@ -168,6 +170,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.highlightshape
 				.setWidth( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] )
 				.setHeight( _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+			Layout.bgRect.setWidth(width).setHeight(height);
 			break;
 		default:
 			break;
