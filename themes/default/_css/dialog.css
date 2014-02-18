@@ -79,16 +79,3 @@
     line-height: 30px;
     display: none;
 }
-.icon-list{
-    margin: 0;
-    padding: 0
-}
-.icon-list li{
-    padding: 10px 20px;
-    margin: 0;
-    list-style: none;
-    cursor: pointer;
-}
-.icon-list li:hover{
-    background: #cfe0f7
-}

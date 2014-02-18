@@ -3,6 +3,7 @@ KM.registerUI( 'markers', function ( name ) {
     var me = this,
         currentRange, $dialog,
         opt = {
+            width: 200,
             title: this.getLang( 'tooltips' )[ name ] || '',
             url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
         };
@@ -28,20 +29,10 @@ KM.registerUI( 'markers', function ( name ) {
             var $root = this.root(),
                 win = null,
                 offset = null;
-
             if ( !$root.parent()[ 0 ] ) {
                 me.$container.find( '.kmui-dialog-container' ).append( $root );
             }
             KM.setWidgetBody( name, $dialog, me );
-            $dialog.on( "click", "#icon-priority li", function () {
-                var $this = $( this );
-                var val = $this.val();
-                me.execCommand( "changeicon", "PriorityIcon", val );
-            } ).on( "click", "#icon-priority li", function () {
-                var $this = $( this );
-                var val = $this.val();
-                me.execCommand( "changeicon", "PriorityIcon", val );
-            } );
         } ).attachTo( $btn )
     } );
 

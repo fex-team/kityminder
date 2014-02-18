@@ -25,8 +25,14 @@ KityMinder.LANG[ 'zh-cn' ] = {
                 'lang_input_title': '标题：',
                 'lang_input_target': '是否在新窗口打开：'
             },
-            'validLink': '只支持选中一个链接时生效',
-            'httpPrompt': '您输入的超链接中不包含http等协议名称，默认将为您添加http://前缀'
+            'priority': '优先级',
+            'progress': {
+                'notdone': "未完成",
+                'quarterdone': '完成1/4',
+                'halfdone': '完成1/2',
+                'threequartersdone': '完成3/4',
+                'done': '已完成',
+            }
         }
     }
 
