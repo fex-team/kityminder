@@ -87,17 +87,17 @@ KityMinder.registerModule( "IconModule", function () {
 	} )() );
 	return {
 		"commands": {
-			"setpriority": setPriorityCommand,
-			"setprogress": setProgressCommand
+			"priority": setPriorityCommand,
+			"progress": setProgressCommand
 		},
 		"events": {
 			"RenderNode": function ( e ) {
 				var node = e.node;
 				var iconRc = node.getIconRc();
+				var contRc = node.getContRc();
 				var PriorityIconVal = node.getData( "PriorityIcon" );
 				var ProgressIconVal = node.getData( "ProgressIcon" );
 				//依次排布图标、文字
-				iconRc.setTransform( new kity.Matrix().translate( 0, -20 ) );
 				iconRc.clear();
 				var PriorityIconWidth = 0;
 				if ( PriorityIconVal ) {
@@ -111,6 +111,7 @@ KityMinder.registerModule( "IconModule", function () {
 				var textShape = node.getTextShape();
 				if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
 				else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
+				iconRc.setTransform( new kity.Matrix().translate( 0, -( iconRc.getHeight() + textShape.getHeight() ) / 2 ) );
 			}
 		}
 	};

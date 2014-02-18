@@ -144,6 +144,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         var transformed = this.textShape.container.getTransform().transformBox(textOffset);
         //var contRcOffset = this.minderNode.getContRc().getRenderBox();
 
+
         this.offset =   {
             x : nodeOffset.x +  transformed.x,
             y : nodeOffset.y +  transformed.y

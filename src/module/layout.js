@@ -132,6 +132,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 ) return false;
 				var _buffer = [];
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
@@ -140,7 +141,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var parent = _buffer[ 0 ].getParent();
 					if ( parent && _buffer.indexOf( parent ) === -1 ) _buffer.push( parent );
 					_buffer.shift();
-				} while ( _buffer.length !== 1 );
+				} while ( _buffer.length > 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
 			}

@@ -48,7 +48,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'mouseup':function(e){
-                if(!sel.collapsed){
+                if(!sel.collapsed && mouseDownStatus){
                     receiver.updateRange(range)
                 }
                 mouseDownStatus = false;
@@ -117,6 +117,20 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     receiver.updateSelectionShow(1)
                         .updateRange(range);
+
+
+                }
+
+                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                    receiver.setBaseOffset()
+                        .getTextOffsetData();
+
+                    if(sel.collapsed){
+                        receiver.updateSelection();
+                    }else{
+                        receiver.updateSelectionShow(1)
+                    }
+
 
 
                 }
