@@ -25,9 +25,22 @@
         initEvent: function ( km, $w ) {
             $w.on( "click", "li", function () {
                 var $this = $( this );
+                $this.siblings().removeClass( "active" );
+                $this.toggleClass( "active" );
                 var val = $this.val();
+                if ( !$this.hasClass( "active" ) ) {
+                    val = null;
+                }
                 var type = $this.attr( "type" );
                 km.execCommand( type, val );
+            } );
+            km.on( 'interactchange', function ( e ) {
+                var valPri = this.queryCommandValue( "setpriority" );
+                var valPro = this.queryCommandValue( "setprogress" );
+                $w.find( "li[type='setpriority']" ).removeClass( "active" );
+                $w.find( "li[type='setpriority'][value='" + valPri + "']" ).addClass( "active" );
+                $w.find( "li[type='setprogress']" ).removeClass( "active" );
+                $w.find( "li[type='setprogress'][value='" + valPro + "']" ).addClass( "active" );
             } );
         },
         buttons: {

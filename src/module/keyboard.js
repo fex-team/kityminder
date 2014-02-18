@@ -90,11 +90,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 this.receiver.keydownNode = node;
                 switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
-                    this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
+                    this.execCommand( 'appendSiblingNode', new MinderNode( this.getLang().topic ) );
                     e.preventDefault();
                     break;
                 case keys.Tab:
-                    this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
+                    this.execCommand( 'appendChildNode', new MinderNode( this.getLang().topic ) );
                     e.preventDefault();
                     break;
                 case keys.Backspace:
