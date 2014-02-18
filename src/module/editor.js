@@ -48,7 +48,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'mouseup':function(e){
-                if(!sel.collapsed){
+                if(!sel.collapsed && mouseDownStatus){
                     receiver.updateRange(range)
                 }
                 mouseDownStatus = false;
@@ -83,7 +83,57 @@ KityMinder.registerModule( "TextEditModule", function () {
             },
             'stopTextEdit':function(){
                 sel.setHide();
+                receiver.clear().setTextEditStatus(false);
+            },
+            'execCommand':function(e){
+                var cmds = {
+                    'appendchildnode':1,
+                    'appendsiblingnode':1
+                };
+                if(cmds[e.commandName]){
 
+                    var node = km.getSelectedNode();
+
+                    var textShape = node.getTextShape();
+
+                    textShape.setStyle('cursor','default');
+                    node.getTextShape().setStyle('cursor','text');
+                    receiver.setTextEditStatus(true)
+                        .setSelection(sel)
+                        .setKityMinder(this)
+                        .setMinderNode(node)
+                        .setTextShape(textShape)
+                        .setBaseOffset()
+                        .setContainerStyle()
+                        .setSelectionHeight()
+                        .getTextOffsetData()
+                        .setIndex(0)
+                        .updateSelection()
+                        .setRange(range);
+
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(textShape.getContent().length);
+                    sel.setShow();
+
+                    receiver.updateSelectionShow(1)
+                        .updateRange(range);
+
+
+                }
+
+                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                    receiver.setBaseOffset()
+                        .getTextOffsetData();
+
+                    if(sel.collapsed){
+                        receiver.updateSelection();
+                    }else{
+                        receiver.updateSelectionShow(1)
+                    }
+
+
+
+                }
             }
         }
     };

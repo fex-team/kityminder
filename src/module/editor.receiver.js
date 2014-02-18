@@ -77,8 +77,10 @@ Minder.Receiver = kity.createClass('Receiver',{
                     switch(keyCode){
                         case keymap.Enter:
                         case keymap.Tab:
-                            this.setTextEditStatus(false);
-                            this.clear();
+                            if(this.keydownNode === this.minderNode){
+                                this.setTextEditStatus(false);
+                                this.clear();
+                            }
                             e.preventDefault();
                             return;
                         case keymap.Shift:
@@ -140,6 +142,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         var nodeOffset = this.minderNode.getRenderContainer().getRenderBox();
 //        var textOffset = this.textShape.getRenderBox();
         var contRcOffset = this.minderNode.getContRc().getRenderBox();
+
 
         this.offset =   {
             x : nodeOffset.x +  contRcOffset.x,
@@ -263,5 +266,9 @@ Minder.Receiver = kity.createClass('Receiver',{
         range.setEnd(node,this.selection.endOffset);
         range.select();
         return this;
+    },
+    setIndex:function(index){
+        this.index = index;
+        return this
     }
 });

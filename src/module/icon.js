@@ -87,8 +87,8 @@ KityMinder.registerModule( "IconModule", function () {
 	} )() );
 	return {
 		"commands": {
-			"setpriority": setPriorityCommand,
-			"setprogress": setProgressCommand
+			"priority": setPriorityCommand,
+			"progress": setProgressCommand
 		},
 		"events": {
 			"RenderNode": function ( e ) {
