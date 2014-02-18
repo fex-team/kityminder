@@ -1,12 +1,11 @@
 .kmui-modal {
     position: fixed;
-    _position: absolute;
-    top: 10%;
-    left: 50%;
-    border: 1px solid #acacac;
-    box-shadow: 2px 2px 5px #d3d6da;
+    top: 10px;
+    right:10px;
     background-color: #ffffff;
     outline: 0;
+    border-radius: 5px;
+    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
 }
 .kmui-modal-header {
     padding: 5px 10px;

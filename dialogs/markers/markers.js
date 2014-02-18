@@ -1,70 +1,66 @@
-(function(){
+( function () {
     var utils = KM.utils;
-    function hrefStartWith(href, arr) {
-        href = href.replace(/^\s+|\s+$/g, '');
-        for (var i = 0, ai; ai = arr[i++];) {
-            if (href.indexOf(ai) == 0) {
-                return true;
+    KM.registerWidget( 'markers', {
+        tpl: "<ul class='icon-list'>" +
+            "<li value='1' type='setpriority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) 0 0'></span><span><%= priority %>1</span></li>" +
+            "<li value='2' type='setpriority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -20px 0'></span><span><%= priority %>2</span></li>" +
+            "<li value='3' type='setpriority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -40px 0'></span><span><%= priority %>3</span></li>" +
+            "<li value='4' type='setpriority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -60px 0'></span><span><%= priority %>4</span></li>" +
+            "<li value='5' type='setpriority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -80px 0'></span><span><%= priority %>5</span></li>" +
+            "</ul>" +
+            "<ul class='icon-list'>" +
+            "<li value='1' type='setprogress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) 0 0'></span><span><%= progress.notdone %></span></li>" +
+            "<li value='2' type='setprogress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -20px 0'></span><span><%= progress.quarterdone %></span></li>" +
+            "<li value='3' type='setprogress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -40px 0'></span><span><%= progress.halfdone %></span></li>" +
+            "<li value='4' type='setprogress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -60px 0'></span><span><%= progress.threequartersdone %></span></li>" +
+            "<li value='5' type='setprogress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -80px 0'></span><span><%= progress.done %></span></li>" +
+            "</ul>",
+        initContent: function ( km ) {
+            var lang = km.getLang( 'dialogs.markers' );
+            if ( lang ) {
+                var html = $.parseTmpl( this.tpl, lang );
             }
-        }
-        return false;
-    }
-
-    KM.registerWidget('markers', {
-        tpl: "<style type=\"text/css\">" +
-            ".kmui-dialog-link .kmui-link-table{font-size: 12px;margin: 10px;line-height: 30px}" +
-            ".kmui-dialog-link .kmui-link-txt{width:300px;height:21px;line-height:21px;border:1px solid #d7d7d7;}" +
-            "</style>" +
-            "<table class=\"kmui-link-table\">" +
-            "<tr>" +
-            "<td><label for=\"href\"><%=lang_input_url%></label></td>" +
-            "<td><input class=\"kmui-link-txt\" id=\"kmui-link-Jhref\" type=\"text\" /></td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td><label for=\"title\"><%=lang_input_title%></label></td>" +
-            "<td><input class=\"kmui-link-txt\" id=\"kmui-link-Jtitle\" type=\"text\"/></td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td colspan=\"2\">" +
-            "<label for=\"target\"><%=lang_input_target%></label>" +
-            "<input id=\"kmui-link-Jtarget\" type=\"checkbox\"/>" +
-            "</td>" +
-            "</tr>" +
-
-            "</table>",
-        initContent: function (km) {
-            var lang = km.getLang('dialogs.markers');
-            if (lang) {
-                var html = $.parseTmpl(this.tpl, lang.static);
-            }
-            this.root().html(html);
+            this.root().html( html );
         },
-        initEvent: function (km, $w) {
-            var link = km.queryCommandValue('link');
-            if(link){
-                $('#kmui-link-Jhref',$w).val(utils.html($(link).attr('href')));
-                $('#kmui-link-Jtitle',$w).val($(link).attr('title'));
-                $(link).attr('target') == '_blank' && $('#kmui-link-Jtarget').attr('checked',true)
-            }
+        initEvent: function ( km, $w ) {
+            $w.on( "click", "li", function () {
+                var $this = $( this );
+                $this.siblings().removeClass( "active" );
+                $this.toggleClass( "active" );
+                var val = $this.val();
+                if ( !$this.hasClass( "active" ) ) {
+                    val = null;
+                }
+                var type = $this.attr( "type" );
+                km.execCommand( type, val );
+            } );
+            km.on( 'interactchange', function ( e ) {
+                var valPri = this.queryCommandValue( "setpriority" );
+                var valPro = this.queryCommandValue( "setprogress" );
+                $w.find( "li[type='setpriority']" ).removeClass( "active" );
+                $w.find( "li[type='setpriority'][value='" + valPri + "']" ).addClass( "active" );
+                $w.find( "li[type='setprogress']" ).removeClass( "active" );
+                $w.find( "li[type='setprogress'][value='" + valPro + "']" ).addClass( "active" );
+            } );
         },
         buttons: {
             'ok': {
-                exec: function (km, $w) {
-                    var href = $('#kmui-link-Jhref').val().replace(/^\s+|\s+$/g, '');
+                exec: function ( km, $w ) {
+                    var href = $( '#kmui-link-Jhref' ).val().replace( /^\s+|\s+$/g, '' );
 
-                    if (href) {
-                        km.execCommand('link', {
+                    if ( href ) {
+                        km.execCommand( 'link', {
                             'href': href,
-                            'target': $("#kmui-link-Jtarget:checked").length ? "_blank" : '_self',
-                            'title': $("#kmui-link-Jtitle").val().replace(/^\s+|\s+$/g, ''),
+                            'target': $( "#kmui-link-Jtarget:checked" ).length ? "_blank" : '_self',
+                            'title': $( "#kmui-link-Jtitle" ).val().replace( /^\s+|\s+$/g, '' ),
                             '_href': href
-                        });
+                        } );
                     }
                 }
             },
-            'cancel':{}
+            'cancel': {}
         },
-        width: 400
-    })
-})();
+        width: 200,
 
+    } )
+} )();
