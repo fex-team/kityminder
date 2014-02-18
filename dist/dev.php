@@ -36,6 +36,7 @@ $dependency = Array(
     ,'src/module/basestyle.js'
     ,'src/module/font.js'
     ,'src/module/zoom.js'
+    ,'src/ui/jquery-ui-1.10.4.custom.min.js'
     ,'src/ui/widget.js'
     ,'src/ui/button.js'
     ,'src/ui/toolbar.js'

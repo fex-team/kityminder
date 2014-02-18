@@ -43,6 +43,10 @@ KM.ui.define( 'modal', {
         $( '[data-hide="modal"],[data-ok="modal"]', me.root() ).hover( function () {
             $( this ).toggleClass( 'kmui-hover' )
         } );
+
+        setTimeout(function() {
+            $('.kmui-modal').draggable({ handle: '.kmui-modal-header' });
+        }, 100);
     },
     toggle: function () {
         var me = this;
@@ -65,7 +69,9 @@ KM.ui.define( 'modal', {
                 .show()
                 .focus()
                 .trigger( 'aftershow' );
-        } )
+        } );
+
+        $('.kmui-modal').draggable({ handle: '.kmui-modal-header' });
     },
     showTip: function ( text ) {
         $( '.kmui-modal-tip', this.root() ).html( text ).fadeIn();

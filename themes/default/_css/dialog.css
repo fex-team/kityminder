@@ -10,6 +10,7 @@
 .kmui-modal-header {
     padding: 5px 10px;
     border-bottom: 1px solid #eee;
+    cursor: move;
 }
 .kmui-modal-header .kmui-close {
     float: right;
