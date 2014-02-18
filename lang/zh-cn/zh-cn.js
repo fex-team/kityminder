@@ -1,4 +1,6 @@
 KityMinder.LANG[ 'zh-cn' ] = {
+    'maintopic': '中心主题',
+    'topic': '分支主题',
     'tooltips': {
         'undo': '撤销',
         'redo': '重做',

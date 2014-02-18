@@ -39,7 +39,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._addRenderContainer();
 
-        this._root = new MinderNode( "Main Topic" );
+        this._root = new MinderNode( this.getLang().maintopic );
         this._root.setType( "root" );
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );
