@@ -20,6 +20,8 @@
         "KITYMINDER_CONFIG",
         "keymap",
         "Utils",
-        "utils"
+        "utils",
+        "$",
+        "KM"
     ]
 }

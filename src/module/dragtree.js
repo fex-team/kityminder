@@ -206,8 +206,8 @@ var DragBox = kity.createClass( "DragBox", {
 		}
 		if ( target ) {
 			this._addDropStyle( target );
-			this._lastSucceedTarget = target;
 		}
+		this._lastSucceedTarget = target;
 	},
 
 	_removeDropStyle: function ( node ) {
@@ -215,7 +215,7 @@ var DragBox = kity.createClass( "DragBox", {
 	},
 
 	_addDropStyle: function ( node ) {
-		node._layout.bgRect.stroke( 'rgb(254, 219, 0)', 2 );
+		node._layout.bgRect.stroke( 'rgb(254, 219, 0)', 3 );
 	},
 
 	dragStart: function ( position ) {

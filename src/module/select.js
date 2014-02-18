@@ -80,7 +80,7 @@ KityMinder.registerModule( "Select", function () {
                 }
                 if ( marqueeMode ) {
                     marqueeShape.fadeOut( 200, 'ease', 0, function () {
-                        marqueeShape.remove();
+                        if(marqueeShape.remove) marqueeShape.remove();
                     } );
                     marqueeMode = false;
                 }

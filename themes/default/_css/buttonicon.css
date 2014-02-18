@@ -23,3 +23,9 @@
 .kmui-btn-toolbar .kmui-btn .kmui-icon-clock {
     background: url(../images/clock.png) no-repeat 2px 2px;
 }
+.kmui-btn-toolbar .kmui-btn .kmui-icon-zoom-in {
+    background: url(../images/zoom_in.png) no-repeat 2px 2px;
+}
+.kmui-btn-toolbar .kmui-btn .kmui-icon-zoom-out {
+    background: url(../images/zoom_out.png) no-repeat 2px 2px;
+}
