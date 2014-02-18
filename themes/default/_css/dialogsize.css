@@ -15,7 +15,7 @@
     cursor: pointer;
     color: #333
 }
-.icon-list li:hover{
+.icon-list li:hover,.icon-list li.active{
     background: #cfe0f7
 }
 .icon-list li span.icon{
