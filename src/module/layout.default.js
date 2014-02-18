@@ -331,16 +331,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var endPos;
 			if ( Layout.appendside === "left" ) {
 				sPos = new kity.BezierPoint( rootX - 30, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x + 3, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
 			} else {
 				sPos = new kity.BezierPoint( rootX + 30, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x - 3, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
 			}
 			var sPosV = sPos.getVertex();
 			var endPosV = endPos.getVertex();
 			sPos.setVertex( rootX, rootY );
 			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
-			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 3 );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 1 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
 		} else if ( nodeType === "sub" ) {
 			if ( !Layout.connect ) {
 				connect = Layout.connect = new kity.Path();

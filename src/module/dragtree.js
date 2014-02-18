@@ -212,10 +212,12 @@ var DragBox = kity.createClass( "DragBox", {
 
 	_removeDropStyle: function ( node ) {
 		node._layout.bgRect.stroke( 'none' );
+		this._rect.stroke( '#3399ff', 1 );
 	},
 
 	_addDropStyle: function ( node ) {
 		node._layout.bgRect.stroke( 'rgb(254, 219, 0)', 3 );
+		node.getRenderContainer().fxScale( 1.25, 1.25, 150, 'ease' ).fxScale( 0.8, 0.8, 150, 'ease' );
 	},
 
 	dragStart: function ( position ) {
