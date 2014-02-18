@@ -132,7 +132,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 ) return false;
+				var _root = km.getRoot();
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && !selectedNodes[ 0 ].getParent() ) ) {
+					km.select( _root );
+					return false;
+				}
 				var _buffer = [];
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
