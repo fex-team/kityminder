@@ -543,6 +543,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		removeNode: function ( nodes ) {
 			while ( nodes.length !== 0 ) {
 				var parent = nodes[ 0 ].getParent();
+				if ( !parent ) {
+					nodes.splice( 0, 1 );
+					return false;
+				}
 				var nodeLayout = nodes[ 0 ].getLayout();
 				if ( parent.getType() === "root" ) {
 					var sideList = parent.getLayout()[ nodeLayout.appendside + "List" ];
