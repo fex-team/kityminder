@@ -67,6 +67,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
+
                 var keys = KityMinder.keymap;
                 if ( this.receiver.isTextEditStatus() ) {
                     switch ( e.originEvent.keyCode ) {
@@ -85,6 +86,8 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     }
                     return;
                 }
+                var node = e.getTargetNode();
+                this.receiver.keydownNode = node;
                 switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
                     this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
