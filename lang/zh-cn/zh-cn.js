@@ -12,6 +12,8 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'layoutstyle': '主题',
         'saveto': '导出',
         'hand': '允许拖拽',
+        'zoom-in': '放大',
+        'zoom-out': '缩小',
         'markers': '添加标签'
     },
     'popupcolor': {
