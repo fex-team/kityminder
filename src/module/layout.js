@@ -181,7 +181,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default"
+			"defaultlayoutstyle": "bottom"
 		}
 	};
 } );
