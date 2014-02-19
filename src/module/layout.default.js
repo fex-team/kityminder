@@ -53,9 +53,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var nodeShape = node.getRenderContainer();
 				var nodeX, nodeY = ( node.getType() === "main" ? Layout.y : ( Layout.y + nodeShape.getHeight() / 2 - 5 ) );
 				if ( Layout.appendside === "left" ) {
-					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 6;
+					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 5;
 				} else {
 					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 6;
+					if ( node.getType() === "main" ) nodeX -= 3;
 				}
 				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
 			},
@@ -121,7 +122,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
 			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
-			node.getBgRc().clear().addShapes( [ highlightshape, underline ] );
+			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius( 4 ), highlightshape, underline ] );
 			break;
 		default:
 			break;
@@ -160,6 +161,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var _contWidth = contRc.getWidth();
 			var _contHeight = contRc.getHeight();
+			width = _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ];
+			height = _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
 			Layout.underline.getDrawer()
 				.clear()
 				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
@@ -168,6 +171,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.highlightshape
 				.setWidth( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] )
 				.setHeight( _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+			Layout.bgRect.setWidth( width ).setHeight( height );
 			break;
 		default:
 			break;
@@ -216,7 +220,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		} else {
 			if ( action === "append" || action === "contract" ) {
 				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			} else if ( action === "change" ) { //展开
+			} else if ( action === "change" ) {
 				Layout.branchheight = countBranchHeight( node );
 			}
 			var parentLayout = parent.getLayout();
@@ -328,16 +332,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var endPos;
 			if ( Layout.appendside === "left" ) {
 				sPos = new kity.BezierPoint( rootX - 30, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x + 3, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
 			} else {
 				sPos = new kity.BezierPoint( rootX + 30, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x - 3, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
 			}
 			var sPosV = sPos.getVertex();
 			var endPosV = endPos.getVertex();
 			sPos.setVertex( rootX, rootY );
 			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
-			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 3 );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? -0.5 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
 		} else if ( nodeType === "sub" ) {
 			if ( !Layout.connect ) {
 				connect = Layout.connect = new kity.Path();
@@ -374,7 +378,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		}
 		//更新收放icon
-		if ( nodeType !== "root" ) {
+		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
 			}
@@ -472,6 +476,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.align = siblingLayout.align;
 				parent.insertChild( node, sibling.getIndex() + 1 );
 				if ( parent.getType() === "root" ) {
+					var len = parent.getChildren().length;
+					if ( len < 7 ) {
+						if ( len % 2 ) {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						} else {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						}
+					}
 					var sideList = parentLayout[ Layout.appendside + "List" ];
 					var idx = sideList.indexOf( sibling );
 					sideList.splice( idx + 1, 0, node );
@@ -543,6 +557,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		removeNode: function ( nodes ) {
 			while ( nodes.length !== 0 ) {
 				var parent = nodes[ 0 ].getParent();
+				if ( !parent ) {
+					nodes.splice( 0, 1 );
+					return false;
+				}
 				var nodeLayout = nodes[ 0 ].getLayout();
 				if ( parent.getType() === "root" ) {
 					var sideList = parent.getLayout()[ nodeLayout.appendside + "List" ];
@@ -593,7 +611,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				} else {
 					_buffer[ 0 ].getRenderContainer().remove();
 					Layout.connect.remove();
-					Layout.shicon.remove();
+					if ( Layout.shicon ) Layout.shicon.remove();
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();

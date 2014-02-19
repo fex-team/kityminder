@@ -39,7 +39,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._addRenderContainer();
 
-        this._root = new MinderNode( "Main Topic" );
+        this._root = new MinderNode( this.getLang().maintopic );
         this._root.setType( "root" );
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );
@@ -70,13 +70,19 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._bindshortcutKeys();
     },
     addShortcutKeys: function ( cmd, keys ) {
-        var obj = {};
+        var obj = {},km = this;
         if ( keys ) {
             obj[ cmd ] = keys
         } else {
             obj = cmd;
         }
-        utils.extend( this._shortcutkeys, obj )
+        utils.each(obj,function(k,v){
+            km._shortcutkeys[k.toLowerCase()] = v;
+        });
+
+    },
+    getShortcutKey : function(cmdName){
+        return this._shortcutkeys[cmdName]
     },
     _bindshortcutKeys: function () {
         var me = this,

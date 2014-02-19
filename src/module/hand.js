@@ -101,8 +101,10 @@ kity.Draggable = ( function () {
                         paper.off( DRAG_MOVE_EVENT, dragFn );
                         dragTarget.trigger( 'dragend' );
 
-                        e.stopPropagation();
-                        e.preventDefault();
+                        if ( e ) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }
                     }
                 } );
             }
@@ -128,6 +130,7 @@ kity.Draggable = ( function () {
         undrag: function () {
             var target = this.dragTarget;
             target.off( DRAG_START_EVENT, target._dragStartHandler );
+            target._dragEndHandler();
             target.getPaper().off( DRAG_END_EVENT, target._dragEndHandler );
             delete target._dragStartHandler;
             delete target._dragEndHandler;
@@ -136,3 +139,45 @@ kity.Draggable = ( function () {
         }
     } );
 } )();
+
+KityMinder.registerModule( 'Hand', function () {
+    var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
+        base: Command,
+        execute: function ( minder ) {
+            var drag = minder._onDragMode = !minder._onDragMode;
+            minder.getPaper().setStyle( 'cursor', drag ? 'pointer' : 'default' );
+            minder.getPaper().setStyle( 'cursor', drag ? '-webkit-grab' : 'default' );
+            if ( drag ) {
+                minder.getPaper().drag();
+            } else {
+                minder.getPaper().undrag();
+            }
+        },
+        queryState: function ( minder ) {
+            return minder._onDragMode ? 1 : 0;
+        }
+    } );
+
+    return {
+        init: function () {
+            this._onDragMode = false;
+            kity.extendClass( kity.Paper, kity.Draggable );
+        },
+        commands: {
+            'hand': ToggleHandCommand
+        },
+        events: {
+            keyup: function ( e ) {
+                if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
+                    this.execCommand( 'hand' );
+                    e.preventDefault();
+                }
+            },
+            beforemousemove: function ( e ) {
+                if ( this._onDragMode ) {
+                    e.stopPropagation();
+                }
+            }
+        }
+    };
+} );

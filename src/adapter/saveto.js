@@ -1,4 +1,4 @@
-KM.registerUI( 'saveto', function ( name ) {
+KM.registerToolbarUI( 'saveto', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),

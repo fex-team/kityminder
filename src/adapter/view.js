@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'bold italic redo undo',
+KM.registerToolbarUI( 'hand zoom-in zoom-out',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {
@@ -6,12 +6,12 @@ KM.registerToolbarUI( 'bold italic redo undo',
             click: function () {
                 me.execCommand( name );
             },
-            title: this.getLang( 'tooltips' )[ name ] || ''
+            title: this.getLang( 'tooltips.' )[ name ] || ''
         } );
-        this.on( 'interactchange', function () {
-            var state = this.queryCommandState( name );
+        me.on('interactchange', function() {
+            var state = me.queryCommandState( name );
             $btn.kmui().disabled( state == -1 ).active( state == 1 );
-        } );
+        });
         return $btn;
     }
 );

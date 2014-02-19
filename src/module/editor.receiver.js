@@ -2,7 +2,7 @@
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
-        this.selection.setHide();
+        this.selection && this.selection.setHide();
         this.index = 0;
         return this;
     },
@@ -77,8 +77,10 @@ Minder.Receiver = kity.createClass('Receiver',{
                     switch(keyCode){
                         case keymap.Enter:
                         case keymap.Tab:
-                            this.setTextEditStatus(false);
-                            this.clear();
+                            if(this.keydownNode === this.minderNode){
+                                this.setTextEditStatus(false);
+                                this.clear();
+                            }
                             e.preventDefault();
                             return;
                         case keymap.Shift:
@@ -125,26 +127,26 @@ Minder.Receiver = kity.createClass('Receiver',{
         //更新模拟选区的范围
         this.selection.setStartOffset(this.index).collapse(true);
         if(this.index == this.textData.length){
+            if(this.index == 0){
+                this.selection.setPosition(this.getBaseOffset())
+            }else{
+                this.selection.setPosition({
+                    x : this.textData[this.index-1].x + this.textData[this.index-1].width,
+                    y : this.textData[this.index-1].y
+                })
+            }
 
-            this.selection.setPosition({
-                x : this.textData[this.index-1].x + this.textData[this.index-1].width,
-                y : this.textData[this.index-1].y
-            })
+
         }else{
             this.selection.setPosition(this.textData[this.index])
         }
         return this;
     },
+    getBaseOffset:function(){
+        return this.textShape.getRenderBox('top');
+    },
     setBaseOffset :function(){
-
-        var nodeOffset = this.minderNode.getRenderContainer().getRenderBox();
-//        var textOffset = this.textShape.getRenderBox();
-        var contRcOffset = this.minderNode.getContRc().getRenderBox();
-
-        this.offset =   {
-            x : nodeOffset.x +  contRcOffset.x,
-            y : nodeOffset.y +  contRcOffset.y
-        };
+        this.offset = this.textShape.getRenderBox('top');
         return this;
     },
     setContainerStyle : function(){
@@ -223,6 +225,9 @@ Minder.Receiver = kity.createClass('Receiver',{
             if(offset.x >= v.x && offset.x <= v.x + v.width){
 
                 if(me.index == i){
+                    if(i == 0){
+                        me.selection.setStartOffset(i)
+                    }
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
                 }else if(i > me.index){
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
@@ -236,7 +241,6 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
     },
     updateSelectionShow:function(){
-
         var startOffset = this.textData[this.selection.startOffset],
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
@@ -261,5 +265,9 @@ Minder.Receiver = kity.createClass('Receiver',{
         range.setEnd(node,this.selection.endOffset);
         range.select();
         return this;
+    },
+    setIndex:function(index){
+        this.index = index;
+        return this
     }
 });

@@ -38,12 +38,12 @@ kity.extendClass( Minder, {
                 }
             }
 
-            if(moduleDeals.defaultOptions){
-                this.setDefaultOptions(moduleDeals.defaultOptions);
+            if ( moduleDeals.defaultOptions ) {
+                this.setDefaultOptions( moduleDeals.defaultOptions );
             }
             //添加模块的快捷键
-            if(moduleDeals.addShortcutKeys){
-                this.addShortcutKeys(moduleDeals.addShortcutKeys)
+            if ( moduleDeals.addShortcutKeys ) {
+                this.addShortcutKeys( moduleDeals.addShortcutKeys )
             }
 
         }
