@@ -66,6 +66,12 @@ KM.registerUI( 'hand zoom-in zoom-out',
                     e.stopPropagation();
                 }
             } );
+            me.on('keyup', function(e) {
+                if(e.keyCode == keymap.Space && me.getSelectedNodes().length == 0) {
+                    $btn.click();
+                    e.preventDefault();
+                }
+            });
             kity.extendClass( kity.Paper, kity.Draggable );
             break;
         case 'zoom-in':

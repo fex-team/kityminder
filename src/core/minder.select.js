@@ -26,6 +26,7 @@ kity.extendClass( Minder, function () {
                 unhighlightNode( me, n );
             } );
             this._selectedNodes = [];
+            return this.fire( 'selectionclear' );
         },
         removeSelectedNodes: function ( nodes ) {
             var me = this;
