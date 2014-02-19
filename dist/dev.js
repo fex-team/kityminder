@@ -1,17 +1,17 @@
 var KityMinder =
     window.KM =
-    window.KityMinder = function(){
+    window.KityMinder = function () {
         var instanceMap = {}, instanceId = 0;
         return {
-            version : '1.0.0',
-            createMinder : function ( renderTarget, options ) {
+            version: '1.0.0',
+            createMinder: function ( renderTarget, options ) {
                 options = options || {};
                 options.renderTo = Utils.isString( renderTarget ) ? document.getElementById( renderTarget ) : renderTarget;
                 var minder = new Minder( options );
-                this.addMinder(options.renderTo,minder);
+                this.addMinder( options.renderTo, minder );
                 return minder;
             },
-            addMinder :  function ( target, minder ) {
+            addMinder: function ( target, minder ) {
                 var id;
                 if ( typeof ( target ) === 'string' ) {
                     id = target;
@@ -20,21 +20,19 @@ var KityMinder =
                 }
                 instanceMap[ id ] = minder;
             },
-            getMinder : function(target,options){
+            getMinder: function ( target, options ) {
                 var id;
                 if ( typeof ( target ) === 'string' ) {
                     id = target;
                 } else {
                     id = target.id || ( "KM_INSTANCE_" + instanceId++ );
                 }
-                return instanceMap[ id ] || this.createMinder(target,options);
+                return instanceMap[ id ] || this.createMinder( target, options );
             },
             //挂接多语言
-            LANG:{}
+            LANG: {}
         }
-    }();
-
-
+}();
 
 var utils = Utils = KityMinder.Utils = {
     extend: kity.Utils.extend.bind( kity.Utils ),
@@ -223,7 +221,89 @@ var utils = Utils = KityMinder.Utils = {
             parent = parent.parent;
         }
         return parent;
-    }
+    },
+    loadFile:function () {
+        var tmpList = [];
+
+        function getItem(doc, obj) {
+            try {
+                for (var i = 0, ci; ci = tmpList[i++];) {
+                    if (ci.doc === doc && ci.url == (obj.src || obj.href)) {
+                        return ci;
+                    }
+                }
+            } catch (e) {
+                return null;
+            }
+
+        }
+
+        return function (doc, obj, fn) {
+            var item = getItem(doc, obj);
+            if (item) {
+                if (item.ready) {
+                    fn && fn();
+                } else {
+                    item.funs.push(fn)
+                }
+                return;
+            }
+            tmpList.push({
+                doc:doc,
+                url:obj.src || obj.href,
+                funs:[fn]
+            });
+            if (!doc.body) {
+                var html = [];
+                for (var p in obj) {
+                    if (p == 'tag')continue;
+                    html.push(p + '="' + obj[p] + '"')
+                }
+                doc.write('<' + obj.tag + ' ' + html.join(' ') + ' ></' + obj.tag + '>');
+                return;
+            }
+            if (obj.id && doc.getElementById(obj.id)) {
+                return;
+            }
+            var element = doc.createElement(obj.tag);
+            delete obj.tag;
+            for (var p in obj) {
+                element.setAttribute(p, obj[p]);
+            }
+            element.onload = element.onreadystatechange = function () {
+                if (!this.readyState || /loaded|complete/.test(this.readyState)) {
+                    item = getItem(doc, obj);
+                    if (item.funs.length > 0) {
+                        item.ready = 1;
+                        for (var fi; fi = item.funs.pop();) {
+                            fi();
+                        }
+                    }
+                    element.onload = element.onreadystatechange = null;
+                }
+            };
+            element.onerror = function () {
+                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file umeditor.config.js ')
+            };
+            doc.getElementsByTagName("head")[0].appendChild(element);
+        }
+    }(),
+    clone:function (source, target) {
+        var tmp;
+        target = target || {};
+        for (var i in source) {
+            if (source.hasOwnProperty(i)) {
+                tmp = source[i];
+                if (typeof tmp == 'object') {
+                    target[i] = utils.isArray(tmp) ? [] : {};
+                    utils.clone(source[i], target[i])
+                } else {
+                    target[i] = tmp;
+                }
+            }
+        }
+        return target;
+    },
 
 };
 
@@ -717,7 +797,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._addRenderContainer();
 
-        this._root = new MinderNode( "Main Topic" );
+        this._root = new MinderNode( this.getLang().maintopic );
         this._root.setType( "root" );
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );
@@ -748,13 +828,19 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._bindshortcutKeys();
     },
     addShortcutKeys: function ( cmd, keys ) {
-        var obj = {};
+        var obj = {},km = this;
         if ( keys ) {
             obj[ cmd ] = keys
         } else {
             obj = cmd;
         }
-        utils.extend( this._shortcutkeys, obj )
+        utils.each(obj,function(k,v){
+            km._shortcutkeys[k.toLowerCase()] = v;
+        });
+
+    },
+    getShortcutKey : function(cmdName){
+        return this._shortcutkeys[cmdName]
     },
     _bindshortcutKeys: function () {
         var me = this,
@@ -867,7 +953,7 @@ kity.extendClass( Minder, {
                 if ( test.recognize && test.recognize( local ) ) {
                     protocal = test;
                 }
-                return !test;
+                return !protocal;
             } );
         }
 
@@ -924,7 +1010,7 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        this._paper.on( 'click mousedown mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
+        this._paper.on( 'click dblclick mousedown mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
         if ( window ) {
             window.addEventListener( 'resize', this._firePharse.bind( this ) );
         }
@@ -1054,12 +1140,12 @@ kity.extendClass( Minder, {
                 }
             }
 
-            if(moduleDeals.defaultOptions){
-                this.setDefaultOptions(moduleDeals.defaultOptions);
+            if ( moduleDeals.defaultOptions ) {
+                this.setDefaultOptions( moduleDeals.defaultOptions );
             }
             //添加模块的快捷键
-            if(moduleDeals.addShortcutKeys){
-                this.addShortcutKeys(moduleDeals.addShortcutKeys)
+            if ( moduleDeals.addShortcutKeys ) {
+                this.addShortcutKeys( moduleDeals.addShortcutKeys )
             }
 
         }
@@ -1241,16 +1327,16 @@ var keymap = KityMinder.keymap  = {
 
 //添加多语言模块
 kity.extendClass( Minder, {
-    getLang:function(path){
+    getLang: function ( path ) {
 
-        var lang = KM.LANG[this.getOptions('lang')];
-        if (!lang) {
-            throw Error("not import language file");
+        var lang = KM.LANG[ this.getOptions( 'lang' ) ];
+        if ( !lang ) {
+            throw Error( "not import language file" );
         }
-        path = (path || "").split(".");
-        for (var i = 0, ci; ci = path[i++];) {
-            lang = lang[ci];
-            if (!lang)break;
+        path = ( path || "" ).split( "." );
+        for ( var i = 0, ci; ci = path[ i++ ]; ) {
+            lang = lang[ ci ];
+            if ( !lang ) break;
         }
         return lang;
     }
@@ -1556,7 +1642,7 @@ KityMinder.registerModule( "HistoryModule", function () {
 
 KityMinder.registerModule( "IconModule", function () {
 	var renderPriorityIcon = function ( node, val ) {
-		var colors = [ "", "red", "blue", "green", "orange", "purple" ];
+		var colors = [ "", "#A92E24", "#29A6BD", "#1E8D54", "#eb6100", "#876DDA" ];
 		var _bg = new kity.Rect().fill( colors[ val ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
 		var _number = new kity.Text().setContent( val ).fill( "white" ).setSize( 12 );
 		var _rc = new kity.Group();
@@ -1566,7 +1652,7 @@ KityMinder.registerModule( "IconModule", function () {
 	};
 	var renderProgressIcon = function ( node, val, left ) {
 		var _rc = new kity.Group();
-		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "blue", 2 ) );
+		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "#29A6BD", 2 ) );
 		var _percent, d;
 		if ( val < 5 ) {
 			_percent = new kity.Path();
@@ -1590,49 +1676,70 @@ KityMinder.registerModule( "IconModule", function () {
 			d.carcTo( 6, 0, 6, 1, 0 );
 			break;
 		case 5:
-			_percent.addShape( new kity.Circle().setRadius( 6 ).fill( "blue" ) );
+			var check = new kity.Path();
+			_percent.addShapes( [ new kity.Circle().setRadius( 6 ).fill( "#29A6BD" ), check ] );
+			check.getDrawer().moveTo( -3, 0 ).lineTo( -1, 3 ).lineTo( 3, -2 );
+			check.stroke( new kity.Pen( "white", 2 ).setLineCap( "round" ) );
 			break;
 		}
 		if ( val < 5 ) d.close();
-		_percent.fill( "blue" );
+		_percent.fill( "#29A6BD" );
 	};
-	var ChangeIconCommand = kity.createClass( "AddIconCommand", ( function () {
+	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, iconType, value ) {
+			execute: function ( km, value ) {
 				var nodes = km.getSelectedNodes();
 				for ( var i = 0; i < nodes.length; i++ ) {
-					nodes[ i ].setData( iconType, value );
+					nodes[ i ].setData( "PriorityIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
+			},
+			queryValue: function ( km ) {
+				var nodes = km.getSelectedNodes();
+				var val;
+				for ( var i = 0; i < nodes.length; i++ ) {
+					val = nodes[ i ].getData( "PriorityIcon" );
+					if ( val ) break;
+				}
+				return val;
 			}
 		};
 	} )() );
-	var RemoveIconCommand = kity.createClass( "RemoveIconCommand", ( function () {
+	var setProgressCommand = kity.createClass( "SetProgressCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, iconType ) {
+			execute: function ( km, value ) {
 				var nodes = km.getSelectedNodes();
 				for ( var i = 0; i < nodes.length; i++ ) {
-					nodes[ i ].setData( iconType, null );
+					nodes[ i ].setData( "ProgressIcon", value );
 					km.updateLayout( nodes[ i ] );
 				}
+			},
+			queryValue: function ( km ) {
+				var nodes = km.getSelectedNodes();
+				var val;
+				for ( var i = 0; i < nodes.length; i++ ) {
+					val = nodes[ i ].getData( "ProgressIcon" );
+					if ( val ) break;
+				}
+				return val;
 			}
 		};
 	} )() );
 	return {
 		"commands": {
-			"changeicon": ChangeIconCommand,
-			"removeicon": RemoveIconCommand
+			"priority": setPriorityCommand,
+			"progress": setProgressCommand
 		},
 		"events": {
 			"RenderNode": function ( e ) {
 				var node = e.node;
 				var iconRc = node.getIconRc();
+				var contRc = node.getContRc();
 				var PriorityIconVal = node.getData( "PriorityIcon" );
 				var ProgressIconVal = node.getData( "ProgressIcon" );
 				//依次排布图标、文字
-				iconRc.setTransform( new kity.Matrix().translate( 0, -20 ) );
 				iconRc.clear();
 				var PriorityIconWidth = 0;
 				if ( PriorityIconVal ) {
@@ -1645,6 +1752,8 @@ KityMinder.registerModule( "IconModule", function () {
 				var iconWidth = iconRc.getWidth();
 				var textShape = node.getTextShape();
 				if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
+				else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
+				iconRc.setTransform( new kity.Matrix().translate( 0, -( iconRc.getHeight() + textShape.getHeight() ) / 2 ) );
 			}
 		}
 	};
@@ -1784,6 +1893,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
+				var _root = km.getRoot();
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && !selectedNodes[ 0 ].getParent() ) ) {
+					km.select( _root );
+					return false;
+				}
 				var _buffer = [];
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
@@ -1792,7 +1906,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					var parent = _buffer[ 0 ].getParent();
 					if ( parent && _buffer.indexOf( parent ) === -1 ) _buffer.push( parent );
 					_buffer.shift();
-				} while ( _buffer.length !== 1 );
+				} while ( _buffer.length > 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
 			}
@@ -1834,6 +1948,643 @@ KityMinder.registerModule( "LayoutModule", function () {
 } );
 
 KityMinder.registerModule( "LayoutDefault", function () {
+	var _target = this.getRenderTarget();
+
+	function getMinderSize() {
+		return {
+			width: _target.clientWidth,
+			height: _target.clientHeight
+		};
+	}
+	var minder = this;
+	//收缩-展开子树的节点
+	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
+		return {
+			constructor: function ( node ) {
+				this._show = false;
+				this._node = node;
+				var iconShape = this.shape = new kity.Group();
+				iconShape.class = "shicon";
+				iconShape.icon = this;
+				var circle = this._circle = new kity.Circle().fill( "white" ).stroke( "gray" ).setRadius( 5 );
+				var plus = this._plus = new kity.Path();
+				plus.getDrawer()
+					.moveTo( -3, 0 )
+					.lineTo( 3, 0 )
+					.moveTo( 0, -3 )
+					.lineTo( 0, 3 );
+				plus.stroke( "gray" );
+				var dec = this._dec = new kity.Path();
+				dec.getDrawer()
+					.moveTo( -3, 0 )
+					.lineTo( 3, 0 );
+				dec.stroke( "gray" );
+				minder.getRenderContainer().addShape( iconShape );
+				iconShape.addShapes( [ circle, plus, dec ] );
+				this.update();
+				this.switchState();
+			},
+			switchState: function () {
+				if ( !this._show ) {
+					this._plus.setOpacity( 0 );
+					this._dec.setOpacity( 1 );
+					this._show = true;
+				} else {
+					this._plus.setOpacity( 1 );
+					this._dec.setOpacity( 0 );
+					this._show = false;
+				}
+				return this._show;
+			},
+			update: function () {
+				var node = this._node;
+				var Layout = node.getLayout();
+				var nodeShape = node.getRenderContainer();
+				var nodeX, nodeY = ( node.getType() === "main" ? Layout.y : ( Layout.y + nodeShape.getHeight() / 2 - 5 ) );
+				if ( Layout.appendside === "left" ) {
+					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 5;
+				} else {
+					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 6;
+					if ( node.getType() === "main" ) nodeX -= 3;
+				}
+				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
+			},
+			remove: function () {
+				this.shape.remove();
+			}
+		};
+	} )() );
+	//求并集
+	var uSet = function ( a, b ) {
+		for ( var i = 0; i < a.length; i++ ) {
+			var idx = b.indexOf( a[ i ] );
+			if ( idx !== -1 ) {
+				b.splice( idx, 1 );
+			}
+		}
+		return a.concat( b );
+	};
+	//样式的配置（包括颜色、字号等）
+	var nodeStyles = {
+		"root": {
+			color: '#430',
+			fill: '#e9df98',
+			fontSize: 24,
+			padding: [ 15.5, 25.5, 15.5, 25.5 ],
+			margin: [ 0, 0, 0, 0 ],
+			radius: 30,
+			highlight: 'rgb(254, 219, 0)'
+		},
+		"main": {
+			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
+			fill: '#A4c5c0',
+			color: "#333",
+			padding: [ 6.5, 20, 6.5, 20 ],
+			fontSize: 16,
+			margin: [ 0, 10, 30, 50 ],
+			radius: 10,
+			highlight: 'rgb(254, 219, 0)'
+		},
+		"sub": {
+			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
+			color: "white",
+			fontSize: 12,
+			margin: [ 0, 10, 20, 6 ],
+			padding: [ 5, 10, 5.5, 10 ],
+			highlight: 'rgb(254, 219, 0)'
+		}
+	};
+	//更新背景
+	var updateBg = function ( node ) {
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var Layout = node.getLayout();
+		switch ( node.getType() ) {
+		case "root":
+		case "main":
+			var bg = node.getBgRc().clear();
+			bg.addShape( Layout.bgShadow = new kity.Rect() );
+			bg.addShape( Layout.bgRect = new kity.Rect() );
+			Layout.bgRect.fill( nodeStyle.fill ).setRadius( nodeStyle.radius );
+			Layout.bgShadow.fill( 'black' ).setOpacity( 0.2 ).setRadius( nodeStyle.radius ).translate( 3, 5 );
+			break;
+		case "sub":
+			var underline = Layout.underline = new kity.Path();
+			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
+			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius( 4 ), highlightshape, underline ] );
+			break;
+		default:
+			break;
+		}
+	};
+	//初始化样式
+	var initLayout = function ( node ) {
+		var Layout = node.getLayout();
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var txtShape = node.getTextShape();
+		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
+		if ( nodeType === "root" ) {
+			Layout.leftList = [];
+			Layout.rightList = [];
+			Layout.leftHeight = 0;
+			Layout.rightHeight = 0;
+		}
+	};
+	//根据内容调整节点尺寸
+	var updateShapeByCont = function ( node ) {
+		var contRc = node.getContRc();
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var _contRCWidth = contRc.getWidth();
+		var _contRCHeight = contRc.getHeight();
+		var Layout = node.getLayout();
+		switch ( nodeType ) {
+		case "root":
+		case "main":
+			var width = _contRCWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ],
+				height = _contRCHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
+			Layout.bgRect.setWidth( width ).setHeight( height );
+			Layout.bgShadow.setWidth( width ).setHeight( height );
+			break;
+		case "sub":
+			var _contWidth = contRc.getWidth();
+			var _contHeight = contRc.getHeight();
+			width = _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ];
+			height = _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
+			Layout.underline.getDrawer()
+				.clear()
+				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
+				.lineTo( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ], _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] );
+			Layout.underline.stroke( nodeStyle.stroke );
+			Layout.highlightshape
+				.setWidth( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] )
+				.setHeight( _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+			Layout.bgRect.setWidth( width ).setHeight( height );
+			break;
+		default:
+			break;
+		}
+		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + node.getTextShape().getHeight() ) );
+	};
+	//计算节点在垂直方向的位置
+	var updateLayoutVertical = function ( node, parent, action ) {
+		var root = minder.getRoot();
+		var effectSet = [ node ];
+		if ( action === "remove" ) {
+			effectSet = [];
+		}
+		var Layout = node.getLayout();
+		var nodeShape = node.getRenderContainer();
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var appendside = Layout.appendside;
+		var countBranchHeight = function ( node, side ) {
+			var nodeStyle = nodeStyles[ node.getType() ];
+			var selfHeight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
+			var childHeight = ( function () {
+				var sum = 0;
+				var children;
+				if ( !side ) {
+					children = node.getChildren();
+				} else {
+					children = node.getLayout()[ side + "List" ];
+				}
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					if ( children[ i ].getRenderContainer().getHeight() !== 0 )
+						sum += childLayout.branchheight;
+				}
+				return sum;
+			} )();
+			if ( side ) {
+				return childHeight;
+			} else {
+				return ( selfHeight > childHeight ? selfHeight : childHeight );
+			}
+		};
+		if ( nodeType === "root" ) {
+			Layout.y = getMinderSize().height / 2;
+			effectSet.push( node );
+		} else {
+			if ( action === "append" || action === "contract" ) {
+				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
+			} else if ( action === "change" ) {
+				Layout.branchheight = countBranchHeight( node );
+			}
+			var parentLayout = parent.getLayout();
+			var parentShape = parent.getRenderContainer();
+			var prt = node.getParent() || parent;
+			//自底向上更新祖先元素的branchheight值
+			while ( prt ) {
+				var prtLayout = prt.getLayout();
+				if ( prt.getType() === "root" ) {
+					prtLayout[ appendside + "Height" ] = countBranchHeight( prt, appendside );
+				} else {
+					prtLayout.branchheight = countBranchHeight( prt );
+				}
+				prt = prt.getParent();
+			}
+			//自顶向下更新受影响一侧的y值
+			var sideList = root.getLayout()[ appendside + "List" ];
+			var _buffer = [ root ];
+			while ( _buffer.length > 0 ) {
+				var _buffer0Layout = _buffer[ 0 ].getLayout();
+				var children = _buffer0Layout[ appendside + "List" ] || _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( children );
+				var sY = _buffer0Layout.y - ( _buffer0Layout[ appendside + "Height" ] || _buffer0Layout.branchheight ) / 2;
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					childLayout.y = sY + childLayout.branchheight / 2;
+					sY += childLayout.branchheight;
+				}
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
+		}
+		return effectSet;
+	};
+	//计算节点在水平方向的位置
+	var updateLayoutHorizon = function ( node ) {
+		var nodeType = node.getType();
+		var parent = node.getParent();
+		var effectSet = [ node ];
+		var Layout = node.getLayout();
+		var _buffer = [ node ];
+		while ( _buffer.length !== 0 ) {
+			var prt = _buffer[ 0 ].getParent();
+			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+			if ( !prt ) {
+				Layout.x = getMinderSize().width / 2;
+				_buffer.shift();
+				continue;
+			}
+			var parentLayout = prt.getLayout();
+			var parentWidth = prt.getRenderContainer().getWidth();
+			var parentStyle = nodeStyles[ prt.getType() ];
+			var childLayout = _buffer[ 0 ].getLayout();
+			var childStyle = nodeStyles[ _buffer[ 0 ].getType() ];
+			if ( parentLayout.align === "center" ) {
+				parentWidth = parentWidth / 2;
+			}
+			if ( childLayout.appendside === "left" ) {
+				childLayout.x = parentLayout.x - parentWidth - parentStyle.margin[ 1 ] - childStyle.margin[ 3 ];
+			} else {
+				childLayout.x = parentLayout.x + parentWidth + parentStyle.margin[ 1 ] + childStyle.margin[ 3 ];
+			}
+			effectSet.push( _buffer[ 0 ] );
+			_buffer.shift();
+		}
+		return effectSet;
+	};
+	var translateNode = function ( node ) {
+		var Layout = node.getLayout();
+		var nodeShape = node.getRenderContainer();
+		var align = Layout.align;
+		var _rectHeight = nodeShape.getHeight();
+		var _rectWidth = nodeShape.getWidth();
+		switch ( align ) {
+		case "right":
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y - _rectHeight / 2 ) );
+			break;
+		case "center":
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y - _rectHeight / 2 ) );
+			break;
+		default:
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
+			break;
+		}
+		node.setPoint( Layout.x, Layout.y );
+	};
+	var updateConnectAndshIcon = function ( node ) {
+		var nodeType = node.getType();
+		var Layout = node.getLayout();
+		var nodeStyle = nodeStyles[ node.getType() ];
+		var connect;
+		//更新连线
+		if ( nodeType === "main" ) {
+			if ( !Layout.connect ) {
+				connect = Layout.connect = new kity.Group();
+				var bezier = Layout.connect.bezier = new kity.Bezier();
+				var circle = Layout.connect.circle = new kity.Circle();
+				connect.addShapes( [ bezier, circle ] );
+				minder.getRenderContainer().addShape( connect );
+				minder.getRoot().getRenderContainer().bringTop();
+			}
+			var parent = minder.getRoot();
+			var rootX = parent.getLayout().x;
+			var rootY = parent.getLayout().y;
+			connect = Layout.connect;
+			var nodeShape = node.getRenderContainer();
+			var nodeClosurePoints = nodeShape.getRenderBox().closurePoints;
+			var sPos;
+			var endPos;
+			if ( Layout.appendside === "left" ) {
+				sPos = new kity.BezierPoint( rootX - 30, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x + 3, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
+			} else {
+				sPos = new kity.BezierPoint( rootX + 30, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x - 3, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
+			}
+			var sPosV = sPos.getVertex();
+			var endPosV = endPos.getVertex();
+			sPos.setVertex( rootX, rootY );
+			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? -0.5 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
+		} else if ( nodeType === "sub" ) {
+			if ( !Layout.connect ) {
+				connect = Layout.connect = new kity.Path();
+				minder.getRenderContainer().addShape( connect );
+			}
+			connect = Layout.connect;
+			var parentShape = node.getParent().getRenderContainer();
+			var parentBox = parentShape.getRenderBox();
+			var parentLayout = node.getParent().getLayout();
+			var parentStyle = nodeStyles[ node.getParent().getType() ];
+			var Shape = node.getRenderContainer();
+			var sX, sY = parentLayout.y;
+			var nodeX, nodeY = Shape.getRenderBox().closurePoints[ 1 ].y;
+			if ( Layout.appendside === "left" ) {
+				sX = parentBox.closurePoints[ 1 ].x - parentStyle.margin[ 1 ];
+				nodeX = Shape.getRenderBox().closurePoints[ 0 ].x;
+				connect.getDrawer()
+					.clear()
+					.moveTo( sX, sY )
+					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY, 0, 1 );
+				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY );
+				connect.stroke( nodeStyle.stroke );
+			} else {
+				sX = parentBox.closurePoints[ 0 ].x + parentStyle.margin[ 1 ];
+				nodeX = Shape.getRenderBox().closurePoints[ 1 ].x + 1;
+				connect.getDrawer()
+					.clear()
+					.moveTo( sX, sY )
+					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY );
+				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY, 0, 1 );
+				connect.stroke( nodeStyle.stroke );
+			}
+		}
+		//更新收放icon
+		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
+			if ( !Layout.shicon ) {
+				Layout.shicon = new ShIcon( node );
+			}
+			Layout.shicon.update();
+		}
+	};
+	var _style = {
+		highlightNode: function ( node ) {
+			var highlight = node.isHighlight();
+			var nodeType = node.getType();
+			var nodeStyle = nodeStyles[ nodeType ];
+			var Layout = node.getLayout();
+			switch ( nodeType ) {
+			case "root":
+			case "main":
+				if ( highlight ) {
+					Layout.bgRect.fill( nodeStyle.highlight );
+				} else {
+					Layout.bgRect.fill( nodeStyle.fill );
+				}
+				break;
+			case "sub":
+				if ( highlight ) {
+					Layout.highlightshape.fill( nodeStyle.highlight ).setOpacity( 1 );
+					node.getTextShape().fill( 'black' );
+				} else {
+					Layout.highlightshape.setOpacity( 0 );
+					node.getTextShape().fill( 'white' );
+				}
+				break;
+			default:
+				break;
+			}
+		},
+		updateLayout: function ( node ) {
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: node
+			}, false ) );
+			this._fire( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
+
+			updateShapeByCont( node );
+			var set1 = updateLayoutHorizon( node );
+			var set2 = updateLayoutVertical( node, node.getParent(), "change" );
+			var set = uSet( set1, set2 );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
+		},
+		initStyle: function () {
+			var _root = minder.getRoot();
+			minder.handelNodeInsert( _root );
+			//设置root的align
+			_root.getLayout().align = "center";
+			updateBg( _root );
+			initLayout( _root );
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: _root
+			}, false ) );
+			this._fire( new MinderEvent( "RenderNode", {
+				node: _root
+			}, false ) );
+			updateShapeByCont( _root );
+			updateLayoutHorizon( _root );
+			updateLayoutVertical( _root );
+			translateNode( _root );
+			var _buffer = [ _root ];
+			var _cleanbuffer = [];
+			//打散结构
+			while ( _buffer.length !== 0 ) {
+				var children = _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( children );
+				for ( var i = 0; i < children.length; i++ ) {
+					children[ i ].getLayout().parent = _buffer[ 0 ];
+				}
+				_buffer[ 0 ].clearChildren();
+				if ( _buffer[ 0 ] !== _root ) _cleanbuffer.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
+			//重组结构
+			for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+				this.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
+			}
+		},
+		appendChildNode: function ( parent, node, sibling ) {
+			minder.handelNodeInsert( node );
+			node.clearLayout();
+			var Layout = node.getLayout();
+			var parentLayout = parent.getLayout();
+			if ( sibling ) {
+				var siblingLayout = sibling.getLayout();
+				Layout.appendside = siblingLayout.appendside;
+				Layout.align = siblingLayout.align;
+				parent.insertChild( node, sibling.getIndex() + 1 );
+				if ( parent.getType() === "root" ) {
+					var len = parent.getChildren().length;
+					if ( len < 7 ) {
+						if ( len % 2 ) {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						} else {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						}
+					}
+					var sideList = parentLayout[ Layout.appendside + "List" ];
+					var idx = sideList.indexOf( sibling );
+					sideList.splice( idx + 1, 0, node );
+				}
+			} else {
+				if ( parent.getType() !== "root" ) {
+					var prtLayout = parent.getLayout();
+					Layout.appendside = prtLayout.appendside;
+					Layout.align = prtLayout.align;
+					parent.appendChild( node );
+				} else {
+					var nodeP = node.getPoint();
+					if ( nodeP && nodeP.x && nodeP.y ) {
+						if ( nodeP.x > parentLayout.x ) {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						} else {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						}
+					} else {
+						if ( parentLayout.rightList.length > 1 && parentLayout.rightList.length > parentLayout.leftList.length ) {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						} else {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						}
+					}
+					var sideList1 = parentLayout[ Layout.appendside + "List" ];
+					sideList1.push( node );
+					var idx1;
+					if ( Layout.appendside === "right" ) {
+						idx1 = sideList1.length;
+					} else {
+						idx1 = parent.getChildren().length;
+					}
+					parent.insertChild( node, idx1 );
+				}
+			}
+			//设置分支类型
+			if ( parent.getType() === "root" ) {
+				node.setType( "main" );
+			} else {
+				node.setType( "sub" );
+			}
+			//计算位置等流程
+			updateBg( node );
+			initLayout( node );
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: node
+			}, false ) );
+			this._fire( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
+			updateShapeByCont( node );
+			var set1 = updateLayoutVertical( node, parent, "append" );
+			var set2 = updateLayoutHorizon( node );
+			var set = uSet( set1, set2 );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
+		},
+		appendSiblingNode: function ( sibling, node ) {
+			var parent = sibling.getParent();
+			this.appendChildNode( parent, node, sibling );
+		},
+		removeNode: function ( nodes ) {
+			while ( nodes.length !== 0 ) {
+				var parent = nodes[ 0 ].getParent();
+				if ( !parent ) {
+					nodes.splice( 0, 1 );
+					return false;
+				}
+				var nodeLayout = nodes[ 0 ].getLayout();
+				if ( parent.getType() === "root" ) {
+					var sideList = parent.getLayout()[ nodeLayout.appendside + "List" ];
+					var index = sideList.indexOf( nodes[ 0 ] );
+					sideList.splice( index, 1 );
+				}
+				parent.removeChild( nodes[ 0 ] );
+				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
+				for ( var j = 0; j < set.length; j++ ) {
+					translateNode( set[ j ] );
+					updateConnectAndshIcon( set[ j ] );
+				}
+				var _buffer = [ nodes[ 0 ] ];
+				while ( _buffer.length !== 0 ) {
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						var Layout = _buffer[ 0 ].getLayout();
+						Layout.connect.remove();
+						Layout.shicon.remove();
+					} catch ( error ) {
+						console.log( "isRemoved" );
+					}
+					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
+					var idx = nodes.indexOf( _buffer[ 0 ] );
+					if ( idx !== -1 ) {
+						nodes.splice( idx, 1 );
+					}
+					_buffer.shift();
+				}
+			}
+		},
+		expandNode: function ( ico ) {
+			var isExpand = ico.icon.switchState();
+			var node = ico.icon._node;
+			var _buffer = node.getChildren();
+			var _cleanbuffer = [];
+
+			while ( _buffer.length !== 0 ) {
+				var Layout = _buffer[ 0 ].getLayout();
+				if ( isExpand ) {
+					var parent = _buffer[ 0 ].getParent();
+					Layout.parent = parent;
+					_cleanbuffer.push( _buffer[ 0 ] );
+					//minder.appendChildNode( parent, _buffer[ 0 ] );
+					Layout.connect = null;
+					Layout.shicon = null;
+				} else {
+					_buffer[ 0 ].getRenderContainer().remove();
+					Layout.connect.remove();
+					if ( Layout.shicon ) Layout.shicon.remove();
+				}
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				_buffer.shift();
+			}
+			if ( isExpand ) {
+				node.clearChildren();
+				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+					_cleanbuffer[ j ].clearChildren();
+					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
+				}
+			}
+			var set = [];
+			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
+		}
+	};
+	this.addLayoutStyle( "default", _style );
+	return {};
+} );
+
+KityMinder.registerModule( "LayoutBottom", function () {
 	var _target = this.getRenderTarget();
 
 	function getMinderSize() {
@@ -1956,7 +2707,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
 			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
-			node.getBgRc().clear().addShapes( [ highlightshape, underline ] );
+			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius( 4 ), highlightshape, underline ] );
 			break;
 		default:
 			break;
@@ -1969,12 +2720,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var nodeStyle = nodeStyles[ nodeType ];
 		var txtShape = node.getTextShape();
 		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
-		if ( nodeType === "root" ) {
-			Layout.leftList = [];
-			Layout.rightList = [];
-			Layout.leftHeight = 0;
-			Layout.rightHeight = 0;
-		}
 	};
 	//根据内容调整节点尺寸
 	var updateShapeByCont = function ( node ) {
@@ -1995,6 +2740,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var _contWidth = contRc.getWidth();
 			var _contHeight = contRc.getHeight();
+			width = _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ];
+			height = _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ];
 			Layout.underline.getDrawer()
 				.clear()
 				.moveTo( 0, _contHeight + nodeStyle.padding[ 2 ] + nodeStyle.padding[ 0 ] )
@@ -2003,6 +2750,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.highlightshape
 				.setWidth( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] )
 				.setHeight( _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+			Layout.bgRect.setWidth( width ).setHeight( height );
 			break;
 		default:
 			break;
@@ -2010,84 +2758,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + node.getTextShape().getHeight() ) );
 	};
 	//计算节点在垂直方向的位置
-	var updateLayoutVertical = function ( node, parent, action ) {
-		var root = minder.getRoot();
-		var effectSet = [ node ];
-		if ( action === "remove" ) {
-			effectSet = [];
-		}
-		var Layout = node.getLayout();
-		var nodeShape = node.getRenderContainer();
-		var nodeType = node.getType();
-		var nodeStyle = nodeStyles[ nodeType ];
-		var appendside = Layout.appendside;
-		var countBranchHeight = function ( node, side ) {
-			var nodeStyle = nodeStyles[ node.getType() ];
-			var selfHeight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			var childHeight = ( function () {
-				var sum = 0;
-				var children;
-				if ( !side ) {
-					children = node.getChildren();
-				} else {
-					children = node.getLayout()[ side + "List" ];
-				}
-				for ( var i = 0; i < children.length; i++ ) {
-					var childLayout = children[ i ].getLayout();
-					if ( children[ i ].getRenderContainer().getHeight() !== 0 )
-						sum += childLayout.branchheight;
-				}
-				return sum;
-			} )();
-			if ( side ) {
-				return childHeight;
-			} else {
-				return ( selfHeight > childHeight ? selfHeight : childHeight );
-			}
-		};
-		if ( nodeType === "root" ) {
-			Layout.y = getMinderSize().height / 2;
-			effectSet.push( node );
-		} else {
-			if ( action === "append" || action === "contract" ) {
-				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			} else if ( action === "change" ) { //展开
-				Layout.branchheight = countBranchHeight( node );
-			}
-			var parentLayout = parent.getLayout();
-			var parentShape = parent.getRenderContainer();
-			var prt = node.getParent() || parent;
-			//自底向上更新祖先元素的branchheight值
-			while ( prt ) {
-				var prtLayout = prt.getLayout();
-				if ( prt.getType() === "root" ) {
-					prtLayout[ appendside + "Height" ] = countBranchHeight( prt, appendside );
-				} else {
-					prtLayout.branchheight = countBranchHeight( prt );
-				}
-				prt = prt.getParent();
-			}
-			//自顶向下更新受影响一侧的y值
-			var sideList = root.getLayout()[ appendside + "List" ];
-			var _buffer = [ root ];
-			while ( _buffer.length > 0 ) {
-				var _buffer0Layout = _buffer[ 0 ].getLayout();
-				var children = _buffer0Layout[ appendside + "List" ] || _buffer[ 0 ].getChildren();
-				_buffer = _buffer.concat( children );
-				var sY = _buffer0Layout.y - ( _buffer0Layout[ appendside + "Height" ] || _buffer0Layout.branchheight ) / 2;
-				for ( var i = 0; i < children.length; i++ ) {
-					var childLayout = children[ i ].getLayout();
-					childLayout.y = sY + childLayout.branchheight / 2;
-					sY += childLayout.branchheight;
-				}
-				effectSet.push( _buffer[ 0 ] );
-				_buffer.shift();
-			}
-		}
-		return effectSet;
-	};
-	//计算节点在水平方向的位置
-	var updateLayoutHorizon = function ( node ) {
+	var updateLayoutVertical = function ( node ) {
 		var nodeType = node.getType();
 		var parent = node.getParent();
 		var effectSet = [ node ];
@@ -2097,25 +2768,80 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var prt = _buffer[ 0 ].getParent();
 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 			if ( !prt ) {
-				Layout.x = getMinderSize().width / 2;
+				Layout.y = 100;
 				_buffer.shift();
 				continue;
 			}
 			var parentLayout = prt.getLayout();
-			var parentWidth = prt.getRenderContainer().getWidth();
+			var parentHeight = prt.getRenderContainer().getHeight();
 			var parentStyle = nodeStyles[ prt.getType() ];
 			var childLayout = _buffer[ 0 ].getLayout();
 			var childStyle = nodeStyles[ _buffer[ 0 ].getType() ];
-			if ( parentLayout.align === "center" ) {
-				parentWidth = parentWidth / 2;
-			}
-			if ( childLayout.appendside === "left" ) {
-				childLayout.x = parentLayout.x - parentWidth - parentStyle.margin[ 1 ] - childStyle.margin[ 3 ];
-			} else {
-				childLayout.x = parentLayout.x + parentWidth + parentStyle.margin[ 1 ] + childStyle.margin[ 3 ];
-			}
+			childLayout.y = parentLayout.y + parentHeight + parentStyle.margin[ 2 ] + childStyle.margin[ 2 ];
 			effectSet.push( _buffer[ 0 ] );
 			_buffer.shift();
+		}
+		return effectSet;
+	};
+	//计算节点在水平方向的位置
+	var updateLayoutHorizon = function ( node, parent, action ) {
+		var root = minder.getRoot();
+		var effectSet = [ node ];
+		if ( action === "remove" ) {
+			effectSet = [];
+		}
+		var Layout = node.getLayout();
+		var nodeShape = node.getRenderContainer();
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var countBranchWidth = function ( node ) {
+			var nodeStyle = nodeStyles[ node.getType() ];
+			var selfWidth = node.getRenderContainer().getWidth() + nodeStyle.margin[ 1 ] + nodeStyle.margin[ 3 ];
+			var childWidth = ( function () {
+				var sum = 0;
+				var children = node.getChildren();
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					if ( children[ i ].getRenderContainer().getWidth() !== 0 )
+						sum += childLayout.branchwidth;
+				}
+				return sum;
+			} )();
+			return ( selfWidth > childWidth ? selfWidth : childWidth );
+		};
+		if ( nodeType === "root" ) {
+			Layout.x = getMinderSize().width / 2 - node.getRenderContainer().getWidth() / 2;
+			effectSet.push( node );
+		} else {
+			if ( action === "append" || action === "contract" ) {
+				Layout.branchwidth = node.getRenderContainer().getWidth() + nodeStyle.margin[ 1 ] + nodeStyle.margin[ 3 ];
+			} else if ( action === "change" ) {
+				Layout.branchheight = countBranchWidth( node );
+			}
+			var parentLayout = parent.getLayout();
+			var parentShape = parent.getRenderContainer();
+			var prt = node.getParent() || parent;
+			//自底向上更新祖先元素的branchwidth值
+			while ( prt ) {
+				var prtLayout = prt.getLayout();
+				prtLayout.branchheight = countBranchWidth( prt );
+				prt = prt.getParent();
+			}
+			//自顶向下更新受影响一侧的y值
+			var _buffer = [ root ];
+			while ( _buffer.length > 0 ) {
+				var _buffer0Layout = _buffer[ 0 ].getLayout();
+				var children = _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( children );
+				var sX = _buffer0Layout.x - _buffer0Layout.branchwidth / 2;
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					childLayout.x = sX;
+					sX += childLayout.branchwidth;
+				}
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
 		}
 		return effectSet;
 	};
@@ -2125,17 +2851,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var align = Layout.align;
 		var _rectHeight = nodeShape.getHeight();
 		var _rectWidth = nodeShape.getWidth();
-		switch ( align ) {
-		case "right":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y - _rectHeight / 2 ) );
-			break;
-		case "center":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y - _rectHeight / 2 ) );
-			break;
-		default:
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
-			break;
-		}
+		nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
 		node.setPoint( Layout.x, Layout.y );
 	};
 	var updateConnectAndshIcon = function ( node ) {
@@ -2163,16 +2879,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var endPos;
 			if ( Layout.appendside === "left" ) {
 				sPos = new kity.BezierPoint( rootX - 30, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 2 ].x + 3, nodeClosurePoints[ 2 ].y + nodeShape.getHeight() / 2 );
 			} else {
 				sPos = new kity.BezierPoint( rootX + 30, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
-				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
+				endPos = new kity.BezierPoint( nodeClosurePoints[ 3 ].x - 3, nodeClosurePoints[ 3 ].y + nodeShape.getHeight() / 2 );
 			}
 			var sPosV = sPos.getVertex();
 			var endPosV = endPos.getVertex();
 			sPos.setVertex( rootX, rootY );
 			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
-			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 3 : -3 ), endPosV.y ).fill( "white" ).stroke( "gray" ).setRadius( 3 );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 1 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
 		} else if ( nodeType === "sub" ) {
 			if ( !Layout.connect ) {
 				connect = Layout.connect = new kity.Path();
@@ -2299,54 +3015,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		appendChildNode: function ( parent, node, sibling ) {
 			minder.handelNodeInsert( node );
 			node.clearLayout();
-			var Layout = node.getLayout();
-			var parentLayout = parent.getLayout();
-			if ( sibling ) {
-				var siblingLayout = sibling.getLayout();
-				Layout.appendside = siblingLayout.appendside;
-				Layout.align = siblingLayout.align;
-				parent.insertChild( node, sibling.getIndex() + 1 );
-				if ( parent.getType() === "root" ) {
-					var sideList = parentLayout[ Layout.appendside + "List" ];
-					var idx = sideList.indexOf( sibling );
-					sideList.splice( idx + 1, 0, node );
-				}
-			} else {
-				if ( parent.getType() !== "root" ) {
-					var prtLayout = parent.getLayout();
-					Layout.appendside = prtLayout.appendside;
-					Layout.align = prtLayout.align;
-					parent.appendChild( node );
-				} else {
-					var nodeP = node.getPoint();
-					if ( nodeP && nodeP.x && nodeP.y ) {
-						if ( nodeP.x > parentLayout.x ) {
-							Layout.appendside = "right";
-							Layout.align = "left";
-						} else {
-							Layout.appendside = "left";
-							Layout.align = "right";
-						}
-					} else {
-						if ( parentLayout.rightList.length > 1 && parentLayout.rightList.length > parentLayout.leftList.length ) {
-							Layout.appendside = "left";
-							Layout.align = "right";
-						} else {
-							Layout.appendside = "right";
-							Layout.align = "left";
-						}
-					}
-					var sideList1 = parentLayout[ Layout.appendside + "List" ];
-					sideList1.push( node );
-					var idx1;
-					if ( Layout.appendside === "right" ) {
-						idx1 = sideList1.length;
-					} else {
-						idx1 = parent.getChildren().length;
-					}
-					parent.insertChild( node, idx1 );
-				}
-			}
 			//设置分支类型
 			if ( parent.getType() === "root" ) {
 				node.setType( "main" );
@@ -2363,8 +3031,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );
-			var set1 = updateLayoutVertical( node, parent, "append" );
-			var set2 = updateLayoutHorizon( node );
+			var set2 = updateLayoutHorizon( node, parent, "append" );
+			var set1 = updateLayoutVertical( node );
 			var set = uSet( set1, set2 );
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );
@@ -2372,496 +3040,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		appendSiblingNode: function ( sibling, node ) {
-			var parent = sibling.getParent();
-			this.appendChildNode( parent, node, sibling );
+
 		},
 		removeNode: function ( nodes ) {
-			while ( nodes.length !== 0 ) {
-				var parent = nodes[ 0 ].getParent();
-				var nodeLayout = nodes[ 0 ].getLayout();
-				if ( parent.getType() === "root" ) {
-					var sideList = parent.getLayout()[ nodeLayout.appendside + "List" ];
-					var index = sideList.indexOf( nodes[ 0 ] );
-					sideList.splice( index, 1 );
-				}
-				parent.removeChild( nodes[ 0 ] );
-				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
-				for ( var j = 0; j < set.length; j++ ) {
-					translateNode( set[ j ] );
-					updateConnectAndshIcon( set[ j ] );
-				}
-				var _buffer = [ nodes[ 0 ] ];
-				while ( _buffer.length !== 0 ) {
-					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-					try {
-						_buffer[ 0 ].getRenderContainer().remove();
-						var Layout = _buffer[ 0 ].getLayout();
-						Layout.connect.remove();
-						Layout.shicon.remove();
-					} catch ( error ) {
-						console.log( "isRemoved" );
-					}
-					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
-					var idx = nodes.indexOf( _buffer[ 0 ] );
-					if ( idx !== -1 ) {
-						nodes.splice( idx, 1 );
-					}
-					_buffer.shift();
-				}
-			}
+
 		},
 		expandNode: function ( ico ) {
-			var isExpand = ico.icon.switchState();
-			var node = ico.icon._node;
-			var _buffer = node.getChildren();
-			var _cleanbuffer = [];
 
-			while ( _buffer.length !== 0 ) {
-				var Layout = _buffer[ 0 ].getLayout();
-				if ( isExpand ) {
-					var parent = _buffer[ 0 ].getParent();
-					Layout.parent = parent;
-					_cleanbuffer.push( _buffer[ 0 ] );
-					//minder.appendChildNode( parent, _buffer[ 0 ] );
-					Layout.connect = null;
-					Layout.shicon = null;
-				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					Layout.shicon.remove();
-				}
-				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-				_buffer.shift();
-			}
-			if ( isExpand ) {
-				node.clearChildren();
-				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-					_cleanbuffer[ j ].clearChildren();
-					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
-				}
-			}
-			var set = [];
-			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-				updateConnectAndshIcon( set[ i ] );
-			}
-		}
-	};
-	this.addLayoutStyle( "default", _style );
-	return {};
-} );
-
-KityMinder.registerModule( "LayoutBottom", function () {
-	var minder = this;
-	var ShIcon = kity.createClass( "DefaultshIcon", ( function () {
-		return {
-			constructor: function ( node ) {
-				this._show = false;
-				this._node = node;
-				var iconShape = this.shape = new kity.Group();
-				iconShape.class = "shicon";
-				iconShape.icon = this;
-				var rect = this._rect = new kity.Rect().fill( "white" ).stroke( "gray" ).setWidth( 10 ).setHeight( 10 ).setRadius( 2 );
-				var plus = this._plus = new kity.Path();
-				plus.getDrawer()
-					.moveTo( 2, 5 )
-					.lineTo( 8, 5 )
-					.moveTo( 5, 2 )
-					.lineTo( 5, 8 );
-				plus.stroke( "gray" );
-				var dec = this._dec = new kity.Path();
-				dec.getDrawer()
-					.moveTo( 2, 5 )
-					.lineTo( 8, 5 );
-				dec.stroke( "gray" );
-				minder.getRenderContainer().addShape( iconShape );
-				iconShape.addShapes( [ rect, plus, dec ] );
-				node.setData( "shicon", this );
-				this.update();
-				this.switchState();
-			},
-			switchState: function () {
-				if ( !this._show ) {
-					this._plus.setOpacity( 0 );
-					this._dec.setOpacity( 1 );
-					this._show = true;
-				} else {
-					this._plus.setOpacity( 1 );
-					this._dec.setOpacity( 0 );
-					this._show = false;
-				}
-				return this._show;
-			},
-			update: function () {
-				var node = this._node;
-				var Layout = node.getData( "layout" );
-				var nodeShape = node.getRenderContainer();
-				var nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x + 5;
-				var nodeY = nodeShape.getRenderBox().closurePoints[ 1 ].y + 1;
-				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
-			},
-			remove: function () {
-				this.shape.remove();
-			}
-		};
-	} )() );
-	//主分支
-	var MainBranch = kity.createClass( "DefaultMainBranch", ( function () {
-		return {
-			constructor: function ( node ) {
-				this._node = node;
-				var bgRc = node.getBgRc();
-				var contRc = node.getContRc();
-				var txt = this._txt = new kity.Text();
-				var rect = this._rect = new kity.Rect();
-				var shicon = this._shicon = new ShIcon( node );
-				bgRc.addShape( rect );
-				var connect = this._connect = new kity.Group();
-				var path = connect.path = new kity.Path();
-				var circle = connect.circle = new kity.Circle();
-				connect.addShapes( [ path, circle ] );
-				minder.getRenderContainer().addShape( connect );
-				var Layout = {
-					radius: 0,
-					fill: "white",
-					color: "black",
-					padding: [ 5.5, 20, 5.5, 20 ],
-					fontSize: 20,
-					margin: [ 10, 10, 30, 50 ],
-					shape: this,
-					align: ( "leftright" ).replace( node.getData( "layout" ).appendside, "" ),
-					appendside: node.getData( "layout" ).appendside
-				};
-				node.setData( "layout", Layout );
-				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
-				this.update();
-			},
-			update: function () {
-				var rect = this._rect;
-				var node = this._node;
-				var contRc = node.getContRc();
-				var txt = node.getTextShape();
-				var Layout = node.getData( "layout" );
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
-				var _contWidth = contRc.getWidth();
-				var _contHeight = contRc.getHeight();
-				var _rectWidth = _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
-				var _rectHeight = _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill ).setRadius( Layout.radius );
-				this.updateConnect();
-				this.updateShIcon();
-			},
-			updateConnect: function () {
-				var node = this._node;
-				var Layout = node.getData( "layout" );
-				if ( Layout.x && Layout.y ) {
-					var connect = this._connect;
-					connect.circle.setCenter( Layout.x + 10, Layout.y - 3 ).fill( "white" ).stroke( "gray" ).setRadius( 2 );
-					var parent = node.getParent();
-					var parentLayout = parent.getData( "layout" );
-					var sX = parentLayout.x + 10.5,
-						pY = parentLayout.y + parent.getRenderContainer().getHeight() + 0.5,
-						sY = parentLayout.y + parent.getRenderContainer().getHeight() + parentLayout.margin[ 2 ] + 0.5;
-					connect.path.getDrawer()
-						.clear()
-						.moveTo( sX, pY )
-						.lineTo( sX, sY )
-						.lineTo( Layout.x + 10.5, sY )
-						.lineTo( Layout.x + 10.5, Layout.y );
-					connect.path.stroke( "white" );
-				}
-
-			},
-			updateShIcon: function () {
-				this._shicon.update();
-			},
-			clear: function () {
-				this._node.getRenderContainer().clear();
-				this._connect.remove();
-				this._shicon.remove();
-			}
-		};
-	} )() );
-	//子分支
-	var SubBranch = kity.createClass( "DefaultSubBranch", ( function () {
-		return {
-			constructor: function ( node ) {
-				this._node = node;
-				var bgRc = node.getBgRc();
-				var contRc = node.getContRc();
-				var underline = this._underline = new kity.Path();
-				var shicon = this._shicon = new ShIcon( node );
-				var highlightshape = this._highlightshape = new kity.Rect();
-				bgRc.addShapes( [ highlightshape, underline ] );
-				var connect = this._connect = new kity.Path();
-				minder.getRenderContainer().addShape( connect );
-				var Layout = {
-					stroke: new kity.Pen( "white", 1 ).setLineCap( "round" ).setLineJoin( "round" ),
-					color: "white",
-					padding: [ 5, 10, 5.5, 10 ],
-					fontSize: 12,
-					margin: [ 0, 10, 20, 5 ],
-					shape: this,
-					align: ( "leftright" ).replace( node.getData( "layout" ).appendside, "" ),
-					appendside: node.getData( "layout" ).appendside
-				};
-				node.setData( "layout", Layout );
-				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 10 ) );
-				highlightshape.fill( "chocolate" ).translate( -1, 0 );
-				this.update();
-			},
-			update: function () {
-				var node = this._node;
-				var contRc = node.getContRc();
-				var Layout = node.getData( "layout" );
-				var underline = this._underline;
-				var highlightshape = this._highlightshape;
-				var txt = node.getTextShape();
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color ).setSize( Layout.fontSize );
-				var _contWidth = contRc.getWidth();
-				var _contHeight = contRc.getHeight();
-				var sY = Layout.padding[ 0 ] + _contHeight / 2;
-				underline.getDrawer()
-					.clear()
-					.moveTo( 0, _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] )
-					.lineTo( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ], _contHeight + Layout.padding[ 2 ] + Layout.padding[ 0 ] );
-				underline.stroke( Layout.stroke );
-				highlightshape
-					.setWidth( _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ] )
-					.setHeight( _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ] )
-					.setOpacity( node.getData( "highlight" ) ? 1 : 0 );
-				this.updateConnect();
-				this.updateShIcon();
-			},
-			updateConnect: function () {
-				var node = this._node;
-				var Layout = node.getData( "layout" );
-				if ( Layout.x && Layout.y ) {
-					var connect = this._connect;
-					var parent = node.getParent();
-					var parentLayout = parent.getData( "layout" );
-					var sX = parentLayout.x + 10.5,
-						pY = parentLayout.y + parent.getRenderContainer().getHeight() + 10.5,
-						sY = Layout.y + 0.5;
-					connect.getDrawer()
-						.clear()
-						.moveTo( sX, pY )
-						.lineTo( sX, sY )
-						.lineTo( Layout.x + 0.5, sY )
-						.lineTo( Layout.x + 0.5, Layout.y + node.getRenderContainer().getHeight() );
-					connect.stroke( "white" );
-				}
-			},
-			updateShIcon: function () {
-				this._shicon.update();
-			},
-			clear: function () {
-				this._node.getRenderContainer().clear();
-				this._connect.remove();
-				this._shicon.remove();
-			}
-		};
-	} )() );
-	//根节点
-	var RootShape = kity.createClass( "DefaultRootShape", ( function () {
-		return {
-			constructor: function ( node ) {
-				var bgRc = node.getBgRc();
-				var contRc = node.getContRc();
-				var rect = this._rect = new kity.Rect();
-				bgRc.addShape( rect );
-				this._node = node;
-				var Layout = {
-					shape: this,
-					x: 100,
-					y: 50,
-					align: "center",
-					appendside: node.getData( "layout" ).appendside || "right",
-					leftList: [],
-					rightList: [],
-					color: "white",
-					fontSize: 20,
-					fill: "#00a6d8",
-					stroke: null,
-					padding: [ 10.5, 10, 10.5, 10 ],
-					margin: [ 0, 0, 20, 0 ]
-				};
-				node.setData( "layout", Layout );
-				node.setData( "text", "Minder Root" );
-				contRc.setTransform( new kity.Matrix().translate( Layout.padding[ 3 ], Layout.padding[ 0 ] + 15 ) );
-				this.update();
-			},
-			update: function () {
-				var rect = this._rect;
-				var connect = this._connect;
-				var node = this._node;
-				var txt = node.getTextShape();
-				var contRc = node.getContRc();
-				var Layout = node.getData( "layout" );
-				txt.setContent( node.getData( "text" ) ).fill( Layout.color );
-				var _contWidth = contRc.getWidth();
-				var _contHeight = contRc.getHeight();
-				var _rectWidth = _contWidth + Layout.padding[ 1 ] + Layout.padding[ 3 ];
-				var _rectHeight = _contHeight + Layout.padding[ 0 ] + Layout.padding[ 2 ];
-				rect.setWidth( _rectWidth ).setHeight( _rectHeight ).fill( node.getData( "highlight" ) ? "chocolate" : Layout.fill );
-			},
-			clear: function () {
-				this._node.getRenderContainer().clear();
-			}
-		};
-	} )() );
-	var drawNode = function ( node ) {
-		var shape = node.getData( "layout" ).shape;
-		shape.update();
-	};
-	//以某个节点为seed对整体高度进行更改计算
-	var updateLayoutVertical = function ( node ) {
-		var effectSet = [ node ];
-		var Layout = node.getData( "layout" );
-		var parent = node.getParent();
-		var parentLayout = parent.getData( "layout" );
-		var parentShape = parent.getRenderContainer();
-		Layout.y = parentLayout.y + parentShape.getHeight() + parentLayout.margin[ 2 ] + Layout.margin[ 0 ];
-		return effectSet;
-	};
-
-	//以某个节点为seed对水平方向进行调整(包括调整子树)
-	var updateLayoutHorizon = function ( node ) {
-		var effectSet = []; //返回受影响（即需要进行下一步translate的节点）
-		var nodeLayout = node.getData( "layout" );
-		var _buffer = [ minder.getRoot() ];
-		var countBranchWidth = function ( node ) {
-			var Layout = node.getData( "layout" );
-			var marginLeft = Layout.margin[ 3 ],
-				marginRight = Layout.margin[ 1 ];
-			var nodewidth = node.getRenderContainer().getWidth() + marginLeft + marginRight;
-			var nodeChildWidth = ( function () {
-				var sum = 0;
-				var children = node.getChildren();
-				for ( var i = 0; i < children.length; i++ ) {
-					sum += children[ i ].getData( "layout" ).branchwidth;
-				}
-				return sum;
-			} )();
-			Layout.branchwidth = ( nodewidth > nodeChildWidth ? nodewidth : nodeChildWidth );
-		};
-		var parent = node;
-		while ( parent ) {
-			countBranchWidth( parent );
-			parent = parent.getParent();
-		}
-		while ( _buffer.length !== 0 ) {
-			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-			var bufferLayout = _buffer[ 0 ].getData( "layout" );
-			var sX = bufferLayout.x;
-			var children = _buffer[ 0 ].getChildren();
-			for ( var i = 0; i < children.length; i++ ) {
-				countBranchWidth( children[ i ] );
-				var childrenLayout = children[ i ].getData( "layout" );
-				childrenLayout.x = sX;
-				sX += childrenLayout.branchwidth;
-			}
-			effectSet.push( _buffer[ 0 ] );
-			_buffer.shift();
-		}
-		return effectSet;
-	};
-	var translateNode = function ( node ) {
-		var Layout = node.getData( "layout" );
-		var nodeShape = node.getRenderContainer();
-		nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
-		if ( Layout.shape ) {
-			if ( Layout.shape.updateConnect ) Layout.shape.updateConnect();
-			if ( Layout.shape.updateShIcon ) Layout.shape.updateShIcon();
-		}
-	};
-	//求并集
-	var uSet = function ( a, b ) {
-		for ( var i = 0; i < a.length; i++ ) {
-			var idx = b.indexOf( a[ i ] );
-			if ( idx !== -1 ) {
-				b.splice( idx, 1 );
-			}
-		}
-		return a.concat( b );
-	};
-	var _style = {
-		renderNode: function ( node ) {
-			drawNode( node );
-		},
-		initStyle: function () {
-			var _root = this.getRoot();
-			minder.handelNodeInsert( _root );
-			var rc = new RootShape( _root );
-			translateNode( _root );
-		},
-		updateLayout: function ( node ) {
-			drawNode( node );
-			var set = updateLayoutHorizon( node );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-			}
-		},
-		appendChildNode: function ( parent, node, index ) {
-			minder.handelNodeInsert( node );
-			var _root = this.getRoot();
-			var childbranch;
-			if ( !node.getData( "layout" ) ) node.setData( "layout", {} );
-			if ( parent.getChildren().indexOf( node ) === -1 ) {
-				if ( !index ) parent.appendChild( node );
-				else parent.insertChild( node, index );
-			}
-			var parentLayout = parent.getData( "layout" );
-			var Layout = node.getData( "layout" );
-			if ( parent.getType() === "root" ) {
-				node.setType( "main" );
-				childbranch = new MainBranch( node );
-			} else {
-				node.setType( "sub" );
-				childbranch = new SubBranch( node );
-			}
-			var set1 = updateLayoutVertical( node );
-			var set2 = updateLayoutHorizon( node );
-			var set = uSet( set1, set2 );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-				var box = set[ i ].getRenderContainer().getRenderBox();
-				set[ i ].setPoint( box.x, box.y );
-			}
-		},
-		appendSiblingNode: function ( sibling, node ) {
-
-		},
-		removeNode: function ( nodes ) {
-			var root = this.getRoot();
-			for ( var i = 0; i < nodes.length; i++ ) {
-				var parent = nodes[ i ].getParent();
-				if ( parent ) {
-					var _buffer = [ nodes[ i ] ];
-					var parentLayout = parent.getData( "layout" );
-					while ( _buffer.length !== 0 ) {
-						_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-						_buffer[ 0 ].getData( "layout" ).shape.clear();
-						_buffer[ 0 ].getRenderContainer().remove();
-						var prt = _buffer[ 0 ].getParent();
-						prt.removeChild( _buffer[ 0 ] );
-						_buffer.shift();
-					}
-					if ( parent === root ) {
-						var Layout = nodes[ i ].getData( "layout" );
-						var appendside = Layout.appendside;
-						var sideList = parentLayout[ appendside + "List" ];
-						var idx = sideList.indexOf( nodes[ i ] );
-						sideList.splice( idx, 1 );
-					}
-					parent.removeChild( nodes[ i ] );
-					var set = updateLayoutHorizon( nodes[ i ], parent, "remove" );
-					for ( var j = 0; j < set.length; j++ ) {
-						translateNode( set[ j ] );
-					}
-				}
-			}
 		}
 	};
 	this.addLayoutStyle( "bottom", _style );
@@ -2896,6 +3081,7 @@ kity.extendClass( Minder, function () {
                 unhighlightNode( me, n );
             } );
             this._selectedNodes = [];
+            return this.fire( 'selectionclear' );
         },
         removeSelectedNodes: function ( nodes ) {
             var me = this;
@@ -3043,8 +3229,10 @@ kity.Draggable = ( function () {
                         paper.off( DRAG_MOVE_EVENT, dragFn );
                         dragTarget.trigger( 'dragend' );
 
-                        e.stopPropagation();
-                        e.preventDefault();
+                        if ( e ) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }
                     }
                 } );
             }
@@ -3070,6 +3258,7 @@ kity.Draggable = ( function () {
         undrag: function () {
             var target = this.dragTarget;
             target.off( DRAG_START_EVENT, target._dragStartHandler );
+            target._dragEndHandler();
             target.getPaper().off( DRAG_END_EVENT, target._dragEndHandler );
             delete target._dragStartHandler;
             delete target._dragEndHandler;
@@ -3079,8 +3268,51 @@ kity.Draggable = ( function () {
     } );
 } )();
 
+KityMinder.registerModule( 'Hand', function () {
+    var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
+        base: Command,
+        execute: function ( minder ) {
+            var drag = minder._onDragMode = !minder._onDragMode;
+            minder.getPaper().setStyle( 'cursor', drag ? 'pointer' : 'default' );
+            minder.getPaper().setStyle( 'cursor', drag ? '-webkit-grab' : 'default' );
+            if ( drag ) {
+                minder.getPaper().drag();
+            } else {
+                minder.getPaper().undrag();
+            }
+        },
+        queryState: function ( minder ) {
+            return minder._onDragMode ? 1 : 0;
+        }
+    } );
+
+    return {
+        init: function () {
+            this._onDragMode = false;
+            kity.extendClass( kity.Paper, kity.Draggable );
+        },
+        commands: {
+            'hand': ToggleHandCommand
+        },
+        events: {
+            keyup: function ( e ) {
+                if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
+                    this.execCommand( 'hand' );
+                    e.preventDefault();
+                }
+            },
+            beforemousemove: function ( e ) {
+                if ( this._onDragMode ) {
+                    e.stopPropagation();
+                }
+            }
+        }
+    };
+} );
+
 var GM = KityMinder.Geometry;
 
+// 矩形的变形动画定义
 var AreaAnimator = kity.createClass( "AreaAnimator", {
 	base: kity.Animator,
 	constructor: function ( startArea, endArea ) {
@@ -3094,165 +3326,274 @@ var AreaAnimator = kity.createClass( "AreaAnimator", {
 	}
 } );
 
-var DragBox = kity.createClass( "DragBox", {
-	base: kity.Group,
-	constructor: function ( shapeArray, focusPoint ) {
-		this.callBase();
-		this._targetCount = shapeArray.length;
-		this._focusPoint = focusPoint;
-		this._targetArea = this._calcStartArea( shapeArray );
-		this._dragArea = this._calcDragArea( focusPoint );
-		this._draw();
-	},
-	_calcStartArea: function ( shapeArray ) {
-		var area = shapeArray.pop().getRenderBox();
-		while ( shapeArray.length ) {
-			area = GM.mergeBox( area, shapeArray.pop().getRenderBox() );
+var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
+	base: Command,
+	execute: function ( minder, nodes, parent ) {
+		var node;
+		for ( var i = nodes.length - 1; i >= 0; i-- ) {
+			node = nodes[ i ];
+			if ( node.getParent() ) {
+				node.getParent().removeChild( node );
+				parent.appendChild( node );
+			}
 		}
-		return {
-			x: area.left,
-			y: area.top,
-			width: area.width,
-			height: area.height
-		};
-	},
-	_calcDragArea: function ( focusPoint ) {
-		var width = 80,
-			height = 30;
-		return {
-			x: focusPoint.x - width / 2,
-			y: focusPoint.y - height / 2,
-			width: width,
-			height: height
-		};
-	},
-	_draw: function ( container ) {
-		var d = this._dragArea;
-		this._rect = new kity.Rect().fill( 'white' ).stroke( '#3399ff', 1 );
-		this.addShape( this._rect.setRadius( 5 ) );
-		this.addShape( new kity.Text( this._targetCount + ' item' )
-			.setPosition( this._focusPoint.x, this._focusPoint.y + 5 )
-			.setSize( 14 )
-			.setTextAnchor( 'middle' )
-			.fill( 'black' )
-			.setStyle( 'cursor', 'default' ) );
-	},
-	shrink: function () {
-		var animator = new AreaAnimator( this._targetArea, this._dragArea );
-		animator.start( this._rect, 400, 'easeOutQuint' );
-	},
-	green: function () {
-		this._rect.stroke( 'green', 2 ).setOpacity( 1 );
-	},
-	blue: function () {
-		this._rect.stroke( '#3399ff', 1 ).setOpacity( 0.8 );
+		minder.initStyle( minder.getRoot() );
+		minder.select( nodes, true );
 	}
 } );
 
 
-function findAllAncestor( nodes ) {
-	var ancestors = [],
-		judge;
-
-	function hasAncestor( nodes, judge ) {
-		for ( var i = nodes.length - 1; i >= 0; --i ) {
-			if ( nodes[ i ].isAncestorOf( judge ) ) return true;
-		}
-		return false;
-	}
-
-	nodes.sort( function ( node1, node2 ) {
-		return node1.getLevel() - node2.getLevel();
-	} );
-
-	while ( ( judge = nodes.pop() ) ) {
-		if ( !hasAncestor( nodes, judge ) ) {
-			ancestors.push( judge );
-		}
-	}
-	return ancestors;
+function boxMapper( node ) {
+	return node.getRenderContainer().getRenderBox();
 }
 
-function findAvailableParents( nodes, root ) {
-	var availables = [],
-		i;
-	availables.push( root );
-	root.getChildren().forEach( function ( test ) {
-		for ( i = 0; i < nodes.length; i++ ) {
-			if ( nodes[ i ] == test ) return;
+// 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：
+//    1. 从节点列表计算出拖动部分
+//    2. 产生替代矩形包围拖动部分
+//    3. 动画收缩替代矩形到固定大小，成为替代盒子
+//    4. 控制替代盒子的移动
+//    5. 计算可以 drop 的节点，产生 drop 交互提示
+var DragBox = kity.createClass( "DragBox", {
+	base: kity.Group,
+
+
+	constructor: function ( minder ) {
+		this.callBase();
+		this._minder = minder;
+		this._draw();
+	},
+
+	// 绘制显示拖放范围的矩形和显示拖放信息的文本
+	_draw: function () {
+		this._rect = new kity.Rect()
+			.setRadius( 5 )
+			.fill( 'white' )
+			.stroke( '#3399ff', 1 );
+		this._text = new kity.Text()
+			.setSize( 14 )
+			.setTextAnchor( 'middle' )
+			.fill( 'black' )
+			.setStyle( 'cursor', 'default' );
+		this.addShapes( [ this._rect, this._text ] );
+	},
+
+
+	// 从选中的节点计算拖放源
+	//    并不是所有选中的节点都作为拖放源，如果选中节点中存在 A 和 B，
+	//    并且 A 是 B 的祖先，则 B 不作为拖放源
+	//    
+	//    计算过程：
+	//       1. 将节点按照树高排序，排序后只可能是前面节点是后面节点的祖先
+	//       2. 从后往前枚举排序的结果，如果发现枚举目标之前存在其祖先，
+	//          则排除枚举目标作为拖放源，否则加入拖放源
+	_calcDragSources: function () {
+		var nodes = this._minder.getSelectedNodes().slice( 0 ),
+			ancestors = [],
+			judge;
+
+		// 判断 nodes 列表中是否存在 judge 的祖先
+		function hasAncestor( nodes, judge ) {
+			for ( var i = nodes.length - 1; i >= 0; --i ) {
+				if ( nodes[ i ].isAncestorOf( judge ) ) return true;
+			}
+			return false;
 		}
-		availables = availables.concat( findAvailableParents( nodes, test ) );
-	} );
-	return availables;
-}
+
+		// 按照拓扑排序
+		nodes.sort( function ( node1, node2 ) {
+			return node1.getLevel() - node2.getLevel();
+		} );
+
+		// 因为是拓扑有序的，所以只需往上查找
+		while ( ( judge = nodes.pop() ) ) {
+			if ( !hasAncestor( nodes, judge ) ) {
+				ancestors.push( judge );
+			}
+		}
+		this._dragSources = ancestors;
+	},
+
+
+	// 计算拖放目标可以释放的节点列表（释放意味着成为其子树），存在这条限制规则：
+	//    - 不能拖放到拖放目标的子树上（允许拖放到自身，因为多选的情况下可以把其它节点加入）
+	//    
+	//    1. 加入当前节点（初始为根节点）到允许列表
+	//    2. 对于当前节点的每一个子节点：
+	//       (1) 如果是拖放目标的其中一个节点，忽略（整棵子树被剪枝）
+	//       (2) 如果不是拖放目标之一，以当前子节点为当前节点，回到 1 计算
+	//    3. 返回允许列表
+	// 
+	_calcDropTargets: function () {
+
+		function findAvailableParents( nodes, root ) {
+			var availables = [],
+				i;
+			availables.push( root );
+			root.getChildren().forEach( function ( test ) {
+				for ( i = 0; i < nodes.length; i++ ) {
+					if ( nodes[ i ] == test ) return;
+				}
+				availables = availables.concat( findAvailableParents( nodes, test ) );
+			} );
+			return availables;
+		}
+
+		this._dropTargets = findAvailableParents( this._dragSources, this._minder.getRoot() );
+		this._dropTargetBoxes = this._dropTargets.map( boxMapper );
+	},
+
+	// 进入拖放模式：
+	//    1. 计算拖放源和允许的拖放目标
+	//    2. 渲染拖放盒子
+	//    3. 启动收缩动画
+	//    4. 标记已启动
+	_enterDragMode: function () {
+		this._calcDragSources();
+		this._calcDropTargets();
+		this._drawForDragMode();
+		this._shrink();
+		this._dragMode = true;
+	},
+	_leaveDragMode: function () {
+		this.remove();
+		this._dragMode = false;
+		this._dropSucceedTarget = null;
+	},
+	_drawForDragMode: function () {
+		this._text.setContent( this._dragSources.length + ' items' );
+		this._text.setPosition( this._startPosition.x, this._startPosition.y + 5 );
+		this._minder.getRenderContainer().addShape( this );
+	},
+	_shrink: function () {
+		// 合并所有拖放源图形的矩形即可
+		function calcSourceArea( boxArray ) {
+			var area = boxArray.pop();
+			while ( boxArray.length ) {
+				area = GM.mergeBox( area, boxArray.pop() );
+			}
+			return {
+				x: area.left,
+				y: area.top,
+				width: area.width,
+				height: area.height
+			};
+		}
+		// 从焦点发散出一个固定的矩形即可
+		function calcFocusArea( focusPoint ) {
+			var width = 80,
+				height = 30;
+			return {
+				x: focusPoint.x - width / 2,
+				y: focusPoint.y - height / 2,
+				width: width,
+				height: height
+			};
+		}
+
+		var sourceArea = calcSourceArea( this._dragSources.map( boxMapper ) );
+		var focusArea = calcFocusArea( this._startPosition );
+		var animator = new AreaAnimator( sourceArea, focusArea );
+		animator.start( this._rect, 400, 'easeOutQuint' );
+	},
+	// 此处可用线段树优化，但考虑到节点不多，必要性不到，就用暴力测试
+	_dropTest: function () {
+		var dragBox = this.getRenderBox(),
+			test;
+
+		this._dropSucceedTarget = null;
+		for ( var i = 0; i < this._dropTargetBoxes.length; i++ ) {
+			test = this._dropTargetBoxes[ i ];
+			if ( GM.isBoxIntersect( dragBox, test ) ) {
+				this._dropSucceedTarget = this._dropTargets[ i ];
+				return;
+			}
+		}
+	},
+	_updateDropHint: function () {
+		var target = this._dropSucceedTarget,
+			lastTarget = this._lastSucceedTarget;
+		if ( target && target == lastTarget ) return;
+		if ( lastTarget ) {
+			this._removeDropStyle( lastTarget );
+		}
+		if ( target ) {
+			this._addDropStyle( target );
+		}
+		this._lastSucceedTarget = target;
+	},
+
+	_removeDropStyle: function ( node ) {
+		node._layout.bgRect.stroke( 'none' );
+		this._rect.stroke( '#3399ff', 1 );
+	},
+
+	_addDropStyle: function ( node ) {
+		node._layout.bgRect.stroke( 'rgb(254, 219, 0)', 3 );
+		node.getRenderContainer().fxScale( 1.25, 1.25, 150, 'ease' ).fxScale( 0.8, 0.8, 150, 'ease' );
+	},
+
+	dragStart: function ( position ) {
+		// 只记录开始位置，不马上开启拖放模式
+		// 这个位置同时是拖放范围收缩时的焦点位置（中心）
+		this._startPosition = position;
+	},
+
+	dragMove: function ( position ) {
+		if ( !this._startPosition ) return;
+
+		this._dragPosition = position;
+
+		if ( !this._dragMode ) {
+			// 判断拖放模式是否该启动
+			if ( GM.getDistance( this._dragPosition, this._startPosition ) < 10 ) {
+				return;
+			}
+			this._enterDragMode();
+		}
+
+		var movement = kity.Vector.fromPoints( this._startPosition, this._dragPosition );
+
+		this.setTransform( new kity.Matrix().translate( movement.x, movement.y ) );
+
+		this._dropTest();
+		this._updateDropHint();
+	},
+
+	dragEnd: function () {
+		this._startPosition = null;
+		if ( !this._dragMode ) {
+			return;
+		}
+		if ( this._dropSucceedTarget ) {
+			this._minder.execCommand( 'movetoparent', this._dragSources, this._dropSucceedTarget );
+		}
+		this._leaveDragMode();
+	}
+
+} );
 
 KityMinder.registerModule( "DragTree", function () {
 	var dragStartPosition, dragBox, dragTargets, dropTargets, dragTargetBoxes, dropTarget;
 
 	return {
+		init: function () {
+			this._dragBox = new DragBox( this );
+		},
 		events: {
 			mousedown: function ( e ) {
-				var clickNode = e.getTargetNode();
-
-				if ( !clickNode ) {
-					return;
+				if ( e.getTargetNode() ) {
+					this._dragBox.dragStart( e.getPosition() );
 				}
-
-				dragStartPosition = e.getPosition();
-
 			},
 			mousemove: function ( e ) {
-				var currentPosition;
-
-				if ( !dragStartPosition ) return;
-
-				currentPosition = e.getPosition();
-
-				if ( !dragBox ) {
-					if ( GM.getDistance( currentPosition, dragStartPosition ) < 10 ) {
-						return;
-					}
-					dragTargets = findAllAncestor( this.getSelectedNodes().slice( 0 ) );
-					dropTargets = findAvailableParents( dragTargets, this.getRoot() );
-					dragBox = new DragBox( dragTargets.map( function ( target ) {
-						return target.getRenderContainer();
-					} ), currentPosition );
-					this.getRenderContainer().addShape( dragBox );
-					dragBox.shrink();
-				}
-
-				dragBox.setTransform( new kity.Matrix().translate( currentPosition.x - dragStartPosition.x, currentPosition.y - dragStartPosition.y ) );
-
-				if ( dropTarget ) {
-					//dropTarget.getRenderContainer().scale( 0.8 );
-					dragBox.blue();
-					dropTarget = null;
-				}
-				dropTargets.forEach( function ( test ) {
-					if ( GM.isBoxIntersect( dragBox.getRenderBox(), test.getRenderContainer().getRenderBox() ) ) {
-						//test.getRenderContainer().scale( 1.25 );
-						dropTarget = test;
-						dragBox.green();
-					}
-				} );
+				this._dragBox.dragMove( e.getPosition() );
 			},
 			mouseup: function ( e ) {
-				dragStartPosition = null;
-				if ( dragBox ) {
-					dragBox.remove();
-					dragBox = null;
-					if ( dropTarget ) {
-						dragTargets.forEach( function ( target ) {
-							if ( target.parent ) {
-								target.parent.removeChild( target );
-								dropTarget.appendChild( target );
-							}
-						} );
-						this.removeAllSelectedNodes();
-						this.initStyle( this.getRoot() );
-					}
-				}
+				this._dragBox.dragEnd();
 			}
+		},
+		commands: {
+			'movetoparent': MoveToParentCommand
 		}
 	};
 } );
@@ -3360,6 +3701,7 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 buildPositionNetwork( this.getRoot() );
             },
             keydown: function ( e ) {
+
                 var keys = KityMinder.keymap;
                 if ( this.receiver.isTextEditStatus() ) {
                     switch ( e.originEvent.keyCode ) {
@@ -3378,13 +3720,15 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     }
                     return;
                 }
+                var node = e.getTargetNode();
+                this.receiver.keydownNode = node;
                 switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
-                    this.execCommand( 'appendSiblingNode', new MinderNode( 'Topic' ) );
+                    this.execCommand( 'appendSiblingNode', new MinderNode( this.getLang().topic ) );
                     e.preventDefault();
                     break;
                 case keys.Tab:
-                    this.execCommand( 'appendChildNode', new MinderNode( 'Topic' ) );
+                    this.execCommand( 'appendChildNode', new MinderNode( this.getLang().topic ) );
                     e.preventDefault();
                     break;
                 case keys.Backspace:
@@ -3420,11 +3764,19 @@ KityMinder.registerModule( "Select", function () {
     var minder = this;
     var g = KityMinder.Geometry;
 
-    // 框选控制
+    // 在实例上渲染框选矩形、计算框选范围的对象
     var marqueeActivator = ( function () {
+
+        // 记录选区的开始位置（mousedown的位置）
         var startPosition = null;
+
+        // 选区的图形
         var marqueeShape = new kity.Path().fill( 'rgba(255,255,255,.3)' ).stroke( 'white' );
+
+        // 标记是否已经启动框选状态
+        //    并不是 mousedown 发生之后就启动框选状态，而是检测到移动了一定的距离（MARQUEE_MODE_THRESHOLD）之后
         var marqueeMode = false;
+        var MARQUEE_MODE_THRESHOLD = 10;
 
         return {
             selectStart: function ( e ) {
@@ -3435,20 +3787,26 @@ KityMinder.registerModule( "Select", function () {
                 if ( startPosition ) {
                     return this.selectEnd();
                 }
+
                 startPosition = g.snapToSharp( e.getPosition() );
-                minder.getPaper().addShape( marqueeShape );
-                marqueeShape.setOpacity( 0.8 ).getDrawer().clear();
             },
             selectMove: function ( e ) {
+                
                 if ( !startPosition ) return;
+                
                 var p1 = startPosition,
                     p2 = e.getPosition();
 
+                // 检测是否要进入选区模式
                 if ( !marqueeMode ) {
-                    if ( g.getDistance( p1, p2 ) < 10 ) {
+                    // 距离没达到阈值，退出
+                    if ( g.getDistance( p1, p2 ) < MARQUEE_MODE_THRESHOLD ) {
                         return;
                     }
+                    // 已经达到阈值，记录下来并且重置选区形状
                     marqueeMode = true;
+                    minder.getPaper().addShape( marqueeShape );
+                    marqueeShape.setOpacity( 0.8 ).getDrawer().clear();
                 }
 
                 var marquee = g.getBox( p1, p2 ),
@@ -3467,7 +3825,7 @@ KityMinder.registerModule( "Select", function () {
                     this.close();
                 } );
 
-                // 选中节点数据更新
+                // 计算选中范围
                 minder.getRoot().traverse( function ( node ) {
                     var renderBox = node.getRenderContainer().getRenderBox();
                     if ( g.isBoxIntersect( renderBox, marquee ) ) {
@@ -3475,6 +3833,7 @@ KityMinder.registerModule( "Select", function () {
                     }
                 } );
 
+                // 应用选中范围
                 minder.select( selectedNodes, true );
             },
             selectEnd: function ( e ) {
@@ -3483,7 +3842,7 @@ KityMinder.registerModule( "Select", function () {
                 }
                 if ( marqueeMode ) {
                     marqueeShape.fadeOut( 200, 'ease', 0, function () {
-                        marqueeShape.remove();
+                        if(marqueeShape.remove) marqueeShape.remove();
                     } );
                     marqueeMode = false;
                 }
@@ -3491,25 +3850,49 @@ KityMinder.registerModule( "Select", function () {
         };
     } )();
 
+    var lastDownNode = null;
     return {
         "events": {
             mousedown: function ( e ) {
-                var clickNode = e.getTargetNode();
-                if ( !clickNode ) {
+                var downNode = e.getTargetNode();
+
+                // 没有点中节点：
+                //     清除选中状态，并且标记选区开始位置
+                if ( !downNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
-                } else if ( e.originEvent.shiftKey ) {
-                    this.toggleSelect( clickNode );
-                } else if ( !clickNode.isSelected() ) {
-                    this.select( clickNode, true );
+                }
+
+                // 点中了节点，并且按了 shift 键：
+                //     被点中的节点切换选中状态
+                else if ( e.originEvent.shiftKey ) {
+                    this.toggleSelect( downNode );
+                }
+
+                // 点中的节点没有被选择：
+                //     单选点中的节点
+                else if ( !downNode.isSelected() ) {
+                    this.select( downNode, true );
+                }
+
+                // 点中的节点被选中了，并且不是单选：
+                //     完成整个点击之后需要使其变为单选。
+                //     不能马上变为单选，因为可能是需要拖动选中的多个节点
+                else if ( !this.isSingleSelect() ) {
+                    lastDownNode = downNode;
                 }
             },
             mousemove: marqueeActivator.selectMove,
             mouseup: function ( e ) {
-                var clickNode = e.getTargetNode();
-                if ( clickNode && clickNode.isSelected() && !this.isSingleSelect() ) {
-                    this.select( clickNode, true );
+                var upNode = e.getTargetNode();
+
+                // 如果 mouseup 发生在 lastDownNode 外，是无需理会的
+                if ( upNode && upNode == lastDownNode ) {
+                    this.select( lastDownNode, true );
+                    lastDownNode = null;
                 }
+
+                // 清理一下选择状态
                 marqueeActivator.selectEnd( e );
             }
         }
@@ -3725,7 +4108,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
 
-                    if ( this.isSingleSelect() && node.isSelected() ) {
+                    if ( this.isSingleSelect() && node.isSelected() && e.kityEvent.targetShape.getType().toLowerCase()== 'text') {
 
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
@@ -3746,7 +4129,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'mouseup':function(e){
-                if(!sel.collapsed){
+                if(!sel.collapsed && mouseDownStatus){
                     receiver.updateRange(range)
                 }
                 mouseDownStatus = false;
@@ -3755,25 +4138,86 @@ KityMinder.registerModule( "TextEditModule", function () {
             'beforemousemove':function(e){
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
-                    setTimeout(function(){
-
-                        var offset = e.getPosition();
-                        dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
-                        receiver.updateSelectionByMousePosition(offset,dir)
-                            .updateSelectionShow(dir);
-                        sel.stroke('none',0);
-                        lastEvtPosition = e.getPosition();
-                    },100)
+                    var offset = e.getPosition();
+                    dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
+                    receiver.updateSelectionByMousePosition(offset,dir)
+                        .updateSelectionShow(dir);
+                    sel.stroke('none',0);
+                    lastEvtPosition = e.getPosition();
                 }
+            },
+            'dblclick':function(e){
 
+                var text =  e.kityEvent.targetShape;
+                if ( text.getType().toLowerCase()== 'text') {
 
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(text.getContent().length);
+                    sel.setShow();
+                    receiver.updateSelectionShow(1)
+                        .updateRange(range);
+
+                }
             },
             'restoreScene':function(){
                 sel.setHide();
             },
             'stopTextEdit':function(){
                 sel.setHide();
+                receiver.clear().setTextEditStatus(false);
+            },
+            'execCommand':function(e){
+                var cmds = {
+                    'appendchildnode':1,
+                    'appendsiblingnode':1
+                };
+                if(cmds[e.commandName]){
 
+                    var node = km.getSelectedNode();
+
+                    var textShape = node.getTextShape();
+
+                    textShape.setStyle('cursor','default');
+                    node.getTextShape().setStyle('cursor','text');
+                    receiver.setTextEditStatus(true)
+                        .setSelection(sel)
+                        .setKityMinder(this)
+                        .setMinderNode(node)
+                        .setTextShape(textShape)
+                        .setBaseOffset()
+                        .setContainerStyle()
+                        .setSelectionHeight()
+                        .getTextOffsetData()
+                        .setIndex(0)
+                        .updateSelection()
+                        .setRange(range);
+
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(textShape.getContent().length);
+                    sel.setShow();
+
+                    receiver.updateSelectionShow(1)
+                        .updateRange(range);
+
+
+                }
+
+                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                    receiver.setBaseOffset()
+                        .getTextOffsetData();
+
+                    if(sel.collapsed){
+                        receiver.updateSelection();
+                    }else{
+                        receiver.updateSelectionShow(1)
+                    }
+
+
+
+                }
+            },
+            'selectionclear':function(){
+                receiver.setTextEditStatus(false).clear()
             }
         }
     };
@@ -3825,7 +4269,7 @@ Minder.Range = kity.createClass('Range',{
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
-        this.selection.setHide();
+        this.selection && this.selection.setHide();
         this.index = 0;
         return this;
     },
@@ -3900,8 +4344,10 @@ Minder.Receiver = kity.createClass('Receiver',{
                     switch(keyCode){
                         case keymap.Enter:
                         case keymap.Tab:
-                            this.setTextEditStatus(false);
-                            this.clear();
+                            if(this.keydownNode === this.minderNode){
+                                this.setTextEditStatus(false);
+                                this.clear();
+                            }
                             e.preventDefault();
                             return;
                         case keymap.Shift:
@@ -3948,26 +4394,26 @@ Minder.Receiver = kity.createClass('Receiver',{
         //更新模拟选区的范围
         this.selection.setStartOffset(this.index).collapse(true);
         if(this.index == this.textData.length){
+            if(this.index == 0){
+                this.selection.setPosition(this.getBaseOffset())
+            }else{
+                this.selection.setPosition({
+                    x : this.textData[this.index-1].x + this.textData[this.index-1].width,
+                    y : this.textData[this.index-1].y
+                })
+            }
 
-            this.selection.setPosition({
-                x : this.textData[this.index-1].x + this.textData[this.index-1].width,
-                y : this.textData[this.index-1].y
-            })
+
         }else{
             this.selection.setPosition(this.textData[this.index])
         }
         return this;
     },
+    getBaseOffset:function(){
+        return this.textShape.getRenderBox('top');
+    },
     setBaseOffset :function(){
-
-        var nodeOffset = this.minderNode.getRenderContainer().getRenderBox();
-//        var textOffset = this.textShape.getRenderBox();
-        var contRcOffset = this.minderNode.getContRc().getRenderBox();
-
-        this.offset =   {
-            x : nodeOffset.x +  contRcOffset.x,
-            y : nodeOffset.y +  contRcOffset.y
-        };
+        this.offset = this.textShape.getRenderBox('top');
         return this;
     },
     setContainerStyle : function(){
@@ -4046,6 +4492,9 @@ Minder.Receiver = kity.createClass('Receiver',{
             if(offset.x >= v.x && offset.x <= v.x + v.width){
 
                 if(me.index == i){
+                    if(i == 0){
+                        me.selection.setStartOffset(i)
+                    }
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
                 }else if(i > me.index){
                     me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
@@ -4059,7 +4508,6 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
     },
     updateSelectionShow:function(){
-
         var startOffset = this.textData[this.selection.startOffset],
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
@@ -4084,6 +4532,10 @@ Minder.Receiver = kity.createClass('Receiver',{
         range.setEnd(node,this.selection.endOffset);
         range.select();
         return this;
+    },
+    setIndex:function(index){
+        this.index = index;
+        return this
     }
 });
 
@@ -4175,10 +4627,15 @@ Minder.Selection = kity.createClass( 'Selection', {
         clearInterval( this.timer );
         var me = this,
             state = '';
-        this.timer = setInterval( function () {
-            me.setStyle( 'display', state );
-            state = state ? '' : 'none';
-        }, 300 );
+        if(this.collapsed){
+            this.timer = setInterval( function () {
+                me.setStyle( 'display', state );
+                state = state ? '' : 'none';
+            }, 300 );
+        }else{
+            me.setStyle( 'display', '' );
+        }
+
         return this;
     },
     setTextShape: function ( text ) {
@@ -4389,28 +4846,109 @@ KityMinder.registerModule( "fontmodule", function () {
 } );
 
 KityMinder.registerModule( 'Zoom', function () {
-	/*
-	return {
-		events: {
-			'mousewheel': function ( e ) {
-				if ( e.originEvent.wheelDelta > 0 ) {
-					if ( this._zoom < 0.2 ) return;
-					this._zoom *= 0.95;
-					this.getRenderContainer().scale( 0.95 );
-				} else {
-					if ( this._zoom > 5 ) return;
-					this._zoom /= 0.95;
-					this.getRenderContainer().scale( 1 / 0.95 );
-				}
-				e.originEvent.preventDefault();
+	var MAX_ZOOM = 2,
+		MIN_ZOOM = 0.5,
+		ZOOM_STEP = Math.sqrt( 2 );
+
+	function zoom( minder, rate ) {
+		var paper = minder.getPaper();
+		var viewbox = paper.getViewBox();
+		var zoomValue = minder._zoomValue;
+		var w = viewbox.width,
+			h = viewbox.height,
+			x = viewbox.x,
+			y = viewbox.y;
+		var ww = w * rate,
+			hh = h * rate,
+			xx = x + ( w - ww ) / 2,
+			yy = y + ( h - hh ) / 2;
+		var animator = new kity.Animator( {
+			beginValue: viewbox,
+			finishValue: {
+				width: ww,
+				height: hh,
+				x: xx,
+				y: yy
 			},
+			setter: function ( target, value ) {
+				target.setViewBox( value.x, value.y, value.width, value.height );
+			}
+		} );
+
+		animator.start( paper, 100, 'ease' );
+		minder._zoomValue = zoomValue *= rate;
+	}
+
+	var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
+		base: Command,
+		execute: function ( minder ) {
+			if( !this.queryState( minder ) ) {
+				zoom( minder, 1 / ZOOM_STEP );
+			}
+		},
+		queryState: function ( minder ) {
+			return (minder._zoomValue > MIN_ZOOM) ? 0 : -1;
+		}
+	} );
+
+	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
+		base: Command,
+		execute: function ( minder ) {
+			if( !this.queryState( minder ) ) {
+				zoom( minder, ZOOM_STEP );
+			}
+		},
+		queryState: function ( minder ) {
+			return (minder._zoomValue < MAX_ZOOM) ? 0 : -1;
+		}
+	} );
+
+	return {
+		commands: {
+			'zoom-in': ZoomInCommand,
+			'zoom-out': ZoomOutCommand
+		},
+		addShortcutKeys: {
+			"zoom-in": "+", //=
+			"zoom-out": "-" //-
+		},
+		events: {
 			'ready': function () {
-				this._zoom = 1;
+				this._zoomValue = 1;
+			},
+			'mousewheel': function ( e ) {
+				var delta = e.originEvent.wheelDelta;
+				var me = this;
+
+				// 稀释
+				if ( Math.abs( delta ) > 100 ) {
+					clearTimeout( this._wheelZoomTimeout );
+				} else {
+					return;
+				}
+
+				this._wheelZoomTimeout = setTimeout( function () {
+					var value;
+					var lastValue = me.getPaper()._zoom || 1;
+					if ( delta < 0 ) {
+						me.execCommand('zoom-in');
+					} else if ( delta > 0 ) {
+						me.execCommand('zoom-out');
+					}
+				}, 100 );
+
+				e.originEvent.preventDefault();
 			}
 		}
-	};*/
-	return {};
+	};
 } );
+
+/*! jQuery UI - v1.10.4 - 2014-02-18
+* http://jqueryui.com
+* Includes: jquery.ui.core.js, jquery.ui.widget.js, jquery.ui.mouse.js, jquery.ui.draggable.js
+* Copyright 2014 jQuery Foundation and other contributors; Licensed MIT */
+
+(function(e,t){function i(t,i){var s,a,o,r=t.nodeName.toLowerCase();return"area"===r?(s=t.parentNode,a=s.name,t.href&&a&&"map"===s.nodeName.toLowerCase()?(o=e("img[usemap=#"+a+"]")[0],!!o&&n(o)):!1):(/input|select|textarea|button|object/.test(r)?!t.disabled:"a"===r?t.href||i:i)&&n(t)}function n(t){return e.expr.filters.visible(t)&&!e(t).parents().addBack().filter(function(){return"hidden"===e.css(this,"visibility")}).length}var s=0,a=/^ui-id-\d+$/;e.ui=e.ui||{},e.extend(e.ui,{version:"1.10.4",keyCode:{BACKSPACE:8,COMMA:188,DELETE:46,DOWN:40,END:35,ENTER:13,ESCAPE:27,HOME:36,LEFT:37,NUMPAD_ADD:107,NUMPAD_DECIMAL:110,NUMPAD_DIVIDE:111,NUMPAD_ENTER:108,NUMPAD_MULTIPLY:106,NUMPAD_SUBTRACT:109,PAGE_DOWN:34,PAGE_UP:33,PERIOD:190,RIGHT:39,SPACE:32,TAB:9,UP:38}}),e.fn.extend({focus:function(t){return function(i,n){return"number"==typeof i?this.each(function(){var t=this;setTimeout(function(){e(t).focus(),n&&n.call(t)},i)}):t.apply(this,arguments)}}(e.fn.focus),scrollParent:function(){var t;return t=e.ui.ie&&/(static|relative)/.test(this.css("position"))||/absolute/.test(this.css("position"))?this.parents().filter(function(){return/(relative|absolute|fixed)/.test(e.css(this,"position"))&&/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0):this.parents().filter(function(){return/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0),/fixed/.test(this.css("position"))||!t.length?e(document):t},zIndex:function(i){if(i!==t)return this.css("zIndex",i);if(this.length)for(var n,s,a=e(this[0]);a.length&&a[0]!==document;){if(n=a.css("position"),("absolute"===n||"relative"===n||"fixed"===n)&&(s=parseInt(a.css("zIndex"),10),!isNaN(s)&&0!==s))return s;a=a.parent()}return 0},uniqueId:function(){return this.each(function(){this.id||(this.id="ui-id-"+ ++s)})},removeUniqueId:function(){return this.each(function(){a.test(this.id)&&e(this).removeAttr("id")})}}),e.extend(e.expr[":"],{data:e.expr.createPseudo?e.expr.createPseudo(function(t){return function(i){return!!e.data(i,t)}}):function(t,i,n){return!!e.data(t,n[3])},focusable:function(t){return i(t,!isNaN(e.attr(t,"tabindex")))},tabbable:function(t){var n=e.attr(t,"tabindex"),s=isNaN(n);return(s||n>=0)&&i(t,!s)}}),e("<a>").outerWidth(1).jquery||e.each(["Width","Height"],function(i,n){function s(t,i,n,s){return e.each(a,function(){i-=parseFloat(e.css(t,"padding"+this))||0,n&&(i-=parseFloat(e.css(t,"border"+this+"Width"))||0),s&&(i-=parseFloat(e.css(t,"margin"+this))||0)}),i}var a="Width"===n?["Left","Right"]:["Top","Bottom"],o=n.toLowerCase(),r={innerWidth:e.fn.innerWidth,innerHeight:e.fn.innerHeight,outerWidth:e.fn.outerWidth,outerHeight:e.fn.outerHeight};e.fn["inner"+n]=function(i){return i===t?r["inner"+n].call(this):this.each(function(){e(this).css(o,s(this,i)+"px")})},e.fn["outer"+n]=function(t,i){return"number"!=typeof t?r["outer"+n].call(this,t):this.each(function(){e(this).css(o,s(this,t,!0,i)+"px")})}}),e.fn.addBack||(e.fn.addBack=function(e){return this.add(null==e?this.prevObject:this.prevObject.filter(e))}),e("<a>").data("a-b","a").removeData("a-b").data("a-b")&&(e.fn.removeData=function(t){return function(i){return arguments.length?t.call(this,e.camelCase(i)):t.call(this)}}(e.fn.removeData)),e.ui.ie=!!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase()),e.support.selectstart="onselectstart"in document.createElement("div"),e.fn.extend({disableSelection:function(){return this.bind((e.support.selectstart?"selectstart":"mousedown")+".ui-disableSelection",function(e){e.preventDefault()})},enableSelection:function(){return this.unbind(".ui-disableSelection")}}),e.extend(e.ui,{plugin:{add:function(t,i,n){var s,a=e.ui[t].prototype;for(s in n)a.plugins[s]=a.plugins[s]||[],a.plugins[s].push([i,n[s]])},call:function(e,t,i){var n,s=e.plugins[t];if(s&&e.element[0].parentNode&&11!==e.element[0].parentNode.nodeType)for(n=0;s.length>n;n++)e.options[s[n][0]]&&s[n][1].apply(e.element,i)}},hasScroll:function(t,i){if("hidden"===e(t).css("overflow"))return!1;var n=i&&"left"===i?"scrollLeft":"scrollTop",s=!1;return t[n]>0?!0:(t[n]=1,s=t[n]>0,t[n]=0,s)}})})(jQuery);(function(t,e){var i=0,s=Array.prototype.slice,n=t.cleanData;t.cleanData=function(e){for(var i,s=0;null!=(i=e[s]);s++)try{t(i).triggerHandler("remove")}catch(o){}n(e)},t.widget=function(i,s,n){var o,a,r,h,l={},c=i.split(".")[0];i=i.split(".")[1],o=c+"-"+i,n||(n=s,s=t.Widget),t.expr[":"][o.toLowerCase()]=function(e){return!!t.data(e,o)},t[c]=t[c]||{},a=t[c][i],r=t[c][i]=function(t,i){return this._createWidget?(arguments.length&&this._createWidget(t,i),e):new r(t,i)},t.extend(r,a,{version:n.version,_proto:t.extend({},n),_childConstructors:[]}),h=new s,h.options=t.widget.extend({},h.options),t.each(n,function(i,n){return t.isFunction(n)?(l[i]=function(){var t=function(){return s.prototype[i].apply(this,arguments)},e=function(t){return s.prototype[i].apply(this,t)};return function(){var i,s=this._super,o=this._superApply;return this._super=t,this._superApply=e,i=n.apply(this,arguments),this._super=s,this._superApply=o,i}}(),e):(l[i]=n,e)}),r.prototype=t.widget.extend(h,{widgetEventPrefix:a?h.widgetEventPrefix||i:i},l,{constructor:r,namespace:c,widgetName:i,widgetFullName:o}),a?(t.each(a._childConstructors,function(e,i){var s=i.prototype;t.widget(s.namespace+"."+s.widgetName,r,i._proto)}),delete a._childConstructors):s._childConstructors.push(r),t.widget.bridge(i,r)},t.widget.extend=function(i){for(var n,o,a=s.call(arguments,1),r=0,h=a.length;h>r;r++)for(n in a[r])o=a[r][n],a[r].hasOwnProperty(n)&&o!==e&&(i[n]=t.isPlainObject(o)?t.isPlainObject(i[n])?t.widget.extend({},i[n],o):t.widget.extend({},o):o);return i},t.widget.bridge=function(i,n){var o=n.prototype.widgetFullName||i;t.fn[i]=function(a){var r="string"==typeof a,h=s.call(arguments,1),l=this;return a=!r&&h.length?t.widget.extend.apply(null,[a].concat(h)):a,r?this.each(function(){var s,n=t.data(this,o);return n?t.isFunction(n[a])&&"_"!==a.charAt(0)?(s=n[a].apply(n,h),s!==n&&s!==e?(l=s&&s.jquery?l.pushStack(s.get()):s,!1):e):t.error("no such method '"+a+"' for "+i+" widget instance"):t.error("cannot call methods on "+i+" prior to initialization; "+"attempted to call method '"+a+"'")}):this.each(function(){var e=t.data(this,o);e?e.option(a||{})._init():t.data(this,o,new n(a,this))}),l}},t.Widget=function(){},t.Widget._childConstructors=[],t.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",defaultElement:"<div>",options:{disabled:!1,create:null},_createWidget:function(e,s){s=t(s||this.defaultElement||this)[0],this.element=t(s),this.uuid=i++,this.eventNamespace="."+this.widgetName+this.uuid,this.options=t.widget.extend({},this.options,this._getCreateOptions(),e),this.bindings=t(),this.hoverable=t(),this.focusable=t(),s!==this&&(t.data(s,this.widgetFullName,this),this._on(!0,this.element,{remove:function(t){t.target===s&&this.destroy()}}),this.document=t(s.style?s.ownerDocument:s.document||s),this.window=t(this.document[0].defaultView||this.document[0].parentWindow)),this._create(),this._trigger("create",null,this._getCreateEventData()),this._init()},_getCreateOptions:t.noop,_getCreateEventData:t.noop,_create:t.noop,_init:t.noop,destroy:function(){this._destroy(),this.element.unbind(this.eventNamespace).removeData(this.widgetName).removeData(this.widgetFullName).removeData(t.camelCase(this.widgetFullName)),this.widget().unbind(this.eventNamespace).removeAttr("aria-disabled").removeClass(this.widgetFullName+"-disabled "+"ui-state-disabled"),this.bindings.unbind(this.eventNamespace),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")},_destroy:t.noop,widget:function(){return this.element},option:function(i,s){var n,o,a,r=i;if(0===arguments.length)return t.widget.extend({},this.options);if("string"==typeof i)if(r={},n=i.split("."),i=n.shift(),n.length){for(o=r[i]=t.widget.extend({},this.options[i]),a=0;n.length-1>a;a++)o[n[a]]=o[n[a]]||{},o=o[n[a]];if(i=n.pop(),1===arguments.length)return o[i]===e?null:o[i];o[i]=s}else{if(1===arguments.length)return this.options[i]===e?null:this.options[i];r[i]=s}return this._setOptions(r),this},_setOptions:function(t){var e;for(e in t)this._setOption(e,t[e]);return this},_setOption:function(t,e){return this.options[t]=e,"disabled"===t&&(this.widget().toggleClass(this.widgetFullName+"-disabled ui-state-disabled",!!e).attr("aria-disabled",e),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")),this},enable:function(){return this._setOption("disabled",!1)},disable:function(){return this._setOption("disabled",!0)},_on:function(i,s,n){var o,a=this;"boolean"!=typeof i&&(n=s,s=i,i=!1),n?(s=o=t(s),this.bindings=this.bindings.add(s)):(n=s,s=this.element,o=this.widget()),t.each(n,function(n,r){function h(){return i||a.options.disabled!==!0&&!t(this).hasClass("ui-state-disabled")?("string"==typeof r?a[r]:r).apply(a,arguments):e}"string"!=typeof r&&(h.guid=r.guid=r.guid||h.guid||t.guid++);var l=n.match(/^(\w+)\s*(.*)$/),c=l[1]+a.eventNamespace,u=l[2];u?o.delegate(u,c,h):s.bind(c,h)})},_off:function(t,e){e=(e||"").split(" ").join(this.eventNamespace+" ")+this.eventNamespace,t.unbind(e).undelegate(e)},_delay:function(t,e){function i(){return("string"==typeof t?s[t]:t).apply(s,arguments)}var s=this;return setTimeout(i,e||0)},_hoverable:function(e){this.hoverable=this.hoverable.add(e),this._on(e,{mouseenter:function(e){t(e.currentTarget).addClass("ui-state-hover")},mouseleave:function(e){t(e.currentTarget).removeClass("ui-state-hover")}})},_focusable:function(e){this.focusable=this.focusable.add(e),this._on(e,{focusin:function(e){t(e.currentTarget).addClass("ui-state-focus")},focusout:function(e){t(e.currentTarget).removeClass("ui-state-focus")}})},_trigger:function(e,i,s){var n,o,a=this.options[e];if(s=s||{},i=t.Event(i),i.type=(e===this.widgetEventPrefix?e:this.widgetEventPrefix+e).toLowerCase(),i.target=this.element[0],o=i.originalEvent)for(n in o)n in i||(i[n]=o[n]);return this.element.trigger(i,s),!(t.isFunction(a)&&a.apply(this.element[0],[i].concat(s))===!1||i.isDefaultPrevented())}},t.each({show:"fadeIn",hide:"fadeOut"},function(e,i){t.Widget.prototype["_"+e]=function(s,n,o){"string"==typeof n&&(n={effect:n});var a,r=n?n===!0||"number"==typeof n?i:n.effect||i:e;n=n||{},"number"==typeof n&&(n={duration:n}),a=!t.isEmptyObject(n),n.complete=o,n.delay&&s.delay(n.delay),a&&t.effects&&t.effects.effect[r]?s[e](n):r!==e&&s[r]?s[r](n.duration,n.easing,o):s.queue(function(i){t(this)[e](),o&&o.call(s[0]),i()})}})})(jQuery);(function(t){var e=!1;t(document).mouseup(function(){e=!1}),t.widget("ui.mouse",{version:"1.10.4",options:{cancel:"input,textarea,button,select,option",distance:1,delay:0},_mouseInit:function(){var e=this;this.element.bind("mousedown."+this.widgetName,function(t){return e._mouseDown(t)}).bind("click."+this.widgetName,function(i){return!0===t.data(i.target,e.widgetName+".preventClickEvent")?(t.removeData(i.target,e.widgetName+".preventClickEvent"),i.stopImmediatePropagation(),!1):undefined}),this.started=!1},_mouseDestroy:function(){this.element.unbind("."+this.widgetName),this._mouseMoveDelegate&&t(document).unbind("mousemove."+this.widgetName,this._mouseMoveDelegate).unbind("mouseup."+this.widgetName,this._mouseUpDelegate)},_mouseDown:function(i){if(!e){this._mouseStarted&&this._mouseUp(i),this._mouseDownEvent=i;var s=this,n=1===i.which,a="string"==typeof this.options.cancel&&i.target.nodeName?t(i.target).closest(this.options.cancel).length:!1;return n&&!a&&this._mouseCapture(i)?(this.mouseDelayMet=!this.options.delay,this.mouseDelayMet||(this._mouseDelayTimer=setTimeout(function(){s.mouseDelayMet=!0},this.options.delay)),this._mouseDistanceMet(i)&&this._mouseDelayMet(i)&&(this._mouseStarted=this._mouseStart(i)!==!1,!this._mouseStarted)?(i.preventDefault(),!0):(!0===t.data(i.target,this.widgetName+".preventClickEvent")&&t.removeData(i.target,this.widgetName+".preventClickEvent"),this._mouseMoveDelegate=function(t){return s._mouseMove(t)},this._mouseUpDelegate=function(t){return s._mouseUp(t)},t(document).bind("mousemove."+this.widgetName,this._mouseMoveDelegate).bind("mouseup."+this.widgetName,this._mouseUpDelegate),i.preventDefault(),e=!0,!0)):!0}},_mouseMove:function(e){return t.ui.ie&&(!document.documentMode||9>document.documentMode)&&!e.button?this._mouseUp(e):this._mouseStarted?(this._mouseDrag(e),e.preventDefault()):(this._mouseDistanceMet(e)&&this._mouseDelayMet(e)&&(this._mouseStarted=this._mouseStart(this._mouseDownEvent,e)!==!1,this._mouseStarted?this._mouseDrag(e):this._mouseUp(e)),!this._mouseStarted)},_mouseUp:function(e){return t(document).unbind("mousemove."+this.widgetName,this._mouseMoveDelegate).unbind("mouseup."+this.widgetName,this._mouseUpDelegate),this._mouseStarted&&(this._mouseStarted=!1,e.target===this._mouseDownEvent.target&&t.data(e.target,this.widgetName+".preventClickEvent",!0),this._mouseStop(e)),!1},_mouseDistanceMet:function(t){return Math.max(Math.abs(this._mouseDownEvent.pageX-t.pageX),Math.abs(this._mouseDownEvent.pageY-t.pageY))>=this.options.distance},_mouseDelayMet:function(){return this.mouseDelayMet},_mouseStart:function(){},_mouseDrag:function(){},_mouseStop:function(){},_mouseCapture:function(){return!0}})})(jQuery);(function(t){t.widget("ui.draggable",t.ui.mouse,{version:"1.10.4",widgetEventPrefix:"drag",options:{addClasses:!0,appendTo:"parent",axis:!1,connectToSortable:!1,containment:!1,cursor:"auto",cursorAt:!1,grid:!1,handle:!1,helper:"original",iframeFix:!1,opacity:!1,refreshPositions:!1,revert:!1,revertDuration:500,scope:"default",scroll:!0,scrollSensitivity:20,scrollSpeed:20,snap:!1,snapMode:"both",snapTolerance:20,stack:!1,zIndex:!1,drag:null,start:null,stop:null},_create:function(){"original"!==this.options.helper||/^(?:r|a|f)/.test(this.element.css("position"))||(this.element[0].style.position="relative"),this.options.addClasses&&this.element.addClass("ui-draggable"),this.options.disabled&&this.element.addClass("ui-draggable-disabled"),this._mouseInit()},_destroy:function(){this.element.removeClass("ui-draggable ui-draggable-dragging ui-draggable-disabled"),this._mouseDestroy()},_mouseCapture:function(e){var i=this.options;return this.helper||i.disabled||t(e.target).closest(".ui-resizable-handle").length>0?!1:(this.handle=this._getHandle(e),this.handle?(t(i.iframeFix===!0?"iframe":i.iframeFix).each(function(){t("<div class='ui-draggable-iframeFix' style='background: #fff;'></div>").css({width:this.offsetWidth+"px",height:this.offsetHeight+"px",position:"absolute",opacity:"0.001",zIndex:1e3}).css(t(this).offset()).appendTo("body")}),!0):!1)},_mouseStart:function(e){var i=this.options;return this.helper=this._createHelper(e),this.helper.addClass("ui-draggable-dragging"),this._cacheHelperProportions(),t.ui.ddmanager&&(t.ui.ddmanager.current=this),this._cacheMargins(),this.cssPosition=this.helper.css("position"),this.scrollParent=this.helper.scrollParent(),this.offsetParent=this.helper.offsetParent(),this.offsetParentCssPosition=this.offsetParent.css("position"),this.offset=this.positionAbs=this.element.offset(),this.offset={top:this.offset.top-this.margins.top,left:this.offset.left-this.margins.left},this.offset.scroll=!1,t.extend(this.offset,{click:{left:e.pageX-this.offset.left,top:e.pageY-this.offset.top},parent:this._getParentOffset(),relative:this._getRelativeOffset()}),this.originalPosition=this.position=this._generatePosition(e),this.originalPageX=e.pageX,this.originalPageY=e.pageY,i.cursorAt&&this._adjustOffsetFromHelper(i.cursorAt),this._setContainment(),this._trigger("start",e)===!1?(this._clear(),!1):(this._cacheHelperProportions(),t.ui.ddmanager&&!i.dropBehaviour&&t.ui.ddmanager.prepareOffsets(this,e),this._mouseDrag(e,!0),t.ui.ddmanager&&t.ui.ddmanager.dragStart(this,e),!0)},_mouseDrag:function(e,i){if("fixed"===this.offsetParentCssPosition&&(this.offset.parent=this._getParentOffset()),this.position=this._generatePosition(e),this.positionAbs=this._convertPositionTo("absolute"),!i){var s=this._uiHash();if(this._trigger("drag",e,s)===!1)return this._mouseUp({}),!1;this.position=s.position}return this.options.axis&&"y"===this.options.axis||(this.helper[0].style.left=this.position.left+"px"),this.options.axis&&"x"===this.options.axis||(this.helper[0].style.top=this.position.top+"px"),t.ui.ddmanager&&t.ui.ddmanager.drag(this,e),!1},_mouseStop:function(e){var i=this,s=!1;return t.ui.ddmanager&&!this.options.dropBehaviour&&(s=t.ui.ddmanager.drop(this,e)),this.dropped&&(s=this.dropped,this.dropped=!1),"original"!==this.options.helper||t.contains(this.element[0].ownerDocument,this.element[0])?("invalid"===this.options.revert&&!s||"valid"===this.options.revert&&s||this.options.revert===!0||t.isFunction(this.options.revert)&&this.options.revert.call(this.element,s)?t(this.helper).animate(this.originalPosition,parseInt(this.options.revertDuration,10),function(){i._trigger("stop",e)!==!1&&i._clear()}):this._trigger("stop",e)!==!1&&this._clear(),!1):!1},_mouseUp:function(e){return t("div.ui-draggable-iframeFix").each(function(){this.parentNode.removeChild(this)}),t.ui.ddmanager&&t.ui.ddmanager.dragStop(this,e),t.ui.mouse.prototype._mouseUp.call(this,e)},cancel:function(){return this.helper.is(".ui-draggable-dragging")?this._mouseUp({}):this._clear(),this},_getHandle:function(e){return this.options.handle?!!t(e.target).closest(this.element.find(this.options.handle)).length:!0},_createHelper:function(e){var i=this.options,s=t.isFunction(i.helper)?t(i.helper.apply(this.element[0],[e])):"clone"===i.helper?this.element.clone().removeAttr("id"):this.element;return s.parents("body").length||s.appendTo("parent"===i.appendTo?this.element[0].parentNode:i.appendTo),s[0]===this.element[0]||/(fixed|absolute)/.test(s.css("position"))||s.css("position","absolute"),s},_adjustOffsetFromHelper:function(e){"string"==typeof e&&(e=e.split(" ")),t.isArray(e)&&(e={left:+e[0],top:+e[1]||0}),"left"in e&&(this.offset.click.left=e.left+this.margins.left),"right"in e&&(this.offset.click.left=this.helperProportions.width-e.right+this.margins.left),"top"in e&&(this.offset.click.top=e.top+this.margins.top),"bottom"in e&&(this.offset.click.top=this.helperProportions.height-e.bottom+this.margins.top)},_getParentOffset:function(){var e=this.offsetParent.offset();return"absolute"===this.cssPosition&&this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])&&(e.left+=this.scrollParent.scrollLeft(),e.top+=this.scrollParent.scrollTop()),(this.offsetParent[0]===document.body||this.offsetParent[0].tagName&&"html"===this.offsetParent[0].tagName.toLowerCase()&&t.ui.ie)&&(e={top:0,left:0}),{top:e.top+(parseInt(this.offsetParent.css("borderTopWidth"),10)||0),left:e.left+(parseInt(this.offsetParent.css("borderLeftWidth"),10)||0)}},_getRelativeOffset:function(){if("relative"===this.cssPosition){var t=this.element.position();return{top:t.top-(parseInt(this.helper.css("top"),10)||0)+this.scrollParent.scrollTop(),left:t.left-(parseInt(this.helper.css("left"),10)||0)+this.scrollParent.scrollLeft()}}return{top:0,left:0}},_cacheMargins:function(){this.margins={left:parseInt(this.element.css("marginLeft"),10)||0,top:parseInt(this.element.css("marginTop"),10)||0,right:parseInt(this.element.css("marginRight"),10)||0,bottom:parseInt(this.element.css("marginBottom"),10)||0}},_cacheHelperProportions:function(){this.helperProportions={width:this.helper.outerWidth(),height:this.helper.outerHeight()}},_setContainment:function(){var e,i,s,n=this.options;return n.containment?"window"===n.containment?(this.containment=[t(window).scrollLeft()-this.offset.relative.left-this.offset.parent.left,t(window).scrollTop()-this.offset.relative.top-this.offset.parent.top,t(window).scrollLeft()+t(window).width()-this.helperProportions.width-this.margins.left,t(window).scrollTop()+(t(window).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top],undefined):"document"===n.containment?(this.containment=[0,0,t(document).width()-this.helperProportions.width-this.margins.left,(t(document).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top],undefined):n.containment.constructor===Array?(this.containment=n.containment,undefined):("parent"===n.containment&&(n.containment=this.helper[0].parentNode),i=t(n.containment),s=i[0],s&&(e="hidden"!==i.css("overflow"),this.containment=[(parseInt(i.css("borderLeftWidth"),10)||0)+(parseInt(i.css("paddingLeft"),10)||0),(parseInt(i.css("borderTopWidth"),10)||0)+(parseInt(i.css("paddingTop"),10)||0),(e?Math.max(s.scrollWidth,s.offsetWidth):s.offsetWidth)-(parseInt(i.css("borderRightWidth"),10)||0)-(parseInt(i.css("paddingRight"),10)||0)-this.helperProportions.width-this.margins.left-this.margins.right,(e?Math.max(s.scrollHeight,s.offsetHeight):s.offsetHeight)-(parseInt(i.css("borderBottomWidth"),10)||0)-(parseInt(i.css("paddingBottom"),10)||0)-this.helperProportions.height-this.margins.top-this.margins.bottom],this.relative_container=i),undefined):(this.containment=null,undefined)},_convertPositionTo:function(e,i){i||(i=this.position);var s="absolute"===e?1:-1,n="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent;return this.offset.scroll||(this.offset.scroll={top:n.scrollTop(),left:n.scrollLeft()}),{top:i.top+this.offset.relative.top*s+this.offset.parent.top*s-("fixed"===this.cssPosition?-this.scrollParent.scrollTop():this.offset.scroll.top)*s,left:i.left+this.offset.relative.left*s+this.offset.parent.left*s-("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():this.offset.scroll.left)*s}},_generatePosition:function(e){var i,s,n,a,o=this.options,r="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent,l=e.pageX,h=e.pageY;return this.offset.scroll||(this.offset.scroll={top:r.scrollTop(),left:r.scrollLeft()}),this.originalPosition&&(this.containment&&(this.relative_container?(s=this.relative_container.offset(),i=[this.containment[0]+s.left,this.containment[1]+s.top,this.containment[2]+s.left,this.containment[3]+s.top]):i=this.containment,e.pageX-this.offset.click.left<i[0]&&(l=i[0]+this.offset.click.left),e.pageY-this.offset.click.top<i[1]&&(h=i[1]+this.offset.click.top),e.pageX-this.offset.click.left>i[2]&&(l=i[2]+this.offset.click.left),e.pageY-this.offset.click.top>i[3]&&(h=i[3]+this.offset.click.top)),o.grid&&(n=o.grid[1]?this.originalPageY+Math.round((h-this.originalPageY)/o.grid[1])*o.grid[1]:this.originalPageY,h=i?n-this.offset.click.top>=i[1]||n-this.offset.click.top>i[3]?n:n-this.offset.click.top>=i[1]?n-o.grid[1]:n+o.grid[1]:n,a=o.grid[0]?this.originalPageX+Math.round((l-this.originalPageX)/o.grid[0])*o.grid[0]:this.originalPageX,l=i?a-this.offset.click.left>=i[0]||a-this.offset.click.left>i[2]?a:a-this.offset.click.left>=i[0]?a-o.grid[0]:a+o.grid[0]:a)),{top:h-this.offset.click.top-this.offset.relative.top-this.offset.parent.top+("fixed"===this.cssPosition?-this.scrollParent.scrollTop():this.offset.scroll.top),left:l-this.offset.click.left-this.offset.relative.left-this.offset.parent.left+("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():this.offset.scroll.left)}},_clear:function(){this.helper.removeClass("ui-draggable-dragging"),this.helper[0]===this.element[0]||this.cancelHelperRemoval||this.helper.remove(),this.helper=null,this.cancelHelperRemoval=!1},_trigger:function(e,i,s){return s=s||this._uiHash(),t.ui.plugin.call(this,e,[i,s]),"drag"===e&&(this.positionAbs=this._convertPositionTo("absolute")),t.Widget.prototype._trigger.call(this,e,i,s)},plugins:{},_uiHash:function(){return{helper:this.helper,position:this.position,originalPosition:this.originalPosition,offset:this.positionAbs}}}),t.ui.plugin.add("draggable","connectToSortable",{start:function(e,i){var s=t(this).data("ui-draggable"),n=s.options,a=t.extend({},i,{item:s.element});s.sortables=[],t(n.connectToSortable).each(function(){var i=t.data(this,"ui-sortable");i&&!i.options.disabled&&(s.sortables.push({instance:i,shouldRevert:i.options.revert}),i.refreshPositions(),i._trigger("activate",e,a))})},stop:function(e,i){var s=t(this).data("ui-draggable"),n=t.extend({},i,{item:s.element});t.each(s.sortables,function(){this.instance.isOver?(this.instance.isOver=0,s.cancelHelperRemoval=!0,this.instance.cancelHelperRemoval=!1,this.shouldRevert&&(this.instance.options.revert=this.shouldRevert),this.instance._mouseStop(e),this.instance.options.helper=this.instance.options._helper,"original"===s.options.helper&&this.instance.currentItem.css({top:"auto",left:"auto"})):(this.instance.cancelHelperRemoval=!1,this.instance._trigger("deactivate",e,n))})},drag:function(e,i){var s=t(this).data("ui-draggable"),n=this;t.each(s.sortables,function(){var a=!1,o=this;this.instance.positionAbs=s.positionAbs,this.instance.helperProportions=s.helperProportions,this.instance.offset.click=s.offset.click,this.instance._intersectsWith(this.instance.containerCache)&&(a=!0,t.each(s.sortables,function(){return this.instance.positionAbs=s.positionAbs,this.instance.helperProportions=s.helperProportions,this.instance.offset.click=s.offset.click,this!==o&&this.instance._intersectsWith(this.instance.containerCache)&&t.contains(o.instance.element[0],this.instance.element[0])&&(a=!1),a})),a?(this.instance.isOver||(this.instance.isOver=1,this.instance.currentItem=t(n).clone().removeAttr("id").appendTo(this.instance.element).data("ui-sortable-item",!0),this.instance.options._helper=this.instance.options.helper,this.instance.options.helper=function(){return i.helper[0]},e.target=this.instance.currentItem[0],this.instance._mouseCapture(e,!0),this.instance._mouseStart(e,!0,!0),this.instance.offset.click.top=s.offset.click.top,this.instance.offset.click.left=s.offset.click.left,this.instance.offset.parent.left-=s.offset.parent.left-this.instance.offset.parent.left,this.instance.offset.parent.top-=s.offset.parent.top-this.instance.offset.parent.top,s._trigger("toSortable",e),s.dropped=this.instance.element,s.currentItem=s.element,this.instance.fromOutside=s),this.instance.currentItem&&this.instance._mouseDrag(e)):this.instance.isOver&&(this.instance.isOver=0,this.instance.cancelHelperRemoval=!0,this.instance.options.revert=!1,this.instance._trigger("out",e,this.instance._uiHash(this.instance)),this.instance._mouseStop(e,!0),this.instance.options.helper=this.instance.options._helper,this.instance.currentItem.remove(),this.instance.placeholder&&this.instance.placeholder.remove(),s._trigger("fromSortable",e),s.dropped=!1)})}}),t.ui.plugin.add("draggable","cursor",{start:function(){var e=t("body"),i=t(this).data("ui-draggable").options;e.css("cursor")&&(i._cursor=e.css("cursor")),e.css("cursor",i.cursor)},stop:function(){var e=t(this).data("ui-draggable").options;e._cursor&&t("body").css("cursor",e._cursor)}}),t.ui.plugin.add("draggable","opacity",{start:function(e,i){var s=t(i.helper),n=t(this).data("ui-draggable").options;s.css("opacity")&&(n._opacity=s.css("opacity")),s.css("opacity",n.opacity)},stop:function(e,i){var s=t(this).data("ui-draggable").options;s._opacity&&t(i.helper).css("opacity",s._opacity)}}),t.ui.plugin.add("draggable","scroll",{start:function(){var e=t(this).data("ui-draggable");e.scrollParent[0]!==document&&"HTML"!==e.scrollParent[0].tagName&&(e.overflowOffset=e.scrollParent.offset())},drag:function(e){var i=t(this).data("ui-draggable"),s=i.options,n=!1;i.scrollParent[0]!==document&&"HTML"!==i.scrollParent[0].tagName?(s.axis&&"x"===s.axis||(i.overflowOffset.top+i.scrollParent[0].offsetHeight-e.pageY<s.scrollSensitivity?i.scrollParent[0].scrollTop=n=i.scrollParent[0].scrollTop+s.scrollSpeed:e.pageY-i.overflowOffset.top<s.scrollSensitivity&&(i.scrollParent[0].scrollTop=n=i.scrollParent[0].scrollTop-s.scrollSpeed)),s.axis&&"y"===s.axis||(i.overflowOffset.left+i.scrollParent[0].offsetWidth-e.pageX<s.scrollSensitivity?i.scrollParent[0].scrollLeft=n=i.scrollParent[0].scrollLeft+s.scrollSpeed:e.pageX-i.overflowOffset.left<s.scrollSensitivity&&(i.scrollParent[0].scrollLeft=n=i.scrollParent[0].scrollLeft-s.scrollSpeed))):(s.axis&&"x"===s.axis||(e.pageY-t(document).scrollTop()<s.scrollSensitivity?n=t(document).scrollTop(t(document).scrollTop()-s.scrollSpeed):t(window).height()-(e.pageY-t(document).scrollTop())<s.scrollSensitivity&&(n=t(document).scrollTop(t(document).scrollTop()+s.scrollSpeed))),s.axis&&"y"===s.axis||(e.pageX-t(document).scrollLeft()<s.scrollSensitivity?n=t(document).scrollLeft(t(document).scrollLeft()-s.scrollSpeed):t(window).width()-(e.pageX-t(document).scrollLeft())<s.scrollSensitivity&&(n=t(document).scrollLeft(t(document).scrollLeft()+s.scrollSpeed)))),n!==!1&&t.ui.ddmanager&&!s.dropBehaviour&&t.ui.ddmanager.prepareOffsets(i,e)}}),t.ui.plugin.add("draggable","snap",{start:function(){var e=t(this).data("ui-draggable"),i=e.options;e.snapElements=[],t(i.snap.constructor!==String?i.snap.items||":data(ui-draggable)":i.snap).each(function(){var i=t(this),s=i.offset();this!==e.element[0]&&e.snapElements.push({item:this,width:i.outerWidth(),height:i.outerHeight(),top:s.top,left:s.left})})},drag:function(e,i){var s,n,a,o,r,l,h,c,u,d,p=t(this).data("ui-draggable"),g=p.options,f=g.snapTolerance,m=i.offset.left,_=m+p.helperProportions.width,v=i.offset.top,b=v+p.helperProportions.height;for(u=p.snapElements.length-1;u>=0;u--)r=p.snapElements[u].left,l=r+p.snapElements[u].width,h=p.snapElements[u].top,c=h+p.snapElements[u].height,r-f>_||m>l+f||h-f>b||v>c+f||!t.contains(p.snapElements[u].item.ownerDocument,p.snapElements[u].item)?(p.snapElements[u].snapping&&p.options.snap.release&&p.options.snap.release.call(p.element,e,t.extend(p._uiHash(),{snapItem:p.snapElements[u].item})),p.snapElements[u].snapping=!1):("inner"!==g.snapMode&&(s=f>=Math.abs(h-b),n=f>=Math.abs(c-v),a=f>=Math.abs(r-_),o=f>=Math.abs(l-m),s&&(i.position.top=p._convertPositionTo("relative",{top:h-p.helperProportions.height,left:0}).top-p.margins.top),n&&(i.position.top=p._convertPositionTo("relative",{top:c,left:0}).top-p.margins.top),a&&(i.position.left=p._convertPositionTo("relative",{top:0,left:r-p.helperProportions.width}).left-p.margins.left),o&&(i.position.left=p._convertPositionTo("relative",{top:0,left:l}).left-p.margins.left)),d=s||n||a||o,"outer"!==g.snapMode&&(s=f>=Math.abs(h-v),n=f>=Math.abs(c-b),a=f>=Math.abs(r-m),o=f>=Math.abs(l-_),s&&(i.position.top=p._convertPositionTo("relative",{top:h,left:0}).top-p.margins.top),n&&(i.position.top=p._convertPositionTo("relative",{top:c-p.helperProportions.height,left:0}).top-p.margins.top),a&&(i.position.left=p._convertPositionTo("relative",{top:0,left:r}).left-p.margins.left),o&&(i.position.left=p._convertPositionTo("relative",{top:0,left:l-p.helperProportions.width}).left-p.margins.left)),!p.snapElements[u].snapping&&(s||n||a||o||d)&&p.options.snap.snap&&p.options.snap.snap.call(p.element,e,t.extend(p._uiHash(),{snapItem:p.snapElements[u].item})),p.snapElements[u].snapping=s||n||a||o||d)}}),t.ui.plugin.add("draggable","stack",{start:function(){var e,i=this.data("ui-draggable").options,s=t.makeArray(t(i.stack)).sort(function(e,i){return(parseInt(t(e).css("zIndex"),10)||0)-(parseInt(t(i).css("zIndex"),10)||0)});s.length&&(e=parseInt(t(s[0]).css("zIndex"),10)||0,t(s).each(function(i){t(this).css("zIndex",e+i)}),this.css("zIndex",e+s.length))}}),t.ui.plugin.add("draggable","zIndex",{start:function(e,i){var s=t(i.helper),n=t(this).data("ui-draggable").options;s.css("zIndex")&&(n._zIndex=s.css("zIndex")),s.css("zIndex",n.zIndex)},stop:function(e,i){var s=t(this).data("ui-draggable").options;s._zIndex&&t(i.helper).css("zIndex",s._zIndex)}})})(jQuery);
 
 (function ($) {
     //对jquery的扩展
@@ -5546,7 +6084,7 @@ KM.ui.define('colorpicker', {
 
 
 /*modal 类*/
-KM.ui.define('modal', {
+KM.ui.define( 'modal', {
     tpl: '<div class="kmui-modal" tabindex="-1" >' +
         '<div class="kmui-modal-header">' +
         '<div class="kmui-close" data-hide="modal"></div>' +
@@ -5571,70 +6109,79 @@ KM.ui.define('modal', {
         backdrop: true,
         keyboard: true
     },
-    init: function (options) {
+    init: function ( options ) {
         var me = this;
 
-        me.root($($.parseTmpl(me.tpl, options || {})));
+        me.root( $( $.parseTmpl( me.tpl, options || {} ) ) );
 
-        me.data("options", options);
-        if (options.okFn) {
-            me.on('ok', $.proxy(options.okFn, me))
+        me.data( "options", options );
+        if ( options.okFn ) {
+            me.on( 'ok', $.proxy( options.okFn, me ) )
         }
-        if (options.cancelFn) {
-            me.on('beforehide', $.proxy(options.cancelFn, me))
+        if ( options.cancelFn ) {
+            me.on( 'beforehide', $.proxy( options.cancelFn, me ) )
         }
 
-        me.root().delegate('[data-hide="modal"]', 'click', $.proxy(me.hide, me))
-            .delegate('[data-ok="modal"]', 'click', $.proxy(me.ok, me));
+        me.root().delegate( '[data-hide="modal"]', 'click', $.proxy( me.hide, me ) )
+            .delegate( '[data-ok="modal"]', 'click', $.proxy( me.ok, me ) );
 
-        $('[data-hide="modal"],[data-ok="modal"]',me.root()).hover(function(){
-            $(this).toggleClass('kmui-hover')
-        });
+        $( '[data-hide="modal"],[data-ok="modal"]', me.root() ).hover( function () {
+            $( this ).toggleClass( 'kmui-hover' )
+        } );
+
+        setTimeout( function () {
+            $( '.kmui-modal' ).draggable( {
+                handle: '.kmui-modal-header'
+            } );
+        }, 100 );
     },
     toggle: function () {
         var me = this;
-        return me[!me.data("isShown") ? 'show' : 'hide']();
+        return me[ !me.data( "isShown" ) ? 'show' : 'hide' ]();
     },
     show: function () {
-
         var me = this;
 
-        me.trigger("beforeshow");
+        me.trigger( "beforeshow" );
 
-        if (me.data("isShown")) return;
+        if ( me.data( "isShown" ) ) return;
 
-        me.data("isShown", true);
+        me.data( "isShown", true );
 
         me.escape();
 
-        me.backdrop(function () {
+        me.backdrop( function () {
             me.autoCenter();
             me.root()
                 .show()
                 .focus()
-                .trigger('aftershow');
-        })
+                .trigger( 'aftershow' );
+        } );
+
+        $( '.kmui-modal' ).draggable( {
+            handle: '.kmui-modal-header'
+        } );
     },
     showTip: function ( text ) {
         $( '.kmui-modal-tip', this.root() ).html( text ).fadeIn();
     },
     hideTip: function ( text ) {
-        $( '.kmui-modal-tip', this.root() ).fadeOut( function (){
-            $(this).html('');
+        $( '.kmui-modal-tip', this.root() ).fadeOut( function () {
+            $( this ).html( '' );
         } );
     },
     autoCenter: function () {
         //ie6下不用处理了
-        !$.IE6 && this.root().css("margin-left", -(this.root().width() / 2));
+        !$.IE6 && this.root().css( "margin-left", -( this.root().width() / 2 ) );
     },
     hide: function () {
         var me = this;
 
-        me.trigger("beforehide");
+        me.trigger( "beforehide" );
 
-        if (!me.data("isShown")) return;
+        if ( !me.data( "isShown" ) ) return;
 
-        me.data("isShown", false);
+        me.data( "isShown", false );
 
         me.escape();
 
@@ -5642,65 +6189,61 @@ KM.ui.define('modal', {
     },
     escape: function () {
         var me = this;
-        if (me.data("isShown") && me.data("options").keyboard) {
-            me.root().on('keyup', function (e) {
+        if ( me.data( "isShown" ) && me.data( "options" ).keyboard ) {
+            me.root().on( 'keyup', function ( e ) {
                 e.which == 27 && me.hide();
-            })
-        }
-        else if (!me.data("isShown")) {
-            me.root().off('keyup');
+            } )
+        } else if ( !me.data( "isShown" ) ) {
+            me.root().off( 'keyup' );
         }
     },
     hideModal: function () {
         var me = this;
         me.root().hide();
-        me.backdrop(function () {
+        me.backdrop( function () {
             me.removeBackdrop();
-            me.trigger('afterhide');
-        })
+            me.trigger( 'afterhide' );
+        } )
     },
     removeBackdrop: function () {
         this.$backdrop && this.$backdrop.remove();
         this.$backdrop = null;
     },
-    backdrop: function (callback) {
+    backdrop: function ( callback ) {
         var me = this;
-        if (me.data("isShown") && me.data("options").backdrop) {
-            me.$backdrop = $('<div class="kmui-modal-backdrop" />').click(
-                me.data("options").backdrop == 'static' ?
-                    $.proxy(me.root()[0].focus, me.root()[0])
-                    : $.proxy(me.hide, me)
+        if ( me.data( "isShown" ) && me.data( "options" ).backdrop ) {
+            me.$backdrop = $( '<div class="kmui-modal-backdrop" />' ).click(
+                me.data( "options" ).backdrop == 'static' ?
+                $.proxy( me.root()[ 0 ].focus, me.root()[ 0 ] ) : $.proxy( me.hide, me )
             )
         }
-        me.trigger('afterbackdrop');
+        me.trigger( 'afterbackdrop' );
         callback && callback();
 
     },
-    attachTo: function ($obj) {
+    attachTo: function ( $obj ) {
         var me = this
-        if (!$obj.data('$mergeObj')) {
+        if ( !$obj.data( '$mergeObj' ) ) {
 
-            $obj.data('$mergeObj', me.root());
-            $obj.on('click', function () {
-                me.toggle($obj)
-            });
-            me.data('$mergeObj', $obj)
+            $obj.data( '$mergeObj', me.root() );
+            $obj.on( 'click', function () {
+                me.toggle( $obj )
+            } );
+            me.data( '$mergeObj', $obj )
         }
     },
     ok: function () {
         var me = this;
-        me.trigger('beforeok');
-        if (me.trigger("ok", me) === false) {
+        me.trigger( 'beforeok' );
+        if ( me.trigger( "ok", me ) === false ) {
             return;
         }
         me.hide();
     },
     getBodyContainer: function () {
-        return this.root().find('.kmui-modal-body')
+        return this.root().find( '.kmui-modal-body' )
     }
-});
-
-
+} );
 
 /*tooltip 类*/
 KM.ui.define('tooltip', {
@@ -6055,6 +6598,7 @@ $.wordCountAdaptive  = function( word, hasSuffix ) {
 
 utils.extend( KityMinder, function () {
     var _kityminderUI = {},
+        _kityminderToolbarUI ={},
         _activeWidget = null,
         _widgetData = {},
         _widgetCallBack = {};
@@ -6062,6 +6606,16 @@ utils.extend( KityMinder, function () {
         registerUI: function ( uiname, fn ) {
             utils.each( uiname.split( /\s+/ ), function ( i, name ) {
                 _kityminderUI[ name ] = fn;
+            } )
+        },
+        registerToolbarUI: function ( uiname, fn ) {
+            utils.each( uiname.split( /\s+/ ), function ( i, name ) {
+                _kityminderToolbarUI[ name ] = fn;
+            } )
+        },
+        loadUI:function(km){
+            utils.each( _kityminderUI, function ( i, fn ) {
+                fn.call(km)
             } )
         },
         _createUI: function ( id ) {
@@ -6072,6 +6626,7 @@ utils.extend( KityMinder, function () {
 
             $cont.append( $toolbar ).append( $kmbody ).append( $statusbar );
             $( utils.isString( id ) ? '#' + id : id ).append( $cont );
+
             return {
                 '$container': $cont,
                 '$toolbar': $toolbar,
@@ -6088,8 +6643,8 @@ utils.extend( KityMinder, function () {
                         if ( name == '|' ) {
                             $.kmuiseparator && btns.push( $.kmuiseparator() );
                         } else {
-                            if ( _kityminderUI[ name ] ) {
-                                var ui = _kityminderUI[ name ].call( km, name );
+                            if ( _kityminderToolbarUI[ name ] ) {
+                                var ui = _kityminderToolbarUI[ name ].call( km, name );
                                 ui && btns.push( ui );
                             }
 
@@ -6110,6 +6665,8 @@ utils.extend( KityMinder, function () {
             this._createToolbar( containers.$toolbar, km );
             this._createStatusbar( containers.$statusbar, km );
             km.$container = containers.$container;
+
+            this.loadUI(km);
             return km.fire( 'interactchange' );
         },
         registerWidget: function ( name, pro, cb ) {
@@ -6173,27 +6730,25 @@ utils.extend( KityMinder, function () {
     }
 }() );
 
-KM.registerUI('bold italic redo undo',
-    function(name) {
+KM.registerToolbarUI( 'bold italic redo undo',
+    function ( name ) {
         var me = this;
-        var $btn = $.kmuibutton({
-            icon : name,
-            click : function(){
-                me.execCommand(name);
+        var $btn = $.kmuibutton( {
+            icon: name,
+            click: function () {
+                me.execCommand( name );
             },
-            title: this.getLang('tooltips')[name] || ''
-        });
-        this.on('interactchange',function(){
-            var state = this.queryCommandState(name);
-            $btn.kmui().disabled(state == -1).active(state == 1)
-        });
+            title: this.getLang( 'tooltips' )[ name ] || ''
+        } );
+        this.on( 'interactchange', function () {
+            var state = this.queryCommandState( name );
+            $btn.kmui().disabled( state == -1 ).active( state == 1 );
+        } );
         return $btn;
     }
 );
 
-
-
-KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
+KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
@@ -6325,7 +6880,7 @@ KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 } );
 
 
-KM.registerUI( 'forecolor', function ( name ) {
+KM.registerToolbarUI( 'forecolor', function ( name ) {
     function getCurrentColor() {
         return $colorLabel.css( 'background-color' );
     }
@@ -6388,7 +6943,7 @@ KM.registerUI( 'forecolor', function ( name ) {
 
 } );
 
-KM.registerUI( 'saveto', function ( name ) {
+KM.registerToolbarUI( 'saveto', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
@@ -6440,31 +6995,93 @@ KM.registerUI( 'saveto', function ( name ) {
 
 } );
 
-KM.registerUI( 'hand',
+KM.registerToolbarUI( 'hand zoom-in zoom-out',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {
             icon: name,
-            click: function ( e ) {
-                var drag = me._onDragMode = !me._onDragMode;
-                me._paper.setStyle( 'cursor', drag ? 'pointer' : 'default' );
-                me._paper.setStyle( 'cursor', drag ? '-webkit-grab' : 'default' );
-                $btn.kmui().active( drag );
-                if ( drag ) {
-                    me._paper.drag();
-                } else {
-                    me._paper.undrag();
-                }
+            click: function () {
+                me.execCommand( name );
             },
-            title: this.getLang( 'hand' )[ name ] || ''
+            title: this.getLang( 'tooltips.' )[ name ] || ''
         } );
-        me.on( 'beforemousemove', function ( e ) {
-            if ( this._onDragMode ) {
-                e.stopPropagation();
-            }
-        } );
-        kity.extendClass( kity.Paper, kity.Draggable );
+        me.on('interactchange', function() {
+            var state = me.queryCommandState( name );
+            $btn.kmui().disabled( state == -1 ).active( state == 1 );
+        });
         return $btn;
+    }
+);
+
+KM.registerToolbarUI( 'markers', function ( name ) {
+
+    var me = this,
+        currentRange, $dialog,
+        opt = {
+            width: 200,
+            title: this.getLang( 'tooltips' )[ name ] || '',
+            url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
+        };
+
+    var $btn = $.kmuibutton( {
+        icon: name,
+        title: this.getLang( 'tooltips' )[ name ] || ''
+    } );
+    //加载模版数据
+    utils.loadFile( document, {
+        src: opt.url,
+        tag: "script",
+        type: "text/javascript",
+        defer: "defer"
+    }, function () {
+
+        $dialog = $.kmuimodal( opt );
+
+        $dialog.attr( 'id', 'kmui-dialog-' + name ).addClass( 'kmui-dialog-' + name )
+            .find( '.kmui-modal-body' ).addClass( 'kmui-dialog-' + name + '-body' );
+
+        $dialog.kmui().on( 'beforeshow', function () {
+            var $root = this.root(),
+                win = null,
+                offset = null;
+            if ( !$root.parent()[ 0 ] ) {
+                me.$container.find( '.kmui-dialog-container' ).append( $root );
+            }
+            KM.setWidgetBody( name, $dialog, me );
+        } ).attachTo( $btn )
+    } );
+
+
+
+    me.on( 'interactchange', function () {
+        var state = this.queryCommandState( name );
+        $btn.kmui().disabled( state == -1 ).active( state == 1 )
+    } );
+    return $btn;
+} );
+
+KM.registerUI( 'tooltips',
+    function ( name ) {
+        var km = this;
+        //添加tooltip;
+        if($.kmuitooltip){
+
+            $("[data-original-title]",km.$container).each(function(i,n){
+                var tooltips = km.getLang('tooltips');
+                var tooltip = $(n).data('original-title');
+                utils.each(tooltips,function(v,k){
+
+                    if(k == tooltip && km.getShortcutKey(v)){
+                        $(n).attr('data-original-title',tooltip + ' (' + km.getShortcutKey(v).toUpperCase() + ')');
+
+                    }
+                })
+            });
+            $.kmuitooltip('attachTo', $("[data-original-title]",km.$container)).css('z-index',km.getOptions('zIndex')+1);
+        }
+        km.$container.find('a').click(function(evt){
+            evt.preventDefault()
+        });
     }
 );
 
