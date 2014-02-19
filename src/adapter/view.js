@@ -1,4 +1,4 @@
-KM.registerUI( 'hand zoom-in zoom-out',
+KM.registerToolbarUI( 'hand zoom-in zoom-out',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {

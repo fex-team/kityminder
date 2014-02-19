@@ -168,7 +168,7 @@ KityMinder.registerModule( 'Hand', function () {
         },
         events: {
             keyup: function ( e ) {
-                if ( e.keyCode == keymap.Space && this.getSelectedNodes().length === 0 ) {
+                if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
                     this.execCommand( 'hand' );
                     e.preventDefault();
                 }
