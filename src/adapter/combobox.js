@@ -1,4 +1,4 @@
-KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
+KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
@@ -130,7 +130,7 @@ KM.registerUI( 'layoutstyle fontfamily fontsize', function ( name ) {
 } );
 
 
-KM.registerUI( 'forecolor', function ( name ) {
+KM.registerToolbarUI( 'forecolor', function ( name ) {
     function getCurrentColor() {
         return $colorLabel.css( 'background-color' );
     }

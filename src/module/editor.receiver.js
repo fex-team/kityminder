@@ -2,7 +2,7 @@
 Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
-        this.selection.setHide();
+        this.selection && this.selection.setHide();
         this.index = 0;
         return this;
     },
@@ -127,15 +127,23 @@ Minder.Receiver = kity.createClass('Receiver',{
         //更新模拟选区的范围
         this.selection.setStartOffset(this.index).collapse(true);
         if(this.index == this.textData.length){
+            if(this.index == 0){
+                this.selection.setPosition(this.getBaseOffset())
+            }else{
+                this.selection.setPosition({
+                    x : this.textData[this.index-1].x + this.textData[this.index-1].width,
+                    y : this.textData[this.index-1].y
+                })
+            }
 
-            this.selection.setPosition({
-                x : this.textData[this.index-1].x + this.textData[this.index-1].width,
-                y : this.textData[this.index-1].y
-            })
+
         }else{
             this.selection.setPosition(this.textData[this.index])
         }
         return this;
+    },
+    getBaseOffset:function(){
+        return this.textShape.getRenderBox('top');
     },
     setBaseOffset :function(){
         this.offset = this.textShape.getRenderBox('top');
