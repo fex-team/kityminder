@@ -138,17 +138,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         return this;
     },
     setBaseOffset :function(){
-
-        var nodeOffset = this.minderNode.getRenderContainer().getRenderBox();
-        var textOffset = this.textShape.getRenderBox();
-        var transformed = this.textShape.container.getTransform().transformBox(textOffset);
-        //var contRcOffset = this.minderNode.getContRc().getRenderBox();
-
-
-        this.offset =   {
-            x : nodeOffset.x +  transformed.x,
-            y : nodeOffset.y +  transformed.y
-        };
+        this.offset = this.textShape.getRenderBox('top');
         return this;
     },
     setContainerStyle : function(){
