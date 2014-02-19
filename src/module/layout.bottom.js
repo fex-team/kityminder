@@ -134,12 +134,6 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var nodeStyle = nodeStyles[ nodeType ];
 		var txtShape = node.getTextShape();
 		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
-		if ( nodeType === "root" ) {
-			Layout.leftList = [];
-			Layout.rightList = [];
-			Layout.leftHeight = 0;
-			Layout.rightHeight = 0;
-		}
 	};
 	//根据内容调整节点尺寸
 	var updateShapeByCont = function ( node ) {
@@ -178,84 +172,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + node.getTextShape().getHeight() ) );
 	};
 	//计算节点在垂直方向的位置
-	var updateLayoutVertical = function ( node, parent, action ) {
-		var root = minder.getRoot();
-		var effectSet = [ node ];
-		if ( action === "remove" ) {
-			effectSet = [];
-		}
-		var Layout = node.getLayout();
-		var nodeShape = node.getRenderContainer();
-		var nodeType = node.getType();
-		var nodeStyle = nodeStyles[ nodeType ];
-		var appendside = Layout.appendside;
-		var countBranchHeight = function ( node, side ) {
-			var nodeStyle = nodeStyles[ node.getType() ];
-			var selfHeight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			var childHeight = ( function () {
-				var sum = 0;
-				var children;
-				if ( !side ) {
-					children = node.getChildren();
-				} else {
-					children = node.getLayout()[ side + "List" ];
-				}
-				for ( var i = 0; i < children.length; i++ ) {
-					var childLayout = children[ i ].getLayout();
-					if ( children[ i ].getRenderContainer().getHeight() !== 0 )
-						sum += childLayout.branchheight;
-				}
-				return sum;
-			} )();
-			if ( side ) {
-				return childHeight;
-			} else {
-				return ( selfHeight > childHeight ? selfHeight : childHeight );
-			}
-		};
-		if ( nodeType === "root" ) {
-			Layout.y = 100;
-			effectSet.push( node );
-		} else {
-			if ( action === "append" || action === "contract" ) {
-				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			} else if ( action === "change" ) { //展开
-				Layout.branchheight = countBranchHeight( node );
-			}
-			var parentLayout = parent.getLayout();
-			var parentShape = parent.getRenderContainer();
-			var prt = node.getParent() || parent;
-			//自底向上更新祖先元素的branchheight值
-			while ( prt ) {
-				var prtLayout = prt.getLayout();
-				if ( prt.getType() === "root" ) {
-					prtLayout[ appendside + "Height" ] = countBranchHeight( prt, appendside );
-				} else {
-					prtLayout.branchheight = countBranchHeight( prt );
-				}
-				prt = prt.getParent();
-			}
-			//自顶向下更新受影响一侧的y值
-			var sideList = root.getLayout()[ appendside + "List" ];
-			var _buffer = [ root ];
-			while ( _buffer.length > 0 ) {
-				var _buffer0Layout = _buffer[ 0 ].getLayout();
-				var children = _buffer0Layout[ appendside + "List" ] || _buffer[ 0 ].getChildren();
-				_buffer = _buffer.concat( children );
-				var sY = _buffer0Layout.y - ( _buffer0Layout[ appendside + "Height" ] || _buffer0Layout.branchheight ) / 2;
-				for ( var i = 0; i < children.length; i++ ) {
-					var childLayout = children[ i ].getLayout();
-					childLayout.y = sY + childLayout.branchheight / 2;
-					sY += childLayout.branchheight;
-				}
-				effectSet.push( _buffer[ 0 ] );
-				_buffer.shift();
-			}
-		}
-		return effectSet;
-	};
-	//计算节点在水平方向的位置
-	var updateLayoutHorizon = function ( node ) {
+	var updateLayoutVertical = function ( node ) {
 		var nodeType = node.getType();
 		var parent = node.getParent();
 		var effectSet = [ node ];
@@ -265,25 +182,80 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			var prt = _buffer[ 0 ].getParent();
 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 			if ( !prt ) {
-				Layout.x = getMinderSize().width / 2;
+				Layout.y = 100;
 				_buffer.shift();
 				continue;
 			}
 			var parentLayout = prt.getLayout();
-			var parentWidth = prt.getRenderContainer().getWidth();
+			var parentHeight = prt.getRenderContainer().getHeight();
 			var parentStyle = nodeStyles[ prt.getType() ];
 			var childLayout = _buffer[ 0 ].getLayout();
 			var childStyle = nodeStyles[ _buffer[ 0 ].getType() ];
-			if ( parentLayout.align === "center" ) {
-				parentWidth = parentWidth / 2;
-			}
-			if ( childLayout.appendside === "left" ) {
-				childLayout.x = parentLayout.x - parentWidth - parentStyle.margin[ 1 ] - childStyle.margin[ 3 ];
-			} else {
-				childLayout.x = parentLayout.x + parentWidth + parentStyle.margin[ 1 ] + childStyle.margin[ 3 ];
-			}
+			childLayout.y = parentLayout.y + parentHeight + parentStyle.margin[ 2 ] + childStyle.margin[ 2 ];
 			effectSet.push( _buffer[ 0 ] );
 			_buffer.shift();
+		}
+		return effectSet;
+	};
+	//计算节点在水平方向的位置
+	var updateLayoutHorizon = function ( node, parent, action ) {
+		var root = minder.getRoot();
+		var effectSet = [ node ];
+		if ( action === "remove" ) {
+			effectSet = [];
+		}
+		var Layout = node.getLayout();
+		var nodeShape = node.getRenderContainer();
+		var nodeType = node.getType();
+		var nodeStyle = nodeStyles[ nodeType ];
+		var countBranchWidth = function ( node ) {
+			var nodeStyle = nodeStyles[ node.getType() ];
+			var selfWidth = node.getRenderContainer().getWidth() + nodeStyle.margin[ 1 ] + nodeStyle.margin[ 3 ];
+			var childWidth = ( function () {
+				var sum = 0;
+				var children = node.getChildren();
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					if ( children[ i ].getRenderContainer().getWidth() !== 0 )
+						sum += childLayout.branchwidth;
+				}
+				return sum;
+			} )();
+			return ( selfWidth > childWidth ? selfWidth : childWidth );
+		};
+		if ( nodeType === "root" ) {
+			Layout.x = getMinderSize().width / 2;
+			effectSet.push( node );
+		} else {
+			if ( action === "append" || action === "contract" ) {
+				Layout.branchwidth = node.getRenderContainer().getWidth() + nodeStyle.margin[ 1 ] + nodeStyle.margin[ 3 ];
+			} else if ( action === "change" ) {
+				Layout.branchheight = countBranchWidth( node );
+			}
+			var parentLayout = parent.getLayout();
+			var parentShape = parent.getRenderContainer();
+			var prt = node.getParent() || parent;
+			//自底向上更新祖先元素的branchwidth值
+			while ( prt ) {
+				var prtLayout = prt.getLayout();
+				prtLayout.branchheight = countBranchWidth( prt );
+				prt = prt.getParent();
+			}
+			//自顶向下更新受影响一侧的y值
+			var _buffer = [ root ];
+			while ( _buffer.length > 0 ) {
+				var _buffer0Layout = _buffer[ 0 ].getLayout();
+				var children = _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( children );
+				var sX = _buffer0Layout.x - _buffer0Layout.branchwidth / 2;
+				for ( var i = 0; i < children.length; i++ ) {
+					var childLayout = children[ i ].getLayout();
+					childLayout.x = sX;
+					sX += childLayout.branchwidth;
+				}
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
+			}
 		}
 		return effectSet;
 	};
@@ -293,17 +265,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var align = Layout.align;
 		var _rectHeight = nodeShape.getHeight();
 		var _rectWidth = nodeShape.getWidth();
-		switch ( align ) {
-		case "right":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y - _rectHeight / 2 ) );
-			break;
-		case "center":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y - _rectHeight / 2 ) );
-			break;
-		default:
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
-			break;
-		}
+		nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
 		node.setPoint( Layout.x, Layout.y );
 	};
 	var updateConnectAndshIcon = function ( node ) {
@@ -465,66 +427,6 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 		},
 		appendChildNode: function ( parent, node, sibling ) {
-			minder.handelNodeInsert( node );
-			node.clearLayout();
-			var Layout = node.getLayout();
-			var parentLayout = parent.getLayout();
-			if ( sibling ) {
-				var siblingLayout = sibling.getLayout();
-				Layout.appendside = siblingLayout.appendside;
-				Layout.align = siblingLayout.align;
-				parent.insertChild( node, sibling.getIndex() + 1 );
-				if ( parent.getType() === "root" ) {
-					var len = parent.getChildren().length;
-					if ( len < 7 ) {
-						if ( len % 2 ) {
-							Layout.appendside = "right";
-							Layout.align = "left";
-						} else {
-							Layout.appendside = "left";
-							Layout.align = "right";
-						}
-					}
-					var sideList = parentLayout[ Layout.appendside + "List" ];
-					var idx = sideList.indexOf( sibling );
-					sideList.splice( idx + 1, 0, node );
-				}
-			} else {
-				if ( parent.getType() !== "root" ) {
-					var prtLayout = parent.getLayout();
-					Layout.appendside = prtLayout.appendside;
-					Layout.align = prtLayout.align;
-					parent.appendChild( node );
-				} else {
-					var nodeP = node.getPoint();
-					if ( nodeP && nodeP.x && nodeP.y ) {
-						if ( nodeP.x > parentLayout.x ) {
-							Layout.appendside = "right";
-							Layout.align = "left";
-						} else {
-							Layout.appendside = "left";
-							Layout.align = "right";
-						}
-					} else {
-						if ( parentLayout.rightList.length > 1 && parentLayout.rightList.length > parentLayout.leftList.length ) {
-							Layout.appendside = "left";
-							Layout.align = "right";
-						} else {
-							Layout.appendside = "right";
-							Layout.align = "left";
-						}
-					}
-					var sideList1 = parentLayout[ Layout.appendside + "List" ];
-					sideList1.push( node );
-					var idx1;
-					if ( Layout.appendside === "right" ) {
-						idx1 = sideList1.length;
-					} else {
-						idx1 = parent.getChildren().length;
-					}
-					parent.insertChild( node, idx1 );
-				}
-			}
 			//设置分支类型
 			if ( parent.getType() === "root" ) {
 				node.setType( "main" );
@@ -550,84 +452,13 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 		},
 		appendSiblingNode: function ( sibling, node ) {
-			var parent = sibling.getParent();
-			this.appendChildNode( parent, node, sibling );
+
 		},
 		removeNode: function ( nodes ) {
-			while ( nodes.length !== 0 ) {
-				var parent = nodes[ 0 ].getParent();
-				if ( !parent ) {
-					nodes.splice( 0, 1 );
-					return false;
-				}
-				var nodeLayout = nodes[ 0 ].getLayout();
-				if ( parent.getType() === "root" ) {
-					var sideList = parent.getLayout()[ nodeLayout.appendside + "List" ];
-					var index = sideList.indexOf( nodes[ 0 ] );
-					sideList.splice( index, 1 );
-				}
-				parent.removeChild( nodes[ 0 ] );
-				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
-				for ( var j = 0; j < set.length; j++ ) {
-					translateNode( set[ j ] );
-					updateConnectAndshIcon( set[ j ] );
-				}
-				var _buffer = [ nodes[ 0 ] ];
-				while ( _buffer.length !== 0 ) {
-					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-					try {
-						_buffer[ 0 ].getRenderContainer().remove();
-						var Layout = _buffer[ 0 ].getLayout();
-						Layout.connect.remove();
-						Layout.shicon.remove();
-					} catch ( error ) {
-						console.log( "isRemoved" );
-					}
-					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
-					var idx = nodes.indexOf( _buffer[ 0 ] );
-					if ( idx !== -1 ) {
-						nodes.splice( idx, 1 );
-					}
-					_buffer.shift();
-				}
-			}
+
 		},
 		expandNode: function ( ico ) {
-			var isExpand = ico.icon.switchState();
-			var node = ico.icon._node;
-			var _buffer = node.getChildren();
-			var _cleanbuffer = [];
 
-			while ( _buffer.length !== 0 ) {
-				var Layout = _buffer[ 0 ].getLayout();
-				if ( isExpand ) {
-					var parent = _buffer[ 0 ].getParent();
-					Layout.parent = parent;
-					_cleanbuffer.push( _buffer[ 0 ] );
-					//minder.appendChildNode( parent, _buffer[ 0 ] );
-					Layout.connect = null;
-					Layout.shicon = null;
-				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					Layout.shicon.remove();
-				}
-				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-				_buffer.shift();
-			}
-			if ( isExpand ) {
-				node.clearChildren();
-				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-					_cleanbuffer[ j ].clearChildren();
-					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
-				}
-			}
-			var set = [];
-			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-				updateConnectAndshIcon( set[ i ] );
-			}
 		}
 	};
 	this.addLayoutStyle( "bottom", _style );

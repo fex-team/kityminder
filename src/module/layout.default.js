@@ -219,7 +219,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		} else {
 			if ( action === "append" || action === "contract" ) {
 				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
-			} else if ( action === "change" ) { //展开
+			} else if ( action === "change" ) {
 				Layout.branchheight = countBranchHeight( node );
 			}
 			var parentLayout = parent.getLayout();
