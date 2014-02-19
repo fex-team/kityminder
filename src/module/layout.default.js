@@ -121,7 +121,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		case "sub":
 			var underline = Layout.underline = new kity.Path();
 			var highlightshape = Layout.highlightshape = new kity.Rect().setRadius( 4 );
-			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius(4), highlightshape, underline ] );
+			node.getBgRc().clear().addShapes( [ Layout.bgRect = new kity.Rect().setRadius( 4 ), highlightshape, underline ] );
 			break;
 		default:
 			break;
@@ -170,7 +170,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.highlightshape
 				.setWidth( _contWidth + nodeStyle.padding[ 1 ] + nodeStyle.padding[ 3 ] )
 				.setHeight( _contHeight + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
-			Layout.bgRect.setWidth(width).setHeight(height);
+			Layout.bgRect.setWidth( width ).setHeight( height );
 			break;
 		default:
 			break;
@@ -377,7 +377,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		}
 		//更新收放icon
-		if ( nodeType !== "root" ) {
+		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
 			}
@@ -475,6 +475,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.align = siblingLayout.align;
 				parent.insertChild( node, sibling.getIndex() + 1 );
 				if ( parent.getType() === "root" ) {
+					var len = parent.getChildren().length;
+					if ( len < 7 ) {
+						if ( len % 2 ) {
+							Layout.appendside = "right";
+							Layout.align = "left";
+						} else {
+							Layout.appendside = "left";
+							Layout.align = "right";
+						}
+					}
 					var sideList = parentLayout[ Layout.appendside + "List" ];
 					var idx = sideList.indexOf( sibling );
 					sideList.splice( idx + 1, 0, node );
@@ -600,7 +610,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				} else {
 					_buffer[ 0 ].getRenderContainer().remove();
 					Layout.connect.remove();
-					Layout.shicon.remove();
+					if ( Layout.shicon ) Layout.shicon.remove();
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
