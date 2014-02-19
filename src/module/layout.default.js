@@ -53,9 +53,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var nodeShape = node.getRenderContainer();
 				var nodeX, nodeY = ( node.getType() === "main" ? Layout.y : ( Layout.y + nodeShape.getHeight() / 2 - 5 ) );
 				if ( Layout.appendside === "left" ) {
-					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 6;
+					nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x - 5;
 				} else {
 					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 6;
+					if ( node.getType() === "main" ) nodeX -= 3;
 				}
 				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
 			},
@@ -340,7 +341,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var endPosV = endPos.getVertex();
 			sPos.setVertex( rootX, rootY );
 			connect.bezier.setPoints( [ sPos, endPos ] ).stroke( nodeStyle.stroke );
-			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? 1 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
+			connect.circle.setCenter( endPosV.x + ( Layout.appendside === "left" ? -0.5 : -1.5 ), endPosV.y ).fill( "white" ).setRadius( 4 );
 		} else if ( nodeType === "sub" ) {
 			if ( !Layout.connect ) {
 				connect = Layout.connect = new kity.Path();
