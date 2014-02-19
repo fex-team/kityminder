@@ -61,6 +61,7 @@ $dependency = Array(
     ,'src/adapter/saveto.js'
     ,'src/adapter/view.js'
     ,'src/adapter/dialog.js'
+    ,'src/adapter/tooltips.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
 );

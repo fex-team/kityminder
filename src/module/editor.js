@@ -134,6 +134,9 @@ KityMinder.registerModule( "TextEditModule", function () {
 
 
                 }
+            },
+            'selectionclear':function(){
+                receiver.setTextEditStatus(false).clear()
             }
         }
     };

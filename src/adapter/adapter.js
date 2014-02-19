@@ -1,5 +1,6 @@
 utils.extend( KityMinder, function () {
     var _kityminderUI = {},
+        _kityminderToolbarUI ={},
         _activeWidget = null,
         _widgetData = {},
         _widgetCallBack = {};
@@ -7,6 +8,16 @@ utils.extend( KityMinder, function () {
         registerUI: function ( uiname, fn ) {
             utils.each( uiname.split( /\s+/ ), function ( i, name ) {
                 _kityminderUI[ name ] = fn;
+            } )
+        },
+        registerToolbarUI: function ( uiname, fn ) {
+            utils.each( uiname.split( /\s+/ ), function ( i, name ) {
+                _kityminderToolbarUI[ name ] = fn;
+            } )
+        },
+        loadUI:function(km){
+            utils.each( _kityminderUI, function ( i, fn ) {
+                fn.call(km)
             } )
         },
         _createUI: function ( id ) {
@@ -17,6 +28,7 @@ utils.extend( KityMinder, function () {
 
             $cont.append( $toolbar ).append( $kmbody ).append( $statusbar );
             $( utils.isString( id ) ? '#' + id : id ).append( $cont );
+
             return {
                 '$container': $cont,
                 '$toolbar': $toolbar,
@@ -33,8 +45,8 @@ utils.extend( KityMinder, function () {
                         if ( name == '|' ) {
                             $.kmuiseparator && btns.push( $.kmuiseparator() );
                         } else {
-                            if ( _kityminderUI[ name ] ) {
-                                var ui = _kityminderUI[ name ].call( km, name );
+                            if ( _kityminderToolbarUI[ name ] ) {
+                                var ui = _kityminderToolbarUI[ name ].call( km, name );
                                 ui && btns.push( ui );
                             }
 
@@ -55,6 +67,8 @@ utils.extend( KityMinder, function () {
             this._createToolbar( containers.$toolbar, km );
             this._createStatusbar( containers.$statusbar, km );
             km.$container = containers.$container;
+
+            this.loadUI(km);
             return km.fire( 'interactchange' );
         },
         registerWidget: function ( name, pro, cb ) {

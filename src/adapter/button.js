@@ -1,4 +1,4 @@
-KM.registerUI( 'bold italic redo undo',
+KM.registerToolbarUI( 'bold italic redo undo',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {

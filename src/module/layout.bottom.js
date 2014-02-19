@@ -224,7 +224,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			return ( selfWidth > childWidth ? selfWidth : childWidth );
 		};
 		if ( nodeType === "root" ) {
-			Layout.x = getMinderSize().width / 2;
+			Layout.x = getMinderSize().width / 2 - node.getRenderContainer().getWidth() / 2;
 			effectSet.push( node );
 		} else {
 			if ( action === "append" || action === "contract" ) {
@@ -427,6 +427,8 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 		},
 		appendChildNode: function ( parent, node, sibling ) {
+			minder.handelNodeInsert( node );
+			node.clearLayout();
 			//设置分支类型
 			if ( parent.getType() === "root" ) {
 				node.setType( "main" );
@@ -443,8 +445,8 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );
-			var set1 = updateLayoutVertical( node, parent, "append" );
-			var set2 = updateLayoutHorizon( node );
+			var set2 = updateLayoutHorizon( node, parent, "append" );
+			var set1 = updateLayoutVertical( node );
 			var set = uSet( set1, set2 );
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );

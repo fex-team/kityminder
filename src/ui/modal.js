@@ -44,9 +44,11 @@ KM.ui.define( 'modal', {
             $( this ).toggleClass( 'kmui-hover' )
         } );
 
-        setTimeout(function() {
-            $('.kmui-modal').draggable({ handle: '.kmui-modal-header' });
-        }, 100);
+        setTimeout( function () {
+            $( '.kmui-modal' ).draggable( {
+                handle: '.kmui-modal-header'
+            } );
+        }, 100 );
     },
     toggle: function () {
         var me = this;
@@ -71,7 +73,9 @@ KM.ui.define( 'modal', {
                 .trigger( 'aftershow' );
         } );
 
-        $('.kmui-modal').draggable({ handle: '.kmui-modal-header' });
+        $( '.kmui-modal' ).draggable( {
+            handle: '.kmui-modal-header'
+        } );
     },
     showTip: function ( text ) {
         $( '.kmui-modal-tip', this.root() ).html( text ).fadeIn();
