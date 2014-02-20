@@ -51,7 +51,8 @@
                 //自动记录
                 autoRecord: true,
                 //最多记录条数
-                recordCount: 5
+                recordCount: 5,
+                enabledRecord:true
             },
             init: function( options ){
 
@@ -133,6 +134,9 @@
              */
             select: function( index ){
 
+                if(!this.data('options').enabledRecord){
+                    return this;
+                }
                 var options = this.data( 'options' ),
                     itemCount = options.itemCount,
                     items = options.autowidthitem;
