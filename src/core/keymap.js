@@ -28,5 +28,14 @@ var keymap = KityMinder.keymap  = {
 
     'NumLock':144,
 
-    'Cmd':91
+    'Cmd':91,
+
+    '=':187,
+    '-':189,
+
+    "b":66,
+    'i':73,
+
+    'z':90,
+    'y':89
 };

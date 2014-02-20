@@ -138,8 +138,8 @@ KityMinder.registerModule( "HistoryModule", function () {
             } )
         },
         addShortcutKeys: {
-            "Undo": "ctrl+90", //undo
-            "Redo": "ctrl+89" //redo
+            "Undo": "ctrl+z", //undo
+            "Redo": "ctrl+y" //redo
         },
         "events": {
             "saveScene": function ( e ) {

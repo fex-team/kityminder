@@ -63,7 +63,7 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers'
+            'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers | node'
         ]
 
         //设置主题

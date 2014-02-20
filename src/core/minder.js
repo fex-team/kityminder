@@ -87,25 +87,46 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     _bindshortcutKeys: function () {
         var me = this,
             shortcutkeys = this._shortcutkeys;
-        me.on( 'keydown', function ( e ) {
+        function checkkey(key,keyCode,e){
+            switch(key){
+                case  'ctrl':
+                case 'cmd':
+                    if(e.ctrlKey || e.metaKey){
+                        return true;
+                    }
+                    break;
+                case 'alt':
+                    if(e.altKey){
+                        return true
+                    }
+                    break;
+                case 'shift':
+                    if(e.shiftKey){
+                        return true;
+                    }
 
+            }
+            if(keyCode == keymap[key]){
+                return true;
+            }
+            return false
+        }
+        me.on( 'keydown', function ( e ) {
             var originEvent = e.originEvent;
             var keyCode = originEvent.keyCode || originEvent.which;
             for ( var i in shortcutkeys ) {
-                var tmp = shortcutkeys[ i ].split( ',' );
-                for ( var t = 0, ti; ti = tmp[ t++ ]; ) {
-                    ti = ti.split( ':' );
-                    var key = ti[ 0 ],
-                        param = ti[ 1 ];
-                    if ( /^(ctrl)(\+shift)?\+(\d+)$/.test( key.toLowerCase() ) || /^(\d+)$/.test( key ) ) {
-                        if ( ( ( RegExp.$1 == 'ctrl' ? ( originEvent.ctrlKey || originEvent.metaKey ) : 0 ) && ( RegExp.$2 != "" ? originEvent[ RegExp.$2.slice( 1 ) + "Key" ] : 1 ) && keyCode == RegExp.$3 ) ||
-                            keyCode == RegExp.$1
-                        ) {
-                            if ( me.queryCommandState( i, param ) != -1 )
-                                me.execCommand( i, param );
-                            e.preventDefault();
-                        }
+                var keys = shortcutkeys[ i ].toLowerCase().split('+');
+                var current = 0;
+                utils.each(keys,function(i,k){
+                    if(checkkey(k,keyCode,originEvent)){
+                        current++;
                     }
+                });
+                if(current == keys.length){
+                    if ( me.queryCommandState( i ) != -1 )
+                        me.execCommand( i );
+                    originEvent.preventDefault();
+                    break;
                 }
 
             }

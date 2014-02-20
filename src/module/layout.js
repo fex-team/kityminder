@@ -205,7 +205,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default"
+			"defaultlayoutstyle": "default",
+            "node":{
+                'appendsiblingnode':'appendsiblingnode',
+                'appendchildnode':'appendchildnode',
+                'removenode':'removenode'
+            }
 		}
 	};
 } );
