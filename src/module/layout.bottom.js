@@ -183,6 +183,9 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			var branchwidth = nLayout.branchwidth = ( selfwidth > childwidth ? selfwidth : childwidth );
 			return branchwidth;
 		};
+		var updateMain = function ( node ) {
+
+		};
 		if ( nodeType === "root" ) {
 			Layout.x = getMinderSize().width / 2;
 			Layout.y = 100;
@@ -216,13 +219,30 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		} else {
 			Layout.align = "left";
 			var parentLayout = parent.getLayout();
-			if ( parent.getType() === "main" ) {
-				Layout.x = 10;
-				Layout.y = nodeStyles.sub.margin[ 0 ];
-			} else {
-				Layout.x = parentLayout.x + 10;
-				Layout.y = parentLayout.y + parent.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ];
+			if ( action === "append" ) {
+				if ( parent.getType() === "main" ) {
+					Layout.x = 10;
+				} else {
+					Layout.x = parentLayout.x + 10;
+				}
 			}
+			if ( action === "append" || action === "change" ) {
+				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ] + nodeStyles.sub.margin[ 2 ];
+			}
+			var prt = parent;
+			//自底向上更新branchheight
+			while ( prt.getType() !== "main" ) {
+				var c = prt.getChildren();
+				var prtLayout = prt.getLayout();
+				var branchHeight = prt.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ] + nodeStyles.sub.margin[ 2 ];
+				for ( var i1 = 0; i1 < c.length; i1++ ) {
+					branchHeight += c[ i1 ].getLayout().branchheight;
+				}
+				prtLayout.branchheight = branchHeight;
+				prt = prt.getParent();
+			}
+			//自顶向下更新y
+			var idx = prt.getIndex();
 			effectSet = [ node ];
 		}
 		return effectSet;
