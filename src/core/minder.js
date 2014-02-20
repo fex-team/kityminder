@@ -69,6 +69,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._shortcutkeys = {};
         this._bindshortcutKeys();
     },
+    isTextEditStatus:function(){
+        return false;
+    },
     addShortcutKeys: function ( cmd, keys ) {
         var obj = {},km = this;
         if ( keys ) {
@@ -122,6 +125,10 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
                         current++;
                     }
                 });
+                //todo 暂时通过receiver判断
+                if(me.isTextEditStatus()){
+                    return;
+                }
                 if(current == keys.length){
                     if ( me.queryCommandState( i ) != -1 )
                         me.execCommand( i );

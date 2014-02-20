@@ -12,7 +12,9 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var lastEvtPosition,dir = 1;
 
-
+    km.isTextEditStatus = function(){
+        return km.receiver.isTextEditStatus();
+    }
 
     return {
         //插入光标
@@ -27,7 +29,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
 
-                    if ( this.isSingleSelect() && node.isSelected() && e.kityEvent.targetShape.getType().toLowerCase()== 'text') {
+                    if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
