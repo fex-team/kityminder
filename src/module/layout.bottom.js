@@ -242,8 +242,28 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				prt = prt.getParent();
 			}
 			//自顶向下更新y
-			var idx = prt.getIndex();
+			var _buffer = prt.getChildren();
+			while ( _buffer.length !== 0 ) {
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				var _buffer0Layout = _buffer[ 0 ].getLayout();
+				var _buffer0Parent = _buffer[ 0 ].getParent();
+				var _buffer0ParentLayout = _buffer0Parent.getLayout();
+				var _buffer0Style = nodeStyles[ _buffer[ 0 ].getType() ];
+				var _buffer0ParentStyle = nodeStyles[ _buffer0Parent.getType() ];
+				// if ( _buffer[ 0 ].getIndex() === 0 ) {
+				// 	_buffer0Layout.y = _buffer0ParentLayout.y + _buffer0Parent.getRenderContainer().getHeight() + _buffer0ParentStyle.margin[ 2 ] + _buffer0Style.margin[ 0 ];
+				// } else {
+				// 	_buffer0Layout.y =
+				// }
+			}
+			// var idx = prt.getIndex();
+			// for ( var kn = idx; kn < mainnodes.length; kn++ ) {
+			// 	var _buffer = mainnodes[ kn ].getChildren();
+			// 	while ( _buffer.length !== 0 ) {
 
+			// 	}
+			// }
+			//更新main层的节点坐标
 		}
 		return effectSet;
 	};
