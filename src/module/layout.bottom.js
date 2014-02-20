@@ -212,10 +212,13 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					Layout.x = parentLayout.x + nodeStyles.sub.margin[ 3 ];
 				}
 			}
-			if ( action === "append" || action === "change" ) {
+			if ( action === "append" ) {
 				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ] + nodeStyles.sub.margin[ 2 ];
 			}
 			var prt = parent;
+			if ( action === "change" ) {
+				prt = node;
+			}
 			//自底向上更新branchheight
 			while ( prt.getType() !== "main" ) {
 				var c = prt.getChildren();
@@ -359,6 +362,13 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			for ( var i = 0; i < set.length; i++ ) {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );
+			}
+			if ( node.getType() === "sub" ) {
+				var set1 = updateLayoutMain();
+				for ( var j = 0; j < set1.length; j++ ) {
+					translateNode( set1[ j ] );
+					updateConnectAndshIcon( set1[ j ] );
+				}
 			}
 		},
 		initStyle: function () {
