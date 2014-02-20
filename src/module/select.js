@@ -29,7 +29,9 @@ KityMinder.registerModule( "Select", function () {
                 startPosition = g.snapToSharp( e.getPosition() );
             },
             selectMove: function ( e ) {
-                
+                if(minder.isTextEditStatus()){
+                    return;
+                }
                 if ( !startPosition ) return;
                 
                 var p1 = startPosition,

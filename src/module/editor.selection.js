@@ -12,7 +12,8 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.timer = null;
         this.collapsed = true;
         this.startOffset = this.endOffset = 0;
-        this.setOpacity(0.5)
+        this.setOpacity(0.5);
+        this.setStyle('cursor','text');
     },
     collapse : function(toEnd){
 
@@ -64,7 +65,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.y = offset.y;
 
         } catch ( e ) {
-            console.log(e)
+           debugger
         }
 
         return this.update();
