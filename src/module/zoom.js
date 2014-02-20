@@ -62,7 +62,7 @@ KityMinder.registerModule( 'Zoom', function () {
 			'zoom-out': ZoomOutCommand
 		},
 		addShortcutKeys: {
-			"zoom-in": "+", //=
+			"zoom-in": "=", //=
 			"zoom-out": "-" //-
 		},
 		events: {
