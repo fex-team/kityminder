@@ -98,9 +98,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
-				if ( !parent ) {
-					return false;
-				}
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
@@ -120,9 +117,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var selectedNode = km.getSelectedNode();
-				if ( !selectedNode ) {
-					return false;
-				}
 				if ( selectedNode.isRoot() ) {
 					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
@@ -134,8 +128,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 				return node;
 			},
 			queryState: function ( km ) {
-				var selectedNode = km.getSelectedNode();
-				if ( !selectedNode || selectedNode === km.getRoot() ) {
+				var selectedNodes = km.getSelectedNodes();
+				//没选中节点和单选root的时候返回不可执行
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) ) {
 					return -1;
 				} else {
 					return 0;
@@ -149,10 +144,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
 				var _root = km.getRoot();
-				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && !selectedNodes[ 0 ].getParent() ) ) {
-					km.select( _root );
-					return false;
-				}
 				var _buffer = [];
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
@@ -167,7 +158,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			},
 			queryState: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) || selectedNodes.length === 0 ) {
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) ) {
 					return -1;
 				} else {
 					return 0;
@@ -205,7 +196,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default",
+			"defaultlayoutstyle": "bottom",
 			"node": {
 				'appendsiblingnode': 'appendsiblingnode',
 				'appendchildnode': 'appendchildnode',

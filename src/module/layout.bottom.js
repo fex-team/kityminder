@@ -176,6 +176,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var nodeType = node.getType();
 		var Layout = node.getLayout();
 		var _root = minder.getRoot();
+		var mainnodes = _root.getChildren();
 		var countMainWidth = function ( node ) {
 			var nLayout = node.getLayout();
 			var selfwidth = node.getRenderContainer().getWidth() + nodeStyles.main.margin[ 1 ] + nodeStyles.main.margin[ 3 ];
@@ -199,7 +200,6 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			effectSet = effectSet.concat( children );
 		} else if ( nodeType === "main" ) {
 			Layout.align = "center";
-			var mainnodes = _root.getChildren();
 			var rootLayout = _root.getLayout();
 			var rootbranchwidth = 0;
 			for ( var j = 0; j < mainnodes.length; j++ ) {
@@ -243,7 +243,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 			//自顶向下更新y
 			var idx = prt.getIndex();
-			effectSet = [ node ];
+
 		}
 		return effectSet;
 	};
