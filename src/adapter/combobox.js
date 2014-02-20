@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
+KM.registerToolbarUI( 'layoutstyle fontfamily fontsize inserttopic', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
@@ -30,6 +30,9 @@ KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
         case 'fontsize':
             options = transForFontsize( options );
             break;
+
+        case 'inserttopic':
+            optons
     }
 
     //实例化

@@ -33,6 +33,15 @@ KM.registerToolbarUI( 'node', function ( name ) {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
+        var combox = $combox.kmui();
+
+        combox.traverseItems(function(label,value){
+            if(me.queryCommandState(value) == -1){
+                combox.disableItemByLabel(label)
+            }else{
+                combox.enableItemByLabel(label)
+            }
+        })
     });
 
     return comboboxWidget.button().addClass( 'kmui-combobox' );
@@ -51,7 +60,6 @@ KM.registerToolbarUI( 'node', function ( name ) {
         } );
 
         options.items = tempItems;
-
         return options;
 
     }

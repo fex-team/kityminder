@@ -194,7 +194,14 @@
             getItems: function () {
                 return this.data( "options" ).items;
             },
-
+            traverseItems:function(fn){
+                var values = this.data('options').value;
+                var labels = this.data('options').items;
+                $.each(labels,function(i,label){
+                    fn(label,values[i])
+                });
+                return this;
+            },
             getItemMapping: function () {
                 return this.data( "options" ).itemMapping;
             },
