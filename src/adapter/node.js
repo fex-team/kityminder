@@ -4,7 +4,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
         "appendchildnode": "tab",
         "removenode":"del|backspace"
     };
-    debugger
+
     var me = this,
         msg = me.getLang('node'),
         label = me.getLang( 'tooltips.' + name ),
@@ -33,7 +33,6 @@ KM.registerToolbarUI( 'node', function ( name ) {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
-
     });
 
     return comboboxWidget.button().addClass( 'kmui-combobox' );
