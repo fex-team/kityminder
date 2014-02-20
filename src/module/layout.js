@@ -196,7 +196,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default",
+			"defaultlayoutstyle": "bottom",
 			"node": {
 				'appendsiblingnode': 'appendsiblingnode',
 				'appendchildnode': 'appendchildnode',
