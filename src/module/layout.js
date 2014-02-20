@@ -104,6 +104,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -124,6 +132,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				}
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode || selectedNode === km.getRoot() ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -148,6 +164,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				} while ( _buffer.length > 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
+			},
+			queryState: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				if ( ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) || selectedNodes.length === 0 ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -181,7 +205,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default"
+			"defaultlayoutstyle": "default",
+			"node": {
+				'appendsiblingnode': 'appendsiblingnode',
+				'appendchildnode': 'appendchildnode',
+				'removenode': 'removenode'
+			}
 		}
 	};
 } );
