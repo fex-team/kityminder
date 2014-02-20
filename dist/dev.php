@@ -62,6 +62,7 @@ $dependency = Array(
     ,'src/adapter/view.js'
     ,'src/adapter/dialog.js'
     ,'src/adapter/tooltips.js'
+    ,'src/adapter/layout.js'
     ,'src/adapter/node.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'

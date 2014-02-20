@@ -8,7 +8,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return this._layoutStyles[ name ];
 		},
 		getLayoutStyleItems: function () {
-			return this._layoutStyles;
+			var items = [];
+			for ( var key in this._layoutStyles ) {
+				items.push( key );
+			}
+			return items;
 		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();

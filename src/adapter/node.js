@@ -1,12 +1,12 @@
 KM.registerToolbarUI( 'node', function ( name ) {
-    var  shortcutKeys =  {
+    var shortcutKeys = {
         "appendsiblingnode": "enter",
         "appendchildnode": "tab",
-        "removenode":"del|backspace"
+        "removenode": "del|backspace"
     };
 
     var me = this,
-        msg = me.getLang('node'),
+        msg = me.getLang( 'node' ),
         label = me.getLang( 'tooltips.' + name ),
         options = {
             label: label,
@@ -16,10 +16,9 @@ KM.registerToolbarUI( 'node', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord:false
+            enabledRecord: false
         },
         $combox = null;
-
     if ( options.items.length == 0 ) {
         return null;
     }
@@ -29,21 +28,21 @@ KM.registerToolbarUI( 'node', function ( name ) {
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        me.execCommand( res.value,new MinderNode( me.getLang().topic ) );
-    }).on( "beforeshow", function () {
+        me.execCommand( res.value, new MinderNode( me.getLang().topic ) );
+    } ).on( "beforeshow", function () {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
         var combox = $combox.kmui();
 
-        combox.traverseItems(function(label,value){
-            if(me.queryCommandState(value) == -1){
-                combox.disableItemByLabel(label)
-            }else{
-                combox.enableItemByLabel(label)
+        combox.traverseItems( function ( label, value ) {
+            if ( me.queryCommandState( value ) == -1 ) {
+                combox.disableItemByLabel( label )
+            } else {
+                combox.enableItemByLabel( label )
             }
-        })
-    });
+        } )
+    } );
 
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 
@@ -56,7 +55,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
         utils.each( options.items, function ( k, v ) {
             options.value.push( v );
 
-            tempItems.push( (msg[k]||k)  + '(' + shortcutKeys[v].toUpperCase() + ')');
+            tempItems.push( ( msg[ k ] || k ) + '(' + shortcutKeys[ v ].toUpperCase() + ')' );
             options.autowidthitem.push( $.wordCountAdaptive( tempItems[ tempItems.length - 1 ] ) );
         } );
 
@@ -65,5 +64,4 @@ KM.registerToolbarUI( 'node', function ( name ) {
 
     }
 
-});
-
+} );
