@@ -104,6 +104,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode ) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		};
 	} )() );
@@ -124,6 +132,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				}
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode || selectedNode === km.getRoot() ) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		};
 	} )() );
@@ -148,6 +164,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				} while ( _buffer.length > 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
+			},
+			queryState: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				if ( ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) || selectedNodes.length === 0 ) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		};
 	} )() );
@@ -181,7 +205,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "bottom"
+			"defaultlayoutstyle": "default"
 		}
 	};
 } );

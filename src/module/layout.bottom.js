@@ -186,6 +186,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		if ( nodeType === "root" ) {
 			Layout.x = getMinderSize().width / 2;
 			Layout.y = 100;
+			Layout.align = "center";
 			effectSet.push( node );
 			var children = node.getChildren();
 			for ( var i = 0; i < children.length; i++ ) {
@@ -194,6 +195,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 			effectSet = effectSet.concat( children );
 		} else if ( nodeType === "main" ) {
+			Layout.align = "center";
 			var mainnodes = _root.getChildren();
 			var rootLayout = _root.getLayout();
 			var rootbranchwidth = 0;
@@ -212,15 +214,16 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 			effectSet = mainnodes;
 		} else {
+			Layout.align = "left";
 			var parentLayout = parent.getLayout();
 			if ( parent.getType() === "main" ) {
 				Layout.x = 10;
+				Layout.y = nodeStyles.sub.margin[ 0 ];
 			} else {
 				Layout.x = parentLayout.x + 10;
-			}
-			if ( action === "append" ) {
 				Layout.y = parentLayout.y + parent.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ];
 			}
+			effectSet = [ node ];
 		}
 		return effectSet;
 	};
@@ -230,7 +233,17 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var align = Layout.align;
 		var _rectHeight = nodeShape.getHeight();
 		var _rectWidth = nodeShape.getWidth();
-		nodeShape.setTransform( new kity.Matrix().translate( Layout.x - node.getRenderContainer().getWidth() / 2, Layout.y ) );
+		switch ( align ) {
+		case "right":
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y ) );
+			break;
+		case "center":
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y ) );
+			break;
+		default:
+			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
+			break;
+		}
 		if ( node.getType() === "main" ) {
 			Layout.subgroup.setTransform( new kity.Matrix().translate( Layout.x - node.getRenderContainer().getWidth() / 2 + 10, Layout.y + node.getRenderContainer().getHeight() ) );
 		}
@@ -338,6 +351,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				node.setType( "sub" );
 				//将节点加入到main分支的subgroup中
 				parentLayout.subgroup.addShape( node.getRenderContainer() );
+				node.getLayout().subgroup = parentLayout.subgroup;
 			}
 			if ( sibling ) {
 				parent.insertChild( node, sibling.getIndex() + 1 );
