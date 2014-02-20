@@ -30,7 +30,10 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					.moveTo( -3, 0 )
 					.lineTo( 3, 0 );
 				dec.stroke( "gray" );
-				minder.getRenderContainer().addShape( iconShape );
+				if ( node.getType() === "main" ) minder.getRenderContainer().addShape( iconShape );
+				else {
+					node.getLayout().subgroup.addShape( iconShape );
+				}
 				iconShape.addShapes( [ circle, plus, dec ] );
 				this.update();
 				this.switchState();
@@ -95,7 +98,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
 			color: "white",
 			fontSize: 12,
-			margin: [ 10, 10, 20, 6 ],
+			margin: [ 10, 10, 10, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
 			highlight: 'rgb(254, 219, 0)'
 		}
@@ -242,28 +245,24 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				prt = prt.getParent();
 			}
 			//自顶向下更新y
-			var _buffer = prt.getChildren();
+			var _buffer = [ prt ];
 			while ( _buffer.length !== 0 ) {
-				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				var childrenC = _buffer[ 0 ].getChildren();
+				_buffer = _buffer.concat( childrenC );
 				var _buffer0Layout = _buffer[ 0 ].getLayout();
-				var _buffer0Parent = _buffer[ 0 ].getParent();
-				var _buffer0ParentLayout = _buffer0Parent.getLayout();
 				var _buffer0Style = nodeStyles[ _buffer[ 0 ].getType() ];
-				var _buffer0ParentStyle = nodeStyles[ _buffer0Parent.getType() ];
-				// if ( _buffer[ 0 ].getIndex() === 0 ) {
-				// 	_buffer0Layout.y = _buffer0ParentLayout.y + _buffer0Parent.getRenderContainer().getHeight() + _buffer0ParentStyle.margin[ 2 ] + _buffer0Style.margin[ 0 ];
-				// } else {
-				// 	_buffer0Layout.y =
-				// }
+				var sY;
+				if ( _buffer[ 0 ].getType() === "main" ) sY = 0;
+				else sY = _buffer0Layout.y + _buffer[ 0 ].getRenderContainer().getHeight() + _buffer0Style.margin[ 2 ];
+				for ( var s = 0; s < childrenC.length; s++ ) {
+					var childLayoutC = childrenC[ s ].getLayout();
+					var childStyleC = nodeStyles[ childrenC[ s ].getType() ];
+					childLayoutC.y = sY + childStyleC.margin[ 0 ];
+					sY += childLayoutC.branchheight;
+				}
+				effectSet.push( _buffer[ 0 ] );
+				_buffer.shift();
 			}
-			// var idx = prt.getIndex();
-			// for ( var kn = idx; kn < mainnodes.length; kn++ ) {
-			// 	var _buffer = mainnodes[ kn ].getChildren();
-			// 	while ( _buffer.length !== 0 ) {
-
-			// 	}
-			// }
-			//更新main层的节点坐标
 		}
 		return effectSet;
 	};
