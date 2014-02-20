@@ -108,9 +108,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
 				if ( !selectedNode ) {
-					return false;
+					return -1;
 				} else {
-					return true;
+					return 0;
 				}
 			}
 		};
@@ -136,9 +136,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
 				if ( !selectedNode || selectedNode === km.getRoot() ) {
-					return false;
+					return -1;
 				} else {
-					return true;
+					return 0;
 				}
 			}
 		};
@@ -168,9 +168,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			queryState: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
 				if ( ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) || selectedNodes.length === 0 ) {
-					return false;
+					return -1;
 				} else {
-					return true;
+					return 0;
 				}
 			}
 		};
@@ -206,11 +206,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		"defaultOptions": {
 			"defaultlayoutstyle": "default",
-            "node":{
-                'appendsiblingnode':'appendsiblingnode',
-                'appendchildnode':'appendchildnode',
-                'removenode':'removenode'
-            }
+			"node": {
+				'appendsiblingnode': 'appendsiblingnode',
+				'appendchildnode': 'appendchildnode',
+				'removenode': 'removenode'
+			}
 		}
 	};
 } );
