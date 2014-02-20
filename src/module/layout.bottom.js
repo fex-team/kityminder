@@ -17,17 +17,17 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				var iconShape = this.shape = new kity.Group();
 				iconShape.class = "shicon";
 				iconShape.icon = this;
-				var rect = this._rect = new kity.Rect().fill( "white" ).stroke( "gray" ).setRadius( 2 ).setWidth( 9 ).setHeight( 9 );
+				var rect = this._rect = new kity.Rect().fill( "white" ).stroke( "gray" ).setRadius( 2 ).setWidth( 10 ).setHeight( 10 );
 				var plus = this._plus = new kity.Path();
 				plus.getDrawer()
-					.moveTo( 1, 5 )
+					.moveTo( 2, 5 )
 					.lineTo( 8, 5 )
-					.moveTo( 5, 1 )
+					.moveTo( 5, 2 )
 					.lineTo( 5, 8 );
 				plus.stroke( "gray" );
 				var dec = this._dec = new kity.Path();
 				dec.getDrawer()
-					.moveTo( 1, 5 )
+					.moveTo( 2, 5 )
 					.lineTo( 8, 5 );
 				dec.stroke( "gray" );
 				if ( node.getType() === "main" ) minder.getRenderContainer().addShape( iconShape );
@@ -198,7 +198,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			effectSet = effectSet.concat( children );
 		} else if ( nodeType === "main" ) {
 			Layout.align = "left";
-			if ( action === "append" ) {
+			if ( action === "append" || action === "contract" ) {
 				Layout.y = rootLayout.y + _root.getRenderContainer().getHeight() + nodeStyles.root.margin[ 2 ] + nodeStyles.main.margin[ 0 ];
 			}
 			effectSet = updateLayoutMain();
@@ -212,7 +212,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					Layout.x = parentLayout.x + nodeStyles.sub.margin[ 3 ];
 				}
 			}
-			if ( action === "append" ) {
+			if ( action === "append" || action === "contract" ) {
 				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyles.sub.margin[ 0 ] + nodeStyles.sub.margin[ 2 ];
 			}
 			var prt = parent;
@@ -322,7 +322,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			connect.stroke( nodeStyles.sub.stroke );
 		}
 		//更新收放icon
-		if ( nodeType !== "root" ) {
+		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
 			}
@@ -485,7 +485,40 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 		},
 		expandNode: function ( ico ) {
+			var isExpand = ico.icon.switchState();
+			var node = ico.icon._node;
+			var _buffer = node.getChildren();
+			var _cleanbuffer = [];
 
+			while ( _buffer.length !== 0 ) {
+				var Layout = _buffer[ 0 ].getLayout();
+				if ( isExpand ) {
+					var parent = _buffer[ 0 ].getParent();
+					Layout.parent = parent;
+					_cleanbuffer.push( _buffer[ 0 ] );
+					Layout.connect = null;
+					Layout.shicon = null;
+				} else {
+					_buffer[ 0 ].getRenderContainer().remove();
+					Layout.connect.remove();
+					if ( Layout.shicon ) Layout.shicon.remove();
+				}
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				_buffer.shift();
+			}
+			if ( isExpand ) {
+				node.clearChildren();
+				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+					_cleanbuffer[ j ].clearChildren();
+					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
+				}
+			}
+			var set = [];
+			if ( !isExpand ) set = updateLayoutAll( node, node.getParent(), "contract" );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
 		}
 	};
 	this.addLayoutStyle( "bottom", _style );
