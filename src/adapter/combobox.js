@@ -19,18 +19,17 @@ KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
     }
     switch ( name ) {
 
-    case 'layoutstyle':
-        options = transForLayoutstyle( options );
-        break;
+        case 'layoutstyle':
+            options = transForLayoutstyle( options );
+            break;
 
-    case 'fontfamily':
-        options = transForFontfamily( options );
-        break;
+        case 'fontfamily':
+            options = transForFontfamily( options );
+            break;
 
-    case 'fontsize':
-        options = transForFontsize( options );
-        break;
-
+        case 'fontsize':
+            options = transForFontsize( options );
+            break;
     }
 
     //实例化
