@@ -89,12 +89,17 @@
             initSelectItem: function(){
 
                 var me = this,
+                    options = me.data( "options" ),
                     labelClass = "."+labelClassName;
 
                 me.root().delegate('.' + itemClassName, 'click', function(){
 
                     var $li = $(this),
                         index = $li.attr('data-item-index');
+
+                    if ( options.disabled[ index ] ) {
+                        return false;
+                    }
 
                     me.trigger('comboboxselect', {
                         index: index,
