@@ -451,7 +451,38 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			this.appendChildNode( parent, node, sibling );
 		},
 		removeNode: function ( nodes ) {
-
+			while ( nodes.length !== 0 ) {
+				var parent = nodes[ 0 ].getParent();
+				if ( !parent ) {
+					nodes.splice( 0, 1 );
+					return false;
+				}
+				var nodeLayout = nodes[ 0 ].getLayout();
+				parent.removeChild( nodes[ 0 ] );
+				var set = updateLayoutAll( nodes[ 0 ], parent, "remove" );
+				for ( var j = 0; j < set.length; j++ ) {
+					translateNode( set[ j ] );
+					updateConnectAndshIcon( set[ j ] );
+				}
+				var _buffer = [ nodes[ 0 ] ];
+				while ( _buffer.length !== 0 ) {
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						var Layout = _buffer[ 0 ].getLayout();
+						Layout.connect.remove();
+						Layout.shicon.remove();
+					} catch ( error ) {
+						console.log( "isRemoved" );
+					}
+					//检测当前节点是否在选中的数组中，如果在的话，从选中数组中去除
+					var idx = nodes.indexOf( _buffer[ 0 ] );
+					if ( idx !== -1 ) {
+						nodes.splice( idx, 1 );
+					}
+					_buffer.shift();
+				}
+			}
 		},
 		expandNode: function ( ico ) {
 
