@@ -464,6 +464,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					translateNode( set[ j ] );
 					updateConnectAndshIcon( set[ j ] );
 				}
+				var set1 = updateLayoutMain();
+				for ( var k = 0; k < set1.length; k++ ) {
+					translateNode( set1[ k ] );
+					updateConnectAndshIcon( set1[ k ] );
+				}
 				var _buffer = [ nodes[ 0 ] ];
 				while ( _buffer.length !== 0 ) {
 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
