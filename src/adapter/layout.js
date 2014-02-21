@@ -8,7 +8,8 @@ KM.registerToolbarUI( 'layout', function ( name ) {
             items: me.getLayoutStyleItems() || [],
             itemStyles: [],
             value: me.getLayoutStyleItems(),
-            autowidthitem: []
+            autowidthitem: [],
+            enabledRecord: false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
