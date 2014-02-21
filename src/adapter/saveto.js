@@ -32,10 +32,10 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         if ( res.value === "png" ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
-            console.log( me.getRenderContainer().getWidth(), me.getRenderContainer().getHeight() );
+            var rootBox = me.getRoot().getRenderContainer().getRenderBox();
             var svg = $( svghtml ).attr( {
-                width: me.getRenderContainer().getWidth(),
-                height: me.getRenderContainer().getHeight()
+                width: rootBox.x + me.getRenderContainer().getWidth() + 20,
+                height: rootBox.y + me.getRenderContainer().getHeight() + 20
             } );
             var div = $( "<div></div>" ).append( svg );
             svghtml = div.html();
