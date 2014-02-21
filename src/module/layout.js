@@ -8,7 +8,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return this._layoutStyles[ name ];
 		},
 		getLayoutStyleItems: function () {
-			return this._layoutStyles;
+			var items = [];
+			for ( var key in this._layoutStyles ) {
+				items.push( key );
+			}
+			return items;
 		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();
@@ -196,7 +200,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "bottom",
+			"defaultlayoutstyle": "default",
 			"node": {
 				'appendsiblingnode': 'appendsiblingnode',
 				'appendchildnode': 'appendchildnode',
