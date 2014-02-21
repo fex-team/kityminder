@@ -35,7 +35,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var rootBox = me.getRoot().getRenderContainer().getRenderBox();
             var svg = $( svghtml ).attr( {
                 width: rootBox.x + me.getRenderContainer().getWidth() + 20,
-                height: rootBox.y + me.getRenderContainer().getHeight() + 20
+                height: rootBox.y + me.getRenderContainer().getHeight() + 20,
+                viewBox: null
             } );
             var div = $( "<div></div>" ).append( svg );
             svghtml = div.html();
