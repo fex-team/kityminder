@@ -127,7 +127,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     receiver.updateSelectionShow(1)
                         .updateRange(range);
-
+                    return;
 
                 }
 
@@ -140,10 +140,11 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }else{
                         receiver.updateSelectionShow(1)
                     }
-
+                    return;
 
 
                 }
+                receiver.clear().setTextEditStatus(false);
             },
             'selectionclear':function(){
                 receiver.setTextEditStatus(false).clear()
