@@ -70,7 +70,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                 };
 
                 // 下载后的问题名
-                var filename = 'baidufe_' + ( new Date() ).getTime() + '.' + type;
+                var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
                 // download
                 saveFile( imgData, filename );
             };
