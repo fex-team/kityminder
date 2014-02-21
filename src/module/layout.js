@@ -94,7 +94,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var SwitchLayoutCommand = kity.createClass( "SwitchLayoutCommand", ( function () {
 		return {
 			base: Command,
-			execute: switchLayout
+			execute: switchLayout,
+			queryValue: function ( km ) {
+				return km.getCurrentStyle();
+			}
 		};
 	} )() );
 	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {

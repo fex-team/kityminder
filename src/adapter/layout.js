@@ -8,8 +8,7 @@ KM.registerToolbarUI( 'layout', function ( name ) {
             items: me.getLayoutStyleItems() || [],
             itemStyles: [],
             value: me.getLayoutStyleItems(),
-            autowidthitem: [],
-            enabledRecord: false
+            autowidthitem: []
         },
         $combox = null;
     if ( options.items.length == 0 ) {
@@ -27,6 +26,14 @@ KM.registerToolbarUI( 'layout', function ( name ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
     } );
+    me.on( 'interactchange', function () {
+        var value = this.queryCommandValue( "switchlayout" );
+        if ( value ) {
+            //设置label
+            comboboxWidget.selectItemByLabel( value );
+        }
+    } );
+
 
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );
