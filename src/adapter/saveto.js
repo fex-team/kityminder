@@ -30,7 +30,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        var data = me.exportData( res.value );
         if ( res.value === "png" ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
             var svg = $( svghtml ).attr( {
@@ -76,6 +75,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             img.src = url;
             return "png";
         }
+        var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
         var a = downloadLink;
         a.setAttribute( 'download', 'MyMind' + p.fileExtension );
