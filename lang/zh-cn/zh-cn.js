@@ -10,11 +10,13 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'fontfamily': '字体',
         'fontsize': '字号',
         'layoutstyle': '主题',
+        'node': '节点操作',
         'saveto': '导出',
         'hand': '允许拖拽',
         'zoom-in': '放大',
         'zoom-out': '缩小',
-        'markers': '添加标签'
+        'markers': '添加标签',
+        'layout': '切换主题'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
@@ -35,9 +37,14 @@ KityMinder.LANG[ 'zh-cn' ] = {
                 'quarterdone': '完成1/4',
                 'halfdone': '完成1/2',
                 'threequartersdone': '完成3/4',
-                'done': '已完成',
+                'done': '已完成'
             }
         }
+    },
+    'node': {
+        'appendsiblingnode': '插入兄弟节点',
+        'appendchildnode': '插入孩子节点',
+        'removenode': '删除节点'
     }
 
 };

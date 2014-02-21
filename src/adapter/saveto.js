@@ -24,7 +24,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         options.autowidthitem.push( $.wordCountAdaptive( text ), true );
     } );
 
-
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     comboboxWidget = $combox.kmui();
@@ -40,8 +39,15 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
-    } ).on( 'aftercomboboxselect', function () {
-        this.setLabelWithDefaultValue();
+        var combox = $combox.kmui();
+
+        combox.traverseItems( function ( label, value ) {
+            if ( me.queryCommandState( value ) == -1 ) {
+                combox.disableItemByLabel( label )
+            } else {
+                combox.enableItemByLabel( label )
+            }
+        } )
     } );
 
 

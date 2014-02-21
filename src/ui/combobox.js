@@ -21,7 +21,7 @@
                 "<%if(autoRecord) {%>" +
                 "<%for( var i=0, len = recordStack.length; i<len; i++ ) {%>" +
                 "<%var index = recordStack[i];%>" +
-                "<li class=\"<%=itemClassName%><%if( selected == index ) {%> kmui-combobox-checked<%}%>\" data-item-index=\"<%=index%>\" unselectable=\"on\" onmousedown=\"return false\">" +
+                "<li class=\"<%=itemClassName%><%if( selected == index ) {%> kmui-combobox-checked<%}%><%if( disabled[ index ] === true ) {%> kmui-combobox-item-disabled<%}%>\" data-item-index=\"<%=index%>\" unselectable=\"on\" onmousedown=\"return false\">" +
                 "<span class=\"kmui-combobox-icon\" unselectable=\"on\" onmousedown=\"return false\"></span>" +
                 "<label class=\"<%=labelClassName%>\" style=\"<%=itemStyles[ index ]%>\" unselectable=\"on\" onmousedown=\"return false\"><%=items[index]%></label>" +
                 "</li>" +
@@ -31,7 +31,7 @@
                 "<%}%>" +
                 "<%}%>" +
                 "<%for( var i=0, label; label = items[i]; i++ ) {%>" +
-                "<li class=\"<%=itemClassName%><%if( selected == i ) {%> kmui-combobox-checked<%}%> kmui-combobox-item-<%=i%>\" data-item-index=\"<%=i%>\" unselectable=\"on\" onmousedown=\"return false\">" +
+                "<li class=\"<%=itemClassName%><%if( selected == i ) {%> kmui-combobox-checked<%}%> kmui-combobox-item-<%=i%><%if( disabled[ i ] === true ) {%> kmui-combobox-item-disabled<%}%>\" data-item-index=\"<%=i%>\" unselectable=\"on\" onmousedown=\"return false\">" +
                 "<span class=\"kmui-combobox-icon\" unselectable=\"on\" onmousedown=\"return false\"></span>" +
                 "<label class=\"<%=labelClassName%>\" style=\"<%=itemStyles[ i ]%>\" unselectable=\"on\" onmousedown=\"return false\"><%=label%></label>" +
                 "</li>" +
@@ -46,10 +46,13 @@
                 value: [],
                 comboboxName: '',
                 selected: '',
+                //初始禁用状态
+                disabled: {},
                 //自动记录
                 autoRecord: true,
                 //最多记录条数
-                recordCount: 5
+                recordCount: 5,
+                enabledRecord:true
             },
             init: function( options ){
 
@@ -87,12 +90,17 @@
             initSelectItem: function(){
 
                 var me = this,
+                    options = me.data( "options" ),
                     labelClass = "."+labelClassName;
 
                 me.root().delegate('.' + itemClassName, 'click', function(){
 
                     var $li = $(this),
                         index = $li.attr('data-item-index');
+
+                    if ( options.disabled[ index ] ) {
+                        return false;
+                    }
 
                     me.trigger('comboboxselect', {
                         index: index,
@@ -126,11 +134,20 @@
              */
             select: function( index ){
 
-                var itemCount = this.data('options').itemCount,
-                    items = this.data('options').autowidthitem;
+                if(!this.data('options').enabledRecord){
+                    return this;
+                }
+                var options = this.data( 'options' ),
+                    itemCount = options.itemCount,
+                    items = options.autowidthitem;
 
                 if ( items && !items.length ) {
-                    items = this.data('options').items;
+                    items = options.items;
+                }
+
+                // 禁用
+                if ( options.disabled[ index ] ) {
+                    return null;
                 }
 
                 if( itemCount == 0 ) {
@@ -178,6 +195,65 @@
                 } );
 
             },
+            getItems: function () {
+                return this.data( "options" ).items;
+            },
+            traverseItems:function(fn){
+                var values = this.data('options').value;
+                var labels = this.data('options').items;
+                $.each(labels,function(i,label){
+                    fn(label,values[i])
+                });
+                return this;
+            },
+            getItemMapping: function () {
+                return this.data( "options" ).itemMapping;
+            },
+
+            disableItemByIndex: function ( index ) {
+
+                var options = this.data( "options" );
+                options.disabled[ index ] = true;
+
+                this._repaint();
+
+            },
+
+            disableItemByLabel: function ( label ) {
+
+                var itemMapping = this.data('options').itemMapping,
+                    index = itemMapping[ label ];
+
+                if ( typeof index === "number" ) {
+                    return this.disableItemByIndex( index );
+                }
+
+                return false;
+
+            },
+
+            enableItemByIndex: function ( index ) {
+
+                var options = this.data( "options" );
+                delete options.disabled[ index ];
+
+                this._repaint();
+
+            },
+
+            enableItemByLabel: function ( label ) {
+
+                var itemMapping = this.data('options').itemMapping,
+                    index = itemMapping[ label ];
+
+                if ( typeof index === "number" ) {
+                    return this.enableItemByIndex( index );
+                }
+
+                return false;
+
+            },
+
             /**
              * 转换记录栈
              */
@@ -256,8 +332,7 @@
             _update: function ( index ) {
 
                 var options = this.data("options"),
-                    newStack = [],
-                    newChilds = null;
+                    newStack = [];
 
                 $.each( options.recordStack, function( i, item ){
 
@@ -277,13 +352,20 @@
                 options.recordStack = newStack;
                 options.selected = index;
 
-                newChilds = $( $.parseTmpl( this.tpl, options ) );
+                this._repaint();
+
+                newStack = null;
+
+            },
+
+            _repaint: function () {
+
+                var newChilds = $( $.parseTmpl( this.tpl, this.data("options") ) );
 
                 //重新渲染
                 this.root().html( newChilds.html() );
 
                 newChilds = null;
-                newStack = null;
 
             }
         };

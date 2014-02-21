@@ -12,7 +12,9 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var lastEvtPosition,dir = 1;
 
-
+    km.isTextEditStatus = function(){
+        return km.receiver.isTextEditStatus();
+    }
 
     return {
         //插入光标
@@ -27,7 +29,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
 
-                    if ( this.isSingleSelect() && node.isSelected() && e.kityEvent.targetShape.getType().toLowerCase()== 'text') {
+                    if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
@@ -57,12 +59,20 @@ KityMinder.registerModule( "TextEditModule", function () {
             'beforemousemove':function(e){
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
+
                     var offset = e.getPosition();
+
+                    if(Math.abs(offset.y - lastEvtPosition.y) > 2){
+                        sel.setHide();
+                        mouseDownStatus = false;
+                        return;
+                    }
                     dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
                     receiver.updateSelectionByMousePosition(offset,dir)
                         .updateSelectionShow(dir);
                     sel.stroke('none',0);
                     lastEvtPosition = e.getPosition();
+
                 }
             },
             'dblclick':function(e){
@@ -73,8 +83,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                     sel.setStartOffset(0);
                     sel.setEndOffset(text.getContent().length);
                     sel.setShow();
-                    receiver.updateSelectionShow(1)
-                        .updateRange(range);
+                    receiver.setContainerTxt(text.getContent()).updateSelectionShow(1)
+                        .updateRange(range).setTextEditStatus(true)
 
                 }
             },
@@ -117,7 +127,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     receiver.updateSelectionShow(1)
                         .updateRange(range);
-
+                    return;
 
                 }
 
@@ -130,10 +140,11 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }else{
                         receiver.updateSelectionShow(1)
                     }
-
+                    return;
 
 
                 }
+                receiver.clear().setTextEditStatus(false);
             },
             'selectionclear':function(){
                 receiver.setTextEditStatus(false).clear()

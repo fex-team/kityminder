@@ -19,6 +19,7 @@
 .kmui-combobox-menu .kmui-combobox-item {
     display: block;
     border: 1px solid white;
+    white-space:nowrap;
 }
 
 .kmui-combobox-menu .kmui-combobox-item-label {
@@ -184,4 +185,13 @@
 /* h6 */
 .kmui-combobox-paragraph .kmui-combobox-item-6 .kmui-combobox-item-label {
     font-size: 12px;
+}
+
+.kmui-combobox-menu .kmui-combobox-item-disabled {
+    opacity: 0.3;
+}
+
+.kmui-combobox-menu .kmui-combobox-item-disabled:HOVER {
+    border-color: #fff;
+    background-color: #fff;
 }
