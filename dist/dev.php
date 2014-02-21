@@ -66,6 +66,7 @@ $dependency = Array(
     ,'src/adapter/node.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
+    ,'src/protocal/png.js'
 );
 
 $content = "";
