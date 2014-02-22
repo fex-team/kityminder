@@ -25,30 +25,42 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null;
 
         this._minder.on( 'beforemousedown', function ( e ) {
-
+            // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 startPosition = e.getPosition();
                 e.stopPropagation();
-            } else if ( !this.getRoot().isSelected() && e.getTargetNode() == this.getRoot() ) {
+            }
+            // 点击未选中的根节点临时开启
+            else if ( !this.getRoot().isSelected() && e.getTargetNode() == this.getRoot() ) {
                 startPosition = e.getPosition();
                 dragger.setEnabled( true );
                 isRootDrag = true;
             }
 
-        } ).on( 'beforemousemove', function ( e ) {
+        } )
+
+        .on( 'beforemousemove', function ( e ) {
             if ( startPosition ) {
                 lastPosition = e.getPosition();
+
+                // 当前偏移加上历史偏移
                 var offset = kity.Vector.fromPoints( startPosition, lastPosition );
                 offset = kity.Vector.add( dragger._offset, offset );
+
                 this.getRenderContainer().setTransform( new kity.Matrix().translate( offset.x, offset.y ) );
                 e.stopPropagation();
             }
-        } ).on( 'mouseup', function ( e ) {
+        } )
+
+        .on( 'mouseup', function ( e ) {
             if ( startPosition && lastPosition ) {
+                // 合并更改的偏移到历史偏移
                 dragger._offset.x += lastPosition.x - startPosition.x;
                 dragger._offset.y += lastPosition.y - startPosition.y;
             }
             startPosition = null;
+
+            // 临时拖动需要还原状态
             if ( isRootDrag ) {
                 dragger.setEnabled( false );
                 isRootDrag = false;
