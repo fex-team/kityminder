@@ -1,5 +1,5 @@
 KM.registerToolbarUI( 'switchlayout', function ( name ) {
-    debugger
+
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
         options = {
