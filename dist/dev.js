@@ -1892,7 +1892,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var SwitchLayoutCommand = kity.createClass( "SwitchLayoutCommand", ( function () {
 		return {
 			base: Command,
-			execute: switchLayout
+			execute: switchLayout,
+			queryValue: function ( km ) {
+				return km.getCurrentStyle();
+			}
 		};
 	} )() );
 	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {
@@ -3110,6 +3113,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					translateNode( set[ j ] );
 					updateConnectAndshIcon( set[ j ] );
 				}
+				var set1 = updateLayoutMain();
+				for ( var k = 0; k < set1.length; k++ ) {
+					translateNode( set1[ k ] );
+					updateConnectAndshIcon( set1[ k ] );
+				}
 				var _buffer = [ nodes[ 0 ] ];
 				while ( _buffer.length !== 0 ) {
 					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
@@ -3462,7 +3470,7 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 
 
 function boxMapper( node ) {
-	return node.getRenderContainer().getRenderBox();
+	return node.getRenderContainer().getRenderBox( 'top' );
 }
 
 // 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：
@@ -3508,6 +3516,12 @@ var DragBox = kity.createClass( "DragBox", {
 		var nodes = this._minder.getSelectedNodes().slice( 0 ),
 			ancestors = [],
 			judge;
+
+		// 根节点不参与计算
+		var rootIndex = nodes.indexOf( this._minder.getRoot() );
+		if ( ~rootIndex ) {
+			nodes.splice( rootIndex, 1 );
+		}
 
 		// 判断 nodes 列表中是否存在 judge 的祖先
 		function hasAncestor( nodes, judge ) {
@@ -3567,10 +3581,15 @@ var DragBox = kity.createClass( "DragBox", {
 	//    4. 标记已启动
 	_enterDragMode: function () {
 		this._calcDragSources();
+		if ( !this._dragSources.length ) {
+			this._startPosition = null;
+			return false;
+		}
 		this._calcDropTargets();
 		this._drawForDragMode();
 		this._shrink();
 		this._dragMode = true;
+		return true;
 	},
 	_leaveDragMode: function () {
 		this.remove();
@@ -3657,16 +3676,21 @@ var DragBox = kity.createClass( "DragBox", {
 	},
 
 	dragMove: function ( position ) {
+		// 启动拖放模式需要最小的移动距离
+		var DRAG_MOVE_THRESHOLD = 10;
+
 		if ( !this._startPosition ) return;
 
 		this._dragPosition = position;
 
 		if ( !this._dragMode ) {
 			// 判断拖放模式是否该启动
-			if ( GM.getDistance( this._dragPosition, this._startPosition ) < 10 ) {
+			if ( GM.getDistance( this._dragPosition, this._startPosition ) < DRAG_MOVE_THRESHOLD ) {
 				return;
 			}
-			this._enterDragMode();
+			if ( !this._enterDragMode() ) {
+				return;
+			}
 		}
 
 		var movement = kity.Vector.fromPoints( this._startPosition, this._dragPosition );
@@ -3699,7 +3723,8 @@ KityMinder.registerModule( "DragTree", function () {
 		},
 		events: {
 			mousedown: function ( e ) {
-				if ( e.getTargetNode() ) {
+				// 单选中根节点也不触发拖拽
+				if ( e.getTargetNode() && e.getTargetNode() != this.getRoot() ) {
 					this._dragBox.dragStart( e.getPosition() );
 				}
 			},
@@ -4213,9 +4238,13 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var lastEvtPosition,dir = 1;
 
+
+
     km.isTextEditStatus = function(){
         return km.receiver.isTextEditStatus();
-    }
+    };
+
+    var selectionByClick = false;
 
     return {
         //插入光标
@@ -4226,12 +4255,19 @@ KityMinder.registerModule( "TextEditModule", function () {
             'beforemousedown':function(e){
                 sel.setHide();
                 var node = e.getTargetNode();
+                if(!node){
+                    var selectionShape = e.kityEvent.targetShape;
+                    if(selectionShape && selectionShape.getType() == 'Selection'){
+                        selectionByClick = true;
+                        node = selectionShape.getData('relatedNode');
+                        e.stopPropagationImmediately();
+                    }
+                }
                 if(node){
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor','default');
 
                     if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
-
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
                         receiver.setTextEditStatus(true)
@@ -4245,15 +4281,24 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setCurrentIndex(e.getPosition())
                             .updateSelection()
                             .setRange(range);
+                        sel.setData('relatedNode',node);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition();
+                        if(selectionByClick){
+                            sel.setShow();
+                            selectionByClick = false;
+                        }
                     }
                 }
             },
             'mouseup':function(e){
-                if(!sel.collapsed && mouseDownStatus){
-                    receiver.updateRange(range)
+                if(mouseDownStatus){
+                    if(!sel.collapsed ){
+                        receiver.updateRange(range)
+                    }else
+                       sel.setShow()
                 }
+
                 mouseDownStatus = false;
                 oneTime = 0;
             },
@@ -4263,7 +4308,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     var offset = e.getPosition();
 
-                    if(Math.abs(offset.y - lastEvtPosition.y) > 2){
+                    if(Math.abs(offset.y - lastEvtPosition.y) > 2 && Math.abs(lastEvtPosition.x - offset.x) < 1 ){
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
@@ -4271,7 +4316,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
                     receiver.updateSelectionByMousePosition(offset,dir)
                         .updateSelectionShow(dir);
-                    sel.stroke('none',0);
+
                     lastEvtPosition = e.getPosition();
 
                 }
@@ -4687,9 +4732,9 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.callBase();
         this.height = height || 20;
 
-        this.stroke( color || 'blue', width || 1 );
-        this.width = 1;
-        this.fill('#99C8FF');
+        this.stroke( color || 'rgb(27,171,255)', width || 1 );
+        this.width = 0;
+        this.fill('rgb(27,171,255)');
         this.setHide();
         this.timer = null;
         this.collapsed = true;
@@ -4699,7 +4744,8 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     collapse : function(toEnd){
 
-        this.stroke( 'blue', 1 );
+        this.stroke( 'rgb(27,171,255)', 1 );
+        this.setOpacity(1);
         this.width = 1;
         this.collapsed = true;
         if(toEnd){
@@ -4720,7 +4766,8 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none');
+        this.stroke('none',0);
+        this.setOpacity(0.5);
         return this;
     },
     setEndOffset:function(offset){
@@ -4734,10 +4781,14 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none');
+        this.stroke('none',0);
+        this.setOpacity(0.5);
         return this;
     },
     updateShow : function(offset,width){
+        if(width){
+            this.setShowHold();
+        }
         this.setPosition(offset).setWidth(width);
         return this;
     },
@@ -6010,9 +6061,7 @@ KM.ui.define('colorpicker', {
              */
             select: function( index ){
 
-                if(!this.data('options').enabledRecord){
-                    return this;
-                }
+
                 var options = this.data( 'options' ),
                     itemCount = options.itemCount,
                     items = options.autowidthitem;
@@ -6041,6 +6090,7 @@ KM.ui.define('colorpicker', {
                 }
 
                 this.trigger( 'changebefore', items[ index ] );
+
 
                 this._update( index );
 
@@ -6210,22 +6260,25 @@ KM.ui.define('colorpicker', {
                 var options = this.data("options"),
                     newStack = [];
 
-                $.each( options.recordStack, function( i, item ){
+                if(this.data('options').enabledRecord){
+                    $.each( options.recordStack, function( i, item ){
 
-                    if( item != index ) {
-                        newStack.push( item );
+                        if( item != index ) {
+                            newStack.push( item );
+                        }
+
+                    } );
+
+                    //压入最新的记录
+                    newStack.unshift( index );
+
+                    if( newStack.length > options.recordCount ) {
+                        newStack.length = options.recordCount;
                     }
 
-                } );
-
-                //压入最新的记录
-                newStack.unshift( index );
-
-                if( newStack.length > options.recordCount ) {
-                    newStack.length = options.recordCount;
+                    options.recordStack = newStack;
                 }
 
-                options.recordStack = newStack;
                 options.selected = index;
 
                 this._repaint();
@@ -7158,7 +7211,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             items: [],
             itemStyles: [],
             value: [],
-            autowidthitem: []
+            autowidthitem: [],
+            enabledRecord:false
         },
         $combox = null,
         comboboxWidget = null;
@@ -7173,11 +7227,59 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         options.autowidthitem.push( $.wordCountAdaptive( text ), true );
     } );
 
+
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
+        if ( res.value === "png" ) {
+            var svghtml = $( "#kityminder .kmui-editor-body" ).html();
+            var rootBox = me.getRoot().getRenderContainer().getRenderBox();
+            var svg = $( svghtml ).attr( {
+                width: rootBox.x + me.getRenderContainer().getWidth() + 20,
+                height: rootBox.y + me.getRenderContainer().getHeight() + 20,
+                viewBox: null
+            } );
+            var div = $( "<div></div>" ).append( svg );
+            svghtml = div.html();
+            var canvas = $( '<canvas style="border:2px solid black;" width="' + svg.attr( "width" ) + '" height="' + svg.attr( "height" ) + '"></canvas>' );
+            var ctx = canvas[ 0 ].getContext( "2d" );
+            var DOMURL = self.URL || self.webkitURL || self;
+            var img = new Image();
+            var svg = new Blob( [ svghtml ], {
+                type: "image/svg+xml;charset=utf-8"
+            } );
+            var url = DOMURL.createObjectURL( svg );
+            img.onload = function () {
+                ctx.drawImage( img, 0, 0 );
+                DOMURL.revokeObjectURL( url );
+                var type = 'png';
+                var imgData = canvas[ 0 ].toDataURL( type );
+                var _fixType = function ( type ) {
+                    type = type.toLowerCase().replace( /jpg/i, 'jpeg' );
+                    var r = type.match( /png|jpeg|bmp|gif/ )[ 0 ];
+                    return 'image/' + r;
+                };
+                imgData = imgData.replace( _fixType( type ), 'image/octet-stream' );
+                var saveFile = function ( data, filename ) {
+                    var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
+                    save_link.href = data;
+                    save_link.download = filename;
+
+                    var event = document.createEvent( 'MouseEvents' );
+                    event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+                    save_link.dispatchEvent( event );
+                };
+
+                // 下载后的问题名
+                var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
+                // download
+                saveFile( imgData, filename );
+            };
+            img.src = url;
+            return "png";
+        }
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
         var a = downloadLink;
@@ -7188,15 +7290,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
-        var combox = $combox.kmui();
-
-        combox.traverseItems( function ( label, value ) {
-            if ( me.queryCommandState( value ) == -1 ) {
-                combox.disableItemByLabel( label )
-            } else {
-                combox.enableItemByLabel( label )
-            }
-        } )
+    } ).on( 'aftercomboboxselect', function () {
+        this.setLabelWithDefaultValue();
     } );
 
 
@@ -7295,7 +7390,8 @@ KM.registerUI( 'tooltips',
     }
 );
 
-KM.registerToolbarUI( 'layout', function ( name ) {
+KM.registerToolbarUI( 'switchlayout', function ( name ) {
+
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
         options = {
@@ -7305,7 +7401,8 @@ KM.registerToolbarUI( 'layout', function ( name ) {
             items: me.getLayoutStyleItems() || [],
             itemStyles: [],
             value: me.getLayoutStyleItems(),
-            autowidthitem: []
+            autowidthitem: [],
+            enabledRecord:false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
@@ -7317,13 +7414,26 @@ KM.registerToolbarUI( 'layout', function ( name ) {
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        me.execCommand( "switchlayout", res.value );
+        me.execCommand( name, res.value );
     } ).on( "beforeshow", function () {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
-    } );
 
+    } );
+    //状态反射
+    me.on( 'interactchange', function () {
+        var state = this.queryCommandState( name ),
+            value = this.queryCommandValue( name );
+        //设置按钮状态
+        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
+
+        if ( value ) {
+            //设置label
+            value = value.replace( /['"]/g, '' ).toLowerCase().split( /['|"]?\s*,\s*[\1]?/ );
+            comboboxWidget.selectItemByLabel( value );
+        }
+    } );
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );
 
@@ -7518,6 +7628,109 @@ KityMinder.registerProtocal( 'json', function () {
 			return Utils.isString( local ) && local.charAt( 0 ) == '{' && local.charAt( local.length - 1 ) == '}';
 		},
 		recognizePriority: 0
+	};
+} );
+
+KityMinder.registerProtocal( "png", function () {
+	var LINE_ENDING = '\n',
+		TAB_CHAR = '\t';
+
+	function repeat( s, n ) {
+		var result = "";
+		while ( n-- ) result += s;
+		return result;
+	}
+
+	function encode( json, level ) {
+		var local = "";
+		level = level || 0;
+		local += repeat( TAB_CHAR, level );
+		local += json.data.text + LINE_ENDING;
+		if ( json.children ) {
+			json.children.forEach( function ( child ) {
+				local += encode( child, level + 1 );
+			} );
+		}
+		return local;
+	}
+
+	function isEmpty( line ) {
+		return !/\S/.test( line );
+	}
+
+	function getLevel( line ) {
+		var level = 0;
+		while ( line.charAt( level ) === TAB_CHAR ) level++;
+		return level;
+	}
+
+	function getNode( line ) {
+		return {
+			data: {
+				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
+			}
+		};
+	}
+
+	function decode( local ) {
+		var json,
+			parentMap = {},
+			lines = local.split( LINE_ENDING ),
+			line, level, node;
+
+		function addChild( parent, child ) {
+			var children = parent.children || ( parent.children = [] );
+			children.push( child );
+		}
+
+		for ( var i = 0; i < lines.length; i++ ) {
+			line = lines[ i ];
+			if ( isEmpty( line ) ) continue;
+
+			level = getLevel( line );
+			node = getNode( line );
+
+			if ( level === 0 ) {
+				if ( json ) {
+					throw new Error( 'Invalid local format' );
+				}
+				json = node;
+			} else {
+				if ( !parentMap[ level - 1 ] ) {
+					throw new Error( 'Invalid local format' );
+				}
+				addChild( parentMap[ level - 1 ], node );
+			}
+			parentMap[ level ] = node;
+		}
+		return json;
+	}
+	var lastTry, lastResult;
+
+	function recognize( local ) {
+		if ( !Utils.isString( local ) ) return false;
+		lastTry = local;
+		try {
+			lastResult = decode( local );
+		} catch ( e ) {
+			lastResult = null;
+		}
+		return !!lastResult;
+	}
+	return {
+		fileDescription: 'png',
+		fileExtension: '.png',
+		encode: function ( json ) {
+			return encode( json, 0 );
+		},
+		decode: function ( local ) {
+			if ( lastTry == local && lastResult ) {
+				return lastResult;
+			}
+			return decode( local );
+		},
+		recognize: recognize,
+		recognizePriority: -1
 	};
 } );
 
