@@ -32,7 +32,7 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 
 
 function boxMapper( node ) {
-	return node.getRenderContainer().getRenderBox();
+	return node.getRenderContainer().getRenderBox( 'top' );
 }
 
 // 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：

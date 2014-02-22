@@ -51,7 +51,8 @@
                 //自动记录
                 autoRecord: true,
                 //最多记录条数
-                recordCount: 5
+                recordCount: 5,
+                enabledRecord:true
             },
             init: function( options ){
 
@@ -133,6 +134,7 @@
              */
             select: function( index ){
 
+
                 var options = this.data( 'options' ),
                     itemCount = options.itemCount,
                     items = options.autowidthitem;
@@ -161,6 +163,7 @@
                 }
 
                 this.trigger( 'changebefore', items[ index ] );
+
 
                 this._update( index );
 
@@ -330,22 +333,25 @@
                 var options = this.data("options"),
                     newStack = [];
 
-                $.each( options.recordStack, function( i, item ){
+                if(this.data('options').enabledRecord){
+                    $.each( options.recordStack, function( i, item ){
 
-                    if( item != index ) {
-                        newStack.push( item );
+                        if( item != index ) {
+                            newStack.push( item );
+                        }
+
+                    } );
+
+                    //压入最新的记录
+                    newStack.unshift( index );
+
+                    if( newStack.length > options.recordCount ) {
+                        newStack.length = options.recordCount;
                     }
 
-                } );
-
-                //压入最新的记录
-                newStack.unshift( index );
-
-                if( newStack.length > options.recordCount ) {
-                    newStack.length = options.recordCount;
+                    options.recordStack = newStack;
                 }
 
-                options.recordStack = newStack;
                 options.selected = index;
 
                 this._repaint();
