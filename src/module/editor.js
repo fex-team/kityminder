@@ -18,7 +18,7 @@ KityMinder.registerModule( "TextEditModule", function () {
         return km.receiver.isTextEditStatus();
     };
 
-
+    var selectionByClick = false;
 
     return {
         //插入光标
@@ -32,8 +32,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(!node){
                     var selectionShape = e.kityEvent.targetShape;
                     if(selectionShape && selectionShape.getType() == 'Selection'){
+                        selectionByClick = true;
                         node = selectionShape.getData('relatedNode');
-
+                        e.stopPropagationImmediately();
                     }
                 }
                 if(node){
@@ -57,6 +58,10 @@ KityMinder.registerModule( "TextEditModule", function () {
                         sel.setData('relatedNode',node);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition();
+                        if(selectionByClick){
+                            sel.setShow();
+                            selectionByClick = false;
+                        }
                     }
                 }
             },
