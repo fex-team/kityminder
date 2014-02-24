@@ -132,6 +132,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 sel.setHide();
                 receiver.clear().setTextEditStatus(false);
             },
+            "resize": function ( e ) {
+                sel.setHide();
+            },
             'execCommand':function(e){
                 var cmds = {
                     'appendchildnode':1,
