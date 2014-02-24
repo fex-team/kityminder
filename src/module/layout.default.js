@@ -605,7 +605,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					var parent = _buffer[ 0 ].getParent();
 					Layout.parent = parent;
 					_cleanbuffer.push( _buffer[ 0 ] );
-					//minder.appendChildNode( parent, _buffer[ 0 ] );
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {

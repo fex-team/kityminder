@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
+KM.registerToolbarUI( 'fontfamily fontsize', function ( name ) {
 
     var me = this,
         label = me.getLang( 'tooltips.' + name ),
@@ -19,17 +19,15 @@ KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
     }
     switch ( name ) {
 
-    case 'layoutstyle':
-        options = transForLayoutstyle( options );
-        break;
 
-    case 'fontfamily':
-        options = transForFontfamily( options );
-        break;
 
-    case 'fontsize':
-        options = transForFontsize( options );
-        break;
+        case 'fontfamily':
+            options = transForFontfamily( options );
+            break;
+
+        case 'fontsize':
+            options = transForFontsize( options );
+            break;
 
     }
 
@@ -61,24 +59,6 @@ KM.registerToolbarUI( 'layoutstyle fontfamily fontsize', function ( name ) {
     } );
 
     return comboboxWidget.button().addClass( 'kmui-combobox' );
-
-
-
-    function transForLayoutstyle( options ) {
-
-        var tempItems = [];
-
-        utils.each( options.items, function ( k, v ) {
-            options.value.push( k );
-            tempItems.push( k );
-            options.autowidthitem.push( $.wordCountAdaptive( tempItems[ tempItems.length - 1 ] ) );
-        } );
-
-        options.items = tempItems;
-
-        return options;
-
-    }
 
     //字体参数转换
     function transForFontfamily( options ) {

@@ -5,18 +5,20 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.callBase();
         this.height = height || 20;
 
-        this.stroke( color || 'blue', width || 1 );
-        this.width = 1;
-        this.fill('#99C8FF');
+        this.stroke( color || 'rgb(27,171,255)', width || 1 );
+        this.width = 0;
+        this.fill('rgb(27,171,255)');
         this.setHide();
         this.timer = null;
         this.collapsed = true;
         this.startOffset = this.endOffset = 0;
-        this.setOpacity(0.5)
+        this.setOpacity(0.5);
+        this.setStyle('cursor','text');
     },
     collapse : function(toEnd){
 
-        this.stroke( 'blue', 1 );
+        this.stroke( 'rgb(27,171,255)', 1 );
+        this.setOpacity(1);
         this.width = 1;
         this.collapsed = true;
         if(toEnd){
@@ -37,7 +39,8 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none');
+        this.stroke('none',0);
+        this.setOpacity(0.5);
         return this;
     },
     setEndOffset:function(offset){
@@ -51,10 +54,14 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none');
+        this.stroke('none',0);
+        this.setOpacity(0.5);
         return this;
     },
     updateShow : function(offset,width){
+        if(width){
+            this.setShowHold();
+        }
         this.setPosition(offset).setWidth(width);
         return this;
     },
@@ -64,7 +71,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.y = offset.y;
 
         } catch ( e ) {
-            console.log(e)
+           debugger
         }
 
         return this.update();

@@ -29,9 +29,11 @@ KityMinder.registerModule( "Select", function () {
                 startPosition = g.snapToSharp( e.getPosition() );
             },
             selectMove: function ( e ) {
-                
+                if ( minder.isTextEditStatus() ) {
+                    return;
+                }
                 if ( !startPosition ) return;
-                
+
                 var p1 = startPosition,
                     p2 = e.getPosition();
 
@@ -65,7 +67,7 @@ KityMinder.registerModule( "Select", function () {
 
                 // 计算选中范围
                 minder.getRoot().traverse( function ( node ) {
-                    var renderBox = node.getRenderContainer().getRenderBox();
+                    var renderBox = node.getRenderContainer().getRenderBox( "top" );
                     if ( g.isBoxIntersect( renderBox, marquee ) ) {
                         selectedNodes.push( node );
                     }
@@ -80,7 +82,7 @@ KityMinder.registerModule( "Select", function () {
                 }
                 if ( marqueeMode ) {
                     marqueeShape.fadeOut( 200, 'ease', 0, function () {
-                        if(marqueeShape.remove) marqueeShape.remove();
+                        if ( marqueeShape.remove ) marqueeShape.remove();
                     } );
                     marqueeMode = false;
                 }

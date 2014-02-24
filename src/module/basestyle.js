@@ -69,8 +69,8 @@ KityMinder.registerModule( "basestylemodule", function () {
             } )
         },
         addShortcutKeys: {
-            "bold": "ctrl+66", //bold
-            "italic": "ctrl+73" //italic
+            "bold": "ctrl+b", //bold
+            "italic": "ctrl+i" //italic
         },
         "events": {
             "beforeRenderNode": function ( e ) {

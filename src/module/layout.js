@@ -8,7 +8,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return this._layoutStyles[ name ];
 		},
 		getLayoutStyleItems: function () {
-			return this._layoutStyles;
+			var items = [];
+			for ( var key in this._layoutStyles ) {
+				items.push( key );
+			}
+			return items;
 		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();
@@ -90,7 +94,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var SwitchLayoutCommand = kity.createClass( "SwitchLayoutCommand", ( function () {
 		return {
 			base: Command,
-			execute: switchLayout
+			execute: switchLayout,
+			queryValue: function ( km ) {
+				return km.getCurrentStyle();
+			}
 		};
 	} )() );
 	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {
@@ -98,12 +105,17 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
-				if ( !parent ) {
-					return false;
-				}
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -112,9 +124,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var selectedNode = km.getSelectedNode();
-				if ( !selectedNode ) {
-					return false;
-				}
 				if ( selectedNode.isRoot() ) {
 					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
@@ -124,6 +133,15 @@ KityMinder.registerModule( "LayoutModule", function () {
 				}
 				km.select( node, true );
 				return node;
+			},
+			queryState: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				//没选中节点和单选root的时候返回不可执行
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -133,10 +151,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
 				var _root = km.getRoot();
-				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && !selectedNodes[ 0 ].getParent() ) ) {
-					km.select( _root );
-					return false;
-				}
 				var _buffer = [];
 				for ( var i = 0; i < selectedNodes.length; i++ ) {
 					_buffer.push( selectedNodes[ i ] );
@@ -148,6 +162,14 @@ KityMinder.registerModule( "LayoutModule", function () {
 				} while ( _buffer.length > 1 );
 				km.removeNode( selectedNodes );
 				km.select( _buffer[ 0 ] );
+			},
+			queryState: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 || ( selectedNodes.length === 1 && selectedNodes[ 0 ] === km.getRoot() ) ) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		};
 	} )() );
@@ -181,7 +203,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		},
 		"defaultOptions": {
-			"defaultlayoutstyle": "default"
+			"defaultlayoutstyle": "default",
+			"node": {
+				'appendsiblingnode': 'appendsiblingnode',
+				'appendchildnode': 'appendchildnode',
+				'removenode': 'removenode'
+			}
 		}
 	};
 } );
