@@ -10,7 +10,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord:false
+            enabledRecord: false
         },
         $combox = null,
         comboboxWidget = null;
@@ -34,7 +34,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( res.value === "png" ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
             var bgImg = $( "#kityminder .kmui-editor-body" ).css( "backgroundImage" ).replace( /"/g, "" ).replace( /url\(|\)$/ig, "" );
-            var renderBox = me.getRenderContainer().getRenderBox();
+            var renderBox = me.getRenderContainer().getRenderBox( "top" );
+            //debugger;
             var svg = $( svghtml ).attr( {
                 width: renderBox.x + me.getRenderContainer().getWidth(),
                 height: renderBox.y + me.getRenderContainer().getHeight(),
