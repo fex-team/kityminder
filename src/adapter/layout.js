@@ -53,7 +53,9 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             }
         })
     });
-
+    data.push({
+        divider:1
+    });
     me.addContextmenu(data);
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );

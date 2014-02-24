@@ -221,6 +221,8 @@ KityMinder.registerModule( "LayoutModule", function () {
             {
                 label:this.getLang('node.removenode'),
                 cmdName:'removenode'
+            },{
+                divider:1
             }
 
         ],

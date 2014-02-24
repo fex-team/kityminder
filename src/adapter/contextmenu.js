@@ -32,6 +32,10 @@ KM.registerUI( 'contextmenu', function () {
         var data = [];
 
         utils.each(items,function(i,item){
+            if(item.divider){
+                data.push(item)
+                return;
+            }
             if(me.queryCommandState(item.cmdName)!=-1){
                 data.push({
                     label:item.label,
@@ -41,7 +45,10 @@ KM.registerUI( 'contextmenu', function () {
             }
         });
         if(data.length){
-
+            var item = data[data.length-1];
+            if(item.divider){
+                data.pop();
+            }
             $menu.kmui().setData({
                 data:data
             }).position(e.getPosition()).show();
