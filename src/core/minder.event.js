@@ -13,7 +13,7 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        this._paper.on( 'click dblclick mousedown mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
+        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
         if ( window ) {
             window.addEventListener( 'resize', this._firePharse.bind( this ) );
         }

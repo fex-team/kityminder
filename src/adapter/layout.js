@@ -42,5 +42,20 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             comboboxWidget.selectItemByLabel( value );
         }
     } );
+
+    var data = [];
+    utils.each(me.getLayoutStyleItems(),function(i,v){
+        data.push({
+            label:me.getLang( 'tooltips.' + name  ) + ' ' + v,
+            cmdName:'switchlayout',
+            exec:function(){
+                me.execCommand('switchlayout',v);
+            }
+        })
+    });
+    data.push({
+        divider:1
+    });
+    me.addContextmenu(data);
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );

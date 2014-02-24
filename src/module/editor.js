@@ -27,6 +27,18 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'beforemousedown':function(e){
+                var isRightMB;
+
+
+                if ("which" in e.originEvent)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                    isRightMB = e.originEvent.which == 3;
+                else if ("button" in e.originEvent)  // IE, Opera
+                    isRightMB = e.originEvent.button == 2;
+
+                if(isRightMB){
+                    e.stopPropagationImmediately();
+                    return;
+                }
                 sel.setHide();
                 var node = e.getTargetNode();
                 if(!node){
@@ -68,7 +80,12 @@ KityMinder.registerModule( "TextEditModule", function () {
             'mouseup':function(e){
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
-                        receiver.updateRange(range)
+                        try{
+                            receiver.updateRange(range)
+                        }catch(e){
+                            console.log(e)
+                        }
+
                     }else
                        sel.setShow()
                 }

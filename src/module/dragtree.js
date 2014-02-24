@@ -161,7 +161,7 @@ var DragBox = kity.createClass( "DragBox", {
 	_drawForDragMode: function () {
 		this._text.setContent( this._dragSources.length + ' items' );
 		this._text.setPosition( this._startPosition.x, this._startPosition.y + 5 );
-		this._minder.getRenderContainer().addShape( this );
+		this._minder.getPaper().addShape( this );
 	},
 	_shrink: function () {
 		// 合并所有拖放源图形的矩形即可

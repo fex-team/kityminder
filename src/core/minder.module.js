@@ -46,6 +46,10 @@ kity.extendClass( Minder, {
                 this.addShortcutKeys( moduleDeals.addShortcutKeys )
             }
 
+            //添加邮件菜单
+            if(moduleDeals.contextmenu){
+                this.addContextmenu(moduleDeals.contextmenu)
+            }
         }
     },
 
