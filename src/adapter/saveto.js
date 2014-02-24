@@ -35,15 +35,17 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
             var bgImg = $( "#kityminder .kmui-editor-body" ).css( "backgroundImage" ).replace( /"/g, "" ).replace( /url\(|\)$/ig, "" );
             var renderBox = me.getRenderContainer().getRenderBox( "top" );
-            //debugger;
+            var renderContainer = me.getRenderContainer();
+            var transform = renderContainer.getTransform();
+            renderContainer.resetTransform();
             var svg = $( svghtml ).attr( {
-                width: renderBox.x + me.getRenderContainer().getWidth(),
-                height: renderBox.y + me.getRenderContainer().getHeight(),
+                width: renderBox.x + renderBox.width,
+                height: renderBox.y + renderBox.height,
                 viewBox: null
             } );
             var div = $( "<div></div>" ).append( svg );
             svghtml = div.html();
-            var canvas = $( '<canvas width="' + renderBox.width + '" height="' + renderBox.height + '"></canvas>' );
+            var canvas = $( '<canvas width="' + ( parseInt( renderBox.width ) + 40 ) + '" height="' + ( parseInt( renderBox.height ) + 40 ) + '"></canvas>' );
             var ctx = canvas[ 0 ].getContext( "2d" );
             var DOMURL = self.URL || self.webkitURL || self;
             var img = new Image();
@@ -57,8 +59,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                 bgTexture.onload = function () {
                     var bgfill = ctx.createPattern( bgTexture, "repeat" );
                     ctx.fillStyle = bgfill;
-                    ctx.fillRect( 0, 0, renderBox.width, renderBox.height );
-                    ctx.drawImage( img, -renderBox.x, -renderBox.y );
+                    ctx.fillRect( 0, 0, renderBox.width + 40, renderBox.height + 40 );
+                    ctx.drawImage( img, -renderBox.x + 20, -renderBox.y + 20 );
                     DOMURL.revokeObjectURL( url );
                     var type = 'png';
                     var imgData = canvas[ 0 ].toDataURL( type );
@@ -82,6 +84,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                     var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
                     // download
                     saveFile( imgData, filename );
+                    renderContainer.setTransform( transform );
                 };
             };
             img.src = url;

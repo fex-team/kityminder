@@ -756,16 +756,6 @@ var MinderEvent = kity.createClass( 'MindEvent', {
     }
 } );
 
-/* @require <kityminder.js>
- * @require <module.js>
- * @require <event.js>
- * @require <node.js>
- * @reuqire <command.js>
- * @require <utils.js>
- *
- * @description KityMinder 使用类
- */
-
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
         this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, options );
@@ -1827,8 +1817,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
+			var lastTransform = this._rc.getTransform();
 			this._rc.remove();
-			this._rc = new kity.Group();
+			this._rc = new kity.Group().setTransform( lastTransform );
 			this._paper.addShape( this._rc );
 
 			var _root = this.getRoot();
@@ -3252,170 +3243,87 @@ kity.extendClass( Minder, function () {
     };
 }() );
 
-kity.Draggable = ( function () {
-    var Paper = kity.Paper;
+var ViewDragger = kity.createClass( "ViewDragger", {
+    constructor: function ( minder ) {
+        this._minder = minder;
+        this._enabled = false;
+        this._offset = {
+            x: 0,
+            y: 0
+        };
+        this._bind();
+    },
+    isEnabled: function () {
+        return this._enabled;
+    },
+    setEnabled: function ( value ) {
+        var paper = this._minder.getPaper();
+        paper.setStyle( 'cursor', value ? 'pointer' : 'default' );
+        paper.setStyle( 'cursor', value ? '-webkit-grab' : 'default' );
+        this._enabled = value;
+    },
 
-    var touchable = window.ontouchstart !== undefined;
-    var DRAG_START_EVENT = touchable ? 'touchstart' : 'mousedown',
-        DRAG_MOVE_EVENT = touchable ? 'touchmove' : 'mousemove',
-        DRAG_END_EVENT = touchable ? 'touchend' : 'mouseup';
+    _bind: function () {
+        var dragger = this,
+            isRootDrag = false,
+            lastPosition = null,
+            currentPosition = null;
 
-    return kity.createClass( {
-        drag: function ( opt ) {
-
-            if ( this.dragEnabled ) {
-                return;
+        this._minder.on( 'beforemousedown', function ( e ) {
+            // 已经被用户打开拖放模式
+            if ( dragger.isEnabled() ) {
+                lastPosition = e.getPosition();
+                e.stopPropagation();
+            }
+            // 点击未选中的根节点临时开启
+            else if ( e.getTargetNode() == this.getRoot() &&
+                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+                lastPosition = e.getPosition();
+                dragger.setEnabled( true );
+                isRootDrag = true;
             }
 
-            var dragStart = opt && opt.start || this.dragStart,
-                dragMove = opt && opt.move || this.dragMove,
-                dragEnd = opt && opt.end || this.dragEnd,
-                dragTarget = opt && opt.target || this.dragTarget || this,
-                me = this;
+        } )
 
-            this.dragEnabled = true;
-            this.dragTarget = dragTarget;
+        .on( 'beforemousemove', function ( e ) {
+            if ( lastPosition ) {
+                currentPosition = e.getPosition();
 
-            function bindEvents( paper ) {
+                // 当前偏移加上历史偏移
+                var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
 
-                var startPosition, lastPosition, dragging = false;
-
-                var dragFn = function ( e ) {
-                    if ( !dragging ) {
-                        paper.off( DRAG_MOVE_EVENT, dragFn );
-                    }
-
-                    if ( e.originEvent.touches && e.originEvent.touches.length !== 1 ) return;
-
-                    var currentPosition = e.getPosition();
-                    var movement = {
-                        x: currentPosition.x - startPosition.x,
-                        y: currentPosition.y - startPosition.y
-                    };
-                    var delta = {
-                        x: currentPosition.x - lastPosition.x,
-                        y: currentPosition.y - lastPosition.y
-                    };
-                    var dragInfo = {
-                        position: currentPosition,
-                        movement: movement,
-                        delta: delta
-                    };
-                    lastPosition = currentPosition;
-
-                    if ( dragMove ) {
-                        dragMove.call( me, dragInfo );
-                    } else if ( me instanceof Paper ) {
-                        // treate paper drag different
-                        var view = me.getViewPort();
-                        view.center.x -= movement.x;
-                        view.center.y -= movement.y;
-                        me.setViewPort( view );
-                    } else {
-                        me.translate( delta.x, delta.y );
-                    }
-
-                    dragTarget.trigger( 'dragmove', dragInfo );
-                    e.stopPropagation();
-                    e.preventDefault();
-                };
-
-                dragTarget.on( DRAG_START_EVENT, dragTarget._dragStartHandler = function ( e ) {
-                    if ( e.originEvent.button ) {
-                        return;
-                    }
-                    dragging = true;
-
-                    var dragInfo = {
-                        position: lastPosition = startPosition = e.getPosition()
-                    };
-
-                    if ( dragStart ) {
-                        var cancel = dragStart.call( me, dragInfo ) === false;
-                        if ( cancel ) {
-                            return;
-                        }
-                    }
-
-                    paper.on( DRAG_MOVE_EVENT, dragFn );
-
-                    dragTarget.trigger( 'dragstart', dragInfo );
-
-                    e.stopPropagation();
-                    e.preventDefault();
-                } );
-
-                paper.on( DRAG_END_EVENT, dragTarget._dragEndHandler = function ( e ) {
-                    if ( dragging ) {
-                        dragging = false;
-                        if ( dragEnd ) {
-                            dragEnd.call( me );
-                        }
-
-                        paper.off( DRAG_MOVE_EVENT, dragFn );
-                        dragTarget.trigger( 'dragend' );
-
-                        if ( e ) {
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }
-                    }
-                } );
+                this.getRenderContainer().translate( offset.x, offset.y );
+                e.stopPropagation();
+                lastPosition = currentPosition;
             }
+        } )
 
-            if ( me instanceof Paper ) {
-                bindEvents( me );
-            } else if ( me.getPaper() ) {
-                bindEvents( me.getPaper() );
-            } else {
-                var listener = function ( e ) {
-                    if ( e.targetShape.getPaper() ) {
-                        bindEvents( e.targetShape.getPaper() );
-                        me.off( 'add', listener );
-                        me.off( 'treeadd', listener );
-                    }
-                };
-                me.on( 'add treeadd', listener );
+        .on( 'mouseup', function ( e ) {
+            lastPosition = null;
+
+            // 临时拖动需要还原状态
+            if ( isRootDrag ) {
+                dragger.setEnabled( false );
+                isRootDrag = false;
             }
-            return this;
-        }, // end of drag
-
-
-        undrag: function () {
-            var target = this.dragTarget;
-            target.off( DRAG_START_EVENT, target._dragStartHandler );
-            target._dragEndHandler();
-            target.getPaper().off( DRAG_END_EVENT, target._dragEndHandler );
-            delete target._dragStartHandler;
-            delete target._dragEndHandler;
-            this.dragEnabled = false;
-            return this;
-        }
-    } );
-} )();
+        } );
+    }
+} );
 
 KityMinder.registerModule( 'Hand', function () {
     var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
         base: Command,
         execute: function ( minder ) {
-            var drag = minder._onDragMode = !minder._onDragMode;
-            minder.getPaper().setStyle( 'cursor', drag ? 'pointer' : 'default' );
-            minder.getPaper().setStyle( 'cursor', drag ? '-webkit-grab' : 'default' );
-            if ( drag ) {
-                minder.getPaper().drag();
-            } else {
-                minder.getPaper().undrag();
-            }
+            minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
         },
         queryState: function ( minder ) {
-            return minder._onDragMode ? 1 : 0;
+            return minder._viewDragger.isEnabled() ? 1 : 0;
         }
     } );
 
     return {
         init: function () {
-            this._onDragMode = false;
-            kity.extendClass( kity.Paper, kity.Draggable );
+            this._viewDragger = new ViewDragger( this );
         },
         commands: {
             'hand': ToggleHandCommand
@@ -3425,11 +3333,6 @@ KityMinder.registerModule( 'Hand', function () {
                 if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
                     this.execCommand( 'hand' );
                     e.preventDefault();
-                }
-            },
-            beforemousemove: function ( e ) {
-                if ( this._onDragMode ) {
-                    e.stopPropagation();
                 }
             }
         }
@@ -3599,7 +3502,7 @@ var DragBox = kity.createClass( "DragBox", {
 	_drawForDragMode: function () {
 		this._text.setContent( this._dragSources.length + ' items' );
 		this._text.setPosition( this._startPosition.x, this._startPosition.y + 5 );
-		this._minder.getRenderContainer().addShape( this );
+		this._minder.getPaper().addShape( this );
 	},
 	_shrink: function () {
 		// 合并所有拖放源图形的矩形即可
@@ -6875,7 +6778,7 @@ $.wordCountAdaptive  = function( word, hasSuffix ) {
 
 utils.extend( KityMinder, function () {
     var _kityminderUI = {},
-        _kityminderToolbarUI ={},
+        _kityminderToolbarUI = {},
         _activeWidget = null,
         _widgetData = {},
         _widgetCallBack = {};
@@ -6890,9 +6793,9 @@ utils.extend( KityMinder, function () {
                 _kityminderToolbarUI[ name ] = fn;
             } )
         },
-        loadUI:function(km){
+        loadUI: function ( km ) {
             utils.each( _kityminderUI, function ( i, fn ) {
-                fn.call(km)
+                fn.call( km )
             } )
         },
         _createUI: function ( id ) {
@@ -6943,7 +6846,7 @@ utils.extend( KityMinder, function () {
             this._createStatusbar( containers.$statusbar, km );
             km.$container = containers.$container;
 
-            this.loadUI(km);
+            this.loadUI( km );
             return km.fire( 'interactchange' );
         },
         registerWidget: function ( name, pro, cb ) {
@@ -7212,7 +7115,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord:false
+            enabledRecord: false
         },
         $combox = null,
         comboboxWidget = null;
@@ -7235,15 +7138,19 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         if ( res.value === "png" ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
-            var rootBox = me.getRoot().getRenderContainer().getRenderBox();
+            var bgImg = $( "#kityminder .kmui-editor-body" ).css( "backgroundImage" ).replace( /"/g, "" ).replace( /url\(|\)$/ig, "" );
+            var renderBox = me.getRenderContainer().getRenderBox( "top" );
+            var renderContainer = me.getRenderContainer();
+            var transform = renderContainer.getTransform();
+            renderContainer.resetTransform();
             var svg = $( svghtml ).attr( {
-                width: rootBox.x + me.getRenderContainer().getWidth() + 20,
-                height: rootBox.y + me.getRenderContainer().getHeight() + 20,
+                width: renderBox.x + renderBox.width,
+                height: renderBox.y + renderBox.height,
                 viewBox: null
             } );
             var div = $( "<div></div>" ).append( svg );
             svghtml = div.html();
-            var canvas = $( '<canvas style="border:2px solid black;" width="' + svg.attr( "width" ) + '" height="' + svg.attr( "height" ) + '"></canvas>' );
+            var canvas = $( '<canvas width="' + ( parseInt( renderBox.width ) + 40 ) + '" height="' + ( parseInt( renderBox.height ) + 40 ) + '"></canvas>' );
             var ctx = canvas[ 0 ].getContext( "2d" );
             var DOMURL = self.URL || self.webkitURL || self;
             var img = new Image();
@@ -7252,30 +7159,38 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             } );
             var url = DOMURL.createObjectURL( svg );
             img.onload = function () {
-                ctx.drawImage( img, 0, 0 );
-                DOMURL.revokeObjectURL( url );
-                var type = 'png';
-                var imgData = canvas[ 0 ].toDataURL( type );
-                var _fixType = function ( type ) {
-                    type = type.toLowerCase().replace( /jpg/i, 'jpeg' );
-                    var r = type.match( /png|jpeg|bmp|gif/ )[ 0 ];
-                    return 'image/' + r;
-                };
-                imgData = imgData.replace( _fixType( type ), 'image/octet-stream' );
-                var saveFile = function ( data, filename ) {
-                    var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
-                    save_link.href = data;
-                    save_link.download = filename;
+                var bgTexture = document.createElement( 'img' );
+                bgTexture.src = bgImg;
+                bgTexture.onload = function () {
+                    var bgfill = ctx.createPattern( bgTexture, "repeat" );
+                    ctx.fillStyle = bgfill;
+                    ctx.fillRect( 0, 0, renderBox.width + 40, renderBox.height + 40 );
+                    ctx.drawImage( img, -renderBox.x + 20, -renderBox.y + 20 );
+                    DOMURL.revokeObjectURL( url );
+                    var type = 'png';
+                    var imgData = canvas[ 0 ].toDataURL( type );
+                    var _fixType = function ( type ) {
+                        type = type.toLowerCase().replace( /jpg/i, 'jpeg' );
+                        var r = type.match( /png|jpeg|bmp|gif/ )[ 0 ];
+                        return 'image/' + r;
+                    };
+                    imgData = imgData.replace( _fixType( type ), 'image/octet-stream' );
+                    var saveFile = function ( data, filename ) {
+                        var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
+                        save_link.href = data;
+                        save_link.download = filename;
 
-                    var event = document.createEvent( 'MouseEvents' );
-                    event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-                    save_link.dispatchEvent( event );
-                };
+                        var event = document.createEvent( 'MouseEvents' );
+                        event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+                        save_link.dispatchEvent( event );
+                    };
 
-                // 下载后的问题名
-                var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
-                // download
-                saveFile( imgData, filename );
+                    // 下载后的文件名
+                    var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
+                    // download
+                    saveFile( imgData, filename );
+                    renderContainer.setTransform( transform );
+                };
             };
             img.src = url;
             return "png";
