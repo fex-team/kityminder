@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="jquery-2.1.0.min.js" charset="utf-8"></script>
+    <script src="baidu-frontia-js-full-1.0.0.js" charset="utf-8"></script>
+    <script src="social.js" charset="utf-8"></script>
+    <script src="../kity/dist/kitygraph.all.js"></script>
+    <script src="../configure.js"></script>
+    <script src="../dist/dev.php"></script>
+    <script src="../lang/zh-cn/zh-cn.js" charset="utf-8"></script>
+    <link href="../themes/default/_css/import.css" type="text/css" rel="stylesheet">
+    <style>
+        .km_receiver{
+            width:0;
+            height:0;
+        }
+        .km-minderNode{
+            cursor:default;
+        }
+        .kmui-container {
+            height: 100%;
+        }
+        html, body, div {
+            margin: 0;
+            padding: 0;
+        }
+        #social {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            line-height: 20px;
+            text-align: right;
+            overflow: hidden;
+        }
+        #social button {
+            outline: none;
+            display: inline-block;
+            bottom: 20px;
+            right: 30px;
+            background: #0099f2;
+            padding: 0 15px;
+            height: 35px;
+            font-size: 13px;
+            line-height: 35px;
+            text-align: center;
+            border-radius: 5px;
+            color: #ffffff;
+            text-decoration: none;
+            border: none;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        #social button:hover {
+            background: #009fff;
+        }
+        #social button[disabled] {
+            background-color: #AAA;
+        }
+    </style>
+</head>
+<body >
+<div id="kityminder" style="height:100%;width:100%" onselectstart="return false">
+</div>
+<div id="social"></div>
+</body>
+<script>
+    window.km = KM.getKityMinder('kityminder');
+</script>
+</html>
