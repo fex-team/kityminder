@@ -74,7 +74,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                         var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
                         save_link.href = data;
                         save_link.download = filename;
-
                         var event = document.createEvent( 'MouseEvents' );
                         event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
                         save_link.dispatchEvent( event );
@@ -95,7 +94,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                 var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
                 save_link.href = 'data:image/svg+xml; utf-8,' + encodeURI( svghtml );
                 save_link.download = filename;
-
                 var event = document.createEvent( 'MouseEvents' );
                 event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
                 save_link.dispatchEvent( event );
