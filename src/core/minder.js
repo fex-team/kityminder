@@ -1,13 +1,3 @@
-/* @require <kityminder.js>
- * @require <module.js>
- * @require <event.js>
- * @require <node.js>
- * @reuqire <command.js>
- * @require <utils.js>
- *
- * @description KityMinder 使用类
- */
-
 var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     constructor: function ( options ) {
         this._options = Utils.extend( window.KITYMINDER_CONFIG || {}, options );
