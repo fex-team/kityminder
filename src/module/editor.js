@@ -83,7 +83,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                         try{
                             receiver.updateRange(range)
                         }catch(e){
-                            debugger
+                            console.log(e)
                         }
 
                     }else
