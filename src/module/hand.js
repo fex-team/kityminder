@@ -1,167 +1,84 @@
-kity.Draggable = ( function () {
-    var Paper = kity.Paper;
+var ViewDragger = kity.createClass( "ViewDragger", {
+    constructor: function ( minder ) {
+        this._minder = minder;
+        this._enabled = false;
+        this._offset = {
+            x: 0,
+            y: 0
+        };
+        this._bind();
+    },
+    isEnabled: function () {
+        return this._enabled;
+    },
+    setEnabled: function ( value ) {
+        var paper = this._minder.getPaper();
+        paper.setStyle( 'cursor', value ? 'pointer' : 'default' );
+        paper.setStyle( 'cursor', value ? '-webkit-grab' : 'default' );
+        this._enabled = value;
+    },
 
-    var touchable = window.ontouchstart !== undefined;
-    var DRAG_START_EVENT = touchable ? 'touchstart' : 'mousedown',
-        DRAG_MOVE_EVENT = touchable ? 'touchmove' : 'mousemove',
-        DRAG_END_EVENT = touchable ? 'touchend' : 'mouseup';
+    _bind: function () {
+        var dragger = this,
+            isRootDrag = false,
+            lastPosition = null,
+            currentPosition = null;
 
-    return kity.createClass( {
-        drag: function ( opt ) {
-
-            if ( this.dragEnabled ) {
-                return;
+        this._minder.on( 'beforemousedown', function ( e ) {
+            // 已经被用户打开拖放模式
+            if ( dragger.isEnabled() ) {
+                lastPosition = e.getPosition();
+                e.stopPropagation();
+            }
+            // 点击未选中的根节点临时开启
+            else if ( e.getTargetNode() == this.getRoot() &&
+                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+                lastPosition = e.getPosition();
+                dragger.setEnabled( true );
+                isRootDrag = true;
             }
 
-            var dragStart = opt && opt.start || this.dragStart,
-                dragMove = opt && opt.move || this.dragMove,
-                dragEnd = opt && opt.end || this.dragEnd,
-                dragTarget = opt && opt.target || this.dragTarget || this,
-                me = this;
+        } )
 
-            this.dragEnabled = true;
-            this.dragTarget = dragTarget;
+        .on( 'beforemousemove', function ( e ) {
+            if ( lastPosition ) {
+                currentPosition = e.getPosition();
 
-            function bindEvents( paper ) {
+                // 当前偏移加上历史偏移
+                var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
 
-                var startPosition, lastPosition, dragging = false;
-
-                var dragFn = function ( e ) {
-                    if ( !dragging ) {
-                        paper.off( DRAG_MOVE_EVENT, dragFn );
-                    }
-
-                    if ( e.originEvent.touches && e.originEvent.touches.length !== 1 ) return;
-
-                    var currentPosition = e.getPosition();
-                    var movement = {
-                        x: currentPosition.x - startPosition.x,
-                        y: currentPosition.y - startPosition.y
-                    };
-                    var delta = {
-                        x: currentPosition.x - lastPosition.x,
-                        y: currentPosition.y - lastPosition.y
-                    };
-                    var dragInfo = {
-                        position: currentPosition,
-                        movement: movement,
-                        delta: delta
-                    };
-                    lastPosition = currentPosition;
-
-                    if ( dragMove ) {
-                        dragMove.call( me, dragInfo );
-                    } else if ( me instanceof Paper ) {
-                        // treate paper drag different
-                        var view = me.getViewPort();
-                        view.center.x -= movement.x;
-                        view.center.y -= movement.y;
-                        me.setViewPort( view );
-                    } else {
-                        me.translate( delta.x, delta.y );
-                    }
-
-                    dragTarget.trigger( 'dragmove', dragInfo );
-                    e.stopPropagation();
-                    e.preventDefault();
-                };
-
-                dragTarget.on( DRAG_START_EVENT, dragTarget._dragStartHandler = function ( e ) {
-                    if ( e.originEvent.button ) {
-                        return;
-                    }
-                    dragging = true;
-
-                    var dragInfo = {
-                        position: lastPosition = startPosition = e.getPosition()
-                    };
-
-                    if ( dragStart ) {
-                        var cancel = dragStart.call( me, dragInfo ) === false;
-                        if ( cancel ) {
-                            return;
-                        }
-                    }
-
-                    paper.on( DRAG_MOVE_EVENT, dragFn );
-
-                    dragTarget.trigger( 'dragstart', dragInfo );
-
-                    e.stopPropagation();
-                    e.preventDefault();
-                } );
-
-                paper.on( DRAG_END_EVENT, dragTarget._dragEndHandler = function ( e ) {
-                    if ( dragging ) {
-                        dragging = false;
-                        if ( dragEnd ) {
-                            dragEnd.call( me );
-                        }
-
-                        paper.off( DRAG_MOVE_EVENT, dragFn );
-                        dragTarget.trigger( 'dragend' );
-
-                        if ( e ) {
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }
-                    }
-                } );
+                this.getRenderContainer().translate( offset.x, offset.y );
+                e.stopPropagation();
+                lastPosition = currentPosition;
             }
+        } )
 
-            if ( me instanceof Paper ) {
-                bindEvents( me );
-            } else if ( me.getPaper() ) {
-                bindEvents( me.getPaper() );
-            } else {
-                var listener = function ( e ) {
-                    if ( e.targetShape.getPaper() ) {
-                        bindEvents( e.targetShape.getPaper() );
-                        me.off( 'add', listener );
-                        me.off( 'treeadd', listener );
-                    }
-                };
-                me.on( 'add treeadd', listener );
+        .on( 'mouseup', function ( e ) {
+            lastPosition = null;
+
+            // 临时拖动需要还原状态
+            if ( isRootDrag ) {
+                dragger.setEnabled( false );
+                isRootDrag = false;
             }
-            return this;
-        }, // end of drag
-
-
-        undrag: function () {
-            var target = this.dragTarget;
-            target.off( DRAG_START_EVENT, target._dragStartHandler );
-            target._dragEndHandler();
-            target.getPaper().off( DRAG_END_EVENT, target._dragEndHandler );
-            delete target._dragStartHandler;
-            delete target._dragEndHandler;
-            this.dragEnabled = false;
-            return this;
-        }
-    } );
-} )();
+        } );
+    }
+} );
 
 KityMinder.registerModule( 'Hand', function () {
     var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
         base: Command,
         execute: function ( minder ) {
-            var drag = minder._onDragMode = !minder._onDragMode;
-            minder.getPaper().setStyle( 'cursor', drag ? 'pointer' : 'default' );
-            minder.getPaper().setStyle( 'cursor', drag ? '-webkit-grab' : 'default' );
-            if ( drag ) {
-                minder.getPaper().drag();
-            } else {
-                minder.getPaper().undrag();
-            }
+            minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
         },
         queryState: function ( minder ) {
-            return minder._onDragMode ? 1 : 0;
+            return minder._viewDragger.isEnabled() ? 1 : 0;
         }
     } );
 
     return {
         init: function () {
-            this._onDragMode = false;
-            kity.extendClass( kity.Paper, kity.Draggable );
+            this._viewDragger = new ViewDragger( this );
         },
         commands: {
             'hand': ToggleHandCommand
@@ -171,11 +88,6 @@ KityMinder.registerModule( 'Hand', function () {
                 if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
                     this.execCommand( 'hand' );
                     e.preventDefault();
-                }
-            },
-            beforemousemove: function ( e ) {
-                if ( this._onDragMode ) {
-                    e.stopPropagation();
                 }
             }
         }

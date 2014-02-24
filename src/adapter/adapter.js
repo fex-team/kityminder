@@ -1,6 +1,6 @@
 utils.extend( KityMinder, function () {
     var _kityminderUI = {},
-        _kityminderToolbarUI ={},
+        _kityminderToolbarUI = {},
         _activeWidget = null,
         _widgetData = {},
         _widgetCallBack = {};
@@ -15,9 +15,9 @@ utils.extend( KityMinder, function () {
                 _kityminderToolbarUI[ name ] = fn;
             } )
         },
-        loadUI:function(km){
+        loadUI: function ( km ) {
             utils.each( _kityminderUI, function ( i, fn ) {
-                fn.call(km)
+                fn.call( km )
             } )
         },
         _createUI: function ( id ) {
@@ -68,7 +68,7 @@ utils.extend( KityMinder, function () {
             this._createStatusbar( containers.$statusbar, km );
             km.$container = containers.$container;
 
-            this.loadUI(km);
+            this.loadUI( km );
             return km.fire( 'interactchange' );
         },
         registerWidget: function ( name, pro, cb ) {
