@@ -7212,7 +7212,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
         var p = KityMinder.findProtocal( k );
         var text = p.fileDescription + '（' + p.fileExtension + '）';
-        alert(text)
         options.value.push( k );
         options.items.push( text );
         options.autowidthitem.push( $.wordCountAdaptive( text ), true );
