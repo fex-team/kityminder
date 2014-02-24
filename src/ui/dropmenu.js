@@ -1,18 +1,35 @@
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        '<%for(var i=0,ci;ci=data[i++];){%>' +
+        this.subTmpl +
+        '</ul>',
+    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
-        '</li><%}%>' +
-        '<%}%>' +
-        '</ul>',
+        '</li><%}}%>' +
+        '<%}%>',
     defaultOpt: {
         data: [],
         click: function () {
-
         }
+    },
+    setData:function(items){
+        this.root().html($.parseTmpl(this.subTmpl,items));
+        return this;
+    },
+    position:function(offset){
+        this.root().offset(offset);
+        return this;
+    },
+    show:function(){
+        if(this.trigger('beforeshow') === false){
+            return;
+        }else{
+            this.root().css({display:'block'});
+            this.trigger('aftershow');
+        }
+        return this;
     },
     init: function (options) {
         var me = this;
