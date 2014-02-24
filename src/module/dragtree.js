@@ -79,6 +79,12 @@ var DragBox = kity.createClass( "DragBox", {
 			ancestors = [],
 			judge;
 
+		// 根节点不参与计算
+		var rootIndex = nodes.indexOf( this._minder.getRoot() );
+		if ( ~rootIndex ) {
+			nodes.splice( rootIndex, 1 );
+		}
+
 		// 判断 nodes 列表中是否存在 judge 的祖先
 		function hasAncestor( nodes, judge ) {
 			for ( var i = nodes.length - 1; i >= 0; --i ) {
@@ -137,10 +143,15 @@ var DragBox = kity.createClass( "DragBox", {
 	//    4. 标记已启动
 	_enterDragMode: function () {
 		this._calcDragSources();
+		if ( !this._dragSources.length ) {
+			this._startPosition = null;
+			return false;
+		}
 		this._calcDropTargets();
 		this._drawForDragMode();
 		this._shrink();
 		this._dragMode = true;
+		return true;
 	},
 	_leaveDragMode: function () {
 		this.remove();
@@ -150,7 +161,7 @@ var DragBox = kity.createClass( "DragBox", {
 	_drawForDragMode: function () {
 		this._text.setContent( this._dragSources.length + ' items' );
 		this._text.setPosition( this._startPosition.x, this._startPosition.y + 5 );
-		this._minder.getRenderContainer().addShape( this );
+		this._minder.getPaper().addShape( this );
 	},
 	_shrink: function () {
 		// 合并所有拖放源图形的矩形即可
@@ -227,16 +238,21 @@ var DragBox = kity.createClass( "DragBox", {
 	},
 
 	dragMove: function ( position ) {
+		// 启动拖放模式需要最小的移动距离
+		var DRAG_MOVE_THRESHOLD = 10;
+
 		if ( !this._startPosition ) return;
 
 		this._dragPosition = position;
 
 		if ( !this._dragMode ) {
 			// 判断拖放模式是否该启动
-			if ( GM.getDistance( this._dragPosition, this._startPosition ) < 10 ) {
+			if ( GM.getDistance( this._dragPosition, this._startPosition ) < DRAG_MOVE_THRESHOLD ) {
 				return;
 			}
-			this._enterDragMode();
+			if ( !this._enterDragMode() ) {
+				return;
+			}
 		}
 
 		var movement = kity.Vector.fromPoints( this._startPosition, this._dragPosition );
@@ -269,7 +285,8 @@ KityMinder.registerModule( "DragTree", function () {
 		},
 		events: {
 			mousedown: function ( e ) {
-				if ( e.getTargetNode() ) {
+				// 单选中根节点也不触发拖拽
+				if ( e.getTargetNode() && e.getTargetNode() != this.getRoot() ) {
 					this._dragBox.dragStart( e.getPosition() );
 				}
 			},
