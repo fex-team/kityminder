@@ -764,6 +764,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initMinder();
         this._initSelection();
         this._initShortcutKey();
+        this._initContextmenu();
         this._initModules();
 
         this.fire( 'ready' );
@@ -886,6 +887,21 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
             }
         } );
+    },
+    _initContextmenu:function(){
+        this.contextmenus = [];
+    },
+    addContextmenu:function(item){
+        if(utils.isArray(item)){
+            this.contextmenus = this.contextmenus.concat(item);
+        }else{
+            this.contextmenus.push(item);
+        }
+
+        return this;
+    },
+    getContextmenu:function(){
+        return this.contextmenus;
     }
 } );
 
@@ -1028,7 +1044,7 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        this._paper.on( 'click dblclick mousedown mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
+        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
         if ( window ) {
             window.addEventListener( 'resize', this._firePharse.bind( this ) );
         }
@@ -1166,6 +1182,10 @@ kity.extendClass( Minder, {
                 this.addShortcutKeys( moduleDeals.addShortcutKeys )
             }
 
+            //添加邮件菜单
+            if(moduleDeals.contextmenu){
+                this.addContextmenu(moduleDeals.contextmenu)
+            }
         }
     },
 
@@ -1991,6 +2011,29 @@ KityMinder.registerModule( "LayoutModule", function () {
 				this.initStyle( this.getRoot() );
 			}
 		},
+        'contextmenu':[
+            {
+                label:this.getLang('node.appendsiblingnode'),
+                exec:function(){
+                    this.execCommand('appendsiblingnode',new MinderNode(this.getLang('topic')))
+                },
+                cmdName:'appendsiblingnode'
+            },
+            {
+                label:this.getLang('node.appendchildnode'),
+                exec:function(){
+                    this.execCommand('appendchildnode',new MinderNode(this.getLang('topic')))
+                },
+                cmdName:'appendchildnode'
+            },
+            {
+                label:this.getLang('node.removenode'),
+                cmdName:'removenode'
+            },{
+                divider:1
+            }
+
+        ],
 		"defaultOptions": {
 			"defaultlayoutstyle": "default",
 			"node": {
@@ -4156,6 +4199,18 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'beforemousedown':function(e){
+                var isRightMB;
+
+
+                if ("which" in e.originEvent)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                    isRightMB = e.originEvent.which == 3;
+                else if ("button" in e.originEvent)  // IE, Opera
+                    isRightMB = e.originEvent.button == 2;
+
+                if(isRightMB){
+                    e.stopPropagationImmediately();
+                    return;
+                }
                 sel.setHide();
                 var node = e.getTargetNode();
                 if(!node){
@@ -4197,7 +4252,12 @@ KityMinder.registerModule( "TextEditModule", function () {
             'mouseup':function(e){
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
-                        receiver.updateRange(range)
+                        try{
+                            receiver.updateRange(range)
+                        }catch(e){
+                            console.log(e)
+                        }
+
                     }else
                        sel.setShow()
                 }
@@ -4443,11 +4503,16 @@ Minder.Receiver = kity.createClass('Receiver',{
                     }
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
 
-
+                    if(this.textShape.getOpacity() == 0){
+                        this.textShape.setOpacity(1);
+                    }
                     this.textShape.setContent(text);
                     this.setContainerStyle();
                     this.minderNode.setText(text);
-
+                    if(text.length == 0){
+                        this.textShape.setContent('a');
+                        this.textShape.setOpacity(0);
+                    }
                     this.km.updateLayout(this.minderNode);
                     this.setBaseOffset();
                     this.updateTextData();
@@ -4701,7 +4766,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.y = offset.y;
 
         } catch ( e ) {
-           debugger
+           console.log(e)
         }
 
         return this.update();
@@ -5371,18 +5436,40 @@ KM.ui.define('menu',{
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        '<%for(var i=0,ci;ci=data[i++];){%>' +
-        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
-        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>">' +
-        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
-        '</li><%}%>' +
-        '<%}%>' +
+        this.subTmpl +
         '</ul>',
+    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
+        '</li><%}}%>' +
+        '<%}%>',
     defaultOpt: {
         data: [],
         click: function () {
-
         }
+    },
+    setData:function(items){
+
+        this.root().html($.parseTmpl(this.subTmpl,items))
+
+        return this;
+    },
+    position:function(offset){
+        this.root().css({
+            left:offset.x,
+            top:offset.y
+        });
+        return this;
+    },
+    show:function(){
+        if(this.trigger('beforeshow') === false){
+            return;
+        }else{
+            this.root().css({display:'block'});
+            this.trigger('aftershow');
+        }
+        return this;
     },
     init: function (options) {
         var me = this;
@@ -5393,7 +5480,7 @@ KM.ui.define('dropmenu', {
         };
 
         this.root($($.parseTmpl(this.tmpl, options))).on('click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]',function (evt) {
-            $.proxy(options.click, me, evt, $(this).data('value'), $(this))()
+            $.proxy(options.click, me, evt, $(this).data('value'), $(this).data('label'),$(this))()
         }).find('li').each(function (i, el) {
                 var $this = $(this);
                 if (!$this.hasClass("kmui-disabled kmui-divider kmui-dropdown-submenu")) {
@@ -7125,6 +7212,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
         var p = KityMinder.findProtocal( k );
         var text = p.fileDescription + '（' + p.fileExtension + '）';
+        alert(text)
         options.value.push( k );
         options.items.push( text );
         options.autowidthitem.push( $.wordCountAdaptive( text ), true );
@@ -7179,7 +7267,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                         var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
                         save_link.href = data;
                         save_link.download = filename;
-
                         var event = document.createEvent( 'MouseEvents' );
                         event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
                         save_link.dispatchEvent( event );
@@ -7194,6 +7281,19 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             };
             img.src = url;
             return "png";
+        } else if ( res.value === "svg" ) {
+            var svghtml = $( "#kityminder .kmui-editor-body" ).html();
+            var saveFile = function ( data, filename ) {
+                var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
+                save_link.href = 'data:image/svg+xml; utf-8,' + encodeURI( svghtml );
+                save_link.download = filename;
+                var event = document.createEvent( 'MouseEvents' );
+                event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+                save_link.dispatchEvent( event );
+            };
+            var filename = 'kityminder_' + ( new Date() ).getTime() + '.svg';
+            saveFile( svg, filename );
+            return "svg";
         }
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
@@ -7232,53 +7332,6 @@ KM.registerToolbarUI( 'hand zoom-in zoom-out',
         return $btn;
     }
 );
-
-KM.registerToolbarUI( 'markers', function ( name ) {
-
-    var me = this,
-        currentRange, $dialog,
-        opt = {
-            width: 200,
-            title: this.getLang( 'tooltips' )[ name ] || '',
-            url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
-        };
-
-    var $btn = $.kmuibutton( {
-        icon: name,
-        title: this.getLang( 'tooltips' )[ name ] || ''
-    } );
-    //加载模版数据
-    utils.loadFile( document, {
-        src: opt.url,
-        tag: "script",
-        type: "text/javascript",
-        defer: "defer"
-    }, function () {
-
-        $dialog = $.kmuimodal( opt );
-
-        $dialog.attr( 'id', 'kmui-dialog-' + name ).addClass( 'kmui-dialog-' + name )
-            .find( '.kmui-modal-body' ).addClass( 'kmui-dialog-' + name + '-body' );
-
-        $dialog.kmui().on( 'beforeshow', function () {
-            var $root = this.root(),
-                win = null,
-                offset = null;
-            if ( !$root.parent()[ 0 ] ) {
-                me.$container.find( '.kmui-dialog-container' ).append( $root );
-            }
-            KM.setWidgetBody( name, $dialog, me );
-        } ).attachTo( $btn )
-    } );
-
-
-
-    me.on( 'interactchange', function () {
-        var state = this.queryCommandState( name );
-        $btn.kmui().disabled( state == -1 ).active( state == 1 )
-    } );
-    return $btn;
-} );
 
 KM.registerUI( 'tooltips',
     function ( name ) {
@@ -7349,6 +7402,21 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             comboboxWidget.selectItemByLabel( value );
         }
     } );
+
+    var data = [];
+    utils.each(me.getLayoutStyleItems(),function(i,v){
+        data.push({
+            label:me.getLang( 'tooltips.' + name  ) + ' ' + v,
+            cmdName:'switchlayout',
+            exec:function(){
+                me.execCommand('switchlayout',v);
+            }
+        })
+    });
+    data.push({
+        divider:1
+    });
+    me.addContextmenu(data);
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );
 
@@ -7418,6 +7486,135 @@ KM.registerToolbarUI( 'node', function ( name ) {
 
     }
 
+} );
+
+KM.registerUI( 'contextmenu', function () {
+    var me = this;
+
+    function getItemByLabel(label){
+        var result;
+        utils.each(me.getContextmenu(),function(i,item){
+            if(item.label == label){
+                result = item;
+                return false;
+            }
+        });
+        return result;
+    }
+    var $menu = $.kmuidropmenu({
+        click:function(e,v,l){
+
+            var item = getItemByLabel(l);
+
+            if(item.exec){
+
+                item.exec.apply(km)
+            }else{
+                me.execCommand(item.cmdName);
+            }
+
+            this.hide();
+        }
+    });
+    me.$container.append($menu);
+    me.on('contextmenu',function(e){
+        var items = me.getContextmenu();
+        var data = [];
+
+        utils.each(items,function(i,item){
+            if(item.divider){
+                data.push(item)
+                return;
+            }
+            if(me.queryCommandState(item.cmdName)!=-1){
+                data.push({
+                    label:item.label,
+                    value:item.cmdName
+
+                })
+            }
+        });
+        if(data.length){
+            var item = data[data.length-1];
+            if(item.divider){
+                data.pop();
+            }
+            $menu.kmui().setData({
+                data:data
+            }).position(e.getPosition()).show();
+
+
+            e.preventDefault()
+        }
+
+    });
+    me.on('click',function(){
+        $menu.kmui().hide();
+    });
+    me.on('beforemousedown',function(e){
+        var isRightMB;
+
+
+        if ("which" in e.originEvent)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+            isRightMB = e.originEvent.which == 3;
+        else if ("button" in e.originEvent)  // IE, Opera
+            isRightMB = e.originEvent.button == 2;
+
+        if(isRightMB){
+
+            e.stopPropagationImmediately();
+
+        }
+    })
+} );
+
+
+
+KM.registerToolbarUI( 'markers', function ( name ) {
+
+    var me = this,
+        currentRange, $dialog,
+        opt = {
+            width: 200,
+            title: this.getLang( 'tooltips' )[ name ] || '',
+            url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
+        };
+
+    var $btn = $.kmuibutton( {
+        icon: name,
+        title: this.getLang( 'tooltips' )[ name ] || ''
+    } );
+    //加载模版数据
+    utils.loadFile( document, {
+        src: opt.url,
+        tag: "script",
+        type: "text/javascript",
+        defer: "defer"
+    }, function () {
+
+        $dialog = $.kmuimodal( opt );
+
+        $dialog.attr( 'id', 'kmui-dialog-' + name ).addClass( 'kmui-dialog-' + name )
+            .find( '.kmui-modal-body' ).addClass( 'kmui-dialog-' + name + '-body' );
+
+        $dialog.kmui().on( 'beforeshow', function () {
+            var $root = this.root(),
+                win = null,
+                offset = null;
+            if ( !$root.parent()[ 0 ] ) {
+                me.$container.find( '.kmui-dialog-container' ).append( $root );
+            }
+            KM.setWidgetBody( name, $dialog, me );
+        } ).attachTo( $btn )
+    } );
+
+
+
+    me.on( 'interactchange', function () {
+        var state = this.queryCommandState( name );
+        $btn.kmui().disabled( state == -1 ).active( state == 1 )
+    } );
+    return $btn;
 } );
 
 KityMinder.registerProtocal( "plain", function () {
@@ -7635,6 +7832,109 @@ KityMinder.registerProtocal( "png", function () {
 	return {
 		fileDescription: 'png',
 		fileExtension: '.png',
+		encode: function ( json ) {
+			return encode( json, 0 );
+		},
+		decode: function ( local ) {
+			if ( lastTry == local && lastResult ) {
+				return lastResult;
+			}
+			return decode( local );
+		},
+		recognize: recognize,
+		recognizePriority: -1
+	};
+} );
+
+KityMinder.registerProtocal( "svg", function () {
+	var LINE_ENDING = '\n',
+		TAB_CHAR = '\t';
+
+	function repeat( s, n ) {
+		var result = "";
+		while ( n-- ) result += s;
+		return result;
+	}
+
+	function encode( json, level ) {
+		var local = "";
+		level = level || 0;
+		local += repeat( TAB_CHAR, level );
+		local += json.data.text + LINE_ENDING;
+		if ( json.children ) {
+			json.children.forEach( function ( child ) {
+				local += encode( child, level + 1 );
+			} );
+		}
+		return local;
+	}
+
+	function isEmpty( line ) {
+		return !/\S/.test( line );
+	}
+
+	function getLevel( line ) {
+		var level = 0;
+		while ( line.charAt( level ) === TAB_CHAR ) level++;
+		return level;
+	}
+
+	function getNode( line ) {
+		return {
+			data: {
+				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
+			}
+		};
+	}
+
+	function decode( local ) {
+		var json,
+			parentMap = {},
+			lines = local.split( LINE_ENDING ),
+			line, level, node;
+
+		function addChild( parent, child ) {
+			var children = parent.children || ( parent.children = [] );
+			children.push( child );
+		}
+
+		for ( var i = 0; i < lines.length; i++ ) {
+			line = lines[ i ];
+			if ( isEmpty( line ) ) continue;
+
+			level = getLevel( line );
+			node = getNode( line );
+
+			if ( level === 0 ) {
+				if ( json ) {
+					throw new Error( 'Invalid local format' );
+				}
+				json = node;
+			} else {
+				if ( !parentMap[ level - 1 ] ) {
+					throw new Error( 'Invalid local format' );
+				}
+				addChild( parentMap[ level - 1 ], node );
+			}
+			parentMap[ level ] = node;
+		}
+		return json;
+	}
+	var lastTry, lastResult;
+
+	function recognize( local ) {
+		if ( !Utils.isString( local ) ) return false;
+		lastTry = local;
+		try {
+			lastResult = decode( local );
+		} catch ( e ) {
+			lastResult = null;
+		}
+		return !!lastResult;
+	}
+	return {
+		fileDescription: 'svg',
+		fileExtension: '.svg',
 		encode: function ( json ) {
 			return encode( json, 0 );
 		},
