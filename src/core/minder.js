@@ -16,6 +16,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initMinder();
         this._initSelection();
         this._initShortcutKey();
+        this._initContextmenu();
         this._initModules();
 
         this.fire( 'ready' );
@@ -138,6 +139,21 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
             }
         } );
+    },
+    _initContextmenu:function(){
+        this.contextmenus = [];
+    },
+    addContextmenu:function(item){
+        if(utils.isArray(item)){
+            this.contextmenus = this.contextmenus.concat(item);
+        }else{
+            this.contextmenus.push(item);
+        }
+
+        return this;
+    },
+    getContextmenu:function(){
+        return this.contextmenus;
     }
 } );
 

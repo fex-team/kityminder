@@ -202,6 +202,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 				this.initStyle( this.getRoot() );
 			}
 		},
+        'contextmenu':[
+            {
+                label:this.getLang('node.appendsiblingnode'),
+                cmdName:'appendsiblingnode'
+            },
+            {
+                label:this.getLang('node.appendchildnode'),
+                cmdName:'appendchildnode'
+            },
+            {
+                label:this.getLang('node.removenode'),
+                cmdName:'removenode'
+            }
+
+        ],
 		"defaultOptions": {
 			"defaultlayoutstyle": "default",
 			"node": {

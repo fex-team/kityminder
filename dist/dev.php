@@ -64,6 +64,7 @@ $dependency = Array(
     ,'src/adapter/tooltips.js'
     ,'src/adapter/layout.js'
     ,'src/adapter/node.js'
+    ,'src/adapter/contextmenu.js'
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
     ,'src/protocal/png.js'
