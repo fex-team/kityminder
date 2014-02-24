@@ -92,11 +92,16 @@ Minder.Receiver = kity.createClass('Receiver',{
                     }
                     var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
 
-
+                    if(this.textShape.getOpacity() == 0){
+                        this.textShape.setOpacity(1);
+                    }
                     this.textShape.setContent(text);
                     this.setContainerStyle();
                     this.minderNode.setText(text);
-
+                    if(text.length == 0){
+                        this.textShape.setContent('a');
+                        this.textShape.setOpacity(0);
+                    }
                     this.km.updateLayout(this.minderNode);
                     this.setBaseOffset();
                     this.updateTextData();
