@@ -91,13 +91,9 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             return "png";
         } else if ( res.value === "svg" ) {
             var svghtml = $( "#kityminder .kmui-editor-body" ).html();
-            // var svg = new Blob( [ svghtml ], {
-            //     type: "image/svg+xml;charset=utf-8"
-            // } );
             var saveFile = function ( data, filename ) {
                 var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
-                //save_link.href = data;
-                save_link.href = 'data:image/svg+xml; utf-8,' + svghtml;
+                save_link.href = 'data:image/svg+xml; utf-8,' + encodeURI( svghtml );
                 save_link.download = filename;
 
                 var event = document.createEvent( 'MouseEvents' );
