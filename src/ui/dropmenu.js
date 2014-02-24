@@ -5,7 +5,7 @@ KM.ui.define('dropmenu', {
         '</ul>',
     subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
-        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>">' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
         '</li><%}}%>' +
         '<%}%>',
@@ -15,11 +15,16 @@ KM.ui.define('dropmenu', {
         }
     },
     setData:function(items){
-        this.root().html($.parseTmpl(this.subTmpl,items));
+
+        this.root().html($.parseTmpl(this.subTmpl,items))
+
         return this;
     },
     position:function(offset){
-        this.root().offset(offset);
+        this.root().css({
+            left:offset.x,
+            top:offset.y
+        });
         return this;
     },
     show:function(){
@@ -40,7 +45,7 @@ KM.ui.define('dropmenu', {
         };
 
         this.root($($.parseTmpl(this.tmpl, options))).on('click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]',function (evt) {
-            $.proxy(options.click, me, evt, $(this).data('value'), $(this))()
+            $.proxy(options.click, me, evt, $(this).data('value'), $(this).data('label'),$(this))()
         }).find('li').each(function (i, el) {
                 var $this = $(this);
                 if (!$this.hasClass("kmui-disabled kmui-divider kmui-dropdown-submenu")) {
