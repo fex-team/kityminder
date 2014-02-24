@@ -67,6 +67,7 @@ $dependency = Array(
     ,'src/protocal/plain.js'
     ,'src/protocal/json.js'
     ,'src/protocal/png.js'
+    ,'src/protocal/svg.js'
 );
 
 $content = "";

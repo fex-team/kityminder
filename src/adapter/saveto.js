@@ -89,6 +89,24 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             };
             img.src = url;
             return "png";
+        } else if ( res.value === "svg" ) {
+            var svghtml = $( "#kityminder .kmui-editor-body" ).html();
+            // var svg = new Blob( [ svghtml ], {
+            //     type: "image/svg+xml;charset=utf-8"
+            // } );
+            var saveFile = function ( data, filename ) {
+                var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
+                //save_link.href = data;
+                save_link.href = 'data:image/svg+xml; utf-8,' + svghtml;
+                save_link.download = filename;
+
+                var event = document.createEvent( 'MouseEvents' );
+                event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+                save_link.dispatchEvent( event );
+            };
+            var filename = 'kityminder_' + ( new Date() ).getTime() + '.svg';
+            saveFile( svg, filename );
+            return "svg";
         }
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
