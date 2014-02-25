@@ -71,7 +71,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.y = offset.y;
 
         } catch ( e ) {
-           debugger
+           console.log(e)
         }
 
         return this.update();

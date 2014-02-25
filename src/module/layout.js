@@ -203,6 +203,29 @@ KityMinder.registerModule( "LayoutModule", function () {
 				this.initStyle( this.getRoot() );
 			}
 		},
+        'contextmenu':[
+            {
+                label:this.getLang('node.appendsiblingnode'),
+                exec:function(){
+                    this.execCommand('appendsiblingnode',new MinderNode(this.getLang('topic')))
+                },
+                cmdName:'appendsiblingnode'
+            },
+            {
+                label:this.getLang('node.appendchildnode'),
+                exec:function(){
+                    this.execCommand('appendchildnode',new MinderNode(this.getLang('topic')))
+                },
+                cmdName:'appendchildnode'
+            },
+            {
+                label:this.getLang('node.removenode'),
+                cmdName:'removenode'
+            },{
+                divider:1
+            }
+
+        ],
 		"defaultOptions": {
 			"defaultlayoutstyle": "default",
 			"node": {

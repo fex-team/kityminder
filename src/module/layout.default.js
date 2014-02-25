@@ -249,7 +249,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					childLayout.y = sY + childLayout.branchheight / 2;
 					sY += childLayout.branchheight;
 				}
-				effectSet.push( _buffer[ 0 ] );
+				if ( _buffer[ 0 ] !== root ) effectSet.push( _buffer[ 0 ] );
 				_buffer.shift();
 			}
 		}
@@ -432,6 +432,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		initStyle: function () {
 			var _root = minder.getRoot();
+			var historyPoint = _root.getPoint();
+			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
 			//设置root的align
 			_root.getLayout().align = "center";
@@ -460,10 +462,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				if ( _buffer[ 0 ] !== _root ) _cleanbuffer.push( _buffer[ 0 ] );
 				_buffer.shift();
 			}
+			if ( historyPoint ) {
+				_root.setPoint( historyPoint );
+			}
 			//重组结构
 			for ( var j = 0; j < _cleanbuffer.length; j++ ) {
 				this.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 			}
+			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, sibling ) {
 			minder.handelNodeInsert( node );
@@ -499,7 +505,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				} else {
 					var nodeP = node.getPoint();
 					if ( nodeP && nodeP.x && nodeP.y ) {
-						if ( nodeP.x > parentLayout.x ) {
+						if ( nodeP.x > parent.getPoint().x ) {
 							Layout.appendside = "right";
 							Layout.align = "left";
 						} else {

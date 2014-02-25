@@ -35,7 +35,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     _createTextShape: function () {
         var textShape = new kity.Text( this.getData( 'text' ) || '' );
-        textShape.setAttr('_nodeTextShape',true);
+        textShape.setAttr( '_nodeTextShape', true );
         this.getContRc().appendShape( textShape );
     },
     _createIconShape: function () {
@@ -69,10 +69,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         return this._iconRc;
     },
     setPoint: function ( x, y ) {
-        this.setData( 'point', {
-            x: x,
-            y: y
-        } );
+        if ( arguments.length < 2 ) {
+            this.setData( "point", x );
+        } else {
+            this.setData( 'point', {
+                x: x,
+                y: y
+            } );
+        }
     },
     getPoint: function () {
         return this.getData( 'point' );
@@ -304,12 +308,12 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     getTextShape: function () {
         var textShape;
-        utils.each(this.getContRc().getShapesByType( 'text' ),function(i,t){
-            if(t.getAttr('_nodeTextShape')){
+        utils.each( this.getContRc().getShapesByType( 'text' ), function ( i, t ) {
+            if ( t.getAttr( '_nodeTextShape' ) ) {
                 textShape = t;
                 return false;
             }
-        });
+        } );
         return textShape;
     },
     isSelected: function () {
