@@ -1,9 +1,14 @@
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        this.subTmpl +
+        '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
+        '</li><%}}%>' +
+        '<%}%>'+
         '</ul>',
-    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+    subTmpl:'<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
@@ -16,7 +21,7 @@ KM.ui.define('dropmenu', {
     },
     setData:function(items){
 
-        this.root().html($.parseTmpl(this.subTmpl,items))
+        this.root().html($.parseTmpl(this.subTmpl,items));
 
         return this;
     },
@@ -27,15 +32,15 @@ KM.ui.define('dropmenu', {
         });
         return this;
     },
-    // show:function(){
-    //     if(this.trigger('beforeshow') === false){
-    //         return;
-    //     }else{
-    //         this.root().css({display:'block'});
-    //         this.trigger('aftershow');
-    //     }
-    //     return this;
-    // },
+    show:function(){
+         if(this.trigger('beforeshow') === false){
+             return;
+         }else{
+             this.root().css({display:'block'});
+             this.trigger('aftershow');
+         }
+         return this;
+    },
     init: function (options) {
         var me = this;
         var eventName = {
