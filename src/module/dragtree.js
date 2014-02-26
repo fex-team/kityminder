@@ -75,36 +75,7 @@ var DragBox = kity.createClass( "DragBox", {
 	//       2. 从后往前枚举排序的结果，如果发现枚举目标之前存在其祖先，
 	//          则排除枚举目标作为拖放源，否则加入拖放源
 	_calcDragSources: function () {
-		var nodes = this._minder.getSelectedNodes().slice( 0 ),
-			ancestors = [],
-			judge;
-
-		// 根节点不参与计算
-		var rootIndex = nodes.indexOf( this._minder.getRoot() );
-		if ( ~rootIndex ) {
-			nodes.splice( rootIndex, 1 );
-		}
-
-		// 判断 nodes 列表中是否存在 judge 的祖先
-		function hasAncestor( nodes, judge ) {
-			for ( var i = nodes.length - 1; i >= 0; --i ) {
-				if ( nodes[ i ].isAncestorOf( judge ) ) return true;
-			}
-			return false;
-		}
-
-		// 按照拓扑排序
-		nodes.sort( function ( node1, node2 ) {
-			return node1.getLevel() - node2.getLevel();
-		} );
-
-		// 因为是拓扑有序的，所以只需往上查找
-		while ( ( judge = nodes.pop() ) ) {
-			if ( !hasAncestor( nodes, judge ) ) {
-				ancestors.push( judge );
-			}
-		}
-		this._dragSources = ancestors;
+		this._dragSources = this._minder.getSelectedAncestors();
 	},
 
 
