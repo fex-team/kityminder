@@ -5093,7 +5093,8 @@ KityMinder.registerModule( 'Zoom', function () {
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			'mousewheel': function ( e ) {
+			// disable mouse wheel
+			'mousewheel_': function ( e ) {
 				var delta = e.originEvent.wheelDelta;
 				var me = this;
 
@@ -5408,11 +5409,11 @@ KM.ui.define('button', {
 //menu 类
 KM.ui.define('menu',{
     show : function($obj,dir,fnname,topOffset,leftOffset){
-
         fnname = fnname || 'position';
         if(this.trigger('beforeshow') === false){
             return;
         }else{
+
             this.root().css($.extend({display:'block'},$obj ? {
                 top : $obj[fnname]().top + ( dir == 'right' ? 0 : $obj.outerHeight()) - (topOffset || 0),
                 left : $obj[fnname]().left + (dir == 'right' ?  $obj.outerWidth() : 0) -  (leftOffset || 0)
@@ -5439,7 +5440,7 @@ KM.ui.define('menu',{
         if(!$obj.data('$mergeObj')){
             $obj.data('$mergeObj',me.root());
             $obj.on('wrapclick',function(evt){
-                me.show()
+                me.supper.show.call(me,$obj,'','offset')
             });
             me.register('click',$obj,function(evt){
                me.hide()
@@ -5452,9 +5453,14 @@ KM.ui.define('menu',{
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        this.subTmpl +
+        '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
+        '</li><%}}%>' +
+        '<%}%>'+
         '</ul>',
-    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+    subTmpl:'<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
@@ -5467,7 +5473,7 @@ KM.ui.define('dropmenu', {
     },
     setData:function(items){
 
-        this.root().html($.parseTmpl(this.subTmpl,items))
+        this.root().html($.parseTmpl(this.subTmpl,items));
 
         return this;
     },
@@ -5478,15 +5484,15 @@ KM.ui.define('dropmenu', {
         });
         return this;
     },
-    // show:function(){
-    //     if(this.trigger('beforeshow') === false){
-    //         return;
-    //     }else{
-    //         this.root().css({display:'block'});
-    //         this.trigger('aftershow');
-    //     }
-    //     return this;
-    // },
+    show:function(){
+         if(this.trigger('beforeshow') === false){
+             return;
+         }else{
+             this.root().css({display:'block'});
+             this.trigger('aftershow');
+         }
+         return this;
+    },
     init: function (options) {
         var me = this;
         var eventName = {
@@ -7128,8 +7134,7 @@ KM.registerToolbarUI( 'fontfamily fontsize', function ( name ) {
 
             temp = options.items[ i ];
             tempItems.push( temp );
-            options.itemStyles.push( 'font-size: ' + temp + 'px' );
-
+            options.itemStyles.push( 'font-size: ' + temp + 'px; height:' + (temp+2) + 'px; line-height: ' + (temp + 2) + 'px' );
         }
 
         options.value = options.items;
