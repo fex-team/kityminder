@@ -31,9 +31,16 @@ KM.ui.define('menu',{
         var me = this;
         if(!$obj.data('$mergeObj')){
             $obj.data('$mergeObj',me.root());
-            $obj.on('wrapclick',function(evt){
-                me.supper.show.call(me,$obj,'','offset')
-            });
+            if($obj.kmui()){
+                $obj.on('wrapclick',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                });
+            }else{
+                $obj.on('click',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                })
+            }
+
             me.register('click',$obj,function(evt){
                me.hide()
             });

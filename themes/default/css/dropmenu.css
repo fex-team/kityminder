@@ -20,11 +20,12 @@
 
 .kmui-dropdown-menu .kmui-divider {
     height: 1px;
-    margin: 9px 0;
+    margin: 5px 0;
     overflow: hidden;
     background-color: #e5e5e5;
 }
-.kmui-dropdown-menu .kmui-divider:first-child {
+.kmui-dropdown-menu .kmui-divider:first-child,
+.kmui-dropdown-menu .kmui-divider:last-child {
     display: none;
 }
 
