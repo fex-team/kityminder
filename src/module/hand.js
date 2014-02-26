@@ -29,6 +29,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
+                e.originEvent.preventDefault();
             }
             // 点击未选中的根节点临时开启
             else if ( e.getTargetNode() == this.getRoot() &&

@@ -27,15 +27,15 @@ KM.ui.define('dropmenu', {
         });
         return this;
     },
-    show:function(){
-        if(this.trigger('beforeshow') === false){
-            return;
-        }else{
-            this.root().css({display:'block'});
-            this.trigger('aftershow');
-        }
-        return this;
-    },
+    // show:function(){
+    //     if(this.trigger('beforeshow') === false){
+    //         return;
+    //     }else{
+    //         this.root().css({display:'block'});
+    //         this.trigger('aftershow');
+    //     }
+    //     return this;
+    // },
     init: function (options) {
         var me = this;
         var eventName = {
