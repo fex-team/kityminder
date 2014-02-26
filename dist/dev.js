@@ -2665,9 +2665,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					if ( Layout.shicon ) Layout.shicon.remove();
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					} catch ( error ) {}
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
@@ -3327,6 +3329,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
+                e.originEvent.preventDefault();
             }
             // 点击未选中的根节点临时开启
             else if ( e.getTargetNode() == this.getRoot() &&
@@ -5475,15 +5478,15 @@ KM.ui.define('dropmenu', {
         });
         return this;
     },
-    show:function(){
-        if(this.trigger('beforeshow') === false){
-            return;
-        }else{
-            this.root().css({display:'block'});
-            this.trigger('aftershow');
-        }
-        return this;
-    },
+    // show:function(){
+    //     if(this.trigger('beforeshow') === false){
+    //         return;
+    //     }else{
+    //         this.root().css({display:'block'});
+    //         this.trigger('aftershow');
+    //     }
+    //     return this;
+    // },
     init: function (options) {
         var me = this;
         var eventName = {
