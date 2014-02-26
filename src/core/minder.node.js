@@ -12,7 +12,6 @@ kity.extendClass( Minder, {
             rc.addShape( current.getRenderContainer() );
         } );
     },
-
     handelNodeRemove: function ( node ) {
         var rc = this._rc;
         node.traverse( function ( current ) {
@@ -29,6 +28,9 @@ kity.extendClass( Minder, {
         } else {
             km.renderNode( nodes );
         }
+    },
+    getMinderTitle: function() {
+        return this.getRoot().getText();
     }
 
 } );
