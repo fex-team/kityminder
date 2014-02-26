@@ -69,7 +69,8 @@ KityMinder.registerModule( 'Zoom', function () {
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			'mousewheel': function ( e ) {
+			// disable mouse wheel
+			'mousewheel_': function ( e ) {
 				var delta = e.originEvent.wheelDelta;
 				var me = this;
 
