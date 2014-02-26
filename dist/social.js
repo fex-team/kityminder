@@ -1,6 +1,6 @@
 $( function () {
     var $panel = $( '#social' );
-    var $login_btn, $save_btn, $share_btn, $user_btn;
+    var $login_btn, $save_btn, $share_btn, $user_btn, $user_menu;
 
     var baseUrl = ( function () {
         var scripts = document.getElementsByTagName( 'script' );
@@ -12,15 +12,11 @@ $( function () {
         }
     } )();
 
-    $login_btn = $.kmuibutton( {
-        text: '登录'
-    } ).click( function () {
-        if ( !currentUser ) {
-            login();
-        }
-    } ).appendTo( $panel );
+    $login_btn = $( '<button>登录</button>' ).addClass('login').click( login );
 
-    var $menu = $.kmuidropmenu( {
+    $user_btn = $( '<button></button>' ).addClass('user-file');
+
+    $user_menu = $.kmuidropmenu( {
         data: [ {
             label: '新建脑图',
             value: 'action_newminder'
@@ -30,22 +26,9 @@ $( function () {
             label: '最近脑图',
             value: 'action_recent'
         } ]
-    } ).appendTo( 'body' ).kmui().attachTo( $login_btn );
+    } ).appendTo( 'body' ).kmui().attachTo( $user_btn );
 
-    var thisMapFilename;
-    $save_btn = $( '<button>保存</button>' ).click( function () {
-        var data = window.km.exportData( 'json' );
-        save( data, 'apps/kityminder/mymind.km', function ( success, info ) {
-            if ( success ) {
-                $save_btn.text( '保存成功！' );
-                setTimeout( function () {
-                    $save_btn.removeAttr( 'disabled' ).text( '保存' );
-                }, 3000 );
-            }
-            console.log( info );
-        } );
-        $save_btn.attr( 'disabled', 'disabled' ).text( '正在保存...' );
-    } ).addClass( 'baidu-cloud' );
+    $save_btn = $( '<button>保存</button>' ).click( saveThisFile ).addClass( 'baidu-cloud' );
 
     $share_btn = $( '<button>分享</button>' ).click( function () {
         if ( $share_btn.attr( 'disabled' ) ) {
@@ -90,18 +73,22 @@ $( function () {
     } ).addClass( 'share' );
 
 
-    baidu.frontia.init( 'wiE55BGOG8BkGnpPs6UNtPbb' );
-    var currentUser = baidu.frontia.getCurrentAccount();
-    if ( currentUser ) {
-        setLogined( currentUser );
-    }
+    var AK, thisMapFilename, currentUser;
 
+    AK = 'wiE55BGOG8BkGnpPs6UNtPbb';
+
+    baidu.frontia.init( AK );
     baidu.frontia.social.setLoginCallback( {
-        success: setLogined,
+        success: setCurrentUser,
         error: function ( error ) {
             console.log( error );
         }
     } );
+
+    currentUser = baidu.frontia.getCurrentAccount();
+    if ( currentUser ) {
+        setCurrentUser( currentUser );
+    }
 
     function login() {
         var options = {
@@ -113,11 +100,13 @@ $( function () {
         baidu.frontia.social.login( options );
     }
 
-    function setLogined( user ) {
+    function setCurrentUser( user ) {
         currentUser = user;
-        $login_btn.text( user.getName() + ' 的文件' );
+        $user_btn.text( user.getName() + ' 的脑图' );
+        $user_btn.appendTo( $panel );
         $save_btn.appendTo( $panel );
         $share_btn.appendTo( $panel );
+        $login_btn.detach();
         loadRecent();
         loadAvator();
         window.location.hash = '';
@@ -131,7 +120,7 @@ $( function () {
                     'width': 16,
                     'height': 16
                 } );
-                $img.prependTo( $login_btn );
+                $img.prependTo( $user_btn );
             }
         } );
     }
@@ -163,6 +152,20 @@ $( function () {
                 } );
             }
         } );
+    }
+
+    function saveThisFile() {
+        var data = window.km.exportData( 'json' );
+        save( data, thisMapFilename, function ( success, info ) {
+            if ( success ) {
+                $save_btn.text( '保存成功！' );
+                setTimeout( function () {
+                    $save_btn.removeAttr( 'disabled' ).text( '保存' );
+                }, 3000 );
+            }
+            console.log( info );
+        } );
+        $save_btn.attr( 'disabled', 'disabled' ).text( '正在保存...' );
     }
 
     function save( file, filename, callback ) {
@@ -208,9 +211,12 @@ $( function () {
         var shareId = match[ 1 ];
         var query = new baidu.frontia.storage.Query();
         query.on( 'shareMinder.id' ).equal( shareId );
+
+        $share_btn.attr('disabled', 'disabled').text('正在加载分享内容...');
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
                 window.km.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                $share_btn.removeAttr('disabled').text('分享');
             },
             error: function ( e ) {
                 console.log( e );
