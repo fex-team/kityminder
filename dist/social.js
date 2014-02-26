@@ -120,6 +120,7 @@ $( function () {
         $share_btn.appendTo( $panel );
         loadRecent();
         loadAvator();
+        window.location.hash = '';
     }
 
     function loadAvator() {
@@ -153,6 +154,7 @@ $( function () {
         sto.getFileUrl( path, {
             success: function ( url ) {
                 $.ajax( {
+                    cache: false,
                     url: url,
                     dataType: 'text',
                     success: function ( result ) {

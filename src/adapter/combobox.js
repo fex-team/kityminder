@@ -95,8 +95,7 @@ KM.registerToolbarUI( 'fontfamily fontsize', function ( name ) {
 
             temp = options.items[ i ];
             tempItems.push( temp );
-            options.itemStyles.push( 'font-size: ' + temp + 'px' );
-
+            options.itemStyles.push( 'font-size: ' + temp + 'px; height:' + (temp+2) + 'px; line-height: ' + (temp + 2) + 'px' );
         }
 
         options.value = options.items;
