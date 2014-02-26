@@ -884,7 +884,8 @@ baidu.frontia = {}, function(e) {
                     var i = [];
                     t.response_params.users.forEach(function(t) {
                         var r = new e.User({socialId: t.user_id,mediaType: t.media_type,name: t.username});
-                        i.push(r)
+                        r.extra = t;
+                        i.push(r);
                     }), u.options.success({result: i,count: t.response_params.count}), c.err_code = 0
                 }
                 c.restimestamp = n(), r(c)

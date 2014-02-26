@@ -614,9 +614,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					if ( Layout.shicon ) Layout.shicon.remove();
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					} catch ( error ) {}
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
