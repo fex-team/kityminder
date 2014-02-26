@@ -5,7 +5,7 @@
     line-height: 20px;
     text-align: right;
     overflow: hidden;
-    button, .kmui-btn {
+    button {
         outline: none;
         display: inline-block;
         padding: 0 15px;
@@ -72,5 +72,25 @@
             border-radius: 2px;
             margin-right: 7px;
         }
+        &.user-file {
+            padding-right: 28px;
+            position: relative;
+            &:after {
+                content: ' ';
+                display: block;
+                position: absolute;
+                right: 10px;
+                top: 15px;
+                width: 0;
+                height: 0;
+                border: solid;
+                border-width: 4px 5px;
+                border-color: #FFFFFF transparent transparent transparent;
+            }
+        }
     }
+}
+.user-file-menu {
+    margin-top: 20px;
+    margin-left: 1px;
 }
