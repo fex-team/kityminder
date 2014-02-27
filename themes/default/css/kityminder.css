@@ -14,9 +14,9 @@
     border-radius: 4px;
     box-shadow: 3px 3px 8px rgba(0,0,0, .5);
 }
-.kmui-container .kmui-editor-body{
+.kmui-container .kmui-editor-body {
     background: rgb(50, 60, 61) url(../images/grid.png) repeat;
-    line-height: 0;
+    /*line-height: 0;*/
     overflow: hidden;
 }
 svg {
