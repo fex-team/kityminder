@@ -31,7 +31,7 @@ KM.ui.define('menu',{
         var me = this;
         if(!$obj.data('$mergeObj')){
             $obj.data('$mergeObj',me.root());
-            if($obj.kmui().wrapclick){
+            if($obj.kmui()){
                 $obj.on('wrapclick',function(evt){
                     me.supper.show.call(me,$obj,'','offset',15)
                 });
