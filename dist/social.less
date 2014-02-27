@@ -5,7 +5,8 @@
     line-height: 20px;
     text-align: right;
     overflow: hidden;
-    button, .kmui-btn {
+    button {
+        font-family: Arial, "Heiti SC", "Microsoft Yahei";
         outline: none;
         display: inline-block;
         padding: 0 15px;
@@ -27,8 +28,7 @@
         background: -o-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Opera 11.10+ */
         background: -ms-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* IE10+ */
         background: linear-gradient(to bottom,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* W3C */
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0099f2', endColorstr='#0076dd',GradientType=0 ); /* IE6-8 */
-
+        
         &:hover {
             background: #009fff;
         }
@@ -72,5 +72,25 @@
             border-radius: 2px;
             margin-right: 7px;
         }
+        &.user-file {
+            padding-right: 28px;
+            position: relative;
+            &:after {
+                content: ' ';
+                display: block;
+                position: absolute;
+                right: 10px;
+                top: 15px;
+                width: 0;
+                height: 0;
+                border: solid;
+                border-width: 4px 5px;
+                border-color: #FFFFFF transparent transparent transparent;
+            }
+        }
     }
+}
+.user-file-menu {
+    margin-top: 20px;
+    margin-left: 1px;
 }
