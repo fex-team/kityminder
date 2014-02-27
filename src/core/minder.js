@@ -27,6 +27,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
+        this._paper.getNode().ondragstart = function(e) {
+            e.preventDefault();
+        };
 
         this._addRenderContainer();
 
