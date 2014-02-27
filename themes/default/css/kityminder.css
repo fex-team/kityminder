@@ -16,7 +16,7 @@
 }
 .kmui-container .kmui-editor-body{
     background: rgb(50, 60, 61) url(../images/grid.png) repeat;
-    line-height: 0;
+    /*line-height: 0;*/
     overflow: hidden;
 }
 svg {
