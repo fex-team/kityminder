@@ -61,8 +61,14 @@ KM.ui.define('dropmenu', {
                         })
                     })
                 }
-            })
+            });
 
+    },
+    _initEvent:function(){
+        this.root().on('mouseover','li[class="kmui-dropdown-submenu',function(e){
+            var $submenu = $(this).data('widget');
+            $submenu.kmui().show($(this),'right','position',5,2)
+        });
     },
     disabled: function (cb) {
         $('li[class!=kmui-divider]', this.root()).each(function () {
@@ -99,7 +105,7 @@ KM.ui.define('dropmenu', {
 
         var $list = $('li[class!=kmui-divider]', this.root());
         var $node = $('<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>').append(menu);
-
+        $node.data('widget',menu);
         if (index >= 0 && index < $list.length) {
             $node.insertBefore($list[index]);
         } else if (index < 0) {
