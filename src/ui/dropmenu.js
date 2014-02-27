@@ -100,6 +100,15 @@ KM.ui.define('dropmenu', {
             return currentVal
         }
     },
+    appendItem: function ( item ) {
+        var itemTpl = '<%if(item.divider){%><li class="kmui-divider"></li><%}else{%>' +
+            '<li <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
+            '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= item.label%></a>' +
+            '</li><%}%>';
+        var html = $.parseTmpl( itemTpl, item );
+        var $item = $( html ).click( item.click );
+        this.root().append( $item );
+    },
     addSubmenu: function (label, menu, index) {
         index = index || 0;
 

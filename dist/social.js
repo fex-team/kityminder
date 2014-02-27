@@ -141,7 +141,7 @@ $( function () {
     }
 
     function addToRecentMenu( list ) {
-        list = list.splice(8);
+        list.splice(8);
         list.forEach( function ( file ) {
             $user_menu.appendItem( {
                 item: {
