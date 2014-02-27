@@ -8,9 +8,10 @@
     <script src="social.js" charset="utf-8"></script>
     <script src="../kity/dist/kitygraph.all.js" charset="utf-8"></script>
     <script src="../configure.js" charset="utf-8"></script>
-    <script src="../dist/dev.js" charset="utf-8"></script>
+    <script src="../dist/dev.php" charset="utf-8"></script>
     <script src="../lang/zh-cn/zh-cn.js" charset="utf-8"></script>
     <link href="../themes/default/css/import.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="social.css">
     <style>
         .km_receiver{
             width:0;
@@ -26,37 +27,9 @@
             margin: 0;
             padding: 0;
         }
-        #social {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            line-height: 20px;
-            text-align: right;
-            overflow: hidden;
-        }
-        #social button {
-            outline: none;
-            display: inline-block;
-            bottom: 20px;
-            right: 30px;
-            background: #0099f2;
-            padding: 0 15px;
-            height: 35px;
-            font-size: 13px;
-            line-height: 35px;
-            text-align: center;
-            border-radius: 5px;
-            color: #ffffff;
-            text-decoration: none;
-            border: none;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        #social button:hover {
-            background: #009fff;
-        }
-        #social button[disabled] {
-            background-color: #AAA;
+        html, body, div.kmui-editor-body {
+            height: 100%;
+            -moz-user-select: none;
         }
     </style>
 </head>

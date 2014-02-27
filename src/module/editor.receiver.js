@@ -32,7 +32,9 @@ Minder.Receiver = kity.createClass('Receiver',{
         var text = this.container.firstChild;
         this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
+        var me = this;
         setTimeout(function(){
+            me.container.focus();
             range.select()
         });
         return this;

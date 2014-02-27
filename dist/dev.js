@@ -1313,7 +1313,6 @@ kity.extendClass( Minder, {
             rc.addShape( current.getRenderContainer() );
         } );
     },
-
     handelNodeRemove: function ( node ) {
         var rc = this._rc;
         node.traverse( function ( current ) {
@@ -1330,6 +1329,9 @@ kity.extendClass( Minder, {
         } else {
             km.renderNode( nodes );
         }
+    },
+    getMinderTitle: function() {
+        return this.getRoot().getText();
     }
 
 } );
@@ -2665,9 +2667,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					if ( Layout.shicon ) Layout.shicon.remove();
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					} catch ( error ) {}
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
@@ -3292,6 +3296,39 @@ kity.extendClass( Minder, function () {
         },
         isSingleSelect: function () {
             return this._selectedNodes.length == 1;
+        },
+        getSelectedAncestors: function() {
+            var nodes = this.getSelectedNodes().slice( 0 ),
+            ancestors = [],
+            judge;
+
+            // 根节点不参与计算
+            var rootIndex = nodes.indexOf( this.getRoot() );
+            if ( ~rootIndex ) {
+                nodes.splice( rootIndex, 1 );
+            }
+
+            // 判断 nodes 列表中是否存在 judge 的祖先
+            function hasAncestor( nodes, judge ) {
+                for ( var i = nodes.length - 1; i >= 0; --i ) {
+                    if ( nodes[ i ].isAncestorOf( judge ) ) return true;
+                }
+                return false;
+            }
+
+            // 按照拓扑排序
+            nodes.sort( function ( node1, node2 ) {
+                return node1.getLevel() - node2.getLevel();
+            } );
+
+            // 因为是拓扑有序的，所以只需往上查找
+            while ( ( judge = nodes.pop() ) ) {
+                if ( !hasAncestor( nodes, judge ) ) {
+                    ancestors.push( judge );
+                }
+            }
+
+            return ancestors;
         }
     };
 }() );
@@ -3327,6 +3364,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
+                e.originEvent.preventDefault();
             }
             // 点击未选中的根节点临时开启
             else if ( e.getTargetNode() == this.getRoot() &&
@@ -3469,36 +3507,7 @@ var DragBox = kity.createClass( "DragBox", {
 	//       2. 从后往前枚举排序的结果，如果发现枚举目标之前存在其祖先，
 	//          则排除枚举目标作为拖放源，否则加入拖放源
 	_calcDragSources: function () {
-		var nodes = this._minder.getSelectedNodes().slice( 0 ),
-			ancestors = [],
-			judge;
-
-		// 根节点不参与计算
-		var rootIndex = nodes.indexOf( this._minder.getRoot() );
-		if ( ~rootIndex ) {
-			nodes.splice( rootIndex, 1 );
-		}
-
-		// 判断 nodes 列表中是否存在 judge 的祖先
-		function hasAncestor( nodes, judge ) {
-			for ( var i = nodes.length - 1; i >= 0; --i ) {
-				if ( nodes[ i ].isAncestorOf( judge ) ) return true;
-			}
-			return false;
-		}
-
-		// 按照拓扑排序
-		nodes.sort( function ( node1, node2 ) {
-			return node1.getLevel() - node2.getLevel();
-		} );
-
-		// 因为是拓扑有序的，所以只需往上查找
-		while ( ( judge = nodes.pop() ) ) {
-			if ( !hasAncestor( nodes, judge ) ) {
-				ancestors.push( judge );
-			}
-		}
-		this._dragSources = ancestors;
+		this._dragSources = this._minder.getSelectedAncestors();
 	},
 
 
@@ -5090,7 +5099,8 @@ KityMinder.registerModule( 'Zoom', function () {
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			'mousewheel': function ( e ) {
+			// disable mouse wheel
+			'mousewheel_': function ( e ) {
 				var delta = e.originEvent.wheelDelta;
 				var me = this;
 
@@ -5405,11 +5415,11 @@ KM.ui.define('button', {
 //menu 类
 KM.ui.define('menu',{
     show : function($obj,dir,fnname,topOffset,leftOffset){
-
         fnname = fnname || 'position';
         if(this.trigger('beforeshow') === false){
             return;
         }else{
+
             this.root().css($.extend({display:'block'},$obj ? {
                 top : $obj[fnname]().top + ( dir == 'right' ? 0 : $obj.outerHeight()) - (topOffset || 0),
                 left : $obj[fnname]().left + (dir == 'right' ?  $obj.outerWidth() : 0) -  (leftOffset || 0)
@@ -5435,9 +5445,16 @@ KM.ui.define('menu',{
         var me = this;
         if(!$obj.data('$mergeObj')){
             $obj.data('$mergeObj',me.root());
-            $obj.on('wrapclick',function(evt){
-                me.show()
-            });
+            if($obj.kmui()){
+                $obj.on('wrapclick',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                });
+            }else{
+                $obj.on('click',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                })
+            }
+
             me.register('click',$obj,function(evt){
                me.hide()
             });
@@ -5447,9 +5464,14 @@ KM.ui.define('menu',{
 });
 
 //dropmenu 类
-KM.ui.define('dropmenu', {
+KM.ui.define( 'dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        this.subTmpl +
+        '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
+        '</li><%}}%>' +
+        '<%}%>' +
         '</ul>',
     subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
@@ -5459,32 +5481,33 @@ KM.ui.define('dropmenu', {
         '<%}%>',
     defaultOpt: {
         data: [],
-        click: function () {
-        }
+        click: function () {}
     },
-    setData:function(items){
+    setData: function ( items ) {
 
-        this.root().html($.parseTmpl(this.subTmpl,items))
+        this.root().html( $.parseTmpl( this.subTmpl, items ) );
 
         return this;
     },
-    position:function(offset){
-        this.root().css({
-            left:offset.x,
-            top:offset.y
-        });
+    position: function ( offset ) {
+        this.root().css( {
+            left: offset.x,
+            top: offset.y
+        } );
         return this;
     },
-    show:function(){
-        if(this.trigger('beforeshow') === false){
+    show: function () {
+        if ( this.trigger( 'beforeshow' ) === false ) {
             return;
-        }else{
-            this.root().css({display:'block'});
-            this.trigger('aftershow');
+        } else {
+            this.root().css( {
+                display: 'block'
+            } );
+            this.trigger( 'aftershow' );
         }
         return this;
     },
-    init: function (options) {
+    init: function ( options ) {
         var me = this;
         var eventName = {
             click: 1,
@@ -5492,66 +5515,75 @@ KM.ui.define('dropmenu', {
             mouseout: 1
         };
 
-        this.root($($.parseTmpl(this.tmpl, options))).on('click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]',function (evt) {
-            $.proxy(options.click, me, evt, $(this).data('value'), $(this).data('label'),$(this))()
-        }).find('li').each(function (i, el) {
-                var $this = $(this);
-                if (!$this.hasClass("kmui-disabled kmui-divider kmui-dropdown-submenu")) {
-                    var data = options.data[i];
-                    $.each(eventName, function (k) {
-                        data[k] && $this[k](function (evt) {
-                            $.proxy(data[k], el)(evt, data, me.root)
-                        })
-                    })
-                }
-            })
+        this.root( $( $.parseTmpl( this.tmpl, options ) ) ).on( 'click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]', function ( evt ) {
+            $.proxy( options.click, me, evt, $( this ).data( 'value' ), $( this ).data( 'label' ), $( this ) )()
+        } ).find( 'li' ).each( function ( i, el ) {
+            var $this = $( this );
+            if ( !$this.hasClass( "kmui-disabled kmui-divider kmui-dropdown-submenu" ) ) {
+                var data = options.data[ i ];
+                $.each( eventName, function ( k ) {
+                    data[ k ] && $this[ k ]( function ( evt ) {
+                        $.proxy( data[ k ], el )( evt, data, me.root )
+                    } )
+                } )
+            }
+        } )
 
     },
-    disabled: function (cb) {
-        $('li[class!=kmui-divider]', this.root()).each(function () {
-            var $el = $(this);
-            if (cb === true) {
-                $el.addClass('kmui-disabled')
-            } else if ($.isFunction(cb)) {
-                $el.toggleClass('kmui-disabled', cb(li))
+    disabled: function ( cb ) {
+        $( 'li[class!=kmui-divider]', this.root() ).each( function () {
+            var $el = $( this );
+            if ( cb === true ) {
+                $el.addClass( 'kmui-disabled' )
+            } else if ( $.isFunction( cb ) ) {
+                $el.toggleClass( 'kmui-disabled', cb( li ) )
             } else {
-                $el.removeClass('kmui-disabled')
+                $el.removeClass( 'kmui-disabled' )
             }
 
-        });
+        } );
     },
-    val: function (val) {
+    val: function ( val ) {
         var currentVal;
-        $('li[class!="kmui-divider kmui-disabled kmui-dropdown-submenu"]', this.root()).each(function () {
-            var $el = $(this);
-            if (val === undefined) {
-                if ($el.find('em.kmui-dropmenu-checked').length) {
-                    currentVal = $el.data('value');
+        $( 'li[class!="kmui-divider kmui-disabled kmui-dropdown-submenu"]', this.root() ).each( function () {
+            var $el = $( this );
+            if ( val === undefined ) {
+                if ( $el.find( 'em.kmui-dropmenu-checked' ).length ) {
+                    currentVal = $el.data( 'value' );
                     return false
                 }
             } else {
-                $el.find('em').toggleClass('kmui-dropmenu-checked', $el.data('value') == val)
+                $el.find( 'em' ).toggleClass( 'kmui-dropmenu-checked', $el.data( 'value' ) == val )
             }
-        });
-        if (val === undefined) {
+        } );
+        if ( val === undefined ) {
             return currentVal
         }
     },
-    addSubmenu: function (label, menu, index) {
+    appendItem: function ( item ) {
+        var itemTpl = '<%if(item.divider){%><li class="kmui-divider"></li><%}else{%>' +
+            '<li <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
+            '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= item.label%></a>' +
+            '</li><%}%>';
+        var html = $.parseTmpl( itemTpl, item );
+        var $item = $( html ).click( item.click );
+        this.root().append( $item );
+    },
+    addSubmenu: function ( label, menu, index ) {
         index = index || 0;
 
-        var $list = $('li[class!=kmui-divider]', this.root());
-        var $node = $('<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>').append(menu);
+        var $list = $( 'li[class!=kmui-divider]', this.root() );
+        var $node = $( '<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>' ).append( menu );
 
-        if (index >= 0 && index < $list.length) {
-            $node.insertBefore($list[index]);
-        } else if (index < 0) {
-            $node.insertBefore($list[0]);
-        } else if (index >= $list.length) {
-            $node.appendTo($list);
+        if ( index >= 0 && index < $list.length ) {
+            $node.insertBefore( $list[ index ] );
+        } else if ( index < 0 ) {
+            $node.insertBefore( $list[ 0 ] );
+        } else if ( index >= $list.length ) {
+            $node.appendTo( $list );
         }
     }
-}, 'menu');
+}, 'menu' );
 
 //splitbutton 类
 ///import button
@@ -7125,8 +7157,7 @@ KM.registerToolbarUI( 'fontfamily fontsize', function ( name ) {
 
             temp = options.items[ i ];
             tempItems.push( temp );
-            options.itemStyles.push( 'font-size: ' + temp + 'px' );
-
+            options.itemStyles.push( 'font-size: ' + temp + 'px; height:' + (temp+2) + 'px; line-height: ' + (temp + 2) + 'px' );
         }
 
         options.value = options.items;

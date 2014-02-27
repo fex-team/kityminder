@@ -1,11 +1,11 @@
 //menu 类
 KM.ui.define('menu',{
     show : function($obj,dir,fnname,topOffset,leftOffset){
-
         fnname = fnname || 'position';
         if(this.trigger('beforeshow') === false){
             return;
         }else{
+
             this.root().css($.extend({display:'block'},$obj ? {
                 top : $obj[fnname]().top + ( dir == 'right' ? 0 : $obj.outerHeight()) - (topOffset || 0),
                 left : $obj[fnname]().left + (dir == 'right' ?  $obj.outerWidth() : 0) -  (leftOffset || 0)
@@ -31,9 +31,16 @@ KM.ui.define('menu',{
         var me = this;
         if(!$obj.data('$mergeObj')){
             $obj.data('$mergeObj',me.root());
-            $obj.on('wrapclick',function(evt){
-                me.show()
-            });
+            if($obj.kmui()){
+                $obj.on('wrapclick',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                });
+            }else{
+                $obj.on('click',function(evt){
+                    me.supper.show.call(me,$obj,'','offset',15)
+                })
+            }
+
             me.register('click',$obj,function(evt){
                me.hide()
             });

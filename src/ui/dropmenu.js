@@ -1,9 +1,14 @@
 //dropmenu 类
 KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
-        this.subTmpl +
+        '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+        '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
+        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
+        '</li><%}}%>' +
+        '<%}%>'+
         '</ul>',
-    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+    subTmpl:'<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
@@ -16,7 +21,7 @@ KM.ui.define('dropmenu', {
     },
     setData:function(items){
 
-        this.root().html($.parseTmpl(this.subTmpl,items))
+        this.root().html($.parseTmpl(this.subTmpl,items));
 
         return this;
     },
@@ -56,8 +61,14 @@ KM.ui.define('dropmenu', {
                         })
                     })
                 }
-            })
+            });
 
+    },
+    _initEvent:function(){
+        this.root().on('mouseover','li[class="kmui-dropdown-submenu',function(e){
+            var $submenu = $(this).data('widget');
+            $submenu.kmui().show($(this),'right','position',5,2)
+        });
     },
     disabled: function (cb) {
         $('li[class!=kmui-divider]', this.root()).each(function () {
@@ -89,12 +100,21 @@ KM.ui.define('dropmenu', {
             return currentVal
         }
     },
+    appendItem: function ( item ) {
+        var itemTpl = '<%if(item.divider){%><li class="kmui-divider"></li><%}else{%>' +
+            '<li <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
+            '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= item.label%></a>' +
+            '</li><%}%>';
+        var html = $.parseTmpl( itemTpl, item );
+        var $item = $( html ).click( item.click );
+        this.root().append( $item );
+    },
     addSubmenu: function (label, menu, index) {
         index = index || 0;
 
         var $list = $('li[class!=kmui-divider]', this.root());
         var $node = $('<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>').append(menu);
-
+        $node.data('widget',menu);
         if (index >= 0 && index < $list.length) {
             $node.insertBefore($list[index]);
         } else if (index < 0) {
