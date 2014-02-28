@@ -17,6 +17,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
         paper.setStyle( 'cursor', value ? '-webkit-grab' : 'default' );
         this._enabled = value;
     },
+    move: function ( offset ) {
+        this._minder.getRenderContainer().translate( offset.x, offset.y );
+    },
 
     _bind: function () {
         var dragger = this,
@@ -33,7 +36,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
             // 点击未选中的根节点临时开启
             else if ( e.getTargetNode() == this.getRoot() &&
-                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
                 dragger.setEnabled( true );
                 isRootDrag = true;
@@ -47,8 +50,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
 
                 // 当前偏移加上历史偏移
                 var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
-
-                this.getRenderContainer().translate( offset.x, offset.y );
+                dragger.move( offset );
                 e.stopPropagation();
                 lastPosition = currentPosition;
             }
@@ -90,6 +92,23 @@ KityMinder.registerModule( 'Hand', function () {
                     this.execCommand( 'hand' );
                     e.preventDefault();
                 }
+            },
+            mousewheel: function ( e ) {
+                var dx = e.originEvent.wheelDeltaX || e.originEvent.wheelDelta,
+                    dy = e.originEvent.wheelDeltaY || 0;
+                this._viewDragger.move( {
+                    x: dx / 2.5,
+                    y: dy / 2.5
+                } );
+
+                e.originEvent.preventDefault();
+            },
+            dblclick: function() {
+                var viewport = this.getPaper().getViewPort();
+                var offset = this.getRoot().getRenderContainer(this.getRenderContainer()).getTransform().getTranslate();
+                var dx = viewport.center.x - offset.x,
+                    dy = viewport.center.y - offset.y;
+                this.getRenderContainer().fxTranslate(dx, dy, 300);
             }
         }
     };

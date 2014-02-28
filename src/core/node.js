@@ -180,7 +180,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             node.parent.removeChild( node );
         }
         node.parent = this;
-        node.root = parent.root;
+        node.root = node.parent.root;
 
         this.children.splice( index, 0, node );
     },
