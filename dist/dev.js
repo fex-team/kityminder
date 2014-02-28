@@ -3434,8 +3434,8 @@ KityMinder.registerModule( 'Hand', function () {
                 }
             },
             mousewheel: function ( e ) {
-                var dx = e.originEvent.wheelDeltaX || e.originEvent.wheelDelta,
-                    dy = e.originEvent.wheelDeltaY || 0;
+                var dx = e.originEvent.wheelDeltaX || 0,
+                    dy = e.originEvent.wheelDeltaY || e.originEvent.wheelDelta;
                 this._viewDragger.move( {
                     x: dx / 2.5,
                     y: dy / 2.5
@@ -3448,7 +3448,7 @@ KityMinder.registerModule( 'Hand', function () {
                 var offset = this.getRoot().getRenderContainer(this.getRenderContainer()).getTransform().getTranslate();
                 var dx = viewport.center.x - offset.x,
                     dy = viewport.center.y - offset.y;
-                this.getRenderContainer().fxTranslate(dx, dy, 300);
+                //this.getRenderContainer().fxTranslate(dx, dy, 300);
             }
         }
     };
