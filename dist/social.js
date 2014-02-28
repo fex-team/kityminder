@@ -290,7 +290,7 @@ $( function () {
 
     function loadShare() {
         var pattern = /share_id=(\w+)([&#]|$)/;
-        var match = pattern.exec( window.top.location.href );
+        var match = pattern.exec( window.top.location );
         if ( !match ) return;
         var shareId = match[ 1 ];
         var query = new baidu.frontia.storage.Query();
@@ -311,7 +311,7 @@ $( function () {
 
     function loadPath() {
         var pattern = /path=(.+?)([&#]|$)/;
-        var match = pattern.exec( window.top.location.href );
+        var match = pattern.exec( window.top.location );
         if ( !match ) return;
         thisMapFilename = decodeURI( match[ 1 ] );
     }
