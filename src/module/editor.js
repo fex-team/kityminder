@@ -26,7 +26,8 @@ KityMinder.registerModule( "TextEditModule", function () {
             this.getPaper().addShape(sel);
         },
         "events": {
-            'beforemousedown':function(e){
+            'normal.beforemousedown':function(e){
+
                 var isRightMB;
 
 
@@ -77,7 +78,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }
                 }
             },
-            'mouseup':function(e){
+            'normal.mouseup':function(e){
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
                         try{
@@ -93,7 +94,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 mouseDownStatus = false;
                 oneTime = 0;
             },
-            'beforemousemove':function(e){
+            'normal.beforemousemove':function(e){
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
 
@@ -112,7 +113,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
             },
-            'dblclick':function(e){
+            'normal.dblclick':function(e){
 
                 var text =  e.kityEvent.targetShape;
                 if ( text.getType().toLowerCase()== 'text') {

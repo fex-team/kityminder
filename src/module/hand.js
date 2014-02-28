@@ -24,7 +24,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'beforemousedown', function ( e ) {
+        this._minder.on( 'hand.beforemousedown', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
@@ -41,7 +41,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
 
         } )
 
-        .on( 'beforemousemove', function ( e ) {
+        .on( 'hand.beforemousemove', function ( e ) {
             if ( lastPosition ) {
                 currentPosition = e.getPosition();
 
@@ -54,7 +54,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'mouseup', function ( e ) {
+        .on( 'hand.mouseup', function ( e ) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
@@ -67,10 +67,20 @@ var ViewDragger = kity.createClass( "ViewDragger", {
 } );
 
 KityMinder.registerModule( 'Hand', function () {
+
+    var km = this;
+
     var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
         base: Command,
         execute: function ( minder ) {
+
             minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
+            if(minder._viewDragger.isEnabled()){
+                minder.setStatus('hand')
+            }else{
+                minder.rollbackStatus()
+            }
+
         },
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;

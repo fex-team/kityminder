@@ -5,6 +5,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initEvents();
         this._initMinder();
         this._initSelection();
+        this._initStatus();
         this._initShortcutKey();
         this._initContextmenu();
         this._initModules();
@@ -147,6 +148,25 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     },
     getContextmenu:function(){
         return this.contextmenus;
+    },
+    _initStatus:function(){
+        this._status = "normal";
+        this._rollbackStatus = "normal";
+    },
+    setStatus:function(status){
+        if(status){
+            this._rollbackStatus = this._status;
+            this._status = status;
+        }else{
+            this._status = '';
+        }
+        return this;
+    },
+    rollbackStatus:function(){
+        this._status = this._rollbackStatus;
+    },
+    getStatus:function(){
+        return this._status;
     }
 } );
 
