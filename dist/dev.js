@@ -533,7 +533,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             node.parent.removeChild( node );
         }
         node.parent = this;
-        node.root = parent.root;
+        node.root = node.parent.root;
 
         this.children.splice( index, 0, node );
     },
@@ -789,6 +789,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
+        this._paper.getNode().ondragstart = function(e) {
+            e.preventDefault();
+        };
 
         this._addRenderContainer();
 
@@ -3201,9 +3204,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 					Layout.connect = null;
 					Layout.shicon = null;
 				} else {
-					_buffer[ 0 ].getRenderContainer().remove();
-					Layout.connect.remove();
-					if ( Layout.shicon ) Layout.shicon.remove();
+					try {
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					} catch ( error ) {}
 				}
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
@@ -3352,6 +3357,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
         paper.setStyle( 'cursor', value ? '-webkit-grab' : 'default' );
         this._enabled = value;
     },
+    move: function ( offset ) {
+        this._minder.getRenderContainer().translate( offset.x, offset.y );
+    },
 
     _bind: function () {
         var dragger = this,
@@ -3368,7 +3376,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
             // 点击未选中的根节点临时开启
             else if ( e.getTargetNode() == this.getRoot() &&
-                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
                 dragger.setEnabled( true );
                 isRootDrag = true;
@@ -3382,8 +3390,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
 
                 // 当前偏移加上历史偏移
                 var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
-
-                this.getRenderContainer().translate( offset.x, offset.y );
+                dragger.move( offset );
                 e.stopPropagation();
                 lastPosition = currentPosition;
             }
@@ -3425,6 +3432,23 @@ KityMinder.registerModule( 'Hand', function () {
                     this.execCommand( 'hand' );
                     e.preventDefault();
                 }
+            },
+            mousewheel: function ( e ) {
+                var dx = e.originEvent.wheelDeltaX || e.originEvent.wheelDelta,
+                    dy = e.originEvent.wheelDeltaY || 0;
+                this._viewDragger.move( {
+                    x: dx / 2.5,
+                    y: dy / 2.5
+                } );
+
+                e.originEvent.preventDefault();
+            },
+            dblclick: function() {
+                var viewport = this.getPaper().getViewPort();
+                var offset = this.getRoot().getRenderContainer(this.getRenderContainer()).getTransform().getTranslate();
+                var dx = viewport.center.x - offset.x,
+                    dy = viewport.center.y - offset.y;
+                this.getRenderContainer().fxTranslate(dx, dy, 300);
             }
         }
     };
@@ -4465,7 +4489,9 @@ Minder.Receiver = kity.createClass('Receiver',{
         var text = this.container.firstChild;
         this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
+        var me = this;
         setTimeout(function(){
+            me.container.focus();
             range.select()
         });
         return this;
@@ -4523,7 +4549,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                             return;
 
                     }
-                    var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
+                    var text = this.container.textContent.replace(/\u200b/g,'');
 
                     if(this.textShape.getOpacity() == 0){
                         this.textShape.setOpacity(1);
@@ -5464,16 +5490,16 @@ KM.ui.define('menu',{
 });
 
 //dropmenu 类
-KM.ui.define( 'dropmenu', {
+KM.ui.define('dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
         '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
         '</li><%}}%>' +
-        '<%}%>' +
+        '<%}%>'+
         '</ul>',
-    subTmpl: '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
+    subTmpl:'<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
         '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
@@ -5481,33 +5507,32 @@ KM.ui.define( 'dropmenu', {
         '<%}%>',
     defaultOpt: {
         data: [],
-        click: function () {}
+        click: function () {
+        }
     },
-    setData: function ( items ) {
+    setData:function(items){
 
-        this.root().html( $.parseTmpl( this.subTmpl, items ) );
+        this.root().html($.parseTmpl(this.subTmpl,items));
 
         return this;
     },
-    position: function ( offset ) {
-        this.root().css( {
-            left: offset.x,
-            top: offset.y
-        } );
+    position:function(offset){
+        this.root().css({
+            left:offset.x,
+            top:offset.y
+        });
         return this;
     },
-    show: function () {
-        if ( this.trigger( 'beforeshow' ) === false ) {
+    show:function(){
+        if(this.trigger('beforeshow') === false){
             return;
-        } else {
-            this.root().css( {
-                display: 'block'
-            } );
-            this.trigger( 'aftershow' );
+        }else{
+            this.root().css({display:'block'});
+            this.trigger('aftershow');
         }
         return this;
     },
-    init: function ( options ) {
+    init: function (options) {
         var me = this;
         var eventName = {
             click: 1,
@@ -5515,48 +5540,54 @@ KM.ui.define( 'dropmenu', {
             mouseout: 1
         };
 
-        this.root( $( $.parseTmpl( this.tmpl, options ) ) ).on( 'click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]', function ( evt ) {
-            $.proxy( options.click, me, evt, $( this ).data( 'value' ), $( this ).data( 'label' ), $( this ) )()
-        } ).find( 'li' ).each( function ( i, el ) {
-            var $this = $( this );
-            if ( !$this.hasClass( "kmui-disabled kmui-divider kmui-dropdown-submenu" ) ) {
-                var data = options.data[ i ];
-                $.each( eventName, function ( k ) {
-                    data[ k ] && $this[ k ]( function ( evt ) {
-                        $.proxy( data[ k ], el )( evt, data, me.root )
-                    } )
-                } )
-            }
-        } )
+        this.root($($.parseTmpl(this.tmpl, options))).on('click', 'li[class!="kmui-disabled kmui-divider kmui-dropdown-submenu"]',function (evt) {
+            $.proxy(options.click, me, evt, $(this).data('value'), $(this).data('label'),$(this))()
+        }).find('li').each(function (i, el) {
+                var $this = $(this);
+                if (!$this.hasClass("kmui-disabled kmui-divider kmui-dropdown-submenu")) {
+                    var data = options.data[i];
+                    $.each(eventName, function (k) {
+                        data[k] && $this[k](function (evt) {
+                            $.proxy(data[k], el)(evt, data, me.root)
+                        })
+                    })
+                }
+            });
 
     },
-    disabled: function ( cb ) {
-        $( 'li[class!=kmui-divider]', this.root() ).each( function () {
-            var $el = $( this );
-            if ( cb === true ) {
-                $el.addClass( 'kmui-disabled' )
-            } else if ( $.isFunction( cb ) ) {
-                $el.toggleClass( 'kmui-disabled', cb( li ) )
+    _initEvent:function(){
+        this.root().on('mouseover','li[class="kmui-dropdown-submenu',function(e){
+            var $submenu = $(this).data('widget');
+            $submenu.kmui().show($(this),'right','position',5,2)
+        });
+    },
+    disabled: function (cb) {
+        $('li[class!=kmui-divider]', this.root()).each(function () {
+            var $el = $(this);
+            if (cb === true) {
+                $el.addClass('kmui-disabled')
+            } else if ($.isFunction(cb)) {
+                $el.toggleClass('kmui-disabled', cb(li))
             } else {
-                $el.removeClass( 'kmui-disabled' )
+                $el.removeClass('kmui-disabled')
             }
 
-        } );
+        });
     },
-    val: function ( val ) {
+    val: function (val) {
         var currentVal;
-        $( 'li[class!="kmui-divider kmui-disabled kmui-dropdown-submenu"]', this.root() ).each( function () {
-            var $el = $( this );
-            if ( val === undefined ) {
-                if ( $el.find( 'em.kmui-dropmenu-checked' ).length ) {
-                    currentVal = $el.data( 'value' );
+        $('li[class!="kmui-divider kmui-disabled kmui-dropdown-submenu"]', this.root()).each(function () {
+            var $el = $(this);
+            if (val === undefined) {
+                if ($el.find('em.kmui-dropmenu-checked').length) {
+                    currentVal = $el.data('value');
                     return false
                 }
             } else {
-                $el.find( 'em' ).toggleClass( 'kmui-dropmenu-checked', $el.data( 'value' ) == val )
+                $el.find('em').toggleClass('kmui-dropmenu-checked', $el.data('value') == val)
             }
-        } );
-        if ( val === undefined ) {
+        });
+        if (val === undefined) {
             return currentVal
         }
     },
@@ -5569,21 +5600,21 @@ KM.ui.define( 'dropmenu', {
         var $item = $( html ).click( item.click );
         this.root().append( $item );
     },
-    addSubmenu: function ( label, menu, index ) {
+    addSubmenu: function (label, menu, index) {
         index = index || 0;
 
-        var $list = $( 'li[class!=kmui-divider]', this.root() );
-        var $node = $( '<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>' ).append( menu );
-
-        if ( index >= 0 && index < $list.length ) {
-            $node.insertBefore( $list[ index ] );
-        } else if ( index < 0 ) {
-            $node.insertBefore( $list[ 0 ] );
-        } else if ( index >= $list.length ) {
-            $node.appendTo( $list );
+        var $list = $('li[class!=kmui-divider]', this.root());
+        var $node = $('<li class="kmui-dropdown-submenu"><a tabindex="-1" href="#">' + label + '</a></li>').append(menu);
+        $node.data('widget',menu);
+        if (index >= 0 && index < $list.length) {
+            $node.insertBefore($list[index]);
+        } else if (index < 0) {
+            $node.insertBefore($list[0]);
+        } else if (index >= $list.length) {
+            $node.appendTo($list);
         }
     }
-}, 'menu' );
+}, 'menu');
 
 //splitbutton 类
 ///import button

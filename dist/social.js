@@ -91,7 +91,7 @@ $( function () {
         var options = {
             response_type: 'token',
             media_type: 'baidu',
-            redirect_uri: baseUrl + 'index.html',
+            redirect_uri: window.location.href,
             client_type: 'web'
         };
         baidu.frontia.social.login( options );
@@ -129,7 +129,7 @@ $( function () {
             by: 'time',
             success: function ( result ) {
                 if ( result.list.length ) {
-                    if ( !isShareLink ) {
+                    if ( !isShareLink && !thisMapFilename ) {
                         loadPersonal( result.list[ 0 ].path );
                     } else {
                         $user_btn.loading( false );
@@ -141,7 +141,7 @@ $( function () {
     }
 
     function addToRecentMenu( list ) {
-        list.splice(8);
+        list.splice( 8 );
         list.forEach( function ( file ) {
             $user_menu.appendItem( {
                 item: {
@@ -290,7 +290,7 @@ $( function () {
 
     function loadShare() {
         var pattern = /share_id=(\w+)([&#]|$)/;
-        var match = pattern.exec( window.location.href );
+        var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
         var shareId = match[ 1 ];
         var query = new baidu.frontia.storage.Query();
@@ -308,11 +308,23 @@ $( function () {
         } );
         isShareLink = true;
     }
+
+    function loadPath() {
+        var pattern = /path=(.+?)([&#]|$)/;
+        var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
+        if ( !match ) return;
+        thisMapFilename = decodeURIComponent( match[ 1 ] );
+    }
+
     loadShare();
 
     currentUser = baidu.frontia.getCurrentAccount();
     if ( currentUser ) {
         setCurrentUser( currentUser );
+        loadPath();
+        if(thisMapFilename) {
+            loadPersonal( thisMapFilename );
+        }
     } else {
         $login_btn.appendTo( $panel );
     }
