@@ -106,6 +106,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node ) {
 				var parent = km.getSelectedNode();
+				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+					km.expandNode( parent );
+				}
 				km.appendChildNode( parent, node );
 				km.select( node, true );
 				return node;
@@ -129,7 +132,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 					node.setType( "main" );
 					km.appendChildNode( selectedNode, node );
 				} else {
-					node.setType( "sub" );
 					km.appendSiblingNode( selectedNode, node );
 				}
 				km.select( node, true );
@@ -203,29 +205,26 @@ KityMinder.registerModule( "LayoutModule", function () {
 				this.initStyle( this.getRoot() );
 			}
 		},
-        'contextmenu':[
-            {
-                label:this.getLang('node.appendsiblingnode'),
-                exec:function(){
-                    this.execCommand('appendsiblingnode',new MinderNode(this.getLang('topic')))
-                },
-                cmdName:'appendsiblingnode'
-            },
-            {
-                label:this.getLang('node.appendchildnode'),
-                exec:function(){
-                    this.execCommand('appendchildnode',new MinderNode(this.getLang('topic')))
-                },
-                cmdName:'appendchildnode'
-            },
-            {
-                label:this.getLang('node.removenode'),
-                cmdName:'removenode'
-            },{
-                divider:1
-            }
+		'contextmenu': [ {
+				label: this.getLang( 'node.appendsiblingnode' ),
+				exec: function () {
+					this.execCommand( 'appendsiblingnode', new MinderNode( this.getLang( 'topic' ) ) )
+				},
+				cmdName: 'appendsiblingnode'
+			}, {
+				label: this.getLang( 'node.appendchildnode' ),
+				exec: function () {
+					this.execCommand( 'appendchildnode', new MinderNode( this.getLang( 'topic' ) ) )
+				},
+				cmdName: 'appendchildnode'
+			}, {
+				label: this.getLang( 'node.removenode' ),
+				cmdName: 'removenode'
+			}, {
+				divider: 1
+			}
 
-        ],
+		],
 		"defaultOptions": {
 			"defaultlayoutstyle": "default",
 			"node": {

@@ -26,6 +26,9 @@ KityMinder.registerModule( "basestylemodule", function () {
                 queryState: function (  ) {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
+                    if(nodes.length == 0){
+                        return -1;
+                    }
                     utils.each(nodes,function(i,n){
                         if(n.getData('bold')){
                             result = 1;
@@ -58,6 +61,9 @@ KityMinder.registerModule( "basestylemodule", function () {
                 queryState: function (  ) {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
+                    if(nodes.length == 0){
+                        return -1;
+                    }
                     utils.each(nodes,function(i,n){
                         if(n.getData('italic')){
                             result = 1;

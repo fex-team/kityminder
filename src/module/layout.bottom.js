@@ -408,9 +408,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		appendChildNode: function ( parent, node, sibling ) {
 			node.clearLayout();
 			var parentLayout = parent.getLayout();
+			var expand = parent.getData( "expand" );
 			//设置分支类型
 			if ( parent.getType() === "root" ) {
 				node.setType( "main" );
+				node.setData( "expand", true );
 				minder.handelNodeInsert( node );
 			} else {
 				node.setType( "sub" );
@@ -490,8 +492,15 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			}
 		},
 		expandNode: function ( ico ) {
-			var isExpand = ico.icon.switchState();
-			var node = ico.icon._node;
+			var isExpand, node;
+			if ( ico instanceof MinderNode ) {
+				node = ico;
+				isExpand = node.getLayout().shicon.switchState();
+			} else {
+				isExpand = ico.icon.switchState();
+				node = ico.icon._node;
+			}
+			node.setData( "expand", isExpand );
 			var _buffer = node.getChildren();
 			var _cleanbuffer = [];
 

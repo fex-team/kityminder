@@ -51,6 +51,9 @@ KityMinder.registerModule( "fontmodule", function () {
                         n.setData( 'fontcolor', color );
                         n.getTextShape().fill( color )
                     } )
+                },
+                queryState:function(km){
+                    return km.getSelectedNodes().length == 0 ? -1 : 0
                 }
 
             } ),
@@ -64,6 +67,9 @@ KityMinder.registerModule( "fontmodule", function () {
                         n.getTextShape().setAttr( 'font-family', family );
                         km.updateLayout( n )
                     } )
+                },
+                queryState:function(km){
+                    return km.getSelectedNodes().length == 0 ? -1 : 0
                 }
             } ),
             "fontsize": kity.createClass( "fontsizeCommand", {
@@ -76,6 +82,9 @@ KityMinder.registerModule( "fontmodule", function () {
                         n.getTextShape().setSize( size );
                         km.updateLayout( n )
                     } )
+                },
+                queryState:function(km){
+                    return km.getSelectedNodes().length == 0 ? -1 : 0
                 }
             } )
         },
