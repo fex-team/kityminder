@@ -92,7 +92,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                             return;
 
                     }
-                    var text = (this.container.textContent || this.container.innerText).replace(/\u200b/g,'');
+                    var text = this.container.textContent.replace(/\u200b/g,'');
 
                     if(this.textShape.getOpacity() == 0){
                         this.textShape.setOpacity(1);
