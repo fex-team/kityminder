@@ -1,7 +1,7 @@
 <?php
 
 $dependency = Array(
-        'src/core/kityminder.js'
+    'src/core/kityminder.js'
         ,'src/core/utils.js'
         ,'src/core/command.js'
         ,'src/core/node.js'
@@ -70,6 +70,7 @@ $dependency = Array(
         ,'src/protocal/png.js'
         ,'src/protocal/svg.js'
     );
+
 
 $content = "";
 
