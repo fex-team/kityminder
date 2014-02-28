@@ -313,7 +313,7 @@ $( function () {
         var pattern = /path=(.+?)([&#]|$)/;
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
-        thisMapFilename = decodeURI( match[ 1 ] );
+        thisMapFilename = decodeURIComponent( match[ 1 ] );
     }
 
     loadShare();
