@@ -142,7 +142,7 @@
                         return obj.root()[_prefix + className].apply(obj.root(), arguments)
                     } else {
                         $el && obj.root($el);
-                        obj.init && obj.init(!options || $.isPlainObject(options) ? $.extend2(options || {}, obj.defaultOpt || {}, true) : options);
+                        obj.init && obj.init(utils.clonePlainObject(!options || $.isPlainObject(options) ? $.extend2(options || {}, obj.defaultOpt || {}, true) : options));
                         try{
                             obj.root().find('a').click(function (evt) {
                                 evt.preventDefault()
