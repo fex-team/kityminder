@@ -68,6 +68,7 @@ kity.extendClass( Minder, {
         var callbacks = this._eventCallbacks[ e.type.toLowerCase() ] || [];
 
         if(status){
+
             callbacks =  callbacks.concat(this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || []);
         }
 
