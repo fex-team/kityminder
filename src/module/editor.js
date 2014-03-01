@@ -183,6 +183,9 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
                 receiver.clear().setTextEditStatus(false);
+                if(this.getStatus() == 'textedit'){
+                    this.setStatus('normal')
+                }
             },
             'selectionclear':function(){
                 km.setStatus('normal');

@@ -3,6 +3,7 @@ Minder.Receiver = kity.createClass('Receiver',{
     clear : function(){
         this.container.innerHTML = '';
         this.selection && this.selection.setHide();
+        this.range && this.range.nativeSel.removeAllRanges();
         this.index = 0;
         return this;
     },

@@ -110,6 +110,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             return false
         }
         me.on( 'keydown', function ( e ) {
+
             var originEvent = e.originEvent;
             var keyCode = originEvent.keyCode || originEvent.which;
             for ( var i in shortcutkeys ) {
@@ -120,10 +121,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
                         current++;
                     }
                 });
-                //todo 暂时通过receiver判断
-                if(me.isTextEditStatus()){
-                    return;
-                }
+
                 if(current == keys.length){
                     if ( me.queryCommandState( i ) != -1 )
                         me.execCommand( i );
