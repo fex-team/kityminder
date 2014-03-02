@@ -41,5 +41,16 @@ var MinderEvent = kity.createClass( 'MindEvent', {
     },
     preventDefault:function(){
         this.originEvent.preventDefault();
+    },
+    isRightMB:function(){
+        var isRightMB = false;
+        if(!this.originEvent){
+            return false;
+        }
+        if ("which" in this.originEvent)
+            isRightMB = this.originEvent.which == 3;
+        else if ("button" in this.originEvent)
+            isRightMB = this.originEvent.button == 2;
+        return isRightMB;
     }
 } );

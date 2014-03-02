@@ -62,18 +62,8 @@ KM.registerUI( 'contextmenu', function () {
         $menu.kmui().hide();
     });
     me.on('beforemousedown',function(e){
-        var isRightMB;
-
-
-        if ("which" in e.originEvent)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-            isRightMB = e.originEvent.which == 3;
-        else if ("button" in e.originEvent)  // IE, Opera
-            isRightMB = e.originEvent.button == 2;
-
-        if(isRightMB){
-
+        if(e.isRightMB()){
             e.stopPropagationImmediately();
-
         }
     })
 } );

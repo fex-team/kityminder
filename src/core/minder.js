@@ -5,6 +5,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initEvents();
         this._initMinder();
         this._initSelection();
+        this._initStatus();
         this._initShortcutKey();
         this._initContextmenu();
         this._initModules();
@@ -109,6 +110,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             return false
         }
         me.on( 'keydown', function ( e ) {
+
             var originEvent = e.originEvent;
             var keyCode = originEvent.keyCode || originEvent.which;
             for ( var i in shortcutkeys ) {
@@ -119,10 +121,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
                         current++;
                     }
                 });
-                //todo 暂时通过receiver判断
-                if(me.isTextEditStatus()){
-                    return;
-                }
+
                 if(current == keys.length){
                     if ( me.queryCommandState( i ) != -1 )
                         me.execCommand( i );
@@ -147,6 +146,25 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     },
     getContextmenu:function(){
         return this.contextmenus;
+    },
+    _initStatus:function(){
+        this._status = "normal";
+        this._rollbackStatus = "normal";
+    },
+    setStatus:function(status){
+        if(status){
+            this._rollbackStatus = this._status;
+            this._status = status;
+        }else{
+            this._status = '';
+        }
+        return this;
+    },
+    rollbackStatus:function(){
+        this._status = this._rollbackStatus;
+    },
+    getStatus:function(){
+        return this._status;
     }
 } );
 
