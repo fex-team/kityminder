@@ -537,7 +537,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setType( "main" );
 			} else {
 				node.setType( "sub" );
-				//var isExpand = parent.getData( "expand" );
+				var isExpand = parent.getData( "expand" );
+				if ( isExpand === undefined ) {
+					isExpand = true;
+					parent.setData( "expand", isExpand );
+				}
+				// if ( !isExpand ) {
+				// 	return false;
+				// }
 			}
 			//计算位置等流程
 			updateBg( node );

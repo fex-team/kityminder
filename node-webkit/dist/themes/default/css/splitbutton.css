@@ -1,0 +1,48 @@
+.kmui-btn-toolbar .kmui-splitbutton{
+    position: relative;
+    display: inline-block ;
+    vertical-align: middle;
+    *display: inline ;
+    *zoom:1;
+    margin:0 2px;
+}
+.kmui-splitbutton .kmui-btn{
+    margin: 0;
+}
+.kmui-splitbutton .kmui-caret{
+    position: relative;
+    display: inline-block ;
+    vertical-align: middle;
+    *display: inline ;
+    *zoom:1;
+    width: 8px;
+    height: 20px;
+    background: url(../images/icons.png) -741px 0;
+    _background: url(../images/icons.gif) -741px 0;
+}
+
+.kmui-btn-toolbar .kmui-splitbutton {
+    border: 1px solid transparent;
+}
+
+.kmui-btn-toolbar .kmui-splitbutton .kmui-dropdown-toggle {
+    padding: 1px 2px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+}
+.kmui-btn-toolbar .kmui-splitbutton .kmui-dropdown-toggle:hover {
+    border-left-color: #a3bde3;
+    background-color: #dbe7f8;
+}
+
+/*状态反射*/
+.kmui-btn-toolbar .kmui-splitbutton.kmui-hover {
+    background-color: #d5e1f2;
+    border: 1px solid #a3bde3;
+}
+
+.kmui-btn-toolbar .kmui-splitbutton.kmui-disabled{
+    opacity: 0.3;
+    filter: alpha(opacity = 30);
+}
+

@@ -8,6 +8,7 @@
     "white": false,
     "quotmark": false,
     "predef" : [
+        "module",
         "require",
         "console",
         "kity",
