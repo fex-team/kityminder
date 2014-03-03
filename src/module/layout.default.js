@@ -412,6 +412,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			default:
 				break;
 			}
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: node
+			}, false ) );
+			this._fire( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 		},
 		updateLayout: function ( node ) {
 			this._fire( new MinderEvent( "beforeRenderNode", {
