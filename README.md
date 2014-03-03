@@ -1,9 +1,21 @@
 Kity Minder
 ==========
 
-百度UEditor团队开发的另一前端复杂应用作品(ueditor团队以正式改名为Foremost Frontend Facility简称f立方)。KityMinder简称KM是一款在线的脑图书写工具，它与UEditor的宗旨一样，强调的是最佳的用户编辑体验，我们的KM不仅有媲美和超越native的编辑体验，比如xMinder,mindManager等著名的脑图工具，而且作为一款web工具，我们充分发挥了云存储的功能，将编辑的脑图直接同步到云盘。而且我们独创了“云盘分享功能“。你可以将脑图直接生成在线链接，将链接分享给你的朋友，他只需用浏览器打开链接，就能看到你设计的脑图。
+##简介
+KityMinder是百度F³团队（原UEditor团队）的又一力作。作为一款在线的脑图编辑工具，它有着不输给Native编辑工具（如xMind,MindManager等）的最佳用户体验。同时，它充分发挥了Web云存储的优势，可以直接将编辑中的脑图同步到云端。此外，借由独创的“云盘分享”功能，用户可以一键将当前编辑的脑图直接生成在线链接共享给其他用户，实现无缝沟通。
+
+KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的主流浏览器。
+支持列表如下
+
+1. chrome
+2. firefox
+3. safari
+4. ie9-11
 
 
-联系我们
-kity@baidu.com
-讨论群 374918234
+##项目链接
+[直接使用链接](http://kitygraph.github.io/kityminder/dist/)
+
+##联系我们
+邮件:kity@baidu.com
+讨论群:374918234
