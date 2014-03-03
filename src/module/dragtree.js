@@ -261,11 +261,12 @@ KityMinder.registerModule( "DragTree", function () {
 					this._dragBox.dragStart( e.getPosition() );
 				}
 			},
-			mousemove: function ( e ) {
+			'mousemove': function ( e ) {
 				this._dragBox.dragMove( e.getPosition() );
 			},
-			mouseup: function ( e ) {
+			'mouseup': function ( e ) {
 				this._dragBox.dragEnd();
+				this.rollbackStatus();
 			}
 		},
 		commands: {

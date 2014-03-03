@@ -27,6 +27,20 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
+        this._minder.on( 'normal.beforemousedown', function ( e ) {
+            // 点击未选中的根节点临时开启
+            if ( e.getTargetNode() == this.getRoot() &&
+                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
+                lastPosition = e.getPosition();
+                dragger.setEnabled( true );
+                isRootDrag = true;
+                var me = this;
+                setTimeout(function() {
+                    me.setStatus('hand');
+                }, 1);
+            }
+        } );
+
         this._minder.on( 'hand.beforemousedown', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
@@ -34,14 +48,6 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 e.stopPropagation();
                 e.originEvent.preventDefault();
             }
-            // 点击未选中的根节点临时开启
-            else if ( e.getTargetNode() == this.getRoot() &&
-                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
-                lastPosition = e.getPosition();
-                dragger.setEnabled( true );
-                isRootDrag = true;
-            }
-
         } )
 
         .on( 'hand.beforemousemove', function ( e ) {
@@ -63,6 +69,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             if ( isRootDrag ) {
                 dragger.setEnabled( false );
                 isRootDrag = false;
+                this.rollbackStatus();
             }
         } );
     }
@@ -77,10 +84,10 @@ KityMinder.registerModule( 'Hand', function () {
         execute: function ( minder ) {
 
             minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
-            if(minder._viewDragger.isEnabled()){
-                minder.setStatus('hand')
-            }else{
-                minder.rollbackStatus()
+            if ( minder._viewDragger.isEnabled() ) {
+                minder.setStatus( 'hand' );
+            } else {
+                minder.rollbackStatus();
             }
 
         },
@@ -113,9 +120,9 @@ KityMinder.registerModule( 'Hand', function () {
 
                 e.originEvent.preventDefault();
             },
-            dblclick: function() {
+            dblclick: function () {
                 var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer(this.getRenderContainer()).getTransform().getTranslate();
+                var offset = this.getRoot().getRenderContainer( this.getRenderContainer() ).getTransform().getTranslate();
                 var dx = viewport.center.x - offset.x,
                     dy = viewport.center.y - offset.y;
                 //this.getRenderContainer().fxTranslate(dx, dy, 300);
