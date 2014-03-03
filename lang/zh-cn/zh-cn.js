@@ -42,8 +42,8 @@ KityMinder.LANG[ 'zh-cn' ] = {
         }
     },
     'node': {
-        'appendsiblingnode': '插入兄弟节点',
-        'appendchildnode': '插入孩子节点',
+        'appendsiblingnode': '插入同级节点',
+        'appendchildnode': '插入子节点',
         'removenode': '删除节点'
     }
 

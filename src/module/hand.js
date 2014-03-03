@@ -27,24 +27,30 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'beforemousedown', function ( e ) {
+        this._minder.on( 'normal.beforemousedown', function ( e ) {
+            // 点击未选中的根节点临时开启
+            if ( e.getTargetNode() == this.getRoot() &&
+                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
+                lastPosition = e.getPosition();
+                dragger.setEnabled( true );
+                isRootDrag = true;
+                var me = this;
+                setTimeout(function() {
+                    me.setStatus('hand');
+                }, 1);
+            }
+        } );
+
+        this._minder.on( 'hand.beforemousedown', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
                 e.originEvent.preventDefault();
             }
-            // 点击未选中的根节点临时开启
-            else if ( e.getTargetNode() == this.getRoot() &&
-                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
-                lastPosition = e.getPosition();
-                dragger.setEnabled( true );
-                isRootDrag = true;
-            }
-
         } )
 
-        .on( 'beforemousemove', function ( e ) {
+        .on( 'hand.beforemousemove', function ( e ) {
             if ( lastPosition ) {
                 currentPosition = e.getPosition();
 
@@ -56,23 +62,34 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'mouseup', function ( e ) {
+        .on( 'hand.mouseup', function ( e ) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
             if ( isRootDrag ) {
                 dragger.setEnabled( false );
                 isRootDrag = false;
+                this.rollbackStatus();
             }
         } );
     }
 } );
 
 KityMinder.registerModule( 'Hand', function () {
+
+    var km = this;
+
     var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
         base: Command,
         execute: function ( minder ) {
+
             minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
+            if ( minder._viewDragger.isEnabled() ) {
+                minder.setStatus( 'hand' );
+            } else {
+                minder.rollbackStatus();
+            }
+
         },
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;
@@ -103,9 +120,9 @@ KityMinder.registerModule( 'Hand', function () {
 
                 e.originEvent.preventDefault();
             },
-            dblclick: function() {
+            dblclick: function () {
                 var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer(this.getRenderContainer()).getTransform().getTranslate();
+                var offset = this.getRoot().getRenderContainer( this.getRenderContainer() ).getTransform().getTranslate();
                 var dx = viewport.center.x - offset.x,
                     dy = viewport.center.y - offset.y;
                 //this.getRenderContainer().fxTranslate(dx, dy, 300);

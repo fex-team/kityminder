@@ -412,6 +412,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			default:
 				break;
 			}
+			this._fire( new MinderEvent( "beforeRenderNode", {
+				node: node
+			}, false ) );
+			this._fire( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 		},
 		updateLayout: function ( node ) {
 			this._fire( new MinderEvent( "beforeRenderNode", {
@@ -537,6 +543,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setType( "main" );
 			} else {
 				node.setType( "sub" );
+				var isExpand = parent.getData( "expand" );
+				if ( isExpand === undefined ) {
+					isExpand = true;
+					parent.setData( "expand", isExpand );
+				}
+				// if ( !isExpand ) {
+				// 	return false;
+				// }
 			}
 			//计算位置等流程
 			updateBg( node );
@@ -600,8 +614,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		expandNode: function ( ico ) {
-			var isExpand = ico.icon.switchState();
-			var node = ico.icon._node;
+			var isExpand, node;
+			if ( ico instanceof MinderNode ) {
+				node = ico;
+				isExpand = node.getLayout().shicon.switchState();
+			} else {
+				isExpand = ico.icon.switchState();
+				node = ico.icon._node;
+			}
+			node.setData( "expand", isExpand );
 			var _buffer = node.getChildren();
 			var _cleanbuffer = [];
 

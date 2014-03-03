@@ -93,7 +93,7 @@ KityMinder.registerModule( "Select", function () {
     var lastDownNode = null;
     return {
         "events": {
-            mousedown: function ( e ) {
+            "normal.mousedown textedit.mousedown": function ( e ) {
                 var downNode = e.getTargetNode();
 
                 // 没有点中节点：
@@ -101,6 +101,7 @@ KityMinder.registerModule( "Select", function () {
                 if ( !downNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
+                    this.setStatus('normal')
                 }
 
                 // 点中了节点，并且按了 shift 键：
@@ -122,8 +123,8 @@ KityMinder.registerModule( "Select", function () {
                     lastDownNode = downNode;
                 }
             },
-            mousemove: marqueeActivator.selectMove,
-            mouseup: function ( e ) {
+            "normal.mousemove textedit.mousemove": marqueeActivator.selectMove,
+            "normal.mouseup textedit.mouseup": function ( e ) {
                 var upNode = e.getTargetNode();
 
                 // 如果 mouseup 发生在 lastDownNode 外，是无需理会的

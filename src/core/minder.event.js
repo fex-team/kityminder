@@ -27,6 +27,7 @@ kity.extendClass( Minder, {
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;
 
+
         beforeEvent = new MinderEvent( 'before' + e.type, e, true );
         if ( this._fire( beforeEvent ) ) {
             return;
@@ -44,6 +45,7 @@ kity.extendClass( Minder, {
     },
     _interactChange: function ( e ) {
         var minder = this;
+
         clearTimeout( this._interactTimeout );
         this._interactTimeout = setTimeout( function () {
             var stoped = minder._fire( new MinderEvent( 'beforeinteractchange' ) );
@@ -59,10 +61,23 @@ kity.extendClass( Minder, {
         callbacks.push( callback );
     },
     _fire: function ( e ) {
-        var callbacks = this._eventCallbacks[ e.type.toLowerCase() ];
-        if ( !callbacks ) {
-            return false;
+
+
+        var status = this.getStatus();
+
+        var callbacks = this._eventCallbacks[ e.type.toLowerCase() ] || [];
+
+        if(status){
+
+            callbacks =  callbacks.concat(this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || []);
         }
+
+
+
+        if(callbacks.length == 0){
+            return;
+        }
+
         for ( var i = 0; i < callbacks.length; i++ ) {
             callbacks[ i ].call( this, e );
             if ( e.shouldStopPropagationImmediately() ) {
@@ -72,17 +87,19 @@ kity.extendClass( Minder, {
         return e.shouldStopPropagation();
     },
     on: function ( name, callback ) {
-        var types = name.split( ' ' );
-        for ( var i = 0; i < types.length; i++ ) {
-            this._listen( types[ i ].toLowerCase(), callback );
-        }
+        var km = this;
+        utils.each(name.split(/\s+/),function(i,n){
+            km._listen( n.toLowerCase(), callback );
+        });
         return this;
     },
     off: function ( name, callback ) {
-        var types = name.split( ' ' );
+
+        var types = name.split( /\s+/);
         var i, j, callbacks, removeIndex;
         for ( i = 0; i < types.length; i++ ) {
-            callbacks = this._eventCallbacks[ types[ i ].toLowerCase() ];
+
+            callbacks = this._eventCallbacks[  types[ i ].toLowerCase() ];
             if ( callbacks ) {
                 removeIndex = null;
                 for ( j = 0; j < callbacks.length; j++ ) {
