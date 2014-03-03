@@ -37,7 +37,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var renderBox = me.getRenderContainer().getRenderBox( "top" );
             var renderContainer = me.getRenderContainer();
             var transform = renderContainer.getTransform();
-            renderContainer.setTransform( new kity.Matrix().translate( -renderBox.x, -renderBox.y ) );
+            renderContainer.clearTransform();
             var loop = 0;
             var svg = $( svghtml ).attr( {
                 width: renderBox.width,
