@@ -266,7 +266,6 @@ KityMinder.registerModule( "DragTree", function () {
 			},
 			'mouseup': function ( e ) {
 				this._dragBox.dragEnd();
-				this.rollbackStatus();
 			}
 		},
 		commands: {
