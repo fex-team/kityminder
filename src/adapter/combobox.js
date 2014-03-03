@@ -131,7 +131,7 @@ KM.registerToolbarUI( 'forecolor', function ( name ) {
         title: this.getLang( 'tooltips' )[ name ] || '',
         click: function () {
             var color =   kity.Color.parse(getCurrentColor()).toHEX();
-            if(!color == '#000000'){
+            if( color != '#000000'){
                 me.execCommand( name, color );
             }
         }
