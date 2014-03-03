@@ -7,8 +7,8 @@
     "window": {
         "icon": "minder.png",
         "toolbar": false,
-        "width": 1000,
-        "height": 750,
+        "width": 800,
+        "height": 600,
         "frame": true
     }
 }

@@ -37,7 +37,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var renderBox = me.getRenderContainer().getRenderBox( "top" );
             var renderContainer = me.getRenderContainer();
             var transform = renderContainer.getTransform();
-            renderContainer.resetTransform();
+            debugger;
+            renderContainer.setTransform( -renderBox.x, -renderBox.y );
             var svg = $( svghtml ).attr( {
                 width: renderBox.width,
                 height: renderBox.height,
