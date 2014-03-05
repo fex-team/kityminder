@@ -1,4 +1,13 @@
-/*global module:false*/
+/*-----------------------------------------------------
+ * livereload Default Setting
+ *-----------------------------------------------------*/
+'use strict';
+var path = require('path');
+var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
+
+/*-----------------------------------------------------
+ * Module Setting
+ *-----------------------------------------------------*/
 module.exports = function (grunt) {
 
     var banner = '/*!\n' +
@@ -50,28 +59,54 @@ module.exports = function (grunt) {
         },
 
         uglify: {
-
-            options: {
-
-            },
-
             minimize: {
-
                 files: {
                     'dist/kityminder.all.min.js': 'dist/kityminder.all.js'
                 }
-
             }
+        },
 
+        /* Start [Task liverload] ------------------------------------*/
+        livereload: {
+            port: 35729 // Default livereload listening port.
+        },
+        connect: {
+            livereload: {
+                options: {
+                    hostname: '*',
+                    port: 9001,
+                    base: '.',
+                    middleware: function(connect, options, middlewares) {
+                        return [
+                            lrSnippet,
+                            connect.static(options.base.toString()),
+                            connect.directory(options.base.toString())
+                        ]
+                    }
+                }
+            }
+        },
+        regarde: {
+            js:{
+                files: 'src/**/*.js',
+                tasks: ['default', 'livereload']
+            }
         }
+        /* End [Task liverload] ------------------------------------*/
 
     });
 
     // These plugins provide necessary tasks.
+    /* [Build plugin & task ] ------------------------------------*/
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-
-    // Default task.
+    // Build task(s).
     grunt.registerTask( 'default', [ 'concat:js', 'uglify:minimize' ] );
+
+    /* [liverload plugin & task ] ------------------------------------*/
+    grunt.loadNpmTasks('grunt-regarde');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-livereload');
+    grunt.registerTask('live', ['livereload-start', 'connect', 'regarde']);
 
 };

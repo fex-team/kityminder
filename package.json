@@ -33,7 +33,10 @@
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-concat": "~0.3.0",
-        "grunt-contrib-uglify": "~0.2.6"
+        "grunt-contrib-uglify": "~0.2.6",
+        "grunt-regarde": "latest",
+        "grunt-contrib-connect": "latest",
+        "grunt-contrib-livereload": "latest"
     }
 
 }
