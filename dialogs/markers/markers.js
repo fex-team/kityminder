@@ -1,19 +1,19 @@
 ( function () {
     var utils = KM.utils;
     KM.registerWidget( 'markers', {
-        tpl: "<ul class='icon-list'>" +
-            "<li value='1' type='priority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) 0 0'></span><span><%= priority %>1</span></li>" +
-            "<li value='2' type='priority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -20px 0'></span><span><%= priority %>2</span></li>" +
-            "<li value='3' type='priority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -40px 0'></span><span><%= priority %>3</span></li>" +
-            "<li value='4' type='priority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -60px 0'></span><span><%= priority %>4</span></li>" +
-            "<li value='5' type='priority'><span class='icon' style='background:url(../dialogs/icons/iconpriority.png) -80px 0'></span><span><%= priority %>5</span></li>" +
+        tpl: "<ul class='icon-list priority'>" +
+            "<li value='1' type='priority'><span class='icon p1'></span><span><%= priority %>1</span></li>" +
+            "<li value='2' type='priority'><span class='icon p2'></span><span><%= priority %>2</span></li>" +
+            "<li value='3' type='priority'><span class='icon p3'></span><span><%= priority %>3</span></li>" +
+            "<li value='4' type='priority'><span class='icon p4'></span><span><%= priority %>4</span></li>" +
+            "<li value='5' type='priority'><span class='icon p5'></span><span><%= priority %>5</span></li>" +
             "</ul>" +
-            "<ul class='icon-list'>" +
-            "<li value='1' type='progress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) 0 0'></span><span><%= progress.notdone %></span></li>" +
-            "<li value='2' type='progress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -20px 0'></span><span><%= progress.quarterdone %></span></li>" +
-            "<li value='3' type='progress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -40px 0'></span><span><%= progress.halfdone %></span></li>" +
-            "<li value='4' type='progress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -60px 0'></span><span><%= progress.threequartersdone %></span></li>" +
-            "<li value='5' type='progress'><span class='icon' style='background:url(../dialogs/icons/iconprogress.png) -80px 0'></span><span><%= progress.done %></span></li>" +
+            "<ul class='icon-list progress'>" +
+            "<li value='1' type='progress'><span class='icon p1'></span><span><%= progress.notdone %></span></li>" +
+            "<li value='2' type='progress'><span class='icon p2'></span><span><%= progress.quarterdone %></span></li>" +
+            "<li value='3' type='progress'><span class='icon p3'></span><span><%= progress.halfdone %></span></li>" +
+            "<li value='4' type='progress'><span class='icon p4'></span><span><%= progress.threequartersdone %></span></li>" +
+            "<li value='5' type='progress'><span class='icon p5'></span><span><%= progress.done %></span></li>" +
             "</ul>",
         initContent: function ( km ) {
             var lang = km.getLang( 'dialogs.markers' );
