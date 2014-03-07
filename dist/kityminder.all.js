@@ -3477,9 +3477,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 dragger.setEnabled( true );
                 isRootDrag = true;
                 var me = this;
-                setTimeout(function() {
-                    me.setStatus('hand');
-                }, 1);
+                setTimeout( function () {
+                    me.setStatus( 'hand' );
+                }, 1 );
             }
         } );
 
@@ -3553,21 +3553,36 @@ KityMinder.registerModule( 'Hand', function () {
                 }
             },
             mousewheel: function ( e ) {
-                var dx = e.originEvent.wheelDeltaX || 0,
-                    dy = e.originEvent.wheelDeltaY || e.originEvent.wheelDelta;
+                var dx, dy;
+                e = e.originEvent;
+
+                if ( 'wheelDeltaX' in e ) {
+
+                    dx = e.wheelDeltaX || 0;
+                    dy = e.wheelDeltaY || 0;
+
+                } else {
+
+                    dx = 0;
+                    dy = e.wheelDelta;
+
+                }
+
                 this._viewDragger.move( {
                     x: dx / 2.5,
                     y: dy / 2.5
                 } );
 
-                e.originEvent.preventDefault();
+                e.preventDefault();
             },
-            dblclick: function () {
+            dblclick: function ( e ) {
+                if ( e.getTargetNode() ) return;
+                
                 var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer( this.getRenderContainer() ).getTransform().getTranslate();
-                var dx = viewport.center.x - offset.x,
+                var offset = this.getRoot().getRenderContainer().getRenderBox( this.getRenderContainer() );
+                var dx = viewport.center.x - offset.x - offset.width / 2,
                     dy = viewport.center.y - offset.y;
-                //this.getRenderContainer().fxTranslate(dx, dy, 300);
+                this.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             }
         }
     };
