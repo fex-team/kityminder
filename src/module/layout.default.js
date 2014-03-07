@@ -236,8 +236,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 				prt = prt.getParent();
 			}
-			//自顶向下更新受影响一侧的y值
-			var sideList = root.getLayout()[ appendside + "List" ];
+		}
+		//自顶向下更新受影响一侧的y值
+		var updateSide = function ( appendside ) {
 			var _buffer = [ root ];
 			while ( _buffer.length > 0 ) {
 				var _buffer0Layout = _buffer[ 0 ].getLayout();
@@ -252,6 +253,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				if ( _buffer[ 0 ] !== root ) effectSet.push( _buffer[ 0 ] );
 				_buffer.shift();
 			}
+		};
+		var sideList;
+		if ( appendside ) {
+			updateSide( appendside );
+		} else {
+			updateSide( "left" );
+			updateSide( "right" );
 		}
 		return effectSet;
 	};
