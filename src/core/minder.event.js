@@ -77,10 +77,14 @@ kity.extendClass( Minder, {
         if(callbacks.length == 0){
             return;
         }
+        var  lastStatus = this.getStatus();
 
         for ( var i = 0; i < callbacks.length; i++ ) {
+
             callbacks[ i ].call( this, e );
-            if ( e.shouldStopPropagationImmediately() ) {
+
+
+            if ( this.getStatus() != lastStatus || e.shouldStopPropagationImmediately() ) {
                 break;
             }
         }

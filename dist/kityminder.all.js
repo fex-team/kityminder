@@ -1,3 +1,14 @@
+/*!
+ * ====================================================
+ * kityminder - v1.0.0 - 2014-03-07
+ * https://github.com/fex-team/kityminder
+ * GitHub: https://github.com/fex-team/kityminder.git 
+ * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
+ * ====================================================
+ */
+
+(function(kity, window) {
+
 var KityMinder = window.KM = window.KityMinder = function () {
 	var instanceMap = {}, instanceId = 0;
 	return {
@@ -1142,10 +1153,14 @@ kity.extendClass( Minder, {
         if(callbacks.length == 0){
             return;
         }
+        var  lastStatus = this.getStatus();
 
         for ( var i = 0; i < callbacks.length; i++ ) {
+
             callbacks[ i ].call( this, e );
-            if ( e.shouldStopPropagationImmediately() ) {
+
+
+            if ( this.getStatus() != lastStatus || e.shouldStopPropagationImmediately() ) {
                 break;
             }
         }
@@ -2335,8 +2350,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 				prt = prt.getParent();
 			}
-			//自顶向下更新受影响一侧的y值
-			var sideList = root.getLayout()[ appendside + "List" ];
+		}
+		//自顶向下更新受影响一侧的y值
+		var updateSide = function ( appendside ) {
 			var _buffer = [ root ];
 			while ( _buffer.length > 0 ) {
 				var _buffer0Layout = _buffer[ 0 ].getLayout();
@@ -2351,6 +2367,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				if ( _buffer[ 0 ] !== root ) effectSet.push( _buffer[ 0 ] );
 				_buffer.shift();
 			}
+		};
+		var sideList;
+		if ( appendside ) {
+			updateSide( appendside );
+		} else {
+			updateSide( "left" );
+			updateSide( "right" );
 		}
 		return effectSet;
 	};
@@ -4114,186 +4137,6 @@ KityMinder.registerModule( "Select", function () {
     };
 } );
 
-KityMinder.registerModule( "HistoryModule", function () {
-
-    var km = this;
-
-    var Scene = kity.createClass( 'Scene', {
-        constructor: function ( root ) {
-            this.data = root.clone();
-        },
-        getData: function () {
-            return this.data;
-        },
-        cloneData: function () {
-            return this.getData().clone();
-        },
-        equals: function ( scene ) {
-            return this.getData().equals( scene.getData() )
-        }
-    } );
-    var HistoryManager = kity.createClass( 'HistoryManager', {
-        constructor: function ( km ) {
-            this.list = [];
-            this.index = 0;
-            this.hasUndo = false;
-            this.hasRedo = false;
-            this.km = km;
-        },
-        undo: function () {
-            if ( this.hasUndo ) {
-                if ( !this.list[ this.index - 1 ] && this.list.length == 1 ) {
-                    this.reset();
-                    return;
-                }
-                while ( this.list[ this.index ].equals( this.list[ this.index - 1 ] ) ) {
-                    this.index--;
-                    if ( this.index == 0 ) {
-                        return this.restore( 0 );
-                    }
-                }
-                this.restore( --this.index );
-            }
-        },
-        redo: function () {
-            if ( this.hasRedo ) {
-                while ( this.list[ this.index ].equals( this.list[ this.index + 1 ] ) ) {
-                    this.index++;
-                    if ( this.index == this.list.length - 1 ) {
-                        return this.restore( this.index );
-                    }
-                }
-                this.restore( ++this.index );
-            }
-        },
-        restore: function () {
-            var scene = this.list[ this.index ];
-
-            this.km.setRoot( scene.cloneData() );
-            this.km.removeAllSelectedNodes();
-            this.km.initStyle();
-
-            this.update();
-            this.km.fire('restoreScene');
-            this.km.fire('contentChange');
-        },
-        getScene: function () {
-            return new Scene( this.km.getRoot() )
-        },
-        saveScene: function () {
-            var currentScene = this.getScene();
-            var lastScene = this.list[ this.index ];
-            if ( lastScene && lastScene.equals( currentScene ) ) {
-                return
-            }
-            this.list = this.list.slice( 0, this.index + 1 );
-            this.list.push( currentScene );
-            //如果大于最大数量了，就把最前的剔除
-            if ( this.list.length > this.km.getOptions( 'maxUndoCount' ) ) {
-                this.list.shift();
-            }
-            this.index = this.list.length - 1;
-            //跟新undo/redo状态
-            this.update();
-        },
-        update: function () {
-            this.hasRedo = !! this.list[ this.index + 1 ];
-            this.hasUndo = !! this.list[ this.index - 1 ];
-        },
-        reset: function () {
-            this.list = [];
-            this.index = 0;
-            this.hasUndo = false;
-            this.hasRedo = false;
-        }
-    } );
-    //为km实例添加history管理
-    this.historyManager = new HistoryManager( this );
-
-    var keys = {
-            /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1,/*Command*/91:1,
-            37:1, 38:1, 39:1, 40:1
-        },
-        keycont = 0,
-        lastKeyCode,
-        saveSceneTimer;
-    return {
-        defaultOptions: {
-            maxUndoCount: 20,
-            maxInputCount:20
-        },
-        "commands": {
-            "undo": kity.createClass( "UndoCommand", {
-                base: Command,
-
-                execute: function ( km ) {
-                    km.historyManager.undo()
-                },
-
-                queryState: function ( km ) {
-                    return km.historyManager.hasUndo ? 0 : -1;
-                },
-
-                isNeedUndo: function () {
-                    return false;
-                }
-            } ),
-            "redo": kity.createClass( "RedoCommand", {
-                base: Command,
-
-                execute: function ( km ) {
-                    km.historyManager.redo()
-                },
-
-                queryState: function ( km ) {
-                    return km.historyManager.hasRedo ? 0 : -1;
-                },
-                isNeedUndo: function () {
-                    return false;
-                }
-            } )
-        },
-        addShortcutKeys: {
-            "Undo": "ctrl+z", //undo
-            "Redo": "ctrl+y" //redo
-        },
-        "events": {
-            "saveScene": function ( e ) {
-                this.historyManager.saveScene();
-            },
-            "renderNode":function(e){
-                var node = e.node;
-
-                if(node.isHighlight()){
-                    km.select(node);
-                }
-            },
-            "keydown":function(e){
-                var orgEvt = e.originEvent;
-                var keyCode = orgEvt.keyCode || orgEvt.which;
-                if (!keys[keyCode] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
-
-
-                    if (km.historyManager.list.length == 0) {
-                        km.historyManager.saveScene();
-                    }
-                    clearTimeout(saveSceneTimer);
-
-                    saveSceneTimer = setTimeout(function(){
-                        km.historyManager.saveScene();
-                    },200);
-
-                    lastKeyCode = keyCode;
-                    keycont++;
-                    if (keycont >= km.getOptions('maxInputCount') ) {
-                        km.historyManager.saveScene()
-                    }
-                }
-            }
-        }
-    };
-} );
-
 KityMinder.registerModule( "TextEditModule", function () {
     var km = this;
     var sel = new Minder.Selection();
@@ -5230,11 +5073,21 @@ KityMinder.registerModule( 'Zoom', function () {
 			'zoom-in': ZoomInCommand,
 			'zoom-out': ZoomOutCommand
 		},
-		addShortcutKeys: {
-			"zoom-in": "=", //=
-			"zoom-out": "-" //-
-		},
+
+
 		events: {
+            'normal.keydown':function(e){
+                var me = this;
+                var originEvent = e.originEvent;
+                var keyCode = originEvent.keyCode || originEvent.which;
+                if(keymap['='] == keyCode){
+                    me.execCommand('zoom-in');
+                }
+                if(keymap['-'] == keyCode){
+                    me.execCommand('zoom-out');
+
+                }
+            },
 			'ready': function () {
 				this._zoomValue = 1;
 			},
@@ -6851,172 +6704,6 @@ KM.ui.define('separator', {
     }
 });
 
-//scale 类
-KM.ui.define('scale', {
-    tpl: '<div class="kmui-scale" unselectable="on">' +
-        '<span class="kmui-scale-hand0"></span>' +
-        '<span class="kmui-scale-hand1"></span>' +
-        '<span class="kmui-scale-hand2"></span>' +
-        '<span class="kmui-scale-hand3"></span>' +
-        '<span class="kmui-scale-hand4"></span>' +
-        '<span class="kmui-scale-hand5"></span>' +
-        '<span class="kmui-scale-hand6"></span>' +
-        '<span class="kmui-scale-hand7"></span>' +
-        '</div>',
-    defaultOpt: {
-        $doc: $(document),
-        $wrap: $(document)
-    },
-    init: function (options) {
-        if(options.$doc) this.defaultOpt.$doc = options.$doc;
-        if(options.$wrap) this.defaultOpt.$wrap = options.$wrap;
-        this.root($($.parseTmpl(this.tpl, options)));
-        this.initStyle();
-        this.startPos = this.prePos = {x: 0, y: 0};
-        this.dragId = -1;
-        return this;
-    },
-    initStyle: function () {
-        utils.cssRule('kmui-style-scale', '.kmui-scale{display:none;position:absolute;border:1px solid #38B2CE;cursor:hand;}' +
-            '.kmui-scale span{position:absolute;left:0;top:0;width:7px;height:7px;overflow:hidden;font-size:0px;display:block;background-color:#3C9DD0;}'
-            + '.kmui-scale .kmui-scale-hand0{cursor:nw-resize;top:0;margin-top:-4px;left:0;margin-left:-4px;}'
-            + '.kmui-scale .kmui-scale-hand1{cursor:n-resize;top:0;margin-top:-4px;left:50%;margin-left:-4px;}'
-            + '.kmui-scale .kmui-scale-hand2{cursor:ne-resize;top:0;margin-top:-4px;left:100%;margin-left:-3px;}'
-            + '.kmui-scale .kmui-scale-hand3{cursor:w-resize;top:50%;margin-top:-4px;left:0;margin-left:-4px;}'
-            + '.kmui-scale .kmui-scale-hand4{cursor:e-resize;top:50%;margin-top:-4px;left:100%;margin-left:-3px;}'
-            + '.kmui-scale .kmui-scale-hand5{cursor:sw-resize;top:100%;margin-top:-3px;left:0;margin-left:-4px;}'
-            + '.kmui-scale .kmui-scale-hand6{cursor:s-resize;top:100%;margin-top:-3px;left:50%;margin-left:-4px;}'
-            + '.kmui-scale .kmui-scale-hand7{cursor:se-resize;top:100%;margin-top:-3px;left:100%;margin-left:-3px;}');
-    },
-    _eventHandler: function (e) {
-        var me = this,
-            $doc = me.defaultOpt.$doc;
-        switch (e.type) {
-            case 'mousedown':
-                var hand = e.target || e.srcElement, hand;
-                if (hand.className.indexOf('kmui-scale-hand') != -1) {
-                    me.dragId = hand.className.slice(-1);
-                    me.startPos.x = me.prePos.x = e.clientX;
-                    me.startPos.y = me.prePos.y = e.clientY;
-                    $doc.bind('mousemove', $.proxy(me._eventHandler, me));
-                }
-                break;
-            case 'mousemove':
-                if (me.dragId != -1) {
-                    me.updateContainerStyle(me.dragId, {x: e.clientX - me.prePos.x, y: e.clientY - me.prePos.y});
-                    me.prePos.x = e.clientX;
-                    me.prePos.y = e.clientY;
-                    me.updateTargetElement();
-                }
-                break;
-            case 'mouseup':
-                if (me.dragId != -1) {
-                    me.dragId = -1;
-                    me.updateTargetElement();
-                    var $target = me.data('$scaleTarget');
-                    if ($target.parent()) me.attachTo(me.data('$scaleTarget'));
-                }
-                $doc.unbind('mousemove', $.proxy(me._eventHandler, me));
-                break;
-            default:
-                break;
-        }
-    },
-    updateTargetElement: function () {
-        var me = this,
-            $root = me.root(),
-            $target = me.data('$scaleTarget');
-        $target.css({width: $root.width(), height: $root.height()});
-        me.attachTo($target);
-    },
-    updateContainerStyle: function (dir, offset) {
-        var me = this,
-            $dom = me.root(),
-            tmp,
-            rect = [
-                //[left, top, width, height]
-                [0, 0, -1, -1],
-                [0, 0, 0, -1],
-                [0, 0, 1, -1],
-                [0, 0, -1, 0],
-                [0, 0, 1, 0],
-                [0, 0, -1, 1],
-                [0, 0, 0, 1],
-                [0, 0, 1, 1]
-            ];
-
-        if (rect[dir][0] != 0) {
-            tmp = parseInt($dom.offset().left) + offset.x;
-            $dom.css('left', me._validScaledProp('left', tmp));
-        }
-        if (rect[dir][1] != 0) {
-            tmp = parseInt($dom.offset().top) + offset.y;
-            $dom.css('top', me._validScaledProp('top', tmp));
-        }
-        if (rect[dir][2] != 0) {
-            tmp = $dom.width() + rect[dir][2] * offset.x;
-            $dom.css('width', me._validScaledProp('width', tmp));
-        }
-        if (rect[dir][3] != 0) {
-            tmp = $dom.height() + rect[dir][3] * offset.y;
-            $dom.css('height', me._validScaledProp('height', tmp));
-        }
-    },
-    _validScaledProp: function (prop, value) {
-        var $ele = this.root(),
-            $wrap = this.defaultOpt.$doc,
-            calc = function(val, a, b){
-                return (val + a) > b ? b - a : value;
-            };
-
-        value = isNaN(value) ? 0 : value;
-        switch (prop) {
-            case 'left':
-                return value < 0 ? 0 : calc(value, $ele.width(), $wrap.width());
-            case 'top':
-                return value < 0 ? 0 : calc(value, $ele.height(),$wrap.height());
-            case 'width':
-                return value <= 0 ? 1 : calc(value, $ele.offset().left, $wrap.width());
-            case 'height':
-                return value <= 0 ? 1 : calc(value, $ele.offset().top, $wrap.height());
-        }
-    },
-    show: function ($obj) {
-        var me = this;
-        if ($obj) me.attachTo($obj);
-        me.root().bind('mousedown', $.proxy(me._eventHandler, me));
-        me.defaultOpt.$doc.bind('mouseup', $.proxy(me._eventHandler, me));
-        me.root().show();
-        me.trigger("aftershow");
-    },
-    hide: function () {
-        var me = this;
-        me.root().unbind('mousedown', $.proxy(me._eventHandler, me));
-        me.defaultOpt.$doc.unbind('mouseup', $.proxy(me._eventHandler, me));
-        me.root().hide();
-        me.trigger('afterhide')
-    },
-    attachTo: function ($obj) {
-        var me = this,
-            imgPos = $obj.offset(),
-            $root = me.root(),
-            $wrap = me.defaultOpt.$wrap,
-            posObj = $wrap.offset();
-
-        me.data('$scaleTarget', $obj);
-        me.root().css({
-            position: 'absolute',
-            width: $obj.width(),
-            height: $obj.height(),
-            left: imgPos.left - posObj.left - parseInt($wrap.css('border-left-width')) - parseInt($root.css('border-left-width')),
-            top: imgPos.top - posObj.top - parseInt($wrap.css('border-top-width')) - parseInt($root.css('border-top-width'))
-        });
-    },
-    getScaleTarget: function () {
-        return this.data('$scaleTarget')[0];
-    }
-});
-
 /**
  * 宽度自适应工具函数
  * @param word 单词内容
@@ -7417,7 +7104,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var renderBox = me.getRenderContainer().getRenderBox( "top" );
             var renderContainer = me.getRenderContainer();
             var transform = renderContainer.getTransform();
-            renderContainer.setTransform( new kity.Matrix().translate( -renderBox.x, -renderBox.y ) );
+            renderContainer.clearTransform();
             var loop = 0;
             var svg = $( svghtml ).attr( {
                 width: renderBox.width,
@@ -8127,3 +7814,5 @@ KityMinder.registerProtocal( "svg", function () {
 	};
 } );
 
+
+})(kity, window)

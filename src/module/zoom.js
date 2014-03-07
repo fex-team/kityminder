@@ -61,11 +61,21 @@ KityMinder.registerModule( 'Zoom', function () {
 			'zoom-in': ZoomInCommand,
 			'zoom-out': ZoomOutCommand
 		},
-		addShortcutKeys: {
-			"zoom-in": "=", //=
-			"zoom-out": "-" //-
-		},
+
+
 		events: {
+            'normal.keydown':function(e){
+                var me = this;
+                var originEvent = e.originEvent;
+                var keyCode = originEvent.keyCode || originEvent.which;
+                if(keymap['='] == keyCode){
+                    me.execCommand('zoom-in');
+                }
+                if(keymap['-'] == keyCode){
+                    me.execCommand('zoom-out');
+
+                }
+            },
 			'ready': function () {
 				this._zoomValue = 1;
 			},
