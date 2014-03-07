@@ -36,7 +36,7 @@ $.extend( $.fn, {
 } );
 
 $( function () {
-    var $panel = $( '#social' );
+    var $panel = $( '<div id="social"></div>' ).appendTo( 'body' );
     var $login_btn, $save_btn, $share_btn, $user_btn, $user_menu;
 
     var baseUrl = ( function () {
@@ -322,7 +322,7 @@ $( function () {
     if ( currentUser ) {
         setCurrentUser( currentUser );
         loadPath();
-        if(thisMapFilename) {
+        if ( thisMapFilename ) {
             loadPersonal( thisMapFilename );
         }
     } else {

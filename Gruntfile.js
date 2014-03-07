@@ -2,13 +2,13 @@
  * livereload Default Setting
  *-----------------------------------------------------*/
 'use strict';
-var path = require('path');
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
+var path = require( 'path' );
+var lrSnippet = require( 'grunt-contrib-livereload/lib/utils' ).livereloadSnippet;
 
 /*-----------------------------------------------------
  * Module Setting
  *-----------------------------------------------------*/
-module.exports = function (grunt) {
+module.exports = function ( grunt ) {
 
     var banner = '/*!\n' +
         ' * ====================================================\n' +
@@ -20,27 +20,27 @@ module.exports = function (grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
         ' */\n\n',
-        buildPath = 'dist/dev.php';
+        buildPath = 'dev/import.php';
 
-    var getPath = function ( readFile) {
+    var getPath = function ( readFile ) {
 
-            var sources = require("fs").readFileSync(readFile);
-            sources = /Array\(([^)]+)\)/.exec( sources );
-            sources = sources[1].replace( /\/\/.*\n/g, '\n' ).replace( /'|"|\n|\t|\s/g, '' );
-            sources = sources.split( "," );
-            sources.forEach( function ( filepath, index ) {
-                sources[ index ] = filepath;
-            });
+        var sources = require( "fs" ).readFileSync( readFile );
+        sources = /Array\(([^)]+)\)/.exec( sources );
+        sources = sources[ 1 ].replace( /\/\/.*\n/g, '\n' ).replace( /'|"|\n|\t|\s/g, '' );
+        sources = sources.split( "," );
+        sources.forEach( function ( filepath, index ) {
+            sources[ index ] = filepath;
+        } );
 
-            return sources;
+        return sources;
 
-        };
+    };
 
     // Project configuration.
-    grunt.initConfig({
+    grunt.initConfig( {
 
         // Metadata.
-        pkg: grunt.file.readJSON('package.json'),
+        pkg: grunt.file.readJSON( 'package.json' ),
 
         concat: {
 
@@ -48,7 +48,7 @@ module.exports = function (grunt) {
                 options: {
                     banner: banner + '(function(kity, window) {\n\n',
                     footer: '\n\n})(kity, window)',
-                    process: function(src, filepath) {
+                    process: function ( src, filepath ) {
                         return src + "\n";
                     }
                 },
@@ -60,6 +60,9 @@ module.exports = function (grunt) {
 
         uglify: {
             minimize: {
+                options: {
+                    banner: banner
+                },
                 files: {
                     'dist/kityminder.all.min.js': 'dist/kityminder.all.js'
                 }
@@ -76,37 +79,37 @@ module.exports = function (grunt) {
                     hostname: '*',
                     port: 9001,
                     base: '.',
-                    middleware: function(connect, options, middlewares) {
+                    middleware: function ( connect, options, middlewares ) {
                         return [
                             lrSnippet,
-                            connect.static(options.base.toString()),
-                            connect.directory(options.base.toString())
-                        ]
+                            connect.static( options.base.toString() ),
+                            connect.directory( options.base.toString() )
+                        ];
                     }
                 }
             }
         },
         regarde: {
-            js:{
+            js: {
                 files: 'src/**/*.js',
-                tasks: ['default', 'livereload']
+                tasks: [ 'default', 'livereload' ]
             }
         }
         /* End [Task liverload] ------------------------------------*/
 
-    });
+    } );
 
     // These plugins provide necessary tasks.
     /* [Build plugin & task ] ------------------------------------*/
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks( 'grunt-contrib-concat' );
+    grunt.loadNpmTasks( 'grunt-contrib-uglify' );
     // Build task(s).
     grunt.registerTask( 'default', [ 'concat:js', 'uglify:minimize' ] );
 
     /* [liverload plugin & task ] ------------------------------------*/
-    grunt.loadNpmTasks('grunt-regarde');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-livereload');
-    grunt.registerTask('live', ['livereload-start', 'connect', 'regarde']);
+    grunt.loadNpmTasks( 'grunt-regarde' );
+    grunt.loadNpmTasks( 'grunt-contrib-connect' );
+    grunt.loadNpmTasks( 'grunt-contrib-livereload' );
+    grunt.registerTask( 'live', [ 'livereload-start', 'connect', 'regarde' ] );
 
 };

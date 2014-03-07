@@ -1,3 +1,23 @@
+
+html, body, div {
+    margin: 0;
+    padding: 0;
+}
+html, body, #kity-minder, div.kmui-editor-body {
+    height:100%;
+    width:100%
+    -moz-user-select: none;
+}
+.km_receiver{
+    width:0;
+    height:0;
+}
+.km-minderNode{
+    cursor:default;
+}
+.kmui-container {
+    height: 100%;
+}
 .kmui-container {
 }
 .kmui-container .kmui-toolbar{
