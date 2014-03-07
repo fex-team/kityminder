@@ -31,6 +31,9 @@ KityMinder.registerProtocal( "png", function () {
 			renderContainer.translate( -renderBox.x, -renderBox.y );
 
 			svgXml = km.getPaper().container.innerHTML;
+
+			renderContainer.translate( renderBox.x, renderBox.y );
+			
 			$svg = $( svgXml );
 			$svg.attr( {
 				width: renderBox.width,
@@ -78,7 +81,6 @@ KityMinder.registerProtocal( "png", function () {
 					downloadUrl = generateDataUrl( canvas );
 					if ( finishCallback ) {
 						finishCallback( downloadUrl );
-						renderContainer.translate( renderBox.x, renderBox.y );
 					}
 				} );
 			} );
