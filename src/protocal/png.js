@@ -1,102 +1,94 @@
 KityMinder.registerProtocal( "png", function () {
-	var LINE_ENDING = '\n',
-		TAB_CHAR = '\t';
-
-	function repeat( s, n ) {
-		var result = "";
-		while ( n-- ) result += s;
-		return result;
+	function loadImage( url, callback ) {
+		var image = new Image();
+		image.onload = callback;
+		image.src = url;
 	}
 
-	function encode( json, level ) {
-		var local = "";
-		level = level || 0;
-		local += repeat( TAB_CHAR, level );
-		local += json.data.text + LINE_ENDING;
-		if ( json.children ) {
-			json.children.forEach( function ( child ) {
-				local += encode( child, level + 1 );
-			} );
-		}
-		return local;
-	}
-
-	function isEmpty( line ) {
-		return !/\S/.test( line );
-	}
-
-	function getLevel( line ) {
-		var level = 0;
-		while ( line.charAt( level ) === TAB_CHAR ) level++;
-		return level;
-	}
-
-	function getNode( line ) {
-		return {
-			data: {
-				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
-			}
-		};
-	}
-
-	function decode( local ) {
-		var json,
-			parentMap = {},
-			lines = local.split( LINE_ENDING ),
-			line, level, node;
-
-		function addChild( parent, child ) {
-			var children = parent.children || ( parent.children = [] );
-			children.push( child );
-		}
-
-		for ( var i = 0; i < lines.length; i++ ) {
-			line = lines[ i ];
-			if ( isEmpty( line ) ) continue;
-
-			level = getLevel( line );
-			node = getNode( line );
-
-			if ( level === 0 ) {
-				if ( json ) {
-					throw new Error( 'Invalid local format' );
-				}
-				json = node;
-			} else {
-				if ( !parentMap[ level - 1 ] ) {
-					throw new Error( 'Invalid local format' );
-				}
-				addChild( parentMap[ level - 1 ], node );
-			}
-			parentMap[ level ] = node;
-		}
-		return json;
-	}
-	var lastTry, lastResult;
-
-	function recognize( local ) {
-		if ( !Utils.isString( local ) ) return false;
-		lastTry = local;
-		try {
-			lastResult = decode( local );
-		} catch ( e ) {
-			lastResult = null;
-		}
-		return !!lastResult;
-	}
 	return {
-		fileDescription: 'png',
+		fileDescription: 'PNG 图片',
 		fileExtension: '.png',
-		encode: function ( json ) {
-			return encode( json, 0 );
-		},
-		decode: function ( local ) {
-			if ( lastTry == local && lastResult ) {
-				return lastResult;
+		encode: function ( json, km ) {
+			var domContainer = km.getPaper().container,
+				svgXml,
+				$svg,
+
+				bgDeclare = getComputedStyle( domContainer ).backgroundImage,
+				bgUrl = /url\((.+)\)$/.exec( bgDeclare )[ 1 ],
+
+				renderContainer = km.getRenderContainer(),
+				renderBox = renderContainer.getRenderBox(),
+				transform = renderContainer.getTransform(),
+				width = renderBox.width,
+				height = renderBox.height,
+				padding = 20,
+
+				canvas = document.createElement( 'canvas' ),
+				ctx = canvas.getContext( '2d' ),
+				blob, DomURL, url, img, finishCallback;
+
+
+			renderContainer.translate( -renderBox.x, -renderBox.y );
+
+			svgXml = km.getPaper().container.innerHTML;
+			$svg = $( svgXml );
+			$svg.attr( {
+				width: renderBox.width,
+				height: renderBox.height,
+				style: 'font-family: Arial, "Heiti SC", "Microsoft Yahei";'
+			} );
+
+			// need a xml with width and height
+			svgXml = $( '<div></div' ).append( $svg ).html();
+
+			blob = new Blob( [ svgXml ], {
+				type: "image/svg+xml;charset=utf-8"
+			} );
+
+			DomURL = window.URL || window.webkitURL || window;
+
+			url = DomURL.createObjectURL( blob );
+
+			canvas.width = width + padding * 2;
+			canvas.height = height + padding * 2;
+
+			function fillBackground( ctx, image, width, height ) {
+				ctx.save();
+				ctx.fillStyle = ctx.createPattern( image, "repeat" );
+				ctx.fillRect( 0, 0, width, height );
+				ctx.restore();
 			}
-			return decode( local );
+
+			function drawImage( ctx, image, x, y ) {
+				ctx.drawImage( image, x, y );
+			}
+
+			function generateDataUrl( canvas ) {
+				var url = canvas.toDataURL( 'png' );
+				return url.replace( 'image/png', 'image/octet-stream' );
+			}
+
+			loadImage( url, function () {
+				var svgImage = this;
+				loadImage( bgUrl, function () {
+					var downloadUrl;
+					fillBackground( ctx, this, canvas.width, canvas.height );
+					drawImage( ctx, svgImage, padding, padding );
+					DomURL.revokeObjectURL( url );
+					downloadUrl = generateDataUrl( canvas );
+					if ( finishCallback ) {
+						finishCallback( downloadUrl );
+						renderContainer.translate( renderBox.x, renderBox.y );
+					}
+				} );
+			} );
+
+			return {
+				then: function ( callback ) {
+					finishCallback = callback;
+				}
+			};
 		},
-		recognize: recognize,
 		recognizePriority: -1
 	};
 } );
