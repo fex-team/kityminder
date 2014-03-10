@@ -189,6 +189,7 @@ $( function () {
     function newFile() {
         thisMapFilename = null;
         window.km.importData( '新建脑图', 'plain' );
+        window.km.execCommand( 'camera', window.km.getRoot() );
         $user_btn.text( '<新建脑图>' );
     }
 
