@@ -133,7 +133,7 @@ KityMinder.registerModule( 'Hand', function () {
 
                 e.preventDefault();
             },
-            dblclick: function ( e ) {
+            'normal.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
                 
                 var viewport = this.getPaper().getViewPort();
