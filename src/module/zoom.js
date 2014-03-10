@@ -1,6 +1,6 @@
 KityMinder.registerModule( 'Zoom', function () {
 	var MAX_ZOOM = 2,
-		MIN_ZOOM = 0.5,
+		MIN_ZOOM = kity.Browser.chrome ? 1 : 0.5,
 		ZOOM_STEP = Math.sqrt( 2 );
 
 	function zoom( minder, rate ) {
@@ -40,7 +40,7 @@ KityMinder.registerModule( 'Zoom', function () {
 			}
 		},
 		queryState: function ( minder ) {
-			return (minder._zoomValue > MIN_ZOOM) ? 0 : -1;
+			return (minder._zoomValue > 1 / MAX_ZOOM) ? 0 : -1;
 		}
 	} );
 
@@ -52,7 +52,7 @@ KityMinder.registerModule( 'Zoom', function () {
 			}
 		},
 		queryState: function ( minder ) {
-			return (minder._zoomValue < MAX_ZOOM) ? 0 : -1;
+			return (minder._zoomValue < 1 / MIN_ZOOM) ? 0 : -1;
 		}
 	} );
 
