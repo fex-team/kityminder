@@ -237,7 +237,8 @@ $( function () {
         var data = window.km.exportData( 'json' );
         $share_btn.loading( '正在分享...' );
 
-        var shareUrl = baseUrl + 'index.html?share_id=' + share_id;
+        var currentUrl = window.location.origin + window.location.pathname;
+        var shareUrl = currentUrl + '?share_id=' + share_id;
         share( data, share_id, function ( success ) {
             if ( success ) {
                 var $popup = $( '<div></div>' ).addClass( 'popup' ).appendTo( 'body' );

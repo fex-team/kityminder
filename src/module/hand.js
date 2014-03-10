@@ -113,6 +113,7 @@ KityMinder.registerModule( 'Hand', function () {
             mousewheel: function ( e ) {
                 var dx, dy;
                 e = e.originEvent;
+                if(e.ctrlKey || e.shiftKey) return;
 
                 if ( 'wheelDeltaX' in e ) {
 
@@ -133,7 +134,7 @@ KityMinder.registerModule( 'Hand', function () {
 
                 e.preventDefault();
             },
-            dblclick: function ( e ) {
+            'normal.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
                 
                 var viewport = this.getPaper().getViewPort();

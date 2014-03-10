@@ -3,7 +3,7 @@ html, body, div {
     margin: 0;
     padding: 0;
 }
-html, body, #kity-minder, div.kmui-editor-body {
+html, body, #kityminder, div.kmui-editor-body {
     height: 100%;
     width: 100%;
     overflow: hidden;
