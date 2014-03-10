@@ -14,9 +14,22 @@ KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的
 3. Safari
 4. IE9+
 
+## 线上版本
+[http://fex-team.baidu.com/kityminder/dist](http://fex-team.baidu.com/kityminder/dist)
 
-## 项目链接
-[直接使用链接](http://fex-team.github.io/kityminder/dist/)
+## 依赖说明
+
+KityMinder 依赖 Kity 库。刚下载的压缩包或者刚从 github 拉下来的代码会有一个空的 kity 目录。要运行调试，必须加载 Kity 的依赖：
+
+1. 如果你下载的是 KityMinder 的压缩包，那么需要手动下载 [Kity](http://kitygraph.github.io/kityminder/kity/dist/kitygraph.all.js) 库到 kity/dist/kitygraph.all.js
+
+2. 如果你是从 github 上拉源代码下来的，那么可以更新一下子模块：
+
+```bash
+cd YOUR_KITYMINDER_PATH
+git submodule init
+git submodule update
+```
 
 ## 联系我们
 邮件: kity@baidu.com
