@@ -55,7 +55,7 @@ kity.extendClass( Minder, {
         json = exportNode( this.getRoot() );
         protocal = KityMinder.findProtocal( protocalName );
         if ( protocal ) {
-            return protocal.encode( json );
+            return protocal.encode( json, this );
         } else {
             return json;
         }

@@ -1,0 +1,8 @@
+git stash
+git checkout gh-pages
+git merge dev -m "merge from dev"
+grunt
+git commit -am "publish"
+git push origin gh-pages
+git checkout dev
+git stash pop

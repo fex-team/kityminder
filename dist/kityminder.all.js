@@ -1015,7 +1015,7 @@ kity.extendClass( Minder, {
         json = exportNode( this.getRoot() );
         protocal = KityMinder.findProtocal( protocalName );
         if ( protocal ) {
-            return protocal.encode( json );
+            return protocal.encode( json, this );
         } else {
             return json;
         }
@@ -3477,9 +3477,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 dragger.setEnabled( true );
                 isRootDrag = true;
                 var me = this;
-                setTimeout(function() {
-                    me.setStatus('hand');
-                }, 1);
+                setTimeout( function () {
+                    me.setStatus( 'hand' );
+                }, 1 );
             }
         } );
 
@@ -3553,21 +3553,36 @@ KityMinder.registerModule( 'Hand', function () {
                 }
             },
             mousewheel: function ( e ) {
-                var dx = e.originEvent.wheelDeltaX || 0,
-                    dy = e.originEvent.wheelDeltaY || e.originEvent.wheelDelta;
+                var dx, dy;
+                e = e.originEvent;
+
+                if ( 'wheelDeltaX' in e ) {
+
+                    dx = e.wheelDeltaX || 0;
+                    dy = e.wheelDeltaY || 0;
+
+                } else {
+
+                    dx = 0;
+                    dy = e.wheelDelta;
+
+                }
+
                 this._viewDragger.move( {
                     x: dx / 2.5,
                     y: dy / 2.5
                 } );
 
-                e.originEvent.preventDefault();
+                e.preventDefault();
             },
-            dblclick: function () {
+            dblclick: function ( e ) {
+                if ( e.getTargetNode() ) return;
+                
                 var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer( this.getRenderContainer() ).getTransform().getTranslate();
-                var dx = viewport.center.x - offset.x,
+                var offset = this.getRoot().getRenderContainer().getRenderBox( this.getRenderContainer() );
+                var dx = viewport.center.x - offset.x - offset.width / 2,
                     dy = viewport.center.y - offset.y;
-                //this.getRenderContainer().fxTranslate(dx, dy, 300);
+                this.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             }
         }
     };
@@ -7082,8 +7097,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         $combox = null,
         comboboxWidget = null;
 
-    var downloadLink = document.createElement( 'a' );
-
     utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
         var p = KityMinder.findProtocal( k );
         var text = p.fileDescription + '（' + p.fileExtension + '）';
@@ -7097,85 +7110,26 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     comboboxWidget = $combox.kmui();
 
-    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        if ( res.value === "png" ) {
-            var svghtml = $( "#kityminder .kmui-editor-body" ).html();
-            var bgImg = $( "#kityminder .kmui-editor-body" ).css( "backgroundImage" ).replace( /"/g, "" ).replace( /url\(|\)$/ig, "" );
-            var renderBox = me.getRenderContainer().getRenderBox( "top" );
-            var renderContainer = me.getRenderContainer();
-            var transform = renderContainer.getTransform();
-            renderContainer.clearTransform();
-            var loop = 0;
-            var svg = $( svghtml ).attr( {
-                width: renderBox.width,
-                height: renderBox.height,
-                viewBox: null
-            } );
-            var div = $( "<div></div>" ).append( svg );
-            svghtml = div.html();
-            var canvas = $( '<canvas width="' + ( parseInt( renderBox.width ) + 40 ) + '" height="' + ( parseInt( renderBox.height ) + 40 ) + '"></canvas>' );
-            var ctx = canvas[ 0 ].getContext( "2d" );
-            var DOMURL = self.URL || self.webkitURL || self;
-            var img = new Image();
-            var svg = new Blob( [ svghtml ], {
-                type: "image/svg+xml;charset=utf-8"
-            } );
-            var url = DOMURL.createObjectURL( svg );
-            img.onload = function () {
-                var bgTexture = document.createElement( 'img' );
-                bgTexture.src = bgImg;
-                bgTexture.onload = function () {
-                    var bgfill = ctx.createPattern( bgTexture, "repeat" );
-                    ctx.fillStyle = bgfill;
-                    ctx.fillRect( 0, 0, renderBox.width + 40, renderBox.height + 40 );
-                    ctx.drawImage( img, -renderBox.x + 20, -renderBox.y + 20 );
-                    DOMURL.revokeObjectURL( url );
-                    var type = 'png';
-                    var imgData = canvas[ 0 ].toDataURL( type );
-                    var _fixType = function ( type ) {
-                        type = type.toLowerCase().replace( /jpg/i, 'jpeg' );
-                        var r = type.match( /png|jpeg|bmp|gif/ )[ 0 ];
-                        return 'image/' + r;
-                    };
-                    imgData = imgData.replace( _fixType( type ), 'image/octet-stream' );
-                    var saveFile = function ( data, filename ) {
-                        var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
-                        save_link.href = data;
-                        save_link.download = filename;
-                        var event = document.createEvent( 'MouseEvents' );
-                        event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-                        save_link.dispatchEvent( event );
-                    };
+    function doDownload( url, filename ) {
+        var a = document.createElement( 'a' );
+        a.setAttribute( 'download', filename );
+        a.setAttribute( 'href', url );
+        a.dispatchEvent( new MouseEvent( 'click' ) );
+    }
 
-                    // 下载后的文件名
-                    var filename = 'kityminder_' + ( new Date() ).getTime() + '.' + type;
-                    // download
-                    saveFile( imgData, filename );
-                    renderContainer.setTransform( transform );
-                };
-            };
-            img.src = url;
-            return "png";
-        } else if ( res.value === "svg" ) {
-            var svghtml = $( "#kityminder .kmui-editor-body" ).html();
-            var saveFile = function ( data, filename ) {
-                var save_link = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'a' );
-                save_link.href = 'data:image/svg+xml; utf-8,' + encodeURI( svghtml );
-                save_link.download = filename;
-                var event = document.createEvent( 'MouseEvents' );
-                event.initMouseEvent( 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-                save_link.dispatchEvent( event );
-            };
-            var filename = 'kityminder_' + ( new Date() ).getTime() + '.svg';
-            saveFile( svg, filename );
-            return "svg";
-        }
+    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
-        var a = downloadLink;
-        a.setAttribute( 'download', 'MyMind' + p.fileExtension );
-        a.setAttribute( 'href', 'data:text/plain; utf-8,' + encodeURI( data ) );
-        a.dispatchEvent( new MouseEvent( 'click' ) );
+        var filename = me.getMinderTitle() + p.fileExtension;
+
+        if ( typeof ( data ) == 'string' ) {
+            var url = 'data:text/plain; utf-8,' + encodeURI( data );
+            doDownload( url, filename );
+        } else if ( data && data.then ) {
+            data.then( function ( url ) {
+                doDownload( url, filename );
+            } );
+        }
     } ).on( "beforeshow", function () {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
@@ -7609,207 +7563,109 @@ KityMinder.registerProtocal( 'json', function () {
 } );
 
 KityMinder.registerProtocal( "png", function () {
-	var LINE_ENDING = '\n',
-		TAB_CHAR = '\t';
-
-	function repeat( s, n ) {
-		var result = "";
-		while ( n-- ) result += s;
-		return result;
+	function loadImage( url, callback ) {
+		var image = new Image();
+		image.onload = callback;
+		image.src = url;
 	}
 
-	function encode( json, level ) {
-		var local = "";
-		level = level || 0;
-		local += repeat( TAB_CHAR, level );
-		local += json.data.text + LINE_ENDING;
-		if ( json.children ) {
-			json.children.forEach( function ( child ) {
-				local += encode( child, level + 1 );
-			} );
-		}
-		return local;
-	}
-
-	function isEmpty( line ) {
-		return !/\S/.test( line );
-	}
-
-	function getLevel( line ) {
-		var level = 0;
-		while ( line.charAt( level ) === TAB_CHAR ) level++;
-		return level;
-	}
-
-	function getNode( line ) {
-		return {
-			data: {
-				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
-			}
-		};
-	}
-
-	function decode( local ) {
-		var json,
-			parentMap = {},
-			lines = local.split( LINE_ENDING ),
-			line, level, node;
-
-		function addChild( parent, child ) {
-			var children = parent.children || ( parent.children = [] );
-			children.push( child );
-		}
-
-		for ( var i = 0; i < lines.length; i++ ) {
-			line = lines[ i ];
-			if ( isEmpty( line ) ) continue;
-
-			level = getLevel( line );
-			node = getNode( line );
-
-			if ( level === 0 ) {
-				if ( json ) {
-					throw new Error( 'Invalid local format' );
-				}
-				json = node;
-			} else {
-				if ( !parentMap[ level - 1 ] ) {
-					throw new Error( 'Invalid local format' );
-				}
-				addChild( parentMap[ level - 1 ], node );
-			}
-			parentMap[ level ] = node;
-		}
-		return json;
-	}
-	var lastTry, lastResult;
-
-	function recognize( local ) {
-		if ( !Utils.isString( local ) ) return false;
-		lastTry = local;
-		try {
-			lastResult = decode( local );
-		} catch ( e ) {
-			lastResult = null;
-		}
-		return !!lastResult;
-	}
 	return {
-		fileDescription: 'png',
+		fileDescription: 'PNG 图片',
 		fileExtension: '.png',
-		encode: function ( json ) {
-			return encode( json, 0 );
-		},
-		decode: function ( local ) {
-			if ( lastTry == local && lastResult ) {
-				return lastResult;
+		encode: function ( json, km ) {
+			var domContainer = km.getPaper().container,
+				svgXml,
+				$svg,
+
+				bgDeclare = getComputedStyle( domContainer ).backgroundImage,
+				bgUrl = /url\((.+)\)$/.exec( bgDeclare )[ 1 ],
+
+				renderContainer = km.getRenderContainer(),
+				renderBox = renderContainer.getRenderBox(),
+				transform = renderContainer.getTransform(),
+				width = renderBox.width,
+				height = renderBox.height,
+				padding = 20,
+
+				canvas = document.createElement( 'canvas' ),
+				ctx = canvas.getContext( '2d' ),
+				blob, DomURL, url, img, finishCallback;
+
+
+			renderContainer.translate( -renderBox.x, -renderBox.y );
+
+			svgXml = km.getPaper().container.innerHTML;
+
+			renderContainer.translate( renderBox.x, renderBox.y );
+			
+			$svg = $( svgXml );
+			$svg.attr( {
+				width: renderBox.width,
+				height: renderBox.height,
+				style: 'font-family: Arial, "Heiti SC", "Microsoft Yahei";'
+			} );
+
+			// need a xml with width and height
+			svgXml = $( '<div></div' ).append( $svg ).html();
+
+			blob = new Blob( [ svgXml ], {
+				type: "image/svg+xml;charset=utf-8"
+			} );
+
+			DomURL = window.URL || window.webkitURL || window;
+
+			url = DomURL.createObjectURL( blob );
+
+			canvas.width = width + padding * 2;
+			canvas.height = height + padding * 2;
+
+			function fillBackground( ctx, image, width, height ) {
+				ctx.save();
+				ctx.fillStyle = ctx.createPattern( image, "repeat" );
+				ctx.fillRect( 0, 0, width, height );
+				ctx.restore();
 			}
-			return decode( local );
+
+			function drawImage( ctx, image, x, y ) {
+				ctx.drawImage( image, x, y );
+			}
+
+			function generateDataUrl( canvas ) {
+				var url = canvas.toDataURL( 'png' );
+				return url.replace( 'image/png', 'image/octet-stream' );
+			}
+
+			loadImage( url, function () {
+				var svgImage = this;
+				loadImage( bgUrl, function () {
+					var downloadUrl;
+					fillBackground( ctx, this, canvas.width, canvas.height );
+					drawImage( ctx, svgImage, padding, padding );
+					DomURL.revokeObjectURL( url );
+					downloadUrl = generateDataUrl( canvas );
+					if ( finishCallback ) {
+						finishCallback( downloadUrl );
+					}
+				} );
+			} );
+
+			return {
+				then: function ( callback ) {
+					finishCallback = callback;
+				}
+			};
 		},
-		recognize: recognize,
 		recognizePriority: -1
 	};
 } );
 
 KityMinder.registerProtocal( "svg", function () {
-	var LINE_ENDING = '\n',
-		TAB_CHAR = '\t';
-
-	function repeat( s, n ) {
-		var result = "";
-		while ( n-- ) result += s;
-		return result;
-	}
-
-	function encode( json, level ) {
-		var local = "";
-		level = level || 0;
-		local += repeat( TAB_CHAR, level );
-		local += json.data.text + LINE_ENDING;
-		if ( json.children ) {
-			json.children.forEach( function ( child ) {
-				local += encode( child, level + 1 );
-			} );
-		}
-		return local;
-	}
-
-	function isEmpty( line ) {
-		return !/\S/.test( line );
-	}
-
-	function getLevel( line ) {
-		var level = 0;
-		while ( line.charAt( level ) === TAB_CHAR ) level++;
-		return level;
-	}
-
-	function getNode( line ) {
-		return {
-			data: {
-				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
-			}
-		};
-	}
-
-	function decode( local ) {
-		var json,
-			parentMap = {},
-			lines = local.split( LINE_ENDING ),
-			line, level, node;
-
-		function addChild( parent, child ) {
-			var children = parent.children || ( parent.children = [] );
-			children.push( child );
-		}
-
-		for ( var i = 0; i < lines.length; i++ ) {
-			line = lines[ i ];
-			if ( isEmpty( line ) ) continue;
-
-			level = getLevel( line );
-			node = getNode( line );
-
-			if ( level === 0 ) {
-				if ( json ) {
-					throw new Error( 'Invalid local format' );
-				}
-				json = node;
-			} else {
-				if ( !parentMap[ level - 1 ] ) {
-					throw new Error( 'Invalid local format' );
-				}
-				addChild( parentMap[ level - 1 ], node );
-			}
-			parentMap[ level ] = node;
-		}
-		return json;
-	}
-	var lastTry, lastResult;
-
-	function recognize( local ) {
-		if ( !Utils.isString( local ) ) return false;
-		lastTry = local;
-		try {
-			lastResult = decode( local );
-		} catch ( e ) {
-			lastResult = null;
-		}
-		return !!lastResult;
-	}
 	return {
-		fileDescription: 'svg',
+		fileDescription: 'SVG 矢量图',
 		fileExtension: '.svg',
-		encode: function ( json ) {
-			return encode( json, 0 );
+		encode: function ( json, km ) {
+			return km.getPaper().container.innerHTML;
 		},
-		decode: function ( local ) {
-			if ( lastTry == local && lastResult ) {
-				return lastResult;
-			}
-			return decode( local );
-		},
-		recognize: recognize,
 		recognizePriority: -1
 	};
 } );
