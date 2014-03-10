@@ -113,6 +113,7 @@ KityMinder.registerModule( 'Hand', function () {
             mousewheel: function ( e ) {
                 var dx, dy;
                 e = e.originEvent;
+                if(e.ctrlKey || e.shiftKey) return;
 
                 if ( 'wheelDeltaX' in e ) {
 
