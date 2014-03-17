@@ -15,7 +15,7 @@ KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的
 4. IE9+
 
 ## 线上版本
-[http://fex.baidu.com/kityminder/dist](http://fex.baidu.com/kityminder/dist)
+[http://naotu.baidu.com](http://naotu.baidu.com)
 
 注意：由于历史原因，有两个发布过的公开地址：
 
