@@ -23,7 +23,7 @@ $dependency = Array(
         ,'src/module/layout.default.js'
         ,'src/module/layout.bottom.js'
         ,'src/core/minder.select.js'
-        ,'src/module/hand.js'
+        ,'src/module/view.js'
         ,'src/module/dragtree.js'
         ,'src/module/dropfile.js'
         ,'src/module/keyboard.js'
