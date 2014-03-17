@@ -1,0 +1,4 @@
+#github-url{position:absolute;width:130px;height:130px;right:-90px;top:60px;background-color:#fff;border-radius:65px;box-shadow:-3px 1px 10px rgba(0,0,0,0.3);-webkit-transition:all .2s ease;-moz-transition:all .2s ease;-ms-transition:all .2s ease;transition:all .2s ease;opacity:.3}#github-url:hover{-webkit-transform:translate(-280px);-moz-transform:translate(-280px);-ms-transform:translate(-280px);transform:translate(-280px);opacity:1}
+#github-url:before{content:' ';display:block;position:absolute;width:300px;height:130px;left:65px;top:0;background:rgba(0,0,0,0.001)}
+#github-url:after{content:' ';display:block;position:absolute;width:130px;height:130px;background:url(../img/Github-Mark-120px-plus.png) no-repeat 5px 4px}
+#github-url a{display:block;position:absolute;top:40px;font-size:18px;width:300px;height:40px;padding:10px 0 10px 20px;line-height:40px;color:#000;left:120px;border-radius:0 25px 25px 0;background-color:#fff}

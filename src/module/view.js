@@ -39,9 +39,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                     me.setStatus( 'hand' );
                 }, 1 );
             }
-        } );
+        } )
 
-        this._minder.on( 'hand.beforemousedown', function ( e ) {
+        .on( 'hand.beforemousedown', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
@@ -75,7 +75,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
     }
 } );
 
-KityMinder.registerModule( 'Hand', function () {
+KityMinder.registerModule( 'View', function () {
 
     var km = this;
 
@@ -96,12 +96,24 @@ KityMinder.registerModule( 'Hand', function () {
         }
     } );
 
+    var CameraCommand = kity.createClass( "CameraCommand", {
+        base: Command,
+        execute: function ( km, focusNode ) {
+            var viewport = km.getPaper().getViewPort();
+            var offset = focusNode.getRenderContainer().getRenderBox( km.getRenderContainer() );
+            var dx = viewport.center.x - offset.x - offset.width / 2,
+                dy = viewport.center.y - offset.y;
+            km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+        }
+    } );
+
     return {
         init: function () {
             this._viewDragger = new ViewDragger( this );
         },
         commands: {
-            'hand': ToggleHandCommand
+            'hand': ToggleHandCommand,
+            'camera': CameraCommand
         },
         events: {
             keyup: function ( e ) {
@@ -113,7 +125,7 @@ KityMinder.registerModule( 'Hand', function () {
             mousewheel: function ( e ) {
                 var dx, dy;
                 e = e.originEvent;
-                if(e.ctrlKey || e.shiftKey) return;
+                if ( e.ctrlKey || e.shiftKey ) return;
 
                 if ( 'wheelDeltaX' in e ) {
 
@@ -136,12 +148,7 @@ KityMinder.registerModule( 'Hand', function () {
             },
             'normal.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
-                
-                var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer().getRenderBox( this.getRenderContainer() );
-                var dx = viewport.center.x - offset.x - offset.width / 2,
-                    dy = viewport.center.y - offset.y;
-                this.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+                this.execCommand( 'camera', this.getRoot() );
             }
         }
     };
