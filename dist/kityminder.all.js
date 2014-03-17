@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-10
+ * kityminder - v1.0.0 - 2014-03-17
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -1089,7 +1089,7 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
+        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel DOMMouseScroll touchstart touchmove touchend', this._firePharse.bind( this ) );
         if ( window ) {
             window.addEventListener( 'resize', this._firePharse.bind( this ) );
         }
@@ -1103,6 +1103,10 @@ kity.extendClass( Minder, {
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;
 
+        if ( e.type == 'DOMMouseScroll' ) {
+            e.type = 'mousewheel';
+            e.wheelDelta = e.originEvent.wheelDelta = e.originEvent.detail * 120;
+        }
 
         beforeEvent = new MinderEvent( 'before' + e.type, e, true );
         if ( this._fire( beforeEvent ) ) {
@@ -1143,17 +1147,17 @@ kity.extendClass( Minder, {
 
         var callbacks = this._eventCallbacks[ e.type.toLowerCase() ] || [];
 
-        if(status){
+        if ( status ) {
 
-            callbacks =  callbacks.concat(this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || []);
+            callbacks = callbacks.concat( this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || [] );
         }
 
 
 
-        if(callbacks.length == 0){
+        if ( callbacks.length === 0 ) {
             return;
         }
-        var  lastStatus = this.getStatus();
+        var lastStatus = this.getStatus();
 
         for ( var i = 0; i < callbacks.length; i++ ) {
 
@@ -1168,18 +1172,18 @@ kity.extendClass( Minder, {
     },
     on: function ( name, callback ) {
         var km = this;
-        utils.each(name.split(/\s+/),function(i,n){
+        utils.each( name.split( /\s+/ ), function ( i, n ) {
             km._listen( n.toLowerCase(), callback );
-        });
+        } );
         return this;
     },
     off: function ( name, callback ) {
 
-        var types = name.split( /\s+/);
+        var types = name.split( /\s+/ );
         var i, j, callbacks, removeIndex;
         for ( i = 0; i < types.length; i++ ) {
 
-            callbacks = this._eventCallbacks[  types[ i ].toLowerCase() ];
+            callbacks = this._eventCallbacks[ types[ i ].toLowerCase() ];
             if ( callbacks ) {
                 removeIndex = null;
                 for ( j = 0; j < callbacks.length; j++ ) {
@@ -3481,9 +3485,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                     me.setStatus( 'hand' );
                 }, 1 );
             }
-        } );
+        } )
 
-        this._minder.on( 'hand.beforemousedown', function ( e ) {
+        .on( 'hand.beforemousedown', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
@@ -3517,7 +3521,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
     }
 } );
 
-KityMinder.registerModule( 'Hand', function () {
+KityMinder.registerModule( 'View', function () {
 
     var km = this;
 
@@ -3538,12 +3542,24 @@ KityMinder.registerModule( 'Hand', function () {
         }
     } );
 
+    var CameraCommand = kity.createClass( "CameraCommand", {
+        base: Command,
+        execute: function ( km, focusNode ) {
+            var viewport = km.getPaper().getViewPort();
+            var offset = focusNode.getRenderContainer().getRenderBox( km.getRenderContainer() );
+            var dx = viewport.center.x - offset.x - offset.width / 2,
+                dy = viewport.center.y - offset.y;
+            km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+        }
+    } );
+
     return {
         init: function () {
             this._viewDragger = new ViewDragger( this );
         },
         commands: {
-            'hand': ToggleHandCommand
+            'hand': ToggleHandCommand,
+            'camera': CameraCommand
         },
         events: {
             keyup: function ( e ) {
@@ -3555,7 +3571,7 @@ KityMinder.registerModule( 'Hand', function () {
             mousewheel: function ( e ) {
                 var dx, dy;
                 e = e.originEvent;
-                if(e.ctrlKey || e.shiftKey) return;
+                if ( e.ctrlKey || e.shiftKey ) return;
 
                 if ( 'wheelDeltaX' in e ) {
 
@@ -3578,12 +3594,7 @@ KityMinder.registerModule( 'Hand', function () {
             },
             'normal.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
-                
-                var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer().getRenderBox( this.getRenderContainer() );
-                var dx = viewport.center.x - offset.x - offset.width / 2,
-                    dy = viewport.center.y - offset.y;
-                this.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+                this.execCommand( 'camera', this.getRoot() );
             }
         }
     };
