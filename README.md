@@ -16,7 +16,8 @@ KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的
 
 
 ## 项目链接
-[直接使用链接](http://fex-team.github.io/kityminder/dist/)
+[官网链接http://naotu.baidu.com](http://naotu.baidu.com)
+
 
 ## 联系我们
 邮件: kity@baidu.com
