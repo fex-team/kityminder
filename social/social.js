@@ -189,6 +189,7 @@ $( function () {
     function newFile() {
         thisMapFilename = null;
         window.km.importData( '新建脑图', 'plain' );
+        window.km.execCommand( 'camera', window.km.getRoot() );
         $user_btn.text( '<新建脑图>' );
     }
 
@@ -237,7 +238,8 @@ $( function () {
         var data = window.km.exportData( 'json' );
         $share_btn.loading( '正在分享...' );
 
-        var shareUrl = baseUrl + 'index.html?share_id=' + share_id;
+        var currentUrl = window.location.origin + window.location.pathname;
+        var shareUrl = currentUrl + '?share_id=' + share_id;
         share( data, share_id, function ( success ) {
             if ( success ) {
                 var $popup = $( '<div></div>' ).addClass( 'popup' ).appendTo( 'body' );

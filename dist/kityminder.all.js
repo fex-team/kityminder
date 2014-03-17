@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-07
+ * kityminder - v1.0.0 - 2014-03-10
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -3477,9 +3477,9 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 dragger.setEnabled( true );
                 isRootDrag = true;
                 var me = this;
-                setTimeout(function() {
-                    me.setStatus('hand');
-                }, 1);
+                setTimeout( function () {
+                    me.setStatus( 'hand' );
+                }, 1 );
             }
         } );
 
@@ -3553,21 +3553,37 @@ KityMinder.registerModule( 'Hand', function () {
                 }
             },
             mousewheel: function ( e ) {
-                var dx = e.originEvent.wheelDeltaX || 0,
-                    dy = e.originEvent.wheelDeltaY || e.originEvent.wheelDelta;
+                var dx, dy;
+                e = e.originEvent;
+                if(e.ctrlKey || e.shiftKey) return;
+
+                if ( 'wheelDeltaX' in e ) {
+
+                    dx = e.wheelDeltaX || 0;
+                    dy = e.wheelDeltaY || 0;
+
+                } else {
+
+                    dx = 0;
+                    dy = e.wheelDelta;
+
+                }
+
                 this._viewDragger.move( {
                     x: dx / 2.5,
                     y: dy / 2.5
                 } );
 
-                e.originEvent.preventDefault();
+                e.preventDefault();
             },
-            dblclick: function () {
+            'normal.dblclick': function ( e ) {
+                if ( e.getTargetNode() ) return;
+                
                 var viewport = this.getPaper().getViewPort();
-                var offset = this.getRoot().getRenderContainer( this.getRenderContainer() ).getTransform().getTranslate();
-                var dx = viewport.center.x - offset.x,
+                var offset = this.getRoot().getRenderContainer().getRenderBox( this.getRenderContainer() );
+                var dx = viewport.center.x - offset.x - offset.width / 2,
                     dy = viewport.center.y - offset.y;
-                //this.getRenderContainer().fxTranslate(dx, dy, 300);
+                this.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             }
         }
     };
@@ -5012,7 +5028,7 @@ KityMinder.registerModule( "fontmodule", function () {
 
 KityMinder.registerModule( 'Zoom', function () {
 	var MAX_ZOOM = 2,
-		MIN_ZOOM = 0.5,
+		MIN_ZOOM = kity.Browser.chrome ? 1 : 0.5,
 		ZOOM_STEP = Math.sqrt( 2 );
 
 	function zoom( minder, rate ) {
@@ -5040,31 +5056,31 @@ KityMinder.registerModule( 'Zoom', function () {
 			}
 		} );
 
-		animator.start( paper, 100, 'ease' );
+		animator.start( paper, 500, 'ease' );
 		minder._zoomValue = zoomValue *= rate;
 	}
 
 	var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
 		base: Command,
 		execute: function ( minder ) {
-			if( !this.queryState( minder ) ) {
+			if ( !this.queryState( minder ) ) {
 				zoom( minder, 1 / ZOOM_STEP );
 			}
 		},
 		queryState: function ( minder ) {
-			return (minder._zoomValue > MIN_ZOOM) ? 0 : -1;
+			return ( minder._zoomValue > 1 / MAX_ZOOM ) ? 0 : -1;
 		}
 	} );
 
 	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
 		base: Command,
 		execute: function ( minder ) {
-			if( !this.queryState( minder ) ) {
+			if ( !this.queryState( minder ) ) {
 				zoom( minder, ZOOM_STEP );
 			}
 		},
 		queryState: function ( minder ) {
-			return (minder._zoomValue < MAX_ZOOM) ? 0 : -1;
+			return ( minder._zoomValue < 1 / MIN_ZOOM ) ? 0 : -1;
 		}
 	} );
 
@@ -5076,25 +5092,29 @@ KityMinder.registerModule( 'Zoom', function () {
 
 
 		events: {
-            'normal.keydown':function(e){
-                var me = this;
-                var originEvent = e.originEvent;
-                var keyCode = originEvent.keyCode || originEvent.which;
-                if(keymap['='] == keyCode){
-                    me.execCommand('zoom-in');
-                }
-                if(keymap['-'] == keyCode){
-                    me.execCommand('zoom-out');
+			'normal.keydown': function ( e ) {
+				var me = this;
+				var originEvent = e.originEvent;
+				var keyCode = originEvent.keyCode || originEvent.which;
+				if ( keymap[ '=' ] == keyCode ) {
+					me.execCommand( 'zoom-in' );
+				}
+				if ( keymap[ '-' ] == keyCode ) {
+					me.execCommand( 'zoom-out' );
 
-                }
-            },
+				}
+			},
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			// disable mouse wheel
-			'mousewheel_': function ( e ) {
+			'normal.mousewheel': function ( e ) {
+				if ( !e.originEvent.ctrlKey ) return;
 				var delta = e.originEvent.wheelDelta;
 				var me = this;
+
+				if ( !kity.Browser.mac ) {
+					delta = -delta;
+				}
 
 				// 稀释
 				if ( Math.abs( delta ) > 100 ) {
@@ -5107,9 +5127,9 @@ KityMinder.registerModule( 'Zoom', function () {
 					var value;
 					var lastValue = me.getPaper()._zoom || 1;
 					if ( delta < 0 ) {
-						me.execCommand('zoom-in');
+						me.execCommand( 'zoom-in' );
 					} else if ( delta > 0 ) {
-						me.execCommand('zoom-out');
+						me.execCommand( 'zoom-out' );
 					}
 				}, 100 );
 
@@ -7580,6 +7600,9 @@ KityMinder.registerProtocal( "png", function () {
 			renderContainer.translate( -renderBox.x, -renderBox.y );
 
 			svgXml = km.getPaper().container.innerHTML;
+
+			renderContainer.translate( renderBox.x, renderBox.y );
+			
 			$svg = $( svgXml );
 			$svg.attr( {
 				width: renderBox.width,
@@ -7627,7 +7650,6 @@ KityMinder.registerProtocal( "png", function () {
 					downloadUrl = generateDataUrl( canvas );
 					if ( finishCallback ) {
 						finishCallback( downloadUrl );
-						renderContainer.translate( renderBox.x, renderBox.y );
 					}
 				} );
 			} );

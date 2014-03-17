@@ -13,7 +13,7 @@ kity.extendClass( Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function () {
-        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel touchstart touchmove touchend', this._firePharse.bind( this ) );
+        this._paper.on( 'click dblclick mousedown contextmenu mouseup mousemove mousewheel DOMMouseScroll touchstart touchmove touchend', this._firePharse.bind( this ) );
         if ( window ) {
             window.addEventListener( 'resize', this._firePharse.bind( this ) );
         }
@@ -27,6 +27,10 @@ kity.extendClass( Minder, {
     _firePharse: function ( e ) {
         var beforeEvent, preEvent, executeEvent;
 
+        if ( e.type == 'DOMMouseScroll' ) {
+            e.type = 'mousewheel';
+            e.wheelDelta = e.originEvent.wheelDelta = e.originEvent.detail * 120;
+        }
 
         beforeEvent = new MinderEvent( 'before' + e.type, e, true );
         if ( this._fire( beforeEvent ) ) {
@@ -67,17 +71,17 @@ kity.extendClass( Minder, {
 
         var callbacks = this._eventCallbacks[ e.type.toLowerCase() ] || [];
 
-        if(status){
+        if ( status ) {
 
-            callbacks =  callbacks.concat(this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || []);
+            callbacks = callbacks.concat( this._eventCallbacks[ status + '.' + e.type.toLowerCase() ] || [] );
         }
 
 
 
-        if(callbacks.length == 0){
+        if ( callbacks.length === 0 ) {
             return;
         }
-        var  lastStatus = this.getStatus();
+        var lastStatus = this.getStatus();
 
         for ( var i = 0; i < callbacks.length; i++ ) {
 
@@ -92,18 +96,18 @@ kity.extendClass( Minder, {
     },
     on: function ( name, callback ) {
         var km = this;
-        utils.each(name.split(/\s+/),function(i,n){
+        utils.each( name.split( /\s+/ ), function ( i, n ) {
             km._listen( n.toLowerCase(), callback );
-        });
+        } );
         return this;
     },
     off: function ( name, callback ) {
 
-        var types = name.split( /\s+/);
+        var types = name.split( /\s+/ );
         var i, j, callbacks, removeIndex;
         for ( i = 0; i < types.length; i++ ) {
 
-            callbacks = this._eventCallbacks[  types[ i ].toLowerCase() ];
+            callbacks = this._eventCallbacks[ types[ i ].toLowerCase() ];
             if ( callbacks ) {
                 removeIndex = null;
                 for ( j = 0; j < callbacks.length; j++ ) {
