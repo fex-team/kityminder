@@ -1,0 +1,30 @@
+{
+    "undef" : true,
+    "unused" : false,
+    "strict" : false,
+    "curly" : false,
+    "newcap" : true,
+    "trailing" : true,
+    "white": false,
+    "quotmark": false,
+    "predef" : [
+        "module",
+        "require",
+        "console",
+        "kity",
+        "KityMinder",
+        "KM",
+        "Minder",
+        "MinderNode",
+        "MinderEvent",
+        "Command",
+        "KITYMINDER_CONFIG",
+        "keymap",
+        "Utils",
+        "utils",
+        "$",
+        "KM",
+        "keymap",
+        "baidu"
+    ]
+}

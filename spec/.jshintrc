@@ -1,0 +1,28 @@
+{
+    "undef" : true,
+    "unused" : false,
+    "strict" : false,
+    "curly" : false,
+    "newcap" : true,
+    "trailing" : true,
+    "white": false,
+    "quotmark": false,
+    "predef" : [
+        "require",
+        "console",
+        "kity",
+        "KityMinder",
+        "KM",
+        "Minder",
+        "MinderNode",
+        "MinderEvent",
+        "Command",
+        "KITYMINDER_CONFIG",
+        "Utils",
+        "utils",
+        "describe",
+        "it",
+        "beforeEach",
+        "expect"
+    ]
+}

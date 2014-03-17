@@ -1,0 +1,42 @@
+{
+    "name": "kityminder",
+    "title": "kityminder",
+    "description": "Kity Minder",
+    "version": "1.0.0",
+    "homepage": "https://github.com/fex-team/kityminder",
+    "author": {
+        "name": "f-cube @ FEX",
+        "url": "http://fex.baidu.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/fex-team/kityminder.git"
+    },
+    "keywords": [
+        "kityminder",
+        "kity",
+        "minder",
+        "svg",
+        "graphic",
+        "javascript"
+    ],
+    "bugs": {
+        "url": "https://github.com/fex-team/kityminder/issues"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/fex-team/kityminder/blob/dev/LICENSE"
+        }
+    ],
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-uglify": "~0.2.6",
+        "grunt-regarde": "latest",
+        "grunt-contrib-connect": "latest",
+        "grunt-contrib-livereload": "latest"
+    }
+
+}
