@@ -101,9 +101,7 @@ KityMinder.registerModule( "Select", function () {
                 if ( !downNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
-                    if(this.getStatus() == 'textedit'){
-                        this.trigger('contentchange')
-                    }
+
                     this.setStatus('normal')
                 }
 
