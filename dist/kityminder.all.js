@@ -810,7 +810,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
-        this._paper.getNode().ondragstart = function(e) {
+        this._paper.getNode().ondragstart = function ( e ) {
             e.preventDefault();
         };
 
@@ -846,47 +846,48 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._shortcutkeys = {};
         this._bindshortcutKeys();
     },
-    isTextEditStatus:function(){
+    isTextEditStatus: function () {
         return false;
     },
     addShortcutKeys: function ( cmd, keys ) {
-        var obj = {},km = this;
+        var obj = {}, km = this;
         if ( keys ) {
             obj[ cmd ] = keys
         } else {
             obj = cmd;
         }
-        utils.each(obj,function(k,v){
-            km._shortcutkeys[k.toLowerCase()] = v;
-        });
+        utils.each( obj, function ( k, v ) {
+            km._shortcutkeys[ k.toLowerCase() ] = v;
+        } );
 
     },
-    getShortcutKey : function(cmdName){
-        return this._shortcutkeys[cmdName]
+    getShortcutKey: function ( cmdName ) {
+        return this._shortcutkeys[ cmdName ]
     },
     _bindshortcutKeys: function () {
         var me = this,
             shortcutkeys = this._shortcutkeys;
-        function checkkey(key,keyCode,e){
-            switch(key){
-                case  'ctrl':
-                case 'cmd':
-                    if(e.ctrlKey || e.metaKey){
-                        return true;
-                    }
-                    break;
-                case 'alt':
-                    if(e.altKey){
-                        return true
-                    }
-                    break;
-                case 'shift':
-                    if(e.shiftKey){
-                        return true;
-                    }
+
+        function checkkey( key, keyCode, e ) {
+            switch ( key ) {
+            case 'ctrl':
+            case 'cmd':
+                if ( e.ctrlKey || e.metaKey ) {
+                    return true;
+                }
+                break;
+            case 'alt':
+                if ( e.altKey ) {
+                    return true
+                }
+                break;
+            case 'shift':
+                if ( e.shiftKey ) {
+                    return true;
+                }
 
             }
-            if(keyCode == keymap[key]){
+            if ( keyCode == keymap[ key ] ) {
                 return true;
             }
             return false
@@ -896,15 +897,15 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             var originEvent = e.originEvent;
             var keyCode = originEvent.keyCode || originEvent.which;
             for ( var i in shortcutkeys ) {
-                var keys = shortcutkeys[ i ].toLowerCase().split('+');
+                var keys = shortcutkeys[ i ].toLowerCase().split( '+' );
                 var current = 0;
-                utils.each(keys,function(i,k){
-                    if(checkkey(k,keyCode,originEvent)){
+                utils.each( keys, function ( i, k ) {
+                    if ( checkkey( k, keyCode, originEvent ) ) {
                         current++;
                     }
-                });
+                } );
 
-                if(current == keys.length){
+                if ( current == keys.length ) {
                     if ( me.queryCommandState( i ) != -1 )
                         me.execCommand( i );
                     originEvent.preventDefault();
@@ -914,38 +915,38 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             }
         } );
     },
-    _initContextmenu:function(){
+    _initContextmenu: function () {
         this.contextmenus = [];
     },
-    addContextmenu:function(item){
-        if(utils.isArray(item)){
-            this.contextmenus = this.contextmenus.concat(item);
-        }else{
-            this.contextmenus.push(item);
+    addContextmenu: function ( item ) {
+        if ( utils.isArray( item ) ) {
+            this.contextmenus = this.contextmenus.concat( item );
+        } else {
+            this.contextmenus.push( item );
         }
 
         return this;
     },
-    getContextmenu:function(){
+    getContextmenu: function () {
         return this.contextmenus;
     },
-    _initStatus:function(){
+    _initStatus: function () {
         this._status = "normal";
         this._rollbackStatus = "normal";
     },
-    setStatus:function(status){
-        if(status){
+    setStatus: function ( status ) {
+        if ( status ) {
             this._rollbackStatus = this._status;
             this._status = status;
-        }else{
+        } else {
             this._status = '';
         }
         return this;
     },
-    rollbackStatus:function(){
+    rollbackStatus: function () {
         this._status = this._rollbackStatus;
     },
-    getStatus:function(){
+    getStatus: function () {
         return this._status;
     }
 } );
@@ -1097,7 +1098,7 @@ kity.extendClass( Minder, {
     _bindKeyboardEvents: function () {
         if ( ( navigator.userAgent.indexOf( 'iPhone' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPod' ) == -1 ) && ( navigator.userAgent.indexOf( 'iPad' ) == -1 ) ) {
             //只能在这里做，要不无法触发
-            Utils.listen( document.body, 'keydown keyup keypress', this._firePharse.bind( this ) );
+            Utils.listen( document.body, 'keydown keyup keypress paste', this._firePharse.bind( this ) );
         }
     },
     _firePharse: function ( e ) {
@@ -1439,9 +1440,12 @@ var keymap = KityMinder.keymap  = {
 
     "b":66,
     'i':73,
-
+    //回退
     'z':90,
-    'y':89
+    'y':89,
+    //粘贴
+    'v' : 86,
+    'x' : 88
 };
 
 //添加多语言模块
@@ -2669,14 +2673,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setType( "main" );
 			} else {
 				node.setType( "sub" );
-				var isExpand = parent.getData( "expand" );
-				if ( isExpand === undefined ) {
-					isExpand = true;
-					parent.setData( "expand", isExpand );
-				}
-				// if ( !isExpand ) {
-				// 	return false;
-				// }
 			}
 			//计算位置等流程
 			updateBg( node );
@@ -4135,6 +4131,7 @@ KityMinder.registerModule( "Select", function () {
                 if ( !downNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
+
                     this.setStatus('normal')
                 }
 
@@ -4217,6 +4214,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                         node = selectionShape.getData('relatedNode');
                         e.stopPropagationImmediately();
                     }
+                    if(this.getStatus() == 'textedit')
+                        this.fire('contentchange');
                     km.setStatus('normal')
                 }
                 if(node){
@@ -4408,12 +4407,18 @@ Minder.Range = kity.createClass('Range',{
             startOffset:range.startOffset
         }
     },
+
     collapse:function(toStart){
         this.nativeRange.collapse(toStart === true);
         return this;
     },
     insertNode:function(node){
         this.nativeRange.insertNode(node);
+        return this;
+    },
+    updateNativeRange:function(){
+
+        this.nativeRange = this.nativeSel.getRangeAt(0);
         return this;
     }
 });
@@ -4425,6 +4430,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection && this.selection.setHide();
         this.range && this.range.nativeSel.removeAllRanges();
         this.index = 0;
+        this.inputLength = 0;
         return this;
     },
     setTextEditStatus : function(status){
@@ -4442,7 +4448,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
         utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
-        this.km.on('textedit.beforekeyup textedit.keydown', utils.proxy(this.keyboardEvents,this));
+        this.km.on('textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
     },
@@ -4494,8 +4500,32 @@ Minder.Receiver = kity.createClass('Receiver',{
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
         var keys = KityMinder.keymap;
+        function setTextToContainer(){
+            var text = me.container.textContent.replace(/[\u200b\t\r\n]/g,'');
 
+            if(me.textShape.getOpacity() == 0){
+                me.textShape.setOpacity(1);
+            }
+            me.textShape.setContent(text);
+            me.setContainerStyle();
+            me.minderNode.setText(text);
+            if(text.length == 0){
+                me.textShape.setContent('a');
+                me.textShape.setOpacity(0);
+            }
+            me.km.updateLayout(me.minderNode);
+            me.setBaseOffset();
+            me.updateTextData();
+
+            me.updateIndex();
+            me.updateSelection();
+
+            me.timer = setTimeout(function(){
+                me.selection.setShow()
+            },500);
+        }
         switch(e.type){
+
             case 'keydown':
                 switch ( e.originEvent.keyCode ) {
                     case keys.Enter:
@@ -4506,8 +4536,33 @@ Minder.Receiver = kity.createClass('Receiver',{
                         e.preventDefault();
                         break;
                 }
+
+                if ( e.originEvent.ctrlKey ||  e.originEvent.metaKey ){
+
+                    //粘贴
+                    if(keyCode == keymap.v){
+
+                        setTimeout(function(){
+                            me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
+                            me.container.innerHTML = me.container.textContent.replace(/[\u200b\t\r\n]/g,'');
+                            var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
+                            me.container.textContent = me.container.textContent.replace('$$_kityminder_bookmark_$$','');
+                            me.range.setStart(me.container.firstChild,index).collapse(true).select();
+                            setTextToContainer()
+                        },100);
+                    }
+                    //剪切
+                    if(keyCode == keymap.x){
+                        setTimeout(function(){
+                            setTextToContainer()
+                        },100);
+                    }
+                    return;
+                }
                 break;
             case 'beforekeyup':
+
+
                 switch(keyCode){
                     case keymap.Enter:
                     case keymap.Tab:
@@ -4525,34 +4580,14 @@ Minder.Receiver = kity.createClass('Receiver',{
                         return;
 
                 }
-                var text = this.container.textContent.replace(/\u200b/g,'');
 
-                if(this.textShape.getOpacity() == 0){
-                    this.textShape.setOpacity(1);
-                }
-                this.textShape.setContent(text);
-                this.setContainerStyle();
-                this.minderNode.setText(text);
-                if(text.length == 0){
-                    this.textShape.setContent('a');
-                    this.textShape.setOpacity(0);
-                }
-                this.km.updateLayout(this.minderNode);
-                this.setBaseOffset();
-                this.updateTextData();
-                this.updateIndex();
-                this.updateSelection();
-
-                this.timer = setTimeout(function(){
-                    me.selection.setShow()
-                },500);
+                setTextToContainer();
                 return true;
-
-
         }
 
 
     },
+
     updateIndex:function(){
         this.index = this.range.getStart().startOffset;
     },
