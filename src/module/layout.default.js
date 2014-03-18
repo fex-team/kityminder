@@ -646,13 +646,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						if ( Layout.shicon ) Layout.shicon.remove();
 					} catch ( error ) {}
 				}
-				if ( _buffer[ 0 ].getData( "expand" ) !== false ) _buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
 			}
 			if ( isExpand ) {
 				node.clearChildren();
 				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-					if ( _cleanbuffer[ j ].getData( "expand" ) !== false ) _cleanbuffer[ j ].clearChildren();
+					_cleanbuffer[ j ].clearChildren();
 					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 				}
 			}
