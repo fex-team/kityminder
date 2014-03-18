@@ -596,6 +596,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					sideList.splice( index, 1 );
 				}
 				parent.removeChild( nodes[ 0 ] );
+				if ( parent.getType() !== "root" && parent.getChildren().length === 0 ) {
+					var prtLayout = parent.getLayout();
+					prtLayout.shicon.remove();
+					prtLayout.shicon = null;
+				}
 				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
 				for ( var j = 0; j < set.length; j++ ) {
 					translateNode( set[ j ] );
