@@ -5,6 +5,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.selection && this.selection.setHide();
         this.range && this.range.nativeSel.removeAllRanges();
         this.index = 0;
+        this.inputLength = 0;
         return this;
     },
     setTextEditStatus : function(status){
@@ -21,8 +22,8 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.setAttribute('contenteditable',true);
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
-        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
-        this.km.on('textedit.beforekeyup textedit.keydown', utils.proxy(this.keyboardEvents,this));
+        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;}');//clip:rect(1em 1em 1em 1em);
+        this.km.on('textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
     },
@@ -74,8 +75,32 @@ Minder.Receiver = kity.createClass('Receiver',{
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
         var keys = KityMinder.keymap;
+        function setTextToContainer(){
+            var text = me.container.textContent.replace(/[\u200b\t\r\n]/g,'');
 
+            if(me.textShape.getOpacity() == 0){
+                me.textShape.setOpacity(1);
+            }
+            me.textShape.setContent(text);
+            me.setContainerStyle();
+            me.minderNode.setText(text);
+            if(text.length == 0){
+                me.textShape.setContent('a');
+                me.textShape.setOpacity(0);
+            }
+            me.km.updateLayout(me.minderNode);
+            me.setBaseOffset();
+            me.updateTextData();
+
+            me.updateIndex();
+            me.updateSelection();
+
+            me.timer = setTimeout(function(){
+                me.selection.setShow()
+            },500);
+        }
         switch(e.type){
+
             case 'keydown':
                 switch ( e.originEvent.keyCode ) {
                     case keys.Enter:
@@ -86,8 +111,33 @@ Minder.Receiver = kity.createClass('Receiver',{
                         e.preventDefault();
                         break;
                 }
+
+                if ( e.originEvent.ctrlKey ||  e.originEvent.metaKey ){
+
+                    //粘贴
+                    if(keyCode == keymap.v){
+
+                        setTimeout(function(){
+                            me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
+                            me.container.innerHTML = me.container.textContent.replace(/[\u200b\t\r\n]/g,'');
+                            var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
+                            me.container.textContent = me.container.textContent.replace('$$_kityminder_bookmark_$$','');
+                            me.range.setStart(me.container.firstChild,index).collapse(true).select();
+                            setTextToContainer()
+                        },100);
+                    }
+                    //剪切
+                    if(keyCode == keymap.x){
+                        setTimeout(function(){
+                            setTextToContainer()
+                        },100);
+                    }
+                    return;
+                }
                 break;
             case 'beforekeyup':
+
+
                 switch(keyCode){
                     case keymap.Enter:
                     case keymap.Tab:
@@ -105,34 +155,14 @@ Minder.Receiver = kity.createClass('Receiver',{
                         return;
 
                 }
-                var text = this.container.textContent.replace(/\u200b/g,'');
 
-                if(this.textShape.getOpacity() == 0){
-                    this.textShape.setOpacity(1);
-                }
-                this.textShape.setContent(text);
-                this.setContainerStyle();
-                this.minderNode.setText(text);
-                if(text.length == 0){
-                    this.textShape.setContent('a');
-                    this.textShape.setOpacity(0);
-                }
-                this.km.updateLayout(this.minderNode);
-                this.setBaseOffset();
-                this.updateTextData();
-                this.updateIndex();
-                this.updateSelection();
-
-                this.timer = setTimeout(function(){
-                    me.selection.setShow()
-                },500);
+                setTextToContainer();
                 return true;
-
-
         }
 
 
     },
+
     updateIndex:function(){
         this.index = this.range.getStart().startOffset;
     },

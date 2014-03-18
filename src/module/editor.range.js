@@ -35,12 +35,18 @@ Minder.Range = kity.createClass('Range',{
             startOffset:range.startOffset
         }
     },
+
     collapse:function(toStart){
         this.nativeRange.collapse(toStart === true);
         return this;
     },
     insertNode:function(node){
         this.nativeRange.insertNode(node);
+        return this;
+    },
+    updateNativeRange:function(){
+
+        this.nativeRange = this.nativeSel.getRangeAt(0);
         return this;
     }
 });
