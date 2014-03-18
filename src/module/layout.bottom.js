@@ -174,7 +174,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var sX = rootLayout.x - rootbranchwidth / 2;
 		for ( var k = 0; k < mainnodes.length; k++ ) {
 			var mLayout = mainnodes[ k ].getLayout();
-			mLayout.x = sX;
+			mLayout.x = sX + nodeStyles.main.margin[ 3 ] + 5;
 			sX += mLayout.branchwidth;
 		}
 		return mainnodes;
