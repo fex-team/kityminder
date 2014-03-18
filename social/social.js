@@ -324,7 +324,7 @@ $( function () {
     }
 
     function setFileSaved( saved ) {
-        $save_btn.disabled( saved );
+        $save_btn.disabled( saved || !currentUser );
         if ( saved ) {
             $user_btn.text( getFileName( thisMapFilename ) );
         } else {
