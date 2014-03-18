@@ -27,7 +27,7 @@
         <a href="https://github.com/fex-team/kityminder.git" target="_blank">Fork me on Github</a>
     </div>
     <p id="about">
-        Powered by f-cube, <a href="http://fex.baidu.com" target="_blank">FEX</a> |
+        KityMinder <a id="km-version" href="https://github.com/fex-team/kityminder/blob/dev/CHANGELOG.md" target="blank"></a>, Powered by f-cube, <a href="http://fex.baidu.com" target="_blank">FEX</a> |
         <a href="https://github.com/fex-team/kityminder/issues/new" target="_blank">Report a Bug</a> | 
         <a href="mailto:kity@baidu.com" target="_blank">Contact Us</a>
     </p>
@@ -36,5 +36,15 @@
 <script>
     // create km instance
     window.km = KM.getKityMinder('kityminder');
+    $(function() {
+
+        var lastVersion = localStorage.lastKMVersion;
+        $('#km-version').text( 'v' + KM.version );
+
+        if( lastVersion != KM.version ) {
+            $( '#km-version' ).addClass( 'new-version' );
+            localStorage.lastVersion = KM.version;
+        }
+    });
 </script>
 </html>
