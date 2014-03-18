@@ -10,10 +10,8 @@ $.extend( $.fn, {
     },
     loading: function ( text ) {
         if ( text ) {
-            if ( !this.disabled() ) {
-                this.disabled( true );
-                this.attr( 'origin-text', this.text() );
-            }
+            this.disabled( true );
+            this.attr( 'origin-text', this.text() );
             this.text( text );
         } else {
             this.text( this.attr( 'origin-text' ) );
@@ -49,7 +47,7 @@ $( function () {
         }
     } )();
 
-    $login_btn = $( '<button>登录</button>' ).addClass( 'login' ).click( login );
+    $login_btn = $( '<button>登录</button>' ).addClass( 'login' ).click( login ).appendTo( $panel );
 
     $user_btn = $( '<button><span class="text"></span></button>' ).addClass( 'user-file' );
 
@@ -69,13 +67,16 @@ $( function () {
 
     $user_menu.attachTo( $user_btn );
 
-    $save_btn = $( '<button>保存</button>' ).click( saveThisFile ).addClass( 'baidu-cloud' );
+    $save_btn = $( '<button>保存</button>' ).click( saveThisFile )
+        .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
 
-    $share_btn = $( '<button>分享</button>' ).click( shareThisFile ).addClass( 'share' );
+    $share_btn = $( '<button>分享</button>' ).click( shareThisFile )
+        .addClass( 'share' ).appendTo( $panel ).disabled( true );
 
 
     var AK, thisMapFilename, currentUser, share_id = uuid(),
-        isShareLink;
+        isShareLink, isFileSaved = true,
+        draft = {};
 
     AK = 'wiE55BGOG8BkGnpPs6UNtPbb';
 
@@ -100,9 +101,9 @@ $( function () {
     function setCurrentUser( user ) {
         currentUser = user;
         $user_btn.text( user.getName() + ' 的脑图' );
-        $user_btn.appendTo( $panel );
-        $save_btn.appendTo( $panel );
-        $share_btn.appendTo( $panel );
+        $user_btn.prependTo( $panel );
+        $save_btn.disabled( false );
+        $share_btn.disabled( false );
         $login_btn.detach();
         loadRecent();
         loadAvator();
@@ -166,20 +167,26 @@ $( function () {
     function loadPersonal( path ) {
         var sto = baidu.frontia.personalStorage;
         thisMapFilename = path;
-        $user_btn.loading( '加载“' + getFileName( path ) + '”...' );
-        sto.getFileUrl( path, {
-            success: function ( url ) {
-                $.ajax( {
-                    cache: false,
-                    url: url,
-                    dataType: 'text',
-                    success: function ( result ) {
-                        window.km.importData( result, 'json' );
-                        $user_btn.loading( false ).text( getFileName( path ) );
-                    }
-                } );
-            }
-        } );
+        if ( thisMapFilename == draft.filename ) {
+            $user_btn.loading( false ).text( getFileName( path ) );
+            setFileSaved( false );
+        } else {
+            $user_btn.loading( '加载“' + getFileName( path ) + '”...' );
+            sto.getFileUrl( path, {
+                success: function ( url ) {
+                    $.ajax( {
+                        cache: false,
+                        url: url,
+                        dataType: 'text',
+                        success: function ( result ) {
+                            window.km.importData( result, 'json' );
+                            $user_btn.loading( false ).text( getFileName( path ) );
+                            isFileSaved = true;
+                        }
+                    } );
+                }
+            } );
+        }
     }
 
     function getMapFileName() {
@@ -197,10 +204,7 @@ $( function () {
         var data = window.km.exportData( 'json' );
         save( data, thisMapFilename || getMapFileName(), function ( success, info ) {
             if ( success ) {
-                $save_btn.text( '保存成功！' );
-                setTimeout( function () {
-                    $save_btn.loading( false );
-                }, 3000 );
+                $save_btn.text( '已保存！' );
                 if ( !thisMapFilename ) {
                     thisMapFilename = info.path;
                     addToRecentMenu( [ info ] );
@@ -217,6 +221,7 @@ $( function () {
         var options = {
             ondup: thisMapFilename ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
             success: function ( result ) {
+                setFileSaved( true );
                 callback( true, result );
             },
             error: function ( error ) {
@@ -318,6 +323,43 @@ $( function () {
         thisMapFilename = decodeURIComponent( match[ 1 ] );
     }
 
+    function setFileSaved( saved ) {
+        $save_btn.disabled( saved );
+        if ( saved ) {
+            $user_btn.text( getFileName( thisMapFilename ) );
+        } else {
+            $save_btn.text( '保存' );
+            $user_btn.text( getFileName( thisMapFilename || getMapFileName() ) + ' *' );
+        }
+    }
+
+    function checkAutoSave() {
+        var sto = window.localStorage;
+        if ( !sto ) return;
+        draft = {
+            filename: thisMapFilename,
+            data: window.km.exportData( 'json' )
+        };
+        sto.setItem( 'draft_filename', draft.filename );
+        sto.setItem( 'draft_data', draft.data );
+        setFileSaved( false );
+    }
+
+    function loadAutoSave() {
+        var sto = window.localStorage;
+
+        if ( !sto ) return;
+
+        draft.data = sto.getItem( 'draft_data' );
+        draft.filename = sto.getItem( 'draft_filename' );
+        if ( draft.data ) {
+            window.km.importData( draft.data, 'json' );
+            setFileSaved( false );
+        }
+    }
+
+    loadAutoSave();
+
     loadShare();
 
     currentUser = baidu.frontia.getCurrentAccount();
@@ -328,6 +370,10 @@ $( function () {
             loadPersonal( thisMapFilename );
         }
     } else {
-        $login_btn.appendTo( $panel );
+        loadAutoSave();
     }
+
+    window.km.on( 'contentchange', function () {
+        checkAutoSave();
+    } );
 } );
