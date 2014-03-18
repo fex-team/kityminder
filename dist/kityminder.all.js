@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-17
+ * kityminder - v1.0.0 - 2014-03-18
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -2714,6 +2714,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					sideList.splice( index, 1 );
 				}
 				parent.removeChild( nodes[ 0 ] );
+				if ( parent.getType() !== "root" && parent.getChildren().length === 0 ) {
+					var prtLayout = parent.getLayout();
+					prtLayout.shicon.remove();
+					prtLayout.shicon = null;
+				}
 				var set = updateLayoutVertical( nodes[ 0 ], parent, "remove" );
 				for ( var j = 0; j < set.length; j++ ) {
 					translateNode( set[ j ] );
@@ -2965,7 +2970,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var sX = rootLayout.x - rootbranchwidth / 2;
 		for ( var k = 0; k < mainnodes.length; k++ ) {
 			var mLayout = mainnodes[ k ].getLayout();
-			mLayout.x = sX;
+			mLayout.x = sX + nodeStyles.main.margin[ 3 ] + 5;
 			sX += mLayout.branchwidth;
 		}
 		return mainnodes;
@@ -3258,6 +3263,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				}
 				var nodeLayout = nodes[ 0 ].getLayout();
 				parent.removeChild( nodes[ 0 ] );
+				if ( parent.getType() !== "root" && parent.getChildren().length === 0 ) {
+					var prtLayout = parent.getLayout();
+					prtLayout.shicon.remove();
+					prtLayout.shicon = null;
+				}
 				var set = updateLayoutAll( nodes[ 0 ], parent, "remove" );
 				for ( var j = 0; j < set.length; j++ ) {
 					translateNode( set[ j ] );
@@ -3916,10 +3926,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
         var pointIndexes = [],
             p;
         root.traverse( function ( node ) {
-            p = node.getData( 'point' );
+            p = node.getRenderContainer().getRenderBox( 'top' );
             pointIndexes.push( {
-                x: p.x,
-                y: p.y,
+                x: p.x + p.width / 2,
+                y: p.y + p.height / 2,
                 node: node
             } );
         } );

@@ -174,7 +174,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var sX = rootLayout.x - rootbranchwidth / 2;
 		for ( var k = 0; k < mainnodes.length; k++ ) {
 			var mLayout = mainnodes[ k ].getLayout();
-			mLayout.x = sX;
+			mLayout.x = sX + nodeStyles.main.margin[ 3 ] + 5;
 			sX += mLayout.branchwidth;
 		}
 		return mainnodes;
@@ -467,6 +467,11 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				}
 				var nodeLayout = nodes[ 0 ].getLayout();
 				parent.removeChild( nodes[ 0 ] );
+				if ( parent.getType() !== "root" && parent.getChildren().length === 0 ) {
+					var prtLayout = parent.getLayout();
+					prtLayout.shicon.remove();
+					prtLayout.shicon = null;
+				}
 				var set = updateLayoutAll( nodes[ 0 ], parent, "remove" );
 				for ( var j = 0; j < set.length; j++ ) {
 					translateNode( set[ j ] );
