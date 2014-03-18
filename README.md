@@ -4,7 +4,7 @@ Kity Minder
 ## 简介
 KityMinder 是百度 FEX 团队的 f-cube 小组（原UEditor小组）的又一力作。作为一款在线的脑图编辑工具，它有着很多Native编辑工具的交互体验。KM与UE有着一样的宗旨，就是注重最终用户的使用体验。同时，它充分发挥了Web云存储的优势，可以直接将编辑中的脑图同步到云端。此外，借由独创的 “云盘分享”功能，用户可以一键将当前编辑的脑图直接生成在线链接共享给其他用户，实现无缝沟通。
 
-![Alt text](summary.jpg "简介图")
+![KityMinder](summary.jpg "KityMinder 界面")
 
 KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的主流浏览器。
 支持列表如下
@@ -15,14 +15,19 @@ KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的
 4. IE9+
 
 ## 线上版本
-[http://fex.baidu.com/kityminder/dist](http://fex.baidu.com/kityminder/dist)
+[http://naotu.baidu.com](http://naotu.baidu.com)
 
 注意：由于历史原因，有两个发布过的公开地址：
 
 1. [~~http://fex-team.baidu.com/kityminder/dist~~](http://fex-team.baidu.com/kityminder/dist)
 2. [~~http://kitygraph.github.io/kityminder/dist~~](http://kitygraph.github.io/kityminder/dist)
+3. [http://fex.baidu.com/kityminder/dist](http://fex.baidu.com/kityminder/dist)
 
-第一个地址已经失效，第二个地址不再维护更新，不便之处，请原谅。新地址已经稳定，请大家放心使用。
+第 1 个地址已经失效;
+第 2 个地址不再维护更新，不便之处;
+第 3 个地址会是最新发布的版本;
+
+新地址已经稳定，请大家放心使用。地址变动频繁带来的不便，请谅解。
 
 ## 依赖说明
 

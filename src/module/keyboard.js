@@ -4,10 +4,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
         var pointIndexes = [],
             p;
         root.traverse( function ( node ) {
-            p = node.getData( 'point' );
+            p = node.getRenderContainer().getRenderBox( 'top' );
             pointIndexes.push( {
-                x: p.x,
-                y: p.y,
+                x: p.x + p.width / 2,
+                y: p.y + p.height / 2,
                 node: node
             } );
         } );
