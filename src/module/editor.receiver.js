@@ -22,7 +22,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.setAttribute('contenteditable',true);
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
-        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
+        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;}');//clip:rect(1em 1em 1em 1em);
         this.km.on('textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
@@ -275,16 +275,27 @@ Minder.Receiver = kity.createClass('Receiver',{
                 return false;
             }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
+
                 if(me.index == i){
                     if(i == 0){
                         me.selection.setStartOffset(i)
                     }
-                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                    if(offset.x <= v.x + v.width/2){
+                        me.selection.collapse()
+                    }else {
+                        me.selection.setEndOffset(i + (me.selection.endOffset > i || dir == 1 ? 1 : 0))
+                    }
+
                 }else if(i > me.index){
                     me.selection.setStartOffset(me.index);
-                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                    me.selection.setEndOffset(i + 1)
                 }else{
-                    me.selection.setStartOffset(i + (dir == 1 ? 1 : 0));
+                    if(dir == 1){
+                        me.selection.setStartOffset(i + (offset.x >= v.x + v.width/2 ? 1 : 0));
+                    }else{
+                        me.selection.setStartOffset(i);
+                    }
+
                     me.selection.setEndOffset(me.index)
                 }
 
@@ -298,7 +309,6 @@ Minder.Receiver = kity.createClass('Receiver',{
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
         if(this.selection.collapsed){
-
             this.selection.updateShow(startOffset||this.textData[this.textData.length-1],0);
             return this;
         }
