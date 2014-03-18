@@ -130,10 +130,13 @@ $( function () {
             by: 'time',
             success: function ( result ) {
                 if ( result.list.length ) {
-                    if ( !isShareLink && !thisMapFilename ) {
+                    if ( !isShareLink && !thisMapFilename && !draft.data ) {
                         loadPersonal( result.list[ 0 ].path );
                     } else {
                         $user_btn.loading( false );
+                    }
+                    if ( draft.data ) {
+                        setFileSaved( false );
                     }
                     addToRecentMenu( result.list );
                 }
@@ -166,27 +169,24 @@ $( function () {
 
     function loadPersonal( path ) {
         var sto = baidu.frontia.personalStorage;
-        thisMapFilename = path;
-        if ( thisMapFilename == draft.filename ) {
-            $user_btn.loading( false ).text( getFileName( path ) );
-            setFileSaved( false );
-        } else {
-            $user_btn.loading( '加载“' + getFileName( path ) + '”...' );
-            sto.getFileUrl( path, {
-                success: function ( url ) {
-                    $.ajax( {
-                        cache: false,
-                        url: url,
-                        dataType: 'text',
-                        success: function ( result ) {
-                            window.km.importData( result, 'json' );
-                            $user_btn.loading( false ).text( getFileName( path ) );
-                            isFileSaved = true;
-                        }
-                    } );
-                }
-            } );
-        }
+        $user_btn.loading( '加载“' + getFileName( path ) + '”...' );
+        sto.getFileUrl( path, {
+            success: function ( url ) {
+                $.ajax( {
+                    cache: false,
+                    url: url,
+                    dataType: 'text',
+                    success: function ( result ) {
+                        thisMapFilename = path;
+                        window.km.importData( result, 'json' );
+                        window.km.execCommand( 'camera', window.km.getRoot() );
+                        $user_btn.loading( false );
+                        setFileSaved( true );
+                        clearDraft();
+                    }
+                } );
+            }
+        } );
     }
 
     function getMapFileName() {
@@ -204,14 +204,17 @@ $( function () {
         var data = window.km.exportData( 'json' );
         save( data, thisMapFilename || getMapFileName(), function ( success, info ) {
             if ( success ) {
+                thisMapFilename = info.path;
                 $save_btn.text( '已保存！' );
                 if ( !thisMapFilename ) {
-                    thisMapFilename = info.path;
                     addToRecentMenu( [ info ] );
                     $user_btn.text( getFileName( thisMapFilename ) );
+                    checkAutoSave();
                 }
+                setFileSaved( true );
+            } else {
+                $save_btn.loading( false ).text( '保存失败！' );
             }
-            console.log( info );
         } );
         $save_btn.loading( '正在保存...' );
     }
@@ -221,14 +224,14 @@ $( function () {
         var options = {
             ondup: thisMapFilename ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
             success: function ( result ) {
-                setFileSaved( true );
-                callback( true, result );
+                callback( !!result.path, result );
             },
             error: function ( error ) {
                 callback( false, error );
             }
         };
         sto.uploadTextFile( file, filename, options );
+        clearDraft();
     }
 
     function uuid() {
@@ -320,16 +323,18 @@ $( function () {
         var pattern = /path=(.+?)([&#]|$)/;
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
-        thisMapFilename = decodeURIComponent( match[ 1 ] );
+        var path = decodeURIComponent( match[ 1 ] );
+        loadPersonal( path );
     }
 
     function setFileSaved( saved ) {
-        $save_btn.disabled( saved || !currentUser );
+        $save_btn.disabled( !currentUser || saved );
         if ( saved ) {
             $user_btn.text( getFileName( thisMapFilename ) );
+            clearDraft();
         } else {
             $save_btn.text( '保存' );
-            $user_btn.text( getFileName( thisMapFilename || getMapFileName() ) + ' *' );
+            $user_btn.text( getFileName( thisMapFilename || draft.filename || getMapFileName() ) + ' *' );
         }
     }
 
@@ -337,7 +342,7 @@ $( function () {
         var sto = window.localStorage;
         if ( !sto ) return;
         draft = {
-            filename: thisMapFilename,
+            filename: thisMapFilename || getMapFileName(),
             data: window.km.exportData( 'json' )
         };
         sto.setItem( 'draft_filename', draft.filename );
@@ -351,29 +356,34 @@ $( function () {
         if ( !sto ) return;
 
         draft.data = sto.getItem( 'draft_data' );
-        draft.filename = sto.getItem( 'draft_filename' );
+        thisMapFilename = draft.filename = sto.getItem( 'draft_filename' );
+
         if ( draft.data ) {
             window.km.importData( draft.data, 'json' );
             setFileSaved( false );
         }
     }
 
-    loadAutoSave();
+    function clearDraft() {
+        var sto = window.localStorage;
+        if ( !sto ) return;
+
+        sto.removeItem( 'draft_data' );
+        sto.removeItem( 'draft_filename' );
+    }
+
 
     loadShare();
+
+    if ( !isShareLink ) {
+        loadAutoSave();
+    }
 
     currentUser = baidu.frontia.getCurrentAccount();
     if ( currentUser ) {
         setCurrentUser( currentUser );
         loadPath();
-        if ( thisMapFilename ) {
-            loadPersonal( thisMapFilename );
-        }
-    } else {
-        loadAutoSave();
     }
 
-    window.km.on( 'contentchange', function () {
-        checkAutoSave();
-    } );
+    window.km.on( 'contentchange', checkAutoSave );
 } );

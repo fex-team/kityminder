@@ -101,6 +101,7 @@ KityMinder.registerModule( "Select", function () {
                 if ( !downNode ) {
                     this.removeAllSelectedNodes();
                     marqueeActivator.selectStart( e );
+
                     this.setStatus('normal')
                 }
 

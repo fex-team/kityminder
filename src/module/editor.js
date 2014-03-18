@@ -41,6 +41,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                         node = selectionShape.getData('relatedNode');
                         e.stopPropagationImmediately();
                     }
+                    if(this.getStatus() == 'textedit')
+                        this.fire('contentchange');
                     km.setStatus('normal')
                 }
                 if(node){
