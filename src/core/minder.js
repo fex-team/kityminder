@@ -28,7 +28,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
-        this._paper.getNode().ondragstart = function(e) {
+        this._paper.getNode().ondragstart = function ( e ) {
             e.preventDefault();
         };
 
@@ -64,47 +64,48 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._shortcutkeys = {};
         this._bindshortcutKeys();
     },
-    isTextEditStatus:function(){
+    isTextEditStatus: function () {
         return false;
     },
     addShortcutKeys: function ( cmd, keys ) {
-        var obj = {},km = this;
+        var obj = {}, km = this;
         if ( keys ) {
             obj[ cmd ] = keys
         } else {
             obj = cmd;
         }
-        utils.each(obj,function(k,v){
-            km._shortcutkeys[k.toLowerCase()] = v;
-        });
+        utils.each( obj, function ( k, v ) {
+            km._shortcutkeys[ k.toLowerCase() ] = v;
+        } );
 
     },
-    getShortcutKey : function(cmdName){
-        return this._shortcutkeys[cmdName]
+    getShortcutKey: function ( cmdName ) {
+        return this._shortcutkeys[ cmdName ]
     },
     _bindshortcutKeys: function () {
         var me = this,
             shortcutkeys = this._shortcutkeys;
-        function checkkey(key,keyCode,e){
-            switch(key){
-                case  'ctrl':
-                case 'cmd':
-                    if(e.ctrlKey || e.metaKey){
-                        return true;
-                    }
-                    break;
-                case 'alt':
-                    if(e.altKey){
-                        return true
-                    }
-                    break;
-                case 'shift':
-                    if(e.shiftKey){
-                        return true;
-                    }
+
+        function checkkey( key, keyCode, e ) {
+            switch ( key ) {
+            case 'ctrl':
+            case 'cmd':
+                if ( e.ctrlKey || e.metaKey ) {
+                    return true;
+                }
+                break;
+            case 'alt':
+                if ( e.altKey ) {
+                    return true
+                }
+                break;
+            case 'shift':
+                if ( e.shiftKey ) {
+                    return true;
+                }
 
             }
-            if(keyCode == keymap[key]){
+            if ( keyCode == keymap[ key ] ) {
                 return true;
             }
             return false
@@ -114,15 +115,15 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             var originEvent = e.originEvent;
             var keyCode = originEvent.keyCode || originEvent.which;
             for ( var i in shortcutkeys ) {
-                var keys = shortcutkeys[ i ].toLowerCase().split('+');
+                var keys = shortcutkeys[ i ].toLowerCase().split( '+' );
                 var current = 0;
-                utils.each(keys,function(i,k){
-                    if(checkkey(k,keyCode,originEvent)){
+                utils.each( keys, function ( i, k ) {
+                    if ( checkkey( k, keyCode, originEvent ) ) {
                         current++;
                     }
-                });
+                } );
 
-                if(current == keys.length){
+                if ( current == keys.length ) {
                     if ( me.queryCommandState( i ) != -1 )
                         me.execCommand( i );
                     originEvent.preventDefault();
@@ -132,38 +133,38 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             }
         } );
     },
-    _initContextmenu:function(){
+    _initContextmenu: function () {
         this.contextmenus = [];
     },
-    addContextmenu:function(item){
-        if(utils.isArray(item)){
-            this.contextmenus = this.contextmenus.concat(item);
-        }else{
-            this.contextmenus.push(item);
+    addContextmenu: function ( item ) {
+        if ( utils.isArray( item ) ) {
+            this.contextmenus = this.contextmenus.concat( item );
+        } else {
+            this.contextmenus.push( item );
         }
 
         return this;
     },
-    getContextmenu:function(){
+    getContextmenu: function () {
         return this.contextmenus;
     },
-    _initStatus:function(){
+    _initStatus: function () {
         this._status = "normal";
         this._rollbackStatus = "normal";
     },
-    setStatus:function(status){
-        if(status){
+    setStatus: function ( status ) {
+        if ( status ) {
             this._rollbackStatus = this._status;
             this._status = status;
-        }else{
+        } else {
             this._status = '';
         }
         return this;
     },
-    rollbackStatus:function(){
+    rollbackStatus: function () {
         this._status = this._rollbackStatus;
     },
-    getStatus:function(){
+    getStatus: function () {
         return this._status;
     }
 } );
