@@ -551,14 +551,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.setType( "main" );
 			} else {
 				node.setType( "sub" );
-				var isExpand = parent.getData( "expand" );
-				if ( isExpand === undefined ) {
-					isExpand = true;
-					parent.setData( "expand", isExpand );
-				}
-				// if ( !isExpand ) {
-				// 	return false;
-				// }
 			}
 			//计算位置等流程
 			updateBg( node );
@@ -654,13 +646,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						if ( Layout.shicon ) Layout.shicon.remove();
 					} catch ( error ) {}
 				}
-				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+				if ( _buffer[ 0 ].getData( "expand" ) !== false ) _buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
 			}
 			if ( isExpand ) {
 				node.clearChildren();
 				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-					_cleanbuffer[ j ].clearChildren();
+					if ( _cleanbuffer[ j ].getData( "expand" ) !== false ) _cleanbuffer[ j ].clearChildren();
 					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 				}
 			}
