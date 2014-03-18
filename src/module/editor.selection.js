@@ -19,7 +19,7 @@ Minder.Selection = kity.createClass( 'Selection', {
 
         this.stroke( 'rgb(27,171,255)', 1 );
         this.setOpacity(1);
-        this.width = 1;
+        this.width = 1.5;
         this.collapsed = true;
         if(toEnd){
             this.startOffset = this.endOffset
