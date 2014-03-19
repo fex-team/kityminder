@@ -2773,12 +2773,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 						if ( Layout.shicon ) Layout.shicon.remove();
 					} catch ( error ) {}
 				}
+				//if ( _buffer[ 0 ].getData( "expand" ) !== false )
 				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
 				_buffer.shift();
 			}
 			if ( isExpand ) {
 				node.clearChildren();
 				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
+					//if ( _cleanbuffer[ j ].getData( "expand" ) !== false ) 
 					_cleanbuffer[ j ].clearChildren();
 					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 				}
@@ -4537,6 +4539,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                     case keys.Tab:
                         this.selection.setHide();
                         this.clear().setTextEditStatus(false);
+                        this.km.fire('contentchange');
                         this.km.setStatus('normal');
                         e.preventDefault();
                         break;
@@ -7287,6 +7290,9 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
         return null;
     }
 
+    utils.each(options.items,function(i,item){
+        options.items[i] = me.getLang('layout')[item];
+    });
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     comboboxWidget = $combox.kmui();
@@ -7470,12 +7476,11 @@ KM.registerUI( 'contextmenu', function () {
 
 
 
-KM.registerToolbarUI( 'markers', function ( name ) {
+KM.registerToolbarUI( 'markers help', function ( name ) {
 
     var me = this,
         currentRange, $dialog,
         opt = {
-            width: 200,
             title: this.getLang( 'tooltips' )[ name ] || '',
             url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
         };
