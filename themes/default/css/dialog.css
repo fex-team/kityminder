@@ -37,6 +37,7 @@
     max-height: 400px;
     font-size: 12px;
     overflow-y: auto;
+    overflow-x: auto;
 }
 .kmui-modal-footer {
     float: right;
