@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-18
+ * kityminder - v1.0.0 - 2014-03-19
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -968,9 +968,9 @@ Utils.extend( KityMinder, {
         return KityMinder._protocals[ name ] || null;
     },
     getSupportedProtocals: function () {
-        return Utils.keys( KityMinder._protocals ).sort(function(a, b) {
-            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
-        });
+        return Utils.keys( KityMinder._protocals ).sort( function ( a, b ) {
+            return KityMinder._protocals[ b ].recognizePriority - KityMinder._protocals[ a ].recognizePriority;
+        } );
     },
     getAllRegisteredProtocals: function () {
         return KityMinder._protocals;
@@ -991,18 +991,23 @@ function exportNode( node ) {
     return exported;
 }
 
-function importNode( node, json ) {
+var DEFAULT_TEXT = {
+    'root': 'maintopic',
+    'main': 'topic'
+};
+
+function importNode( node, json, km ) {
     var data = json.data;
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text );
+    node.setText( data.text || km.getLang( DEFAULT_TEXT[ data.type ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
     for ( var i = 0; i < childrenTreeData.length; i++ ) {
         var childNode = new MinderNode();
-        importNode( childNode, childrenTreeData[ i ] );
+        importNode( childNode, childrenTreeData[ i ], km );
         node.appendChild( childNode );
     }
     return node;
@@ -1061,7 +1066,7 @@ kity.extendClass( Minder, {
             this._root.removeChild( 0 );
         }
 
-        importNode( this._root, json );
+        importNode( this._root, json, this );
 
         this._fire( new MinderEvent( 'import', params, false ) );
         this._firePharse( {
@@ -4700,16 +4705,27 @@ Minder.Receiver = kity.createClass('Receiver',{
                 return false;
             }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
+
                 if(me.index == i){
                     if(i == 0){
                         me.selection.setStartOffset(i)
                     }
-                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                    if(offset.x <= v.x + v.width/2){
+                        me.selection.collapse()
+                    }else {
+                        me.selection.setEndOffset(i + (me.selection.endOffset > i || dir == 1 ? 1 : 0))
+                    }
+
                 }else if(i > me.index){
                     me.selection.setStartOffset(me.index);
-                    me.selection.setEndOffset(i + (dir == 1 ? 1 : 0))
+                    me.selection.setEndOffset(i + 1)
                 }else{
-                    me.selection.setStartOffset(i + (dir == 1 ? 1 : 0));
+                    if(dir == 1){
+                        me.selection.setStartOffset(i + (offset.x >= v.x + v.width/2 ? 1 : 0));
+                    }else{
+                        me.selection.setStartOffset(i);
+                    }
+
                     me.selection.setEndOffset(me.index)
                 }
 
@@ -4723,7 +4739,6 @@ Minder.Receiver = kity.createClass('Receiver',{
             endOffset = this.textData[this.selection.endOffset],
             width = 0 ;
         if(this.selection.collapsed){
-
             this.selection.updateShow(startOffset||this.textData[this.textData.length-1],0);
             return this;
         }
@@ -4819,6 +4834,12 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.setShowHold();
         }
         this.setPosition(offset).setWidth(width);
+        //解决在框选内容时，出现很窄的光标
+        if(width == 0){
+            this.setOpacity(0);
+        }else{
+            this.setOpacity(0.5);
+        }
         return this;
     },
     setPosition: function ( offset ) {
@@ -4829,7 +4850,6 @@ Minder.Selection = kity.createClass( 'Selection', {
         } catch ( e ) {
            console.log(e)
         }
-
         return this.update();
     },
     setHeight: function ( height ) {
