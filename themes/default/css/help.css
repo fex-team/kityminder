@@ -1,0 +1,17 @@
+.help-content{
+	line-height: 20px;
+	font-size: 12px;
+}
+.help-content ul{ 
+	list-style: none;
+	padding:0;
+}
+.help-content ul li{
+	color:#666;
+}
+.help-content h2{color:#333;font-size: 18px;}
+.help-content h3{
+	color:#333;
+	display: inline;
+	font-size: 14px;
+}

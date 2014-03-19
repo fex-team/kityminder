@@ -17,6 +17,9 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
         return null;
     }
 
+    utils.each(options.items,function(i,item){
+        options.items[i] = me.getLang('layout')[item];
+    });
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     comboboxWidget = $combox.kmui();

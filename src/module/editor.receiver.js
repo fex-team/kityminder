@@ -107,6 +107,7 @@ Minder.Receiver = kity.createClass('Receiver',{
                     case keys.Tab:
                         this.selection.setHide();
                         this.clear().setTextEditStatus(false);
+                        this.km.fire('contentchange');
                         this.km.setStatus('normal');
                         e.preventDefault();
                         break;
