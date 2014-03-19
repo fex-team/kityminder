@@ -40,9 +40,17 @@
 
     helpContent += '</div>';
 
-    var utils = KM.utils;
     KM.registerWidget( 'help', {
         tpl: helpContent,
+        initContent: function ( km ) {
+            var lang = km.getLang( 'dialogs.help' ),
+                html;
+            if ( lang ) {
+                html = $.parseTmpl( this.tpl, lang );
+            }
+            this.root().html( html );
+        },
+        initEvent: function ( km, $w ) {},
         width: 400
     } );
 } )();
