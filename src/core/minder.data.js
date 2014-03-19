@@ -7,9 +7,9 @@ Utils.extend( KityMinder, {
         return KityMinder._protocals[ name ] || null;
     },
     getSupportedProtocals: function () {
-        return Utils.keys( KityMinder._protocals ).sort(function(a, b) {
-            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
-        });
+        return Utils.keys( KityMinder._protocals ).sort( function ( a, b ) {
+            return KityMinder._protocals[ b ].recognizePriority - KityMinder._protocals[ a ].recognizePriority;
+        } );
     },
     getAllRegisteredProtocals: function () {
         return KityMinder._protocals;
@@ -30,18 +30,23 @@ function exportNode( node ) {
     return exported;
 }
 
-function importNode( node, json ) {
+var DEFAULT_TEXT = {
+    'root': 'maintopic',
+    'main': 'topic'
+};
+
+function importNode( node, json, km ) {
     var data = json.data;
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text );
+    node.setText( data.text || km.getLang( DEFAULT_TEXT[ data.type ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
     for ( var i = 0; i < childrenTreeData.length; i++ ) {
         var childNode = new MinderNode();
-        importNode( childNode, childrenTreeData[ i ] );
+        importNode( childNode, childrenTreeData[ i ], km );
         node.appendChild( childNode );
     }
     return node;
@@ -100,7 +105,7 @@ kity.extendClass( Minder, {
             this._root.removeChild( 0 );
         }
 
-        importNode( this._root, json );
+        importNode( this._root, json, this );
 
         this._fire( new MinderEvent( 'import', params, false ) );
         this._firePharse( {

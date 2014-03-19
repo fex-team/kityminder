@@ -67,10 +67,10 @@ $( function () {
 
     $user_menu.attachTo( $user_btn );
 
-    $save_btn = $( '<button>保存</button>' ).click( saveThisFile )
+    $save_btn = $( '<button id="save-btn">保存</button>' ).click( saveThisFile )
         .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
 
-    $share_btn = $( '<button>分享</button>' ).click( shareThisFile )
+    $share_btn = $( '<button id="share-btn">分享</button>' ).click( shareThisFile )
         .addClass( 'share' ).appendTo( $panel ).disabled( true );
 
 
