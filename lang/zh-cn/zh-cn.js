@@ -16,7 +16,8 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'zoom-in': '放大',
         'zoom-out': '缩小',
         'markers': '添加标签',
-        'switchlayout': '切换主题'
+        'switchlayout': '切换主题',
+        'help':'帮助'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
