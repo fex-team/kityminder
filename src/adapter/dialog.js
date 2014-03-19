@@ -3,7 +3,6 @@ KM.registerToolbarUI( 'markers help', function ( name ) {
     var me = this,
         currentRange, $dialog,
         opt = {
-            width: 200,
             title: this.getLang( 'tooltips' )[ name ] || '',
             url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js',
         };

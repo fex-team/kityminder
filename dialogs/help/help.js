@@ -1,5 +1,5 @@
 ( function () {
-    var helpContent = '<div class="help-content">';
+    var helpContent = '<div class="help-content" style="padding:10px;width:380px;">';
 
     helpContent += '<h2>基本操作</h2>';
     helpContent += '<p>编辑脑图的时候，最基本的操作是插入节点、编辑节点、删除节点、设置节点样式</p>';
@@ -89,7 +89,6 @@
             },
             'cancel': {}
         },
-        width: 200
-
-    } )
+        width: 400
+    } );
 } )();
