@@ -40,5 +40,7 @@ var keymap = KityMinder.keymap  = {
     'y':89,
     //粘贴
     'v' : 86,
-    'x' : 88
+    'x' : 88,
+
+    's' : 83
 };
