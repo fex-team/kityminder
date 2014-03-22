@@ -1,6 +1,8 @@
 # KityMinder Change Log
 
-
+## v1.2.0
+### 功能更新
+1.添加快捷键，新建脑图(ctrl+n),分享脑图(ctrl+shift+s),保存脑图(ctrl+s)
 
 
 ## v1.1.0

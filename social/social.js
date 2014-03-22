@@ -390,16 +390,24 @@ $( function () {
 
     //添加快捷键
     $(document.body).keydown(function(e){
+
         var keyCode = e.keyCode || e.which;
         //添加快捷键
         if((e.ctrlKey || e.metaKey)){
             switch (keyCode){
                 //保存
                 case KM.keymap.s :
-                    saveThisFile();
+                    if(e.shiftKey){
+                        shareThisFile()
+                    }else{
+                        saveThisFile();
+                    }
                     e.preventDefault();
                     break;
-
+                case KM.keymap.n :
+                    newFile();
+                    e.preventDefault();
+                    break;
             }
         }
     })

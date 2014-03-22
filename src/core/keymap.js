@@ -42,5 +42,7 @@ var keymap = KityMinder.keymap  = {
     'v' : 86,
     'x' : 88,
 
-    's' : 83
+    's' : 83,
+
+    'n' : 78
 };
