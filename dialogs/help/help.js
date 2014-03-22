@@ -25,8 +25,8 @@
     helpContent += '<p>使用百度账号登录后，您可以使用云存储和分享功能</p>';
     helpContent += '<ul>';
     helpContent += '    <li><h3>登录：</h3>点击登录按钮</li>';
-    helpContent += '    <li><h3>保存：</h3>点击保存按钮，将会把文件保存到你的云盘里</li>';
-    helpContent += '    <li><h3>分享：</h3>点击分享按钮，会生成分享链接，该链接可以打开您分享的脑图</li>';
+    helpContent += '    <li><h3>保存(CTRL+S)：</h3>点击保存按钮，将会把文件保存到你的云盘里</li>';
+    helpContent += '    <li><h3>分享(CTRL+SHIFT+S)：</h3>点击分享按钮，会生成分享链接，该链接可以打开您分享的脑图</li>';
     helpContent += '    <li><h3>打开：</h3>点击您账号的下拉按钮，会列出最近保存的脑图文件，点击即可打开</li>';
     helpContent += '</ul>';
 

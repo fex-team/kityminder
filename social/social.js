@@ -67,10 +67,10 @@ $( function () {
 
     $user_menu.attachTo( $user_btn );
 
-    $save_btn = $( '<button id="save-btn">保存</button>' ).click( saveThisFile )
+    $save_btn = $( '<button id="save-btn" data-original-title="CTRL+N">保存</button>' ).click( saveThisFile )
         .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
 
-    $share_btn = $( '<button id="share-btn">分享</button>' ).click( shareThisFile )
+    $share_btn = $( '<button id="share-btn" data-original-title="CTRL+SHIFT+S">分享</button>' ).click( shareThisFile )
         .addClass( 'share' ).appendTo( $panel ).disabled( true );
 
 
@@ -195,7 +195,7 @@ $( function () {
 
     function newFile() {
         thisMapFilename = null;
-        window.km.importData( '新建脑图', 'plain' );
+        window.km.importData( '新建脑图(ctrl+n)', 'plain' );
         window.km.execCommand( 'camera', window.km.getRoot() );
         $user_btn.text( '<新建脑图>' );
     }
