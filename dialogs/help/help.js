@@ -50,9 +50,7 @@
             }
             this.root().html( html );
         },
-        initEvent: function ( km, $w ) {
-        },
-
+        initEvent: function ( km, $w ) {},
         width: 400
     } );
 } )();
