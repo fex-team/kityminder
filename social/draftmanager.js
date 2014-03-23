@@ -49,7 +49,7 @@ function DraftManager( minder ) {
     }
 
     function save( path ) {
-        if ( current === null ) {
+        if ( !current ) {
             create();
         } else {
             current.path = path || current.path;
