@@ -516,10 +516,14 @@ $( function () {
 
     function loadDraft( index ) {
         var draft = draftManager.open( index ),
-            isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
-        if ( draft && isRemote ) {
+            isRemote;
+        if ( !draft ) return;
+
+        isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
+        if ( isRemote ) {
             setRemotePath( draft.path, false );
         }
+
         draftManager.load();
         if ( !isRemote ) {
             setRemotePath( null, false );
