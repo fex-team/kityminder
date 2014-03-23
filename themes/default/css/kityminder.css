@@ -24,6 +24,7 @@ html, body, #kityminder, div.kmui-editor-body {
 .kmui-container .kmui-toolbar{
     background-color: #fafafa;
     z-index: 99999;
+    margin-right: 400px;
 }
 .kmui-toolbar .kmui-btn-toolbar{
     padding: 5px;
