@@ -338,6 +338,16 @@ $( function () {
         var data = minder.exportData( 'json' );
         var sto = baidu.frontia.personalStorage;
 
+        function error( reason ) {
+            notice( reason + '\n建议您将脑图以 .km 格式导出到本地！' );
+            $save_btn.loading( false );
+            clearTimeout( timeout );
+        }
+
+        var timeout = setTimeout( function () {
+            error( '保存到云盘超时，可能是网络不稳定导致。' );
+        }, 15000 );
+
         sto.uploadTextFile( data, remotePath || generateRemotePath(), {
             ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
             success: function ( savedFile ) {
@@ -347,12 +357,14 @@ $( function () {
                     }
                     setRemotePath( savedFile.path, true );
                     $save_btn.text( '已保存！' );
+                    draftManager.save( remotePath );
+                    clearTimeout( timeout );
+                } else {
+                    error( '保存到云盘失败，可能是网络问题导致！' );
                 }
-                draftManager.save( remotePath );
             },
-            error: function ( error ) {
-                window.alert( '保存到云盘失败，建议您将脑图以 .km 格式导出到本地！' );
-                $save_btn.loading( false );
+            error: function ( e ) {
+                error( '保存到云盘失败' );
             }
         } );
 
