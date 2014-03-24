@@ -457,7 +457,8 @@ $( function () {
         var list = draftManager.list(),
             draft, $draft, index;
         if ( !list.length ) {
-            return false;
+            draftManager.create();
+            list = draftManager.list();
         }
 
         draft = list.shift();
@@ -488,7 +489,7 @@ $( function () {
 
     function adjustDraftMenu() {
         var pos = $draft_btn.offset();
-        pos.top -= $draft_menu.outerHeight() + 15;
+        pos.top -= $draft_menu.outerHeight() + 5;
         $draft_menu.offset( pos );
     }
 
