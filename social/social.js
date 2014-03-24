@@ -191,6 +191,11 @@ $( function () {
         } else if ( currentAccount ) {
             $user_btn.text( '* ' + minder.getMinderTitle() );
         }
+        if ( saved ) {
+            $save_btn.disabled( true ).text( '已保存' );
+        } else {
+            $save_btn.disabled( false ).text( '保存' );
+        }
     }
 
     // 检查是否在 Cookie 中登录过了
@@ -313,8 +318,22 @@ $( function () {
 
     // 点击文件菜单
     function openFile( e ) {
-        setRemotePath( $( this ).data( 'value' ), true );
-        loadRemote();
+        var path = $( this ).data( 'value' );
+        var draft = draftManager.getCurrent();
+        if ( draft.path == path ) {
+            if ( !draft.sync && window.confirm( '“' + getFileName( path ) + '”在草稿箱包含未保存的更改，确定加载网盘版本覆盖草稿箱中的版本吗？' ) ) {
+                setRemotePath( path, true );
+                loadRemote();
+            }
+        } else {
+            draft = draftManager.openByPath( path );
+            setRemotePath( path, !draft );
+            if ( draft ) {
+                draftManager.load();
+            } else {
+                loadRemote();
+            }
+        }
     }
 
     // 新建文件
@@ -356,8 +375,8 @@ $( function () {
                         addToRecentMenu( [ savedFile ] );
                     }
                     setRemotePath( savedFile.path, true );
-                    $save_btn.text( '已保存！' );
                     draftManager.save( remotePath );
+                    draftManager.sync();
                     clearTimeout( timeout );
                 } else {
                     error( '保存到云盘失败，可能是网络问题导致！' );
@@ -534,10 +553,11 @@ $( function () {
 
         isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
         if ( isRemote ) {
-            setRemotePath( draft.path, false );
+            setRemotePath( draft.path, draft.sync );
         }
-
+        watchingChanges = false;
         draftManager.load();
+        watchingChanges = true;
         if ( !isRemote ) {
             setRemotePath( null, false );
         }

@@ -62,6 +62,10 @@ function DraftManager( minder ) {
         return current;
     }
 
+    function getCurrent() {
+        return current;
+    }
+
     function openByPath( path ) {
         for ( var i = 0; i < drafts.length; i++ ) {
             if ( drafts[ i ].path == path ) return open( i );
@@ -76,9 +80,15 @@ function DraftManager( minder ) {
             current.path = path || current.path;
             current.name = minder.getMinderTitle();
             current.data = minder.exportData( "json" );
+            current.sync = false;
             current.update = new Date();
             store();
         }
+    }
+
+    function sync() {
+        current.sync = true;
+        store();
     }
 
     function list() {
@@ -103,6 +113,8 @@ function DraftManager( minder ) {
         create: create,
         list: list,
         remove: remove,
-        clear: clear
+        clear: clear,
+        getCurrent: getCurrent,
+        sync: sync
     };
 }
