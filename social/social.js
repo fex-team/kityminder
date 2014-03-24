@@ -338,28 +338,35 @@ $( function () {
         var data = minder.exportData( 'json' );
         var sto = baidu.frontia.personalStorage;
 
-        try {
-            sto.uploadTextFile( data, remotePath || generateRemotePath(), {
-                ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
-                success: function ( savedFile ) {
-                    if ( savedFile.path ) {
-                        if ( !remotePath ) {
-                            addToRecentMenu( [ savedFile ] );
-                        }
-                        setRemotePath( savedFile.path, true );
-                        $save_btn.text( '已保存！' );
-                    }
-                    draftManager.save( remotePath );
-                },
-                error: function ( error ) {
-                    notice( '保存到云盘失败，建议您将脑图以 .km 格式导出到本地！' );
-                    $save_btn.loading( false );
-                }
-            } );
-        } catch ( e ) {
-            notice( '保存到云盘失败：' + e.message + '\n建议您将脑图以 .km 格式导出到本地！' );
+        function error( reason ) {
+            notice( reason + '\n建议您将脑图以 .km 格式导出到本地！' );
             $save_btn.loading( false );
+            clearTimeout( timeout );
         }
+
+        var timeout = setTimeout( function () {
+            error( '保存到云盘超时，可能是网络不稳定导致。' );
+        }, 15000 );
+
+        sto.uploadTextFile( data, remotePath || generateRemotePath(), {
+            ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
+            success: function ( savedFile ) {
+                if ( savedFile.path ) {
+                    if ( !remotePath ) {
+                        addToRecentMenu( [ savedFile ] );
+                    }
+                    setRemotePath( savedFile.path, true );
+                    $save_btn.text( '已保存！' );
+                    draftManager.save( remotePath );
+                    clearTimeout( timeout );
+                } else {
+                    error( '保存到云盘失败，可能是网络问题导致！' );
+                }
+            },
+            error: function ( e ) {
+                error( '保存到云盘失败' );
+            }
+        } );
 
         $save_btn.loading( '正在保存...' );
     }
