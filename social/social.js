@@ -338,23 +338,28 @@ $( function () {
         var data = minder.exportData( 'json' );
         var sto = baidu.frontia.personalStorage;
 
-        sto.uploadTextFile( data, remotePath || generateRemotePath(), {
-            ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
-            success: function ( savedFile ) {
-                if ( savedFile.path ) {
-                    if ( !remotePath ) {
-                        addToRecentMenu( [ savedFile ] );
+        try {
+            sto.uploadTextFile( data, remotePath || generateRemotePath(), {
+                ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
+                success: function ( savedFile ) {
+                    if ( savedFile.path ) {
+                        if ( !remotePath ) {
+                            addToRecentMenu( [ savedFile ] );
+                        }
+                        setRemotePath( savedFile.path, true );
+                        $save_btn.text( '已保存！' );
                     }
-                    setRemotePath( savedFile.path, true );
-                    $save_btn.text( '已保存！' );
+                    draftManager.save( remotePath );
+                },
+                error: function ( error ) {
+                    notice( '保存到云盘失败，建议您将脑图以 .km 格式导出到本地！' );
+                    $save_btn.loading( false );
                 }
-                draftManager.save( remotePath );
-            },
-            error: function ( error ) {
-                window.alert( '保存到云盘失败，建议您将脑图以 .km 格式导出到本地！' );
-                $save_btn.loading( false );
-            }
-        } );
+            } );
+        } catch ( e ) {
+            notice( '保存到云盘失败：' + e.message + '\n建议您将脑图以 .km 格式导出到本地！' );
+            $save_btn.loading( false );
+        }
 
         $save_btn.loading( '正在保存...' );
     }
@@ -457,7 +462,8 @@ $( function () {
         var list = draftManager.list(),
             draft, $draft, index;
         if ( !list.length ) {
-            return false;
+            draftManager.create();
+            list = draftManager.list();
         }
 
         draft = list.shift();
@@ -488,7 +494,7 @@ $( function () {
 
     function adjustDraftMenu() {
         var pos = $draft_btn.offset();
-        pos.top -= $draft_menu.outerHeight() + 15;
+        pos.top -= $draft_menu.outerHeight() + 5;
         $draft_menu.offset( pos );
     }
 
@@ -516,10 +522,14 @@ $( function () {
 
     function loadDraft( index ) {
         var draft = draftManager.open( index ),
-            isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
-        if ( draft && isRemote ) {
+            isRemote;
+        if ( !draft ) return;
+
+        isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
+        if ( isRemote ) {
             setRemotePath( draft.path, false );
         }
+
         draftManager.load();
         if ( !isRemote ) {
             setRemotePath( null, false );

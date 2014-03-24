@@ -8,6 +8,27 @@ function DraftManager( minder ) {
     function init() {
         drafts = localStorage.getItem( 'drafts' );
         drafts = drafts ? JSON.parse( drafts ) : [];
+        loadDraftForOldVersion();
+    }
+
+    /**
+     * @todo 1.2 版本中删除该方法
+     *
+     * 加载老版本的草稿
+     */
+    function loadDraftForOldVersion() {
+        var path = localStorage.getItem( 'draft_filename' ),
+            data = localStorage.getItem( 'draft_data' );
+        if ( path && data ) {
+            drafts.push( {
+                path: path,
+                data: data,
+                name: JSON.parse( data ).data.text,
+                update: new Date()
+            } );
+            localStorage.removeItem( 'draft_filename' );
+            localStorage.removeItem( 'draft_data' );
+        }
     }
 
     function store() {
@@ -49,7 +70,7 @@ function DraftManager( minder ) {
     }
 
     function save( path ) {
-        if ( current === null ) {
+        if ( !current ) {
             create();
         } else {
             current.path = path || current.path;
