@@ -3552,6 +3552,7 @@ KityMinder.registerModule( 'View', function () {
             } else {
                 minder.rollbackStatus();
             }
+            this.setContentChanged( false );
 
         },
         queryState: function ( minder ) {
