@@ -191,6 +191,11 @@ $( function () {
         } else if ( currentAccount ) {
             $user_btn.text( '* ' + minder.getMinderTitle() );
         }
+        if ( saved ) {
+            $save_btn.disabled( true ).text( '已保存' );
+        } else {
+            $save_btn.disabled( false ).text( '保存' );
+        }
     }
 
     // 检查是否在 Cookie 中登录过了
@@ -270,7 +275,6 @@ $( function () {
                     url: url,
                     dataType: 'text',
                     success: function ( result ) {
-
                         watchingChanges = false;
 
                         minder.importData( result, 'json' );
@@ -279,11 +283,11 @@ $( function () {
                             draftManager.create();
                         }
                         draftManager.save( remotePath );
-
-                        watchingChanges = true;
-
+                        draftManager.sync();
                         minder.execCommand( 'camera', minder.getRoot() );
                         $user_btn.loading( false ).text( getFileName( remotePath ) );
+
+                        watchingChanges = true;
                     }
                 } );
             },
@@ -313,8 +317,22 @@ $( function () {
 
     // 点击文件菜单
     function openFile( e ) {
-        setRemotePath( $( this ).data( 'value' ), true );
-        loadRemote();
+        var path = $( this ).data( 'value' );
+        var draft = draftManager.getCurrent();
+        if ( draft.path == path ) {
+            if ( !draft.sync && window.confirm( '“' + getFileName( path ) + '”在草稿箱包含未保存的更改，确定加载网盘版本覆盖草稿箱中的版本吗？' ) ) {
+                setRemotePath( path, true );
+                loadRemote();
+            }
+        } else {
+            draft = draftManager.openByPath( path );
+            setRemotePath( path, !draft || draft.sync );
+            if ( draft ) {
+                draftManager.load();
+            } else {
+                loadRemote();
+            }
+        }
     }
 
     // 新建文件
@@ -338,28 +356,35 @@ $( function () {
         var data = minder.exportData( 'json' );
         var sto = baidu.frontia.personalStorage;
 
-        try {
-            sto.uploadTextFile( data, remotePath || generateRemotePath(), {
-                ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
-                success: function ( savedFile ) {
-                    if ( savedFile.path ) {
-                        if ( !remotePath ) {
-                            addToRecentMenu( [ savedFile ] );
-                        }
-                        setRemotePath( savedFile.path, true );
-                        $save_btn.text( '已保存！' );
-                    }
-                    draftManager.save( remotePath );
-                },
-                error: function ( error ) {
-                    notice( '保存到云盘失败，建议您将脑图以 .km 格式导出到本地！' );
-                    $save_btn.loading( false );
-                }
-            } );
-        } catch ( e ) {
-            notice( '保存到云盘失败：' + e.message + '\n建议您将脑图以 .km 格式导出到本地！' );
+        function error( reason ) {
+            notice( reason + '\n建议您将脑图以 .km 格式导出到本地！' );
             $save_btn.loading( false );
+            clearTimeout( timeout );
         }
+
+        var timeout = setTimeout( function () {
+            error( '保存到云盘超时，可能是网络不稳定导致。' );
+        }, 15000 );
+
+        sto.uploadTextFile( data, remotePath || generateRemotePath(), {
+            ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
+            success: function ( savedFile ) {
+                if ( savedFile.path ) {
+                    if ( !remotePath ) {
+                        addToRecentMenu( [ savedFile ] );
+                    }
+                    setRemotePath( savedFile.path, true );
+                    draftManager.save( remotePath );
+                    draftManager.sync();
+                    clearTimeout( timeout );
+                } else {
+                    error( '保存到云盘失败，可能是网络问题导致！' );
+                }
+            },
+            error: function ( e ) {
+                error( '保存到云盘失败' );
+            }
+        } );
 
         $save_btn.loading( '正在保存...' );
     }
@@ -527,10 +552,11 @@ $( function () {
 
         isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
         if ( isRemote ) {
-            setRemotePath( draft.path, false );
+            setRemotePath( draft.path, draft.sync );
         }
-
+        watchingChanges = false;
         draftManager.load();
+        watchingChanges = true;
         if ( !isRemote ) {
             setRemotePath( null, false );
         }
