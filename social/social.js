@@ -328,7 +328,9 @@ $( function () {
             draft = draftManager.openByPath( path );
             setRemotePath( path, !draft || draft.sync );
             if ( draft ) {
+                watchingChanges = false;
                 draftManager.load();
+                watchingChanges = true;
             } else {
                 loadRemote();
             }
@@ -338,12 +340,9 @@ $( function () {
     // 新建文件
     function newFile() {
         setRemotePath( null, true );
-        watchingChanges = false;
-        minder.importData( '新建脑图', 'plain' );
         draftManager.create();
-        watchingChanges = true;
+        minder.importData( '新建脑图', 'plain' );
         minder.execCommand( 'camera', minder.getRoot() );
-        $user_btn.text( '<新建脑图>' );
     }
 
     function generateRemotePath() {
@@ -471,14 +470,10 @@ $( function () {
     function watchChanges() {
         minder.on( 'contentchange', function () {
             if ( !watchingChanges ) return;
-            var currentData = minder.exportData( 'json' );
-            if ( watchChanges.lastData != currentData ) {
-                if ( currentAccount ) {
-                    $save_btn.disabled( false ).text( '保存' );
-                    watchChanges.lastData = currentData;
-                    setRemotePath( remotePath, false );
-                }
-                draftManager.save();
+            var current = draftManager.save();
+            if ( currentAccount ) {
+                $save_btn.disabled( current.sync ).text( '保存' );
+                setRemotePath( remotePath, current.sync );
             }
         } );
     }
