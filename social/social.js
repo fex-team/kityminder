@@ -275,7 +275,6 @@ $( function () {
                     url: url,
                     dataType: 'text',
                     success: function ( result ) {
-
                         watchingChanges = false;
 
                         minder.importData( result, 'json' );
@@ -284,11 +283,11 @@ $( function () {
                             draftManager.create();
                         }
                         draftManager.save( remotePath );
-
-                        watchingChanges = true;
-
+                        draftManager.sync();
                         minder.execCommand( 'camera', minder.getRoot() );
                         $user_btn.loading( false ).text( getFileName( remotePath ) );
+
+                        watchingChanges = true;
                     }
                 } );
             },
@@ -327,7 +326,7 @@ $( function () {
             }
         } else {
             draft = draftManager.openByPath( path );
-            setRemotePath( path, !draft );
+            setRemotePath( path, !draft || draft.sync );
             if ( draft ) {
                 draftManager.load();
             } else {
