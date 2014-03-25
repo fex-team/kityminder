@@ -173,6 +173,9 @@ KityMinder.registerModule( "HistoryModule", function () {
                         km.historyManager.saveScene()
                     }
                 }
+            },
+            "import":function(){
+                this.historyManager.reset()
             }
         }
     };

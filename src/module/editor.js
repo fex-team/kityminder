@@ -171,7 +171,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
 
-                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
+
                     receiver.setBaseOffset()
                         .getTextOffsetData();
 

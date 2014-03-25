@@ -158,6 +158,7 @@ $( function () {
 
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
+                draftManager.create();
                 minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
                 $share_btn.loading( false );
             },
@@ -319,7 +320,7 @@ $( function () {
     function openFile( e ) {
         var path = $( this ).data( 'value' );
         var draft = draftManager.getCurrent();
-        if ( draft.path == path ) {
+        if ( draft && draft.path == path ) {
             if ( !draft.sync && window.confirm( '“' + getFileName( path ) + '”在草稿箱包含未保存的更改，确定加载网盘版本覆盖草稿箱中的版本吗？' ) ) {
                 setRemotePath( path, true );
                 loadRemote();
