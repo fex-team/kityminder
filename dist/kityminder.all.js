@@ -1767,6 +1767,9 @@ KityMinder.registerModule( "HistoryModule", function () {
                         km.historyManager.saveScene()
                     }
                 }
+            },
+            "import":function(){
+                this.historyManager.reset()
             }
         }
     };
@@ -4357,7 +4360,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
 
-                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
+
                     receiver.setBaseOffset()
                         .getTextOffsetData();
 
