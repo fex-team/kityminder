@@ -60,17 +60,6 @@ $( function () {
         // 当前脑图的分享连接
         shareId = uuid(),
 
-        // 查找 baseUrl
-        baseUrl = ( function () {
-            var scripts = document.getElementsByTagName( 'script' );
-            for ( var i = 0; i < scripts.length; i++ ) {
-                var index = scripts[ i ].src.indexOf( 'social.js' );
-                if ( ~index ) {
-                    return scripts[ i ].src.substr( 0, index );
-                }
-            }
-        } )(),
-
         notice = window.alert,
 
         minder = window.km,
@@ -394,9 +383,9 @@ $( function () {
             return;
         }
 
-        var currentUrl = window.location.origin + window.location.pathname,
+        var baseUrl = /^(.*?)(\?|\#|$)/.exec(window.location.href)[1];
 
-            shareUrl = currentUrl + '?shareId=' + shareId,
+        var shareUrl = baseUrl + '?shareId=' + shareId,
 
             shareData = new baidu.frontia.Data( {
                 shareMinder: {
