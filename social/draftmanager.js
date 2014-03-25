@@ -1,7 +1,8 @@
 function DraftManager( minder ) {
     var current = null,
         localStorage = window.localStorage,
-        drafts;
+        drafts,
+        MAX_SIZE = 15;
 
     init();
 
@@ -32,7 +33,7 @@ function DraftManager( minder ) {
     }
 
     function store() {
-        localStorage.setItem( 'drafts', JSON.stringify( drafts ) );
+        localStorage.setItem( 'drafts', JSON.stringify( drafts.slice( 0, MAX_SIZE ) ) );
     }
 
     function create( path ) {
@@ -84,6 +85,7 @@ function DraftManager( minder ) {
             current.update = new Date();
             store();
         }
+        return current;
     }
 
     function sync() {
@@ -92,7 +94,7 @@ function DraftManager( minder ) {
     }
 
     function list() {
-        return drafts.slice();
+        return drafts.slice( 0, 15 );
     }
 
     function remove( remove_index ) {
