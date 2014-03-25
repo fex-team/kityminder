@@ -158,6 +158,7 @@ $( function () {
 
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
+                draftManager.create();
                 minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
                 $share_btn.loading( false );
             },
