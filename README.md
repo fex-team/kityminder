@@ -15,19 +15,22 @@ KM是基于SVG技术实现，使用JavaScript+html实现。支持绝大多数的
 4. IE9+
 
 ## 线上版本
-[http://naotu.baidu.com](http://naotu.baidu.com)
 
-注意：由于历史原因，有两个发布过的公开地址：
+产品地址：[http://naotu.baidu.com](http://naotu.baidu.com)
+
+注意：由于历史原因，有三个发布过的公开地址：
 
 1. [~~http://fex-team.baidu.com/kityminder/dist~~](http://fex-team.baidu.com/kityminder/dist)
 2. [~~http://kitygraph.github.io/kityminder/dist~~](http://kitygraph.github.io/kityminder/dist)
 3. [http://fex.baidu.com/kityminder/dist](http://fex.baidu.com/kityminder/dist)
 
 第 1 个地址已经失效;
-第 2 个地址不再维护更新，不便之处;
-第 3 个地址会是最新发布的版本;
 
-新地址已经稳定，请大家放心使用。地址变动频繁带来的不便，请谅解。
+第 2 个地址不再维护更新，不便之处;
+
+第 3 个地址是更新频率最高的地址，新功能可以在这里尝鲜;
+
+[产品地址](http://naotu.baidu.com)已经稳定，请大家放心使用。地址变动频繁带来的不便，请谅解。
 
 ## 依赖说明
 
