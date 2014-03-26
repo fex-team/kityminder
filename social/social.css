@@ -19,3 +19,8 @@ button.user-file{position:relative;padding-right:28px}button.user-file:after{con
 .draft-menu.kmui-combobox-menu .kmui-combobox-checked .kmui-combobox-item-label{display:block;margin-left:28px}
 .draft-menu.kmui-combobox-menu .kmui-combobox-checked:hover{color:#ccc}.draft-menu.kmui-combobox-menu .kmui-combobox-checked:hover .kmui-combobox-icon{background-position:center 0}
 .user-file-menu{margin-top:20px;margin-left:1px}
+#share-dialog{position:absolute;padding:20px;border-radius:4px;right:10px;top:65px;background:#fff;width:300px;box-shadow:1px 2px 16px rgba(0,0,0,0.5);display:none}#share-dialog h3{margin:0;font-size:16px;color:#666}
+#share-dialog input{width:98%}
+#share-dialog p,#share-dialog #share-platform{margin:20px 0 30px}
+#share-dialog #share-platform{margin-bottom:0}
+#share-dialog:before{position:absolute;content:' ';width:0;height:0;line-height:0;display:block;border:10px solid transparent;border-bottom-color:#fff;right:30px;top:-20px}
