@@ -191,3 +191,46 @@ button {
     margin-top: 20px;
     margin-left: 1px;
 }
+
+#share-dialog {
+    position: absolute;
+    padding: 20px;
+    border-radius: 4px;
+    right: 10px;
+    top: 65px;
+    background: white;
+    width: 300px;
+    box-shadow: 1px 2px 16px rgba(0, 0, 0, .5);
+    display: none;
+
+    h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #666;
+    }
+
+    input {
+        width: 98%;
+    }
+
+    p, #share-platform {
+        margin: 20px 0 30px;
+    }
+
+    #share-platform {
+        margin-bottom: 0;
+    }
+
+    &:before {
+        position: absolute;
+        content: ' ';
+        width: 0;
+        height: 0;
+        line-height: 0;
+        display: block;
+        border: 10px solid transparent;
+        border-bottom-color: white;
+        right: 30px;
+        top: -20px;
+    }
+}
