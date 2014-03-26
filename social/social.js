@@ -60,6 +60,8 @@ $( function () {
         // 当前脑图的分享连接
         shareId = uuid(),
 
+        titleSuffix = document.title || 'Kity Minder',
+
         notice = window.alert,
 
         minder = window.km,
@@ -181,6 +183,9 @@ $( function () {
         } else if ( currentAccount ) {
             $user_btn.text( '* ' + minder.getMinderTitle() );
         }
+
+        document.title = [ filename, titleSuffix ].join( ' - ' );
+
         if ( saved ) {
             $save_btn.disabled( true ).text( '已保存' );
         } else {
@@ -383,7 +388,7 @@ $( function () {
             return;
         }
 
-        var baseUrl = /^(.*?)(\?|\#|$)/.exec(window.location.href)[1];
+        var baseUrl = /^(.*?)(\?|\#|$)/.exec( window.location.href )[ 1 ];
 
         var shareUrl = baseUrl + '?shareId=' + shareId,
 
