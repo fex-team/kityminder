@@ -99,12 +99,13 @@ kity.extendClass( Minder, {
 
         this._fire( new MinderEvent( 'preimport', params, false ) );
 
-
         // 删除当前所有节点
         while ( this._root.getChildren().length ) {
             this._root.removeChild( 0 );
         }
-
+        var curLayout = this._root.getData( "currentstyle" );
+        this._root.setData();
+        this._root.setData( "currentstyle", curLayout );
         importNode( this._root, json, this );
 
         this._fire( new MinderEvent( 'import', params, false ) );
