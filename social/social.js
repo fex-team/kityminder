@@ -45,12 +45,14 @@ $.extend( $.fn, {
     } )()
 } );
 
-
+/**
+ * 核心业务逻辑
+ */
 $( function () {
 
     // UI 元素
     var $panel, $login_btn, $save_btn, $share_btn, $user_btn, $user_menu,
-        $draft_btn, $draft_menu, $share_dialog, $share_url,
+        $draft_btn, $draft_menu, $share_dialog, $share_url, $copy_url_btn,
 
         // 当前文件的远端路径
         remotePath = null,
@@ -70,8 +72,6 @@ $( function () {
 
         titleSuffix = document.title || '百度脑图',
 
-        notice = window.alert,
-
         // 脑图实例
         minder = window.km,
 
@@ -79,7 +79,11 @@ $( function () {
         draftManager = new window.DraftManager( minder ),
 
         // 当前是否要检测文档内容是否变化的开关
-        watchingChanges = true;
+        watchingChanges = true,
+
+        notice = (function() {
+            return window.alert;
+        })();
 
     start();
 
@@ -120,10 +124,10 @@ $( function () {
         $user_menu.attachTo( $user_btn );
 
         $save_btn = $( '<button id="save-btn">保存</button>' ).click( save )
-            .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
+            .addClass( 'baidu-cloud' );
 
         $share_btn = $( '<button id="share-btn">分享</button>' ).click( share )
-            .addClass( 'share' ).appendTo( $panel ).disabled( true );
+            .addClass( 'share' ).appendTo( $panel );
 
         $draft_btn = $( '<button id="draft-btn">草稿箱</button>' ).appendTo( 'body' );
 
@@ -133,15 +137,28 @@ $( function () {
 
         $share_dialog = $( '#share-dialog' );
         $share_url = $( '#share-url' );
-
+        $copy_url_btn = $( '#copy-share-url' );
 
         $share_dialog.mousedown( function ( e ) {
             e.stopPropagation();
         } );
 
+        var copyTrickTimer = 0;
         $( 'body' ).on( 'mousedown', function ( e ) {
-            $share_dialog.hide();
-            $share_btn.loading( false );
+            copyTrickTimer = setTimeout( function () {
+                $share_dialog.hide();
+                $share_btn.loading( false );
+                $copy_url_btn.loading( false );
+            }, 30 );
+        } );
+
+        var clip = new window.ZeroClipboard( $copy_url_btn, {
+            hoverClass: 'hover',
+            activeClass: 'active'
+        } );
+        clip.on( 'dataRequested', function ( client, args ) {
+            $copy_url_btn.loading( '已复制' );
+            clearTimeout( copyTrickTimer );
         } );
     }
 
@@ -173,8 +190,18 @@ $( function () {
 
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
-                draftManager.create();
-                minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                if ( ret.count === 0 ) {
+                    $share_btn.loading( false );
+                    return notice( '加载分享内容失败！请确认分享链接正确。' );
+                }
+                var draft = draftManager.openByPath( 'share/' + shareId );
+                if ( draft ) {
+                    draftManager.load();
+                } else {
+                    draftManager.create( 'share/' + shareId );
+                    minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                }
+                setRemotePath( null, false );
                 $share_btn.loading( false );
             },
             error: function ( e ) {
@@ -239,8 +266,7 @@ $( function () {
     function setAccount( account ) {
         currentAccount = account;
         $user_btn.prependTo( $panel );
-        $save_btn.disabled( false );
-        $share_btn.disabled( false );
+        $save_btn.appendTo( $panel );
         $login_btn.detach();
         loadAvator();
         loadRecent();
