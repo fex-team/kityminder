@@ -4,6 +4,10 @@
     <meta charset="utf-8">
 
     <script src="../lib/jquery-2.1.0.min.js" charset="utf-8"></script>
+    <script src="../lib/ZeroClipboard.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        ZeroClipboard.setDefaults( { moviePath: '../lib/ZeroClipboard.swf' } );
+    </script>
 
     <script src="../kity/dist/kitygraph.all.js" charset="utf-8"></script>
     <script src="../dev/import.php" charset="utf-8"></script>
@@ -24,6 +28,22 @@
 
 <body>
     <div id="kityminder" onselectstart="return false"></div>
+    <div id="share-dialog" >
+        <h3>URL分享：</h3>
+        <p>
+            <input id="share-url" type="url" value="http://naotu.baidu.com/?shareId=kcev3dd" />
+            <button id="copy-share-url" data-clipboard-target="share-url" type="button">复制</button>
+        </p>
+        <h3>社交分享：</h3>
+        <p id="share-platform" class="bdsharebuttonbox">
+            <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+            <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+            <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+            <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        </p>
+    </div>
+    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdMini":"2","bdMiniList":[],"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
 </body>
 <script>
     // create km instance
