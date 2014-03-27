@@ -97,6 +97,18 @@ kity.extendClass( Minder, {
 
         json = params.json || ( params.json = protocal.decode( local ) );
 
+        if ( typeof json === 'object' && 'then' in json ) {
+            var self = this;
+            json.then( local, function ( data ) {
+                self._afterImportData( data, params );
+            } );
+        } else {
+            this._afterImportData( json, params );
+        }
+        return this;
+    },
+
+    _afterImportData: function ( json, params ) {
         this._fire( new MinderEvent( 'preimport', params, false ) );
 
         // 删除当前所有节点
@@ -115,7 +127,6 @@ kity.extendClass( Minder, {
         this._firePharse( {
             type: 'interactchange'
         } );
-
-        return this;
     }
+
 } );
