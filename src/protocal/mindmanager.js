@@ -7,49 +7,45 @@
     XMind files are generated in XMind Workbook (.xmind) format, an open format that is based on the principles of OpenDocument. It consists of a ZIP compressed archive containing separate XML documents for content and styles, a .jpg image file for thumbnails, and directories for related attachments.
  */
 
-KityMinder.registerProtocal( 'xmind', function () {
+KityMinder.registerProtocal( 'mindmanager', function () {
 
     var markerMap = {
-         'priority-1'   : ['PriorityIcon', 1]
-        ,'priority-2'   : ['PriorityIcon', 2]
-        ,'priority-3'   : ['PriorityIcon', 3]
-        ,'priority-4'   : ['PriorityIcon', 4]
-        ,'priority-5'   : ['PriorityIcon', 5]
+         'urn:mindjet:Prio1'   : ['PriorityIcon', 1]
+        ,'urn:mindjet:Prio2'   : ['PriorityIcon', 2]
+        ,'urn:mindjet:Prio3'   : ['PriorityIcon', 3]
+        ,'urn:mindjet:Prio4'   : ['PriorityIcon', 4]
+        ,'urn:mindjet:Prio5'   : ['PriorityIcon', 5]
 
-        ,'task-start'   : ['ProgressIcon', 1]
-        ,'task-quarter' : ['ProgressIcon', 2]
-        ,'task-half'    : ['ProgressIcon', 3]
-        ,'task-3quar'   : ['ProgressIcon', 4]
-        ,'task-done'    : ['ProgressIcon', 5]
-
-        ,'task-oct'     : null
-        ,'task-3oct'    : null
-        ,'task-5oct'    : null
-        ,'task-7oct'    : null
+        ,'0'   : ['ProgressIcon', 1]
+        ,'25'  : ['ProgressIcon', 2]
+        ,'50'  : ['ProgressIcon', 3]
+        ,'75'  : ['ProgressIcon', 4]
+        ,'100' : ['ProgressIcon', 5]
     };
 
     function processTopic(topic, obj){
-
         //处理文本
-        obj.data =  { text : topic.title };
+        obj.data = { text : topic.Text && topic.Text.PlainText || '_' };  // 节点默认的文本，没有Text属性
 
         // 处理标签
-        if(topic.marker_refs && topic.marker_refs.marker_ref){
-            var markers = topic.marker_refs.marker_ref;
-            if( markers.length && markers.length > 0 ){
-                for (var i in markers) {
-                    var type = markerMap[ markers[i]['marker_id'] ];
-                    type && (obj.data[ type[0] ] = type[1]);
-                }
-            }else{
-                var type = markerMap[ markers['marker_id'] ];
+        if(topic.Task){
+
+            var type;
+            if(topic.Task.TaskPriority){
+                type = markerMap[ topic.Task.TaskPriority ];
+                type && (obj.data[ type[0] ] = type[1]);
+            }
+
+            if(topic.Task.TaskPercentage){
+                type = markerMap[ topic.Task.TaskPercentage ];
                 type && (obj.data[ type[0] ] = type[1]);
             }
         }
 
         //处理子节点
-        if( topic.children && topic.children.topics && topic.children.topics.topic ){
-            var tmp = topic.children.topics.topic;
+        if( topic.SubTopics && topic.SubTopics.Topic ){
+
+            var tmp = topic.SubTopics.Topic;
             if( tmp.length && tmp.length > 0 ){ //多个子节点
                 obj.children = [];
 
@@ -68,7 +64,7 @@ KityMinder.registerProtocal( 'xmind', function () {
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
-        processTopic(json.sheet.topic, result);
+        processTopic(json.OneTopic.Topic, result);
         return result;
     };
 
@@ -79,9 +75,9 @@ KityMinder.registerProtocal( 'xmind', function () {
     };
 
 	return {
-		fileDescription: 'xmind格式文件',
-		fileExtension: '.xmind',
-        
+		fileDescription: 'mindmanager格式文件',
+		fileExtension: '.mmap',
+
 		decode: function ( local ) {
 
 		    return {
@@ -89,7 +85,7 @@ KityMinder.registerProtocal( 'xmind', function () {
 
 				    getEntries( local, function( entries ) {
 				        entries.forEach(function( entry ) {
-				            if(entry.filename == 'content.xml'){
+				            if(entry.filename == 'Document.xml'){
 				                entry.getData(new zip.TextWriter(), function(text) {
 				                    var km = xml2km($.parseXML(text));
 				                    callback && callback( km );

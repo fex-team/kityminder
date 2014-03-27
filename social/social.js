@@ -75,9 +75,16 @@ $( function () {
 
         minder = window.km,
 
-        draftManager = new window.DraftManager( minder ),
+        draftManager,
 
         watchingChanges = true;
+
+
+    if( !window.draftManager ){
+        draftManager = window.draftManager = new window.DraftManager( minder );
+    }else{
+        draftManager = window.draftManager;
+    }
 
     start();
 
@@ -270,29 +277,91 @@ $( function () {
 
         sto.getFileUrl( remotePath, {
             success: function ( url ) {
-                $.ajax( {
-                    cache: false,
-                    url: url,
-                    dataType: 'text',
-                    success: function ( result ) {
-                        watchingChanges = false;
-
-                        minder.importData( result, 'json' );
-
-                        if ( !draftManager.openByPath( remotePath ) ) {
-                            draftManager.create();
-                        }
-                        draftManager.save( remotePath );
-                        draftManager.sync();
-                        minder.execCommand( 'camera', minder.getRoot() );
-                        $user_btn.loading( false ).text( getFileName( remotePath ) );
-
-                        watchingChanges = true;
-                    }
-                } );
+                // the url to download the file on cloud dist
+                var arr = remotePath.split('.');
+                var format = arr[arr.length - 1];
+                if(format in loadFile){
+                    loadFile[ format ]( url );
+                }   
             },
             error: notice
         } );
+    }
+
+    var loadFile = {
+        'km'    : loadPlainType,
+        'json'  : loadPlainType,
+        'xmind' : loadXMind,
+        'mmap'  : loadMindManager,
+        'mm'    : loadFreeMind
+    };
+
+    function loadPlainType( url ){
+        $.ajax( {
+            cache: false,
+            url: url,
+            dataType: 'text',
+            success: function ( result ) {
+                importFile( result, 'json' );
+            }
+        } );
+    }
+
+    function loadXMind( url ){
+
+        var xhr = new XMLHttpRequest();    
+        xhr.open("get", url, true);
+        xhr.responseType = "blob";
+        xhr.onload = function() {
+            if ( this.status == 200 && this.readyState) {
+                var blob = this.response;
+                importFile( blob, 'xmind' );
+            }
+        }
+        xhr.send();
+    }
+
+    function loadMindManager( url ){
+
+        var xhr = new XMLHttpRequest();    
+        xhr.open("get", url, true);
+        xhr.responseType = "blob";
+        xhr.onload = function() {
+            if ( this.status == 200 && this.readyState) {
+                var blob = this.response;
+                importFile( blob, 'mindmanager' );
+            }
+        }
+        xhr.send();
+        
+    }
+
+    function loadFreeMind( url ){
+        $.ajax( {
+            cache: false,
+            url: url,
+            dataType: 'text',
+            success: function ( result ) {
+                importFile( result, 'freemind' );
+            }
+        } );
+    }
+
+    // 见文件数据导入minder
+    function importFile(data, format){
+        watchingChanges = false;
+
+        minder.importData( data, format );
+
+        if ( !draftManager.openByPath( remotePath ) ) {
+            draftManager.create();
+        }
+        draftManager.save( remotePath );
+        draftManager.sync();
+        minder.execCommand( 'camera', minder.getRoot() );
+        $user_btn.loading( false ).text( getFileName( remotePath ) );
+
+        watchingChanges = true;
     }
 
     // 添加文件到最近文件列表
