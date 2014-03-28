@@ -49,31 +49,15 @@ KityMinder.registerModule( "KeyboardModule", function () {
         };
     }
 
-    function coefForX( a, b ) {
-        return 0.1 * min( abs( a.top - b.top ), abs( a.bottom - b.bottom ) ) + 1;
-    }
-
-    function coefForY( a, b ) {
-        return 0.1 * min( abs( a.left - b.left ), abs( a.right - b.right ) ) + 1;
-    }
-
     function findClosestPointsFor( pointIndexes, iFind ) {
         var find = pointIndexes[ iFind ];
         var most = {}, quad;
         var current, dist;
-        var table = [];
-
-        console.log( 'table for ' + find.text );
 
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             if ( i == iFind ) continue;
             current = pointIndexes[ i ];
             dist = getCoefedDistance( current, find );
-
-            table.push( {
-                text: current.text,
-                dist: dist.cx
-            } );
 
             // left check
             if ( current.right < find.left ) {
@@ -115,7 +99,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 }
             }
         }
-        console.table( table );
         find.node._nearestNodes = {
             right: most.right && most.right.node || null,
             top: most.top && most.top.node || null,
