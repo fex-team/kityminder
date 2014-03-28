@@ -1,8 +1,15 @@
 /* global Promise: true */
-
 /**
+ * 百度脑图社会化功能
+ *
+ * 1. 百度账号登陆
+ * 2. 百度云存储
+ * 3. 分享
+ * 4. 草稿箱
  * @author techird
  */
+
+
 $.extend( $.fn, {
     disabled: function ( value ) {
         if ( value === undefined ) return !!this.attr( 'disabled' );
@@ -38,11 +45,14 @@ $.extend( $.fn, {
     } )()
 } );
 
-
+/**
+ * 核心业务逻辑
+ */
 $( function () {
 
     // UI 元素
-    var $panel, $login_btn, $save_btn, $share_btn, $user_btn, $user_menu, $draft_btn, $draft_menu,
+    var $panel, $login_btn, $save_btn, $share_btn, $user_btn, $user_menu,
+        $draft_btn, $draft_menu, $share_dialog, $share_url, $copy_url_btn,
 
         // 当前文件的远端路径
         remotePath = null,
@@ -57,27 +67,22 @@ $( function () {
             return ( ( +new Date() * 10000 ) + ( Math.random() * 9999 ) ).toString( 36 );
         },
 
-        // 当前脑图的分享连接
+        // 当前脑图的分享ID
         shareId = uuid(),
 
-        // 查找 baseUrl
-        baseUrl = ( function () {
-            var scripts = document.getElementsByTagName( 'script' );
-            for ( var i = 0; i < scripts.length; i++ ) {
-                var index = scripts[ i ].src.indexOf( 'social.js' );
-                if ( ~index ) {
-                    return scripts[ i ].src.substr( 0, index );
-                }
-            }
-        } )(),
+        titleSuffix = document.title || '百度脑图',
 
-        notice = window.alert,
-
+        // 脑图实例
         minder = window.km,
-
+        // 草稿箱
         draftManager = window.draftManager || new window.DraftManager( minder ),
 
-        watchingChanges = true;
+        // 当前是否要检测文档内容是否变化的开关
+        watchingChanges = true,
+
+        notice = ( function () {
+            return window.alert;
+        } )();
 
     start();
 
@@ -118,16 +123,42 @@ $( function () {
         $user_menu.attachTo( $user_btn );
 
         $save_btn = $( '<button id="save-btn">保存</button>' ).click( save )
-            .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
+            .addClass( 'baidu-cloud' );
 
         $share_btn = $( '<button id="share-btn">分享</button>' ).click( share )
-            .addClass( 'share' ).appendTo( $panel ).disabled( true );
+            .addClass( 'share' ).appendTo( $panel );
 
         $draft_btn = $( '<button id="draft-btn">草稿箱</button>' ).appendTo( 'body' );
 
         $draft_menu = $.kmuidropmenu().addClass( 'draft-menu kmui-combobox-menu' ).appendTo( 'body' );
         $draft_menu.kmui().attachTo( $draft_btn );
         $draft_menu.on( 'aftershow', showDraftList );
+
+        $share_dialog = $( '#share-dialog' );
+        $share_url = $( '#share-url' );
+        $copy_url_btn = $( '#copy-share-url' );
+
+        $share_dialog.mousedown( function ( e ) {
+            e.stopPropagation();
+        } );
+
+        var copyTrickTimer = 0;
+        $( 'body' ).on( 'mousedown', function ( e ) {
+            copyTrickTimer = setTimeout( function () {
+                $share_dialog.hide();
+                $share_btn.loading( false );
+                $copy_url_btn.loading( false );
+            }, 30 );
+        } );
+
+        var clip = new window.ZeroClipboard( $copy_url_btn, {
+            hoverClass: 'hover',
+            activeClass: 'active'
+        } );
+        clip.on( 'dataRequested', function ( client, args ) {
+            $copy_url_btn.loading( '已复制' );
+            clearTimeout( copyTrickTimer );
+        } );
     }
 
     // 初始化云平台 frontia
@@ -158,7 +189,18 @@ $( function () {
 
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
-                minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                if ( ret.count === 0 ) {
+                    $share_btn.loading( false );
+                    return notice( '加载分享内容失败！请确认分享链接正确。' );
+                }
+                var draft = draftManager.openByPath( 'share/' + shareId );
+                if ( draft ) {
+                    draftManager.load();
+                } else {
+                    draftManager.create( 'share/' + shareId );
+                    minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                }
+                setRemotePath( null, false );
                 $share_btn.loading( false );
             },
             error: function ( e ) {
@@ -191,6 +233,9 @@ $( function () {
         } else if ( currentAccount ) {
             $user_btn.text( '* ' + minder.getMinderTitle() );
         }
+
+        document.title = [ filename || minder.getMinderTitle(), titleSuffix ].join( ' - ' );
+
         if ( saved ) {
             $save_btn.disabled( true ).text( '已保存' );
         } else {
@@ -222,8 +267,6 @@ $( function () {
         $user_btn.prependTo( $panel );
         $save_btn.appendTo( $panel );
         $share_btn.appendTo( $panel );
-        $save_btn.disabled( false );
-        $share_btn.disabled( false );
         $login_btn.detach();
         loadAvator();
         loadRecent();
@@ -457,9 +500,9 @@ $( function () {
             return;
         }
 
-        var currentUrl = window.location.origin + window.location.pathname,
+        var baseUrl = /^(.*?)(\?|\#|$)/.exec( window.location.href )[ 1 ];
 
-            shareUrl = currentUrl + '?shareId=' + shareId,
+        var shareUrl = baseUrl + '?shareId=' + shareId,
 
             shareData = new baidu.frontia.Data( {
                 shareMinder: {
@@ -468,41 +511,21 @@ $( function () {
                 }
             } );
 
+        var shareConfig = window._bd_share_config.common,
+            resetShare = window._bd_share_main.init;
+
         $share_btn.loading( '正在分享...' );
 
         baidu.frontia.storage.insertData( shareData, {
             success: function () {
-                var $popup, $url;
-
-                $popup = $( '<div></div>' ).addClass( 'popup' ).appendTo( 'body' );
-                $popup.css( {
-                    'position': 'absolute',
-                    'right': 10,
-                    'top': $share_btn.offset().top + $share_btn.height() + 10,
-                    'width': 250,
-                    'padding': 10,
-                    'background': 'white',
-                    'border-radius': '5px',
-                    'box-shadow': '1px 2px 4px rgba(0, 0, 0, .3)'
-                } );
-                $popup.append( '<p style="margin: 5px 0; font-size: 12px;">分享成功，请复制URL：</p>' );
-
-                $url = $( '<input type="text" style="width: 250px;" value="' + shareUrl + '"></input>' ).appendTo( $popup );
-
-                $url[ 0 ].select();
-
-                $popup.mousedown( function ( e ) {
-                    e.stopPropagation();
-                } );
-
-                $( 'body' ).one( 'mousedown', function ( e ) {
-                    $popup.fadeOut( 'fast', function () {
-                        $popup.remove();
-                    } );
-                    $share_btn.loading( false );
-                } );
+                $share_dialog.show();
+                $share_url.val( shareUrl )[ 0 ].select();
             }
         } );
+        shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();
+        shareConfig.bdDesc = shareConfig.bdText = '“' + minder.getMinderTitle() + '” - 我用百度脑图制作的思维导图，快看看吧！（地址：' + shareUrl + '）';
+        shareConfig.bdUrl = shareUrl;
+        resetShare();
     }
 
     function bindShortCuts() {

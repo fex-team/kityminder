@@ -97,26 +97,27 @@ kity.extendClass( Minder, {
 
         json = params.json || ( params.json = protocal.decode( local ) );
 
-        if( typeof json === 'object' && 'then' in json){
+        if ( typeof json === 'object' && 'then' in json ) {
             var self = this;
-            json.then( local, function(data){
+            json.then( local, function ( data ) {
                 self._afterImportData( data, params );
-            });
-        }else{
+            } );
+        } else {
             this._afterImportData( json, params );
         }
-
         return this;
     },
 
-    _afterImportData: function( json, params ){
+    _afterImportData: function ( json, params ) {
         this._fire( new MinderEvent( 'preimport', params, false ) );
 
         // 删除当前所有节点
         while ( this._root.getChildren().length ) {
             this._root.removeChild( 0 );
         }
-
+        var curLayout = this._root.getData( "currentstyle" );
+        this._root.setData();
+        this._root.setData( "currentstyle", curLayout );
         importNode( this._root, json, this );
 
         this._fire( new MinderEvent( 'import', params, false ) );
