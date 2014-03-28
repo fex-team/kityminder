@@ -9,6 +9,7 @@
 
 KityMinder.registerProtocal( 'xmind', function () {
 
+    // 标签 map
     var markerMap = {
          'priority-1'   : ['PriorityIcon', 1]
         ,'priority-2'   : ['PriorityIcon', 2]
@@ -63,20 +64,20 @@ KityMinder.registerProtocal( 'xmind', function () {
                 processTopic(tmp, obj.children[0]);
             }
         }
-    };
+    }
 
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
         processTopic(json.sheet.topic, result);
         return result;
-    };
+    }
 
     function getEntries(file, onend) {
         zip.createReader(new zip.BlobReader(file), function(zipReader) {
             zipReader.getEntries(onend);
         }, onerror);
-    };
+    }
 
 	return {
 		fileDescription: 'xmind格式文件',
