@@ -52,7 +52,7 @@ KityMinder.registerModule( "DropFile", function () {
 		};
 		reader.readAsText( file );
 	}
-	
+
 	function manageDraft( minder ){
 
 		if( !window.draftManager ){
