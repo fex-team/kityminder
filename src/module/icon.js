@@ -20,7 +20,6 @@ KityMinder.registerModule( "IconModule", function () {
 		_rc.addShapes( [ _bg, _percent ] );
 		node.getIconRc().addShape( _rc );
 		_rc.setTransform( new kity.Matrix().translate( left, 10 ) );
-		_percent.setTransform( 10, 10 );
 		switch ( val ) {
 		case 1:
 			break;

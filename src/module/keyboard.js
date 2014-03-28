@@ -1,4 +1,9 @@
 KityMinder.registerModule( "KeyboardModule", function () {
+    var min = Math.min,
+        max = Math.max,
+        abs = Math.abs,
+        sqrt = Math.sqrt,
+        exp = Math.exp;
 
     function buildPositionNetwork( root ) {
         var pointIndexes = [],
@@ -6,9 +11,14 @@ KityMinder.registerModule( "KeyboardModule", function () {
         root.traverse( function ( node ) {
             p = node.getRenderContainer().getRenderBox( 'top' );
             pointIndexes.push( {
-                x: p.x + p.width / 2,
-                y: p.y + p.height / 2,
-                node: node
+                left: p.x,
+                top: p.y,
+                right: p.x + p.width,
+                bottom: p.y + p.height,
+                width: p.width,
+                height: p.height,
+                node: node,
+                text: node.getText()
             } );
         } );
         for ( var i = 0; i < pointIndexes.length; i++ ) {
@@ -16,34 +26,101 @@ KityMinder.registerModule( "KeyboardModule", function () {
         }
     }
 
-    function quadOf( p ) {
-        return p.x > 0 ?
-            ( p.y > 0 ? 1 : 2 ) :
-            ( p.y < 0 ? 3 : 4 );
+
+    // 这是金泉的点子，赞！
+    // 求两个不相交矩形的最近距离
+    function getCoefedDistance( box1, box2 ) {
+        var xMin, xMax, yMin, yMax, xDist, yDist, dist, cx, cy;
+        xMin = min( box1.left, box2.left );
+        xMax = max( box1.right, box2.right );
+        yMin = min( box1.top, box2.top );
+        yMax = max( box1.bottom, box2.bottom );
+
+        xDist = xMax - xMin - box1.width - box2.width;
+        yDist = yMax - yMin - box1.height - box2.height;
+
+        if ( xDist < 0 ) dist = yDist;
+        else if ( yDist < 0 ) dist = xDist;
+        else dist = sqrt( xDist * xDist + yDist * yDist );
+
+        return {
+            cx: dist,
+            cy: dist
+        };
+    }
+
+    function coefForX( a, b ) {
+        return 0.1 * min( abs( a.top - b.top ), abs( a.bottom - b.bottom ) ) + 1;
+    }
+
+    function coefForY( a, b ) {
+        return 0.1 * min( abs( a.left - b.left ), abs( a.right - b.right ) ) + 1;
     }
 
     function findClosestPointsFor( pointIndexes, iFind ) {
         var find = pointIndexes[ iFind ];
-        var matrix = new kity.Matrix().translate( -find.x, -find.y ).rotate( 45 );
         var most = {}, quad;
-        var current;
+        var current, dist;
+        var table = [];
+
+        console.log( 'table for ' + find.text );
 
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             if ( i == iFind ) continue;
-            current = matrix.transformPoint( pointIndexes[ i ].x, pointIndexes[ i ].y );
-            quad = quadOf( current );
-            if ( !most[ quad ] || current.length() < most[ quad ].point.length() ) {
-                most[ quad ] = {
-                    point: current,
-                    node: pointIndexes[ i ].node
-                };
+            current = pointIndexes[ i ];
+            dist = getCoefedDistance( current, find );
+
+            table.push( {
+                text: current.text,
+                dist: dist.cx
+            } );
+
+            // left check
+            if ( current.right < find.left ) {
+                if ( !most.left || dist.cx < most.left.dist ) {
+                    most.left = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // right check
+            if ( current.left > find.right ) {
+                if ( !most.right || dist.cx < most.right.dist ) {
+                    most.right = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // top check
+            if ( current.bottom < find.top ) {
+                if ( !most.top || dist.cy < most.top.dist ) {
+                    most.top = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
+            }
+
+            // bottom check
+            if ( current.top > find.bottom ) {
+                if ( !most.down || dist.cy < most.down.dist ) {
+                    most.down = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
             }
         }
+        console.table( table );
         find.node._nearestNodes = {
-            right: most[ 1 ] && most[ 1 ].node || null,
-            top: most[ 2 ] && most[ 2 ].node || null,
-            left: most[ 3 ] && most[ 3 ].node || null,
-            down: most[ 4 ] && most[ 4 ].node || null
+            right: most.right && most.right.node || null,
+            top: most.top && most.top.node || null,
+            left: most.left && most.left.node || null,
+            down: most.down && most.down.node || null
         };
     }
 

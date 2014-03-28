@@ -17,10 +17,12 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
 
     utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
         var p = KityMinder.findProtocal( k );
-        var text = p.fileDescription + '（' + p.fileExtension + '）';
-        options.value.push( k );
-        options.items.push( text );
-        options.autowidthitem.push( $.wordCountAdaptive( text ), true );
+        if( p.encode ){
+            var text = p.fileDescription + '（' + p.fileExtension + '）';
+            options.value.push( k );
+            options.items.push( text );
+            options.autowidthitem.push( $.wordCountAdaptive( text ), true );
+        }
     } );
 
 

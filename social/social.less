@@ -48,17 +48,18 @@ button {
     background: -ms-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* IE10+ */
     background: linear-gradient(to bottom,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* W3C */
 
-    &:hover {
+    &:hover, &.hover {
         background: #009fff;
     }
 
-    &:active {
+    &:active, &.active {
         background: darken(#009fff, 10%);
         box-shadow: inset 0 2px 3px rgba(0,0,0, .2);
     }
 
     &[disabled] {
         background: #AAA;
+        cursor: default;
     }
 
     &.baidu-cloud {
@@ -199,7 +200,7 @@ button {
     right: 10px;
     top: 65px;
     background: white;
-    width: 300px;
+    width: 350px;
     box-shadow: 1px 2px 16px rgba(0, 0, 0, .5);
     display: none;
 
@@ -210,11 +211,32 @@ button {
     }
 
     input {
-        width: 98%;
+        width: 260px;
+        height: 22px;
+        line-height: 22px;
+        padding: 4px 4px 0;
+        border: 1px solid #999;
+        vertical-align: middle;
+        margin-right: 3px;
+        background: #EEE;
+        &:focus {
+            border: 1px solid #99f;
+            outline: none;
+        }
     }
 
     p, #share-platform {
         margin: 20px 0 30px;
+    }
+
+    #copy-share-url {
+        display: inline-block;
+        margin: 0;
+        width: 70px;
+        height: 28px;
+        line-height: 28px;
+        border-radius: 2px;
+        vertical-align: middle;
     }
 
     #share-platform {

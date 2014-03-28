@@ -4,12 +4,18 @@
     <meta charset="utf-8">
 
     <script src="../lib/jquery-2.1.0.min.js" charset="utf-8"></script>
+    <script src="../lib/ZeroClipboard.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        ZeroClipboard.setDefaults( { moviePath: '../lib/ZeroClipboard.swf' } );
+    </script>
 
     <script src="../kity/dist/kitygraph.all.js" charset="utf-8"></script>
     <script src="../dev/import.php" charset="utf-8"></script>
     <script src="../kityminder.config.js" charset="utf-8"></script>
     <script src="../lang/zh-cn/zh-cn.js" charset="utf-8"></script>
 
+    <script src="../lib/zip.js" charset="utf-8"></script>
+    <script src="../lib/jquery.xml2json.js" charset="utf-8"></script>
     <script src="../lib/baidu-frontia-js-full-1.0.0.js" charset="utf-8"></script>
     <script src="../social/draftmanager.js" charset="utf-8"></script>
     <script src="../social/social.js" charset="utf-8"></script>
@@ -25,7 +31,8 @@
     <div id="share-dialog" >
         <h3>URL分享：</h3>
         <p>
-            <input id="share-url" type="url" value="" />
+            <input id="share-url" type="url" value="http://naotu.baidu.com/?shareId=kcev3dd" />
+            <button id="copy-share-url" data-clipboard-target="share-url" type="button">复制</button>
         </p>
         <h3>社交分享：</h3>
         <p id="share-platform" class="bdsharebuttonbox">
@@ -40,6 +47,6 @@
 </body>
 <script>
     // create km instance
-    window.km = KM.getKityMinder('kityminder'); 
+    window.km = KM.getKityMinder('kityminder');
 </script>
 </html>
