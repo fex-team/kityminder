@@ -1,14 +1,14 @@
 /*
 
-    http://www.xmind.net/developer/
+    http://freemind.sourceforge.net/
 
-    Parsing XMind file
+    freemind文件后缀为.mm，实际格式为xml
 
-    XMind files are generated in XMind Workbook (.xmind) format, an open format that is based on the principles of OpenDocument. It consists of a ZIP compressed archive containing separate XML documents for content and styles, a .jpg image file for thumbnails, and directories for related attachments.
- */
+*/
 
 KityMinder.registerProtocal( 'freemind', function () {
 
+    // 标签 map
     var markerMap = {
          'full-1'   : ['PriorityIcon', 1]
         ,'full-2'   : ['PriorityIcon', 2]
@@ -58,14 +58,14 @@ KityMinder.registerProtocal( 'freemind', function () {
                 processTopic(tmp, obj.children[0]);
             }
         }
-    };
+    }
 
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
         processTopic(json.node, result);
         return result;
-    };
+    }
 
 	return {
 		fileDescription: 'xmind格式文件',

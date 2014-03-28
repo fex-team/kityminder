@@ -1,14 +1,14 @@
 /*
 
-    http://www.xmind.net/developer/
+    http://www.mindjet.com/mindmanager/
 
-    Parsing XMind file
+    mindmanager的后缀为.mmap，实际文件格式是zip，解压之后核心文件是Document.xml
 
-    XMind files are generated in XMind Workbook (.xmind) format, an open format that is based on the principles of OpenDocument. It consists of a ZIP compressed archive containing separate XML documents for content and styles, a .jpg image file for thumbnails, and directories for related attachments.
- */
+*/
 
 KityMinder.registerProtocal( 'mindmanager', function () {
 
+    // 标签 map
     var markerMap = {
          'urn:mindjet:Prio1'   : ['PriorityIcon', 1]
         ,'urn:mindjet:Prio2'   : ['PriorityIcon', 2]
@@ -59,20 +59,20 @@ KityMinder.registerProtocal( 'mindmanager', function () {
                 processTopic(tmp, obj.children[0]);
             }
         }
-    };
+    }
 
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
         processTopic(json.OneTopic.Topic, result);
         return result;
-    };
+    }
 
     function getEntries(file, onend) {
         zip.createReader(new zip.BlobReader(file), function(zipReader) {
             zipReader.getEntries(onend);
         }, onerror);
-    };
+    }
 
 	return {
 		fileDescription: 'mindmanager格式文件',
