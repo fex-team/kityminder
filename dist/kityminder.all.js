@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-26
+ * kityminder - v1.0.0 - 2014-03-28
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -1058,8 +1058,20 @@ kity.extendClass( Minder, {
 
         json = params.json || ( params.json = protocal.decode( local ) );
 
-        this._fire( new MinderEvent( 'preimport', params, false ) );
+        if( typeof json === 'object' && 'then' in json){
+            var self = this;
+            json.then( local, function(data){
+                self._afterImportData( data, params );
+            });
+        }else{
+            this._afterImportData( json, params );
+        }
 
+        return this;
+    },
+
+    _afterImportData: function( json, params ){
+        this._fire( new MinderEvent( 'preimport', params, false ) );
 
         // 删除当前所有节点
         while ( this._root.getChildren().length ) {
@@ -1075,9 +1087,8 @@ kity.extendClass( Minder, {
         this._firePharse( {
             type: 'interactchange'
         } );
-
-        return this;
     }
+
 } );
 
 // 事件机制
@@ -1797,7 +1808,6 @@ KityMinder.registerModule( "IconModule", function () {
 		_rc.addShapes( [ _bg, _percent ] );
 		node.getIconRc().addShape( _rc );
 		_rc.setTransform( new kity.Matrix().translate( left, 10 ) );
-		_percent.setTransform( 10, 10 );
 		switch ( val ) {
 		case 1:
 			break;
@@ -3916,13 +3926,50 @@ KityMinder.registerModule( "DropFile", function () {
 		e.preventDefault();
 		e.stopPropagation();
 		var minder = this;
-		if ( e.dataTransfer.files ) {
-			var reader = new FileReader();
-			reader.onload = function ( e ) {
-				minder.importData( e.target.result );
-			};
-			reader.readAsText( e.dataTransfer.files[ 0 ] );
+
+		var files = e.dataTransfer.files;
+
+		if ( files ) {
+			var file = files[0];
+			var ext = file.type || (/(.)\w+$/).exec(file.name)[0];
+
+			if( (/xmind/g).test(ext) ){ //xmind zip
+				importSync( minder, file, 'xmind' );
+			}else if( (/mmap/g).test(ext) ){ // mindmanager zip
+				importSync( minder, file, 'mindmanager' );
+			}else if( (/mm/g).test(ext) ){ //freemind xml
+				importAsync( minder, file, 'freemind' );
+			}else{// txt json
+				importAsync( minder, file );
+			}
 		}
+	}
+
+	// 同步加载文件
+	function importSync( minder, file, protocal ){
+		minder.importData( file, protocal );//zip文件的import是同步的
+		manageDraft( minder );
+		minder.execCommand( 'camera', minder.getRoot() );
+	}
+
+	// 异步加载文件
+	function importAsync( minder, file, protocal ){
+		var reader = new FileReader();
+		reader.onload = function ( e ) {
+			minder.importData( e.target.result, protocal );//纯文本文件的import是同步的
+			manageDraft( minder );
+			minder.execCommand( 'camera', minder.getRoot() );
+		};
+		reader.readAsText( file );
+	}
+
+	function manageDraft( minder ){
+
+		if( !window.draftManager ){
+			window.draftManager = new window.DraftManager( minder );
+		}
+
+		window.draftManager.create();
 	}
 
 	return {
@@ -3933,6 +3980,11 @@ KityMinder.registerModule( "DropFile", function () {
 } );
 
 KityMinder.registerModule( "KeyboardModule", function () {
+    var min = Math.min,
+        max = Math.max,
+        abs = Math.abs,
+        sqrt = Math.sqrt,
+        exp = Math.exp;
 
     function buildPositionNetwork( root ) {
         var pointIndexes = [],
@@ -3940,9 +3992,14 @@ KityMinder.registerModule( "KeyboardModule", function () {
         root.traverse( function ( node ) {
             p = node.getRenderContainer().getRenderBox( 'top' );
             pointIndexes.push( {
-                x: p.x + p.width / 2,
-                y: p.y + p.height / 2,
-                node: node
+                left: p.x,
+                top: p.y,
+                right: p.x + p.width,
+                bottom: p.y + p.height,
+                width: p.width,
+                height: p.height,
+                node: node,
+                text: node.getText()
             } );
         } );
         for ( var i = 0; i < pointIndexes.length; i++ ) {
@@ -3950,34 +4007,101 @@ KityMinder.registerModule( "KeyboardModule", function () {
         }
     }
 
-    function quadOf( p ) {
-        return p.x > 0 ?
-            ( p.y > 0 ? 1 : 2 ) :
-            ( p.y < 0 ? 3 : 4 );
+
+    // 这是金泉的点子，赞！
+    // 求两个不相交矩形的最近距离
+    function getCoefedDistance( box1, box2 ) {
+        var xMin, xMax, yMin, yMax, xDist, yDist, dist, cx, cy;
+        xMin = min( box1.left, box2.left );
+        xMax = max( box1.right, box2.right );
+        yMin = min( box1.top, box2.top );
+        yMax = max( box1.bottom, box2.bottom );
+
+        xDist = xMax - xMin - box1.width - box2.width;
+        yDist = yMax - yMin - box1.height - box2.height;
+
+        if ( xDist < 0 ) dist = yDist;
+        else if ( yDist < 0 ) dist = xDist;
+        else dist = sqrt( xDist * xDist + yDist * yDist );
+
+        return {
+            cx: dist,
+            cy: dist
+        };
+    }
+
+    function coefForX( a, b ) {
+        return 0.1 * min( abs( a.top - b.top ), abs( a.bottom - b.bottom ) ) + 1;
+    }
+
+    function coefForY( a, b ) {
+        return 0.1 * min( abs( a.left - b.left ), abs( a.right - b.right ) ) + 1;
     }
 
     function findClosestPointsFor( pointIndexes, iFind ) {
         var find = pointIndexes[ iFind ];
-        var matrix = new kity.Matrix().translate( -find.x, -find.y ).rotate( 45 );
         var most = {}, quad;
-        var current;
+        var current, dist;
+        var table = [];
+
+        console.log( 'table for ' + find.text );
 
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             if ( i == iFind ) continue;
-            current = matrix.transformPoint( pointIndexes[ i ].x, pointIndexes[ i ].y );
-            quad = quadOf( current );
-            if ( !most[ quad ] || current.length() < most[ quad ].point.length() ) {
-                most[ quad ] = {
-                    point: current,
-                    node: pointIndexes[ i ].node
-                };
+            current = pointIndexes[ i ];
+            dist = getCoefedDistance( current, find );
+
+            table.push( {
+                text: current.text,
+                dist: dist.cx
+            } );
+
+            // left check
+            if ( current.right < find.left ) {
+                if ( !most.left || dist.cx < most.left.dist ) {
+                    most.left = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // right check
+            if ( current.left > find.right ) {
+                if ( !most.right || dist.cx < most.right.dist ) {
+                    most.right = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // top check
+            if ( current.bottom < find.top ) {
+                if ( !most.top || dist.cy < most.top.dist ) {
+                    most.top = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
+            }
+
+            // bottom check
+            if ( current.top > find.bottom ) {
+                if ( !most.down || dist.cy < most.down.dist ) {
+                    most.down = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
             }
         }
+        console.table( table );
         find.node._nearestNodes = {
-            right: most[ 1 ] && most[ 1 ].node || null,
-            top: most[ 2 ] && most[ 2 ].node || null,
-            left: most[ 3 ] && most[ 3 ].node || null,
-            down: most[ 4 ] && most[ 4 ].node || null
+            right: most.right && most.right.node || null,
+            top: most.top && most.top.node || null,
+            left: most.left && most.left.node || null,
+            down: most.down && most.down.node || null
         };
     }
 
@@ -7197,10 +7321,12 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
 
     utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
         var p = KityMinder.findProtocal( k );
-        var text = p.fileDescription + '（' + p.fileExtension + '）';
-        options.value.push( k );
-        options.items.push( text );
-        options.autowidthitem.push( $.wordCountAdaptive( text ), true );
+        if( p.encode ){
+            var text = p.fileDescription + '（' + p.fileExtension + '）';
+            options.value.push( k );
+            options.items.push( text );
+            options.autowidthitem.push( $.wordCountAdaptive( text ), true );
+        }
     } );
 
 
@@ -7535,6 +7661,314 @@ KM.registerToolbarUI( 'markers help', function ( name ) {
     } );
     return $btn;
 } );
+
+/*
+
+    http://www.xmind.net/developer/
+
+    Parsing XMind file
+
+    XMind files are generated in XMind Workbook (.xmind) format, an open format that is based on the principles of OpenDocument. It consists of a ZIP compressed archive containing separate XML documents for content and styles, a .jpg image file for thumbnails, and directories for related attachments.
+ */
+
+KityMinder.registerProtocal( 'xmind', function () {
+
+    // 标签 map
+    var markerMap = {
+         'priority-1'   : ['PriorityIcon', 1]
+        ,'priority-2'   : ['PriorityIcon', 2]
+        ,'priority-3'   : ['PriorityIcon', 3]
+        ,'priority-4'   : ['PriorityIcon', 4]
+        ,'priority-5'   : ['PriorityIcon', 5]
+
+        ,'task-start'   : ['ProgressIcon', 1]
+        ,'task-quarter' : ['ProgressIcon', 2]
+        ,'task-half'    : ['ProgressIcon', 3]
+        ,'task-3quar'   : ['ProgressIcon', 4]
+        ,'task-done'    : ['ProgressIcon', 5]
+
+        ,'task-oct'     : null
+        ,'task-3oct'    : null
+        ,'task-5oct'    : null
+        ,'task-7oct'    : null
+    };
+
+    function processTopic(topic, obj){
+
+        //处理文本
+        obj.data =  { text : topic.title };
+
+        // 处理标签
+        if(topic.marker_refs && topic.marker_refs.marker_ref){
+            var markers = topic.marker_refs.marker_ref;
+            if( markers.length && markers.length > 0 ){
+                for (var i in markers) {
+                    var type = markerMap[ markers[i]['marker_id'] ];
+                    type && (obj.data[ type[0] ] = type[1]);
+                }
+            }else{
+                var type = markerMap[ markers['marker_id'] ];
+                type && (obj.data[ type[0] ] = type[1]);
+            }
+        }
+
+        //处理子节点
+        if( topic.children && topic.children.topics && topic.children.topics.topic ){
+            var tmp = topic.children.topics.topic;
+            if( tmp.length && tmp.length > 0 ){ //多个子节点
+                obj.children = [];
+
+                for(var i in tmp){
+                    obj.children.push({});
+                    processTopic(tmp[i], obj.children[i]);
+                }
+
+            }else{ //一个子节点
+                obj.children = [{}];
+                processTopic(tmp, obj.children[0]);
+            }
+        }
+    }
+
+    function xml2km(xml){
+        var json = $.xml2json(xml);
+        var result = {};
+        processTopic(json.sheet.topic, result);
+        return result;
+    }
+
+    function getEntries(file, onend) {
+        zip.createReader(new zip.BlobReader(file), function(zipReader) {
+            zipReader.getEntries(onend);
+        }, onerror);
+    }
+
+	return {
+		fileDescription: 'xmind格式文件',
+		fileExtension: '.xmind',
+        
+		decode: function ( local ) {
+
+		    return {
+		    	then : function(local, callback){
+
+				    getEntries( local, function( entries ) {
+				        entries.forEach(function( entry ) {
+				            if(entry.filename == 'content.xml'){
+				                entry.getData(new zip.TextWriter(), function(text) {
+				                    var km = xml2km($.parseXML(text));
+				                    callback && callback( km );
+				                });
+				            }
+				        });
+				    });
+		    	}
+		    };
+
+		},
+		// recognize: recognize,
+		recognizePriority: -1
+	};
+	
+} );
+
+
+
+
+/*
+
+    http://freemind.sourceforge.net/
+
+    freemind文件后缀为.mm，实际格式为xml
+
+*/
+
+KityMinder.registerProtocal( 'freemind', function () {
+
+    // 标签 map
+    var markerMap = {
+         'full-1'   : ['PriorityIcon', 1]
+        ,'full-2'   : ['PriorityIcon', 2]
+        ,'full-3'   : ['PriorityIcon', 3]
+        ,'full-4'   : ['PriorityIcon', 4]
+        ,'full-5'   : ['PriorityIcon', 5]
+        ,'full-6'   : null
+        ,'full-7'   : null
+        ,'full-8'   : null
+        ,'full-9'   : null
+        ,'full-0'   : null
+    };
+
+    function processTopic(topic, obj){
+
+        //处理文本
+        obj.data =  { text : topic.TEXT };
+
+        // 处理标签
+        if(topic.icon){
+            var icons = topic.icon;
+            if(icons.length && icons.length > 0){
+                for (var i in icons) {
+                    var type = markerMap[ icons[i]['BUILTIN'] ];
+                    type && (obj.data[ type[0] ] = type[1]);
+                }
+            }else{
+                var type = markerMap[ icons['BUILTIN'] ];
+                type && (obj.data[ type[0] ] = type[1]);
+            }
+        }
+        
+        //处理子节点
+        if( topic.node ){
+
+            var tmp = topic.node;
+            if( tmp.length && tmp.length > 0 ){ //多个子节点
+                obj.children = [];
+
+                for(var i in tmp){
+                    obj.children.push({});
+                    processTopic(tmp[i], obj.children[i]);
+                }
+
+            }else{ //一个子节点
+                obj.children = [{}];
+                processTopic(tmp, obj.children[0]);
+            }
+        }
+    }
+
+    function xml2km(xml){
+        var json = $.xml2json(xml);
+        var result = {};
+        processTopic(json.node, result);
+        return result;
+    }
+
+	return {
+		fileDescription: 'xmind格式文件',
+		fileExtension: '.xmind',
+
+		decode: function ( local ) {
+            var json = xml2km( local );
+
+		    return json;
+		},
+		// recognize: recognize,
+		recognizePriority: -1
+	};
+	
+} );
+
+
+
+
+/*
+
+    http://www.mindjet.com/mindmanager/
+
+    mindmanager的后缀为.mmap，实际文件格式是zip，解压之后核心文件是Document.xml
+
+*/
+
+KityMinder.registerProtocal( 'mindmanager', function () {
+
+    // 标签 map
+    var markerMap = {
+         'urn:mindjet:Prio1'   : ['PriorityIcon', 1]
+        ,'urn:mindjet:Prio2'   : ['PriorityIcon', 2]
+        ,'urn:mindjet:Prio3'   : ['PriorityIcon', 3]
+        ,'urn:mindjet:Prio4'   : ['PriorityIcon', 4]
+        ,'urn:mindjet:Prio5'   : ['PriorityIcon', 5]
+
+        ,'0'   : ['ProgressIcon', 1]
+        ,'25'  : ['ProgressIcon', 2]
+        ,'50'  : ['ProgressIcon', 3]
+        ,'75'  : ['ProgressIcon', 4]
+        ,'100' : ['ProgressIcon', 5]
+    };
+
+    function processTopic(topic, obj){
+        //处理文本
+        obj.data = { text : topic.Text && topic.Text.PlainText || '_' };  // 节点默认的文本，没有Text属性
+
+        // 处理标签
+        if(topic.Task){
+
+            var type;
+            if(topic.Task.TaskPriority){
+                type = markerMap[ topic.Task.TaskPriority ];
+                type && (obj.data[ type[0] ] = type[1]);
+            }
+
+            if(topic.Task.TaskPercentage){
+                type = markerMap[ topic.Task.TaskPercentage ];
+                type && (obj.data[ type[0] ] = type[1]);
+            }
+        }
+
+        //处理子节点
+        if( topic.SubTopics && topic.SubTopics.Topic ){
+
+            var tmp = topic.SubTopics.Topic;
+            if( tmp.length && tmp.length > 0 ){ //多个子节点
+                obj.children = [];
+
+                for(var i in tmp){
+                    obj.children.push({});
+                    processTopic(tmp[i], obj.children[i]);
+                }
+
+            }else{ //一个子节点
+                obj.children = [{}];
+                processTopic(tmp, obj.children[0]);
+            }
+        }
+    }
+
+    function xml2km(xml){
+        var json = $.xml2json(xml);
+        var result = {};
+        processTopic(json.OneTopic.Topic, result);
+        return result;
+    }
+
+    function getEntries(file, onend) {
+        zip.createReader(new zip.BlobReader(file), function(zipReader) {
+            zipReader.getEntries(onend);
+        }, onerror);
+    }
+
+	return {
+		fileDescription: 'mindmanager格式文件',
+		fileExtension: '.mmap',
+
+		decode: function ( local ) {
+
+		    return {
+		    	then : function(local, callback){
+
+				    getEntries( local, function( entries ) {
+				        entries.forEach(function( entry ) {
+				            if(entry.filename == 'Document.xml'){
+				                entry.getData(new zip.TextWriter(), function(text) {
+				                    var km = xml2km($.parseXML(text));
+				                    callback && callback( km );
+				                });
+				            }
+				        });
+				    });
+		    	}
+		    };
+
+		},
+		// recognize: recognize,
+		recognizePriority: -1
+	};
+	
+} );
+
+
+
 
 KityMinder.registerProtocal( "plain", function () {
 	var LINE_ENDING = '\n',
