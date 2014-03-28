@@ -81,9 +81,9 @@ $( function () {
         // 当前是否要检测文档内容是否变化的开关
         watchingChanges = true,
 
-        notice = (function() {
+        notice = ( function () {
             return window.alert;
-        })();
+        } )();
 
     start();
 
@@ -267,6 +267,7 @@ $( function () {
         currentAccount = account;
         $user_btn.prependTo( $panel );
         $save_btn.appendTo( $panel );
+        $share_btn.appendTo( $panel );
         $login_btn.detach();
         loadAvator();
         loadRecent();
@@ -329,6 +330,7 @@ $( function () {
                         }
                         draftManager.save( remotePath );
                         draftManager.sync();
+
                         minder.execCommand( 'camera', minder.getRoot() );
                         $user_btn.loading( false ).text( getFileName( remotePath ) );
 
