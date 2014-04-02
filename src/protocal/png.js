@@ -31,6 +31,10 @@ KityMinder.registerProtocal( "png", function () {
 			renderContainer.translate( -renderBox.x, -renderBox.y );
 
 			svgXml = km.getPaper().container.innerHTML;
+			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
+			svgXml = svgXml.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
+
+			console.log(svgXml);
 
 			renderContainer.translate( renderBox.x, renderBox.y );
 			
