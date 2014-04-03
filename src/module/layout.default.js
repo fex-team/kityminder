@@ -585,7 +585,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				updateConnectAndshIcon( set[ i ] );
 			}
 
-			if(arguments.length == 4 && focus){
+			if( focus ){
 				showNodeInView( node );
 			}
 		},
