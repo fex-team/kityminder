@@ -106,6 +106,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node, focus, silbling ) {
 				var parent = km.getSelectedNode();
+
+				if( !parent ){
+					return null;
+				}
+
 				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
 					km.expandNode( parent );
 				}
@@ -129,7 +134,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node, focus ) {
 				var selectedNode = km.getSelectedNode();
-				
+				if( !selectedNode ){
+					return null;
+				}
+
 				if ( selectedNode.isRoot() ) {
 					node.setType( "main" );
 					km.appendChildNode( selectedNode, node, focus );
