@@ -116,6 +116,9 @@ $( function () {
                     window.open( 'http://pan.baidu.com/disk/home#dir/path=/apps/kityminder' );
                 }
             }, {
+                label: '注销',
+                click: logout
+            }, {
                 divider: true
             } ]
         } ).addClass( 'user-file-menu' ).appendTo( 'body' ).kmui();
@@ -261,16 +264,27 @@ $( function () {
         } );
     }
 
+    function logout() {
+        baidu.frontia.logOutCurrentAccount();
+        setAccount( null );
+    }
+
     // 设置用户后为其初始化
     function setAccount( account ) {
         currentAccount = account;
-        $user_btn.prependTo( $panel );
-        $save_btn.appendTo( $panel );
-        $share_btn.appendTo( $panel );
-        $login_btn.detach();
-        loadAvator();
-        loadRecent();
-        window.location.hash = '';
+        if ( account ) {
+            $user_btn.prependTo( $panel );
+            $save_btn.appendTo( $panel );
+            $share_btn.appendTo( $panel );
+            $login_btn.detach();
+            loadAvator();
+            loadRecent();
+            window.location.hash = '';
+        } else {
+            $user_btn.detach();
+            $save_btn.detach();
+            $login_btn.prependTo( $panel );
+        }
     }
 
     // 加载用户头像
