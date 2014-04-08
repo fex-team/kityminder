@@ -179,7 +179,7 @@ $( function () {
     // 检查 URL 是否分享连接，是则加载分享内容
     function loadShare() {
 
-        var pattern = /shareId=(\w+)([&#]|$)/;
+        var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
 
