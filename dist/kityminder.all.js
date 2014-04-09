@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-04-08
+ * kityminder - v1.0.0 - 2014-04-09
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -993,7 +993,8 @@ function exportNode( node ) {
 
 var DEFAULT_TEXT = {
     'root': 'maintopic',
-    'main': 'topic'
+    'main': 'topic',
+    'sub': 'topic'
 };
 
 function importNode( node, json, km ) {
@@ -1001,14 +1002,14 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text || km.getLang( DEFAULT_TEXT[ data.type ] ) );
+    node.setText( data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
     for ( var i = 0; i < childrenTreeData.length; i++ ) {
         var childNode = new MinderNode();
-        importNode( childNode, childrenTreeData[ i ], km );
         node.appendChild( childNode );
+        importNode( childNode, childrenTreeData[ i ], km );
     }
     return node;
 }
@@ -7914,7 +7915,7 @@ KityMinder.registerProtocal( 'mindmanager', function () {
 
     function processTopic(topic, obj){
         //处理文本
-        obj.data = { text : topic.Text && topic.Text.PlainText || '_' };  // 节点默认的文本，没有Text属性
+        obj.data = { text : topic.Text && topic.Text.PlainText || '' };  // 节点默认的文本，没有Text属性
 
         // 处理标签
         if(topic.Task){
@@ -8154,11 +8155,9 @@ KityMinder.registerProtocal( "png", function () {
 			renderContainer.translate( -renderBox.x, -renderBox.y );
 
 			svgXml = km.getPaper().container.innerHTML;
-			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
-			svgXml = svgXml.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
 
 			renderContainer.translate( renderBox.x, renderBox.y );
-			
+
 			$svg = $( svgXml );
 			$svg.attr( {
 				width: renderBox.width,
@@ -8168,6 +8167,9 @@ KityMinder.registerProtocal( "png", function () {
 
 			// need a xml with width and height
 			svgXml = $( '<div></div' ).append( $svg ).html();
+
+			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
+			svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');
 
 			blob = new Blob( [ svgXml ], {
 				type: "image/svg+xml;charset=utf-8"
