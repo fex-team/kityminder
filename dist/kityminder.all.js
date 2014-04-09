@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-28
+ * kityminder - v1.0.0 - 2014-04-08
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -1947,13 +1947,13 @@ KityMinder.registerModule( "LayoutModule", function () {
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this );
 		},
-		appendChildNode: function ( parent, node, index ) {
+		appendChildNode: function ( parent, node, focus, index ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).appendChildNode.call( this, parent, node, index );
+			this.getLayoutStyle( curStyle ).appendChildNode.call( this, parent, node, focus, index );
 		},
-		appendSiblingNode: function ( sibling, node ) {
+		appendSiblingNode: function ( sibling, node, focus ) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle( curStyle ).appendSiblingNode.call( this, sibling, node );
+			this.getLayoutStyle( curStyle ).appendSiblingNode.call( this, sibling, node, focus );
 		},
 		removeNode: function ( nodes ) {
 			var curStyle = this.getCurrentStyle();
@@ -2011,12 +2011,18 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var AppendChildNodeCommand = kity.createClass( "AppendChildNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, node ) {
+			execute: function ( km, node, focus, silbling ) {
 				var parent = km.getSelectedNode();
+
+				if( !parent ){
+					return null;
+				}
+
 				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
 					km.expandNode( parent );
 				}
-				km.appendChildNode( parent, node );
+
+				km.appendChildNode( parent, node, focus, silbling );
 				km.select( node, true );
 				return node;
 			},
@@ -2033,13 +2039,17 @@ KityMinder.registerModule( "LayoutModule", function () {
 	var AppendSiblingNodeCommand = kity.createClass( "AppendSiblingNodeCommand", ( function () {
 		return {
 			base: Command,
-			execute: function ( km, node ) {
+			execute: function ( km, node, focus ) {
 				var selectedNode = km.getSelectedNode();
+				if( !selectedNode ){
+					return null;
+				}
+
 				if ( selectedNode.isRoot() ) {
 					node.setType( "main" );
-					km.appendChildNode( selectedNode, node );
+					km.appendChildNode( selectedNode, node, focus );
 				} else {
-					km.appendSiblingNode( selectedNode, node );
+					km.appendSiblingNode( selectedNode, node, focus );
 				}
 				km.select( node, true );
 				return node;
@@ -2059,6 +2069,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
+
+				if( km.getRoot().children.length == 0 ){
+					return;
+				}
+
 				var selectedNodes = km.getSelectedNodes();
 				var _root = km.getRoot();
 				var _buffer = [];
@@ -2538,6 +2553,21 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.shicon.update();
 		}
 	};
+
+	var showNodeInView = function( node ){
+		var padding = 5;
+        var viewport = minder.getPaper().getViewPort();
+        var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
+
+        var tmpX = viewport.center.x * 2 - (offset.x + offset.width);
+        var tmpY = viewport.center.y * 2 - (offset.y + offset.height);
+
+        var dx = offset.x < 0 ? -offset.x : Math.min(tmpX, 0);
+        var dy = offset.y < 0 ? -offset.y : Math.min(tmpY, 0);
+
+        km.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+	};
+
 	var _style = {
 		highlightNode: function ( node ) {
 			var highlight = node.isHighlight();
@@ -2630,7 +2660,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
-		appendChildNode: function ( parent, node, sibling ) {
+		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			var Layout = node.getLayout();
@@ -2714,10 +2744,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );
 			}
+
+			if( focus ){
+				showNodeInView( node );
+			}
 		},
-		appendSiblingNode: function ( sibling, node ) {
+		appendSiblingNode: function ( sibling, node, focus ) {
 			var parent = sibling.getParent();
-			this.appendChildNode( parent, node, sibling );
+			this.appendChildNode( parent, node, focus, sibling );
 		},
 		removeNode: function ( nodes ) {
 			while ( nodes.length !== 0 ) {
@@ -3372,13 +3406,17 @@ KityMinder.registerModule( "LayoutBottom", function () {
 // 选区管理
 kity.extendClass( Minder, function () {
     function highlightNode( km, node ) {
-        node.setTmpData( "highlight", true );
-        km.highlightNode( node );
+        if( node ){
+            node.setTmpData( "highlight", true );
+            km.highlightNode( node );
+        }
     }
 
     function unhighlightNode( km, node ) {
-        node.setTmpData( "highlight", false );
-        km.highlightNode( node );
+        if( node ){
+            node.setTmpData( "highlight", false );
+            km.highlightNode( node );
+        }
     }
     return {
         _initSelection: function () {
@@ -4031,31 +4069,15 @@ KityMinder.registerModule( "KeyboardModule", function () {
         };
     }
 
-    function coefForX( a, b ) {
-        return 0.1 * min( abs( a.top - b.top ), abs( a.bottom - b.bottom ) ) + 1;
-    }
-
-    function coefForY( a, b ) {
-        return 0.1 * min( abs( a.left - b.left ), abs( a.right - b.right ) ) + 1;
-    }
-
     function findClosestPointsFor( pointIndexes, iFind ) {
         var find = pointIndexes[ iFind ];
         var most = {}, quad;
         var current, dist;
-        var table = [];
-
-        console.log( 'table for ' + find.text );
 
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             if ( i == iFind ) continue;
             current = pointIndexes[ i ];
             dist = getCoefedDistance( current, find );
-
-            table.push( {
-                text: current.text,
-                dist: dist.cx
-            } );
 
             // left check
             if ( current.right < find.left ) {
@@ -4097,7 +4119,6 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 }
             }
         }
-        console.table( table );
         find.node._nearestNodes = {
             right: most.right && most.right.node || null,
             top: most.top && most.top.node || null,
@@ -4133,11 +4154,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 this.receiver.keydownNode = node;
                 switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
-                    this.execCommand( 'appendSiblingNode', new MinderNode( this.getLang().topic ) );
+                    this.execCommand( 'appendSiblingNode', new MinderNode( this.getLang().topic ), true );
                     e.preventDefault();
                     break;
                 case keys.Tab:
-                    this.execCommand( 'appendChildNode', new MinderNode( this.getLang().topic ) );
+                    this.execCommand( 'appendChildNode', new MinderNode( this.getLang().topic ), true );
                     e.preventDefault();
                     break;
                 case keys.Backspace:
@@ -4456,6 +4477,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(cmds[e.commandName]){
 
                     var node = km.getSelectedNode();
+                    if( !node ){
+                        return;
+                    }
 
                     var textShape = node.getTextShape();
 
@@ -5069,7 +5093,7 @@ KityMinder.registerModule( "basestylemodule", function () {
                         return -1;
                     }
                     utils.each(nodes,function(i,n){
-                        if(n.getData('bold')){
+                        if( n && n.getData('bold') ){
                             result = 1;
                             return false;
                         }
@@ -5104,7 +5128,7 @@ KityMinder.registerModule( "basestylemodule", function () {
                         return -1;
                     }
                     utils.each(nodes,function(i,n){
-                        if(n.getData('italic')){
+                        if( n && n.getData('italic') ){
                             result = 1;
                             return false;
                         }
@@ -7507,7 +7531,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        me.execCommand( res.value, new MinderNode( me.getLang().topic ) );
+        me.execCommand( res.value, new MinderNode( me.getLang().topic ), true );
     } ).on( "beforeshow", function () {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
@@ -8130,6 +8154,8 @@ KityMinder.registerProtocal( "png", function () {
 			renderContainer.translate( -renderBox.x, -renderBox.y );
 
 			svgXml = km.getPaper().container.innerHTML;
+			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
+			svgXml = svgXml.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
 
 			renderContainer.translate( renderBox.x, renderBox.y );
 			
@@ -8199,7 +8225,8 @@ KityMinder.registerProtocal( "svg", function () {
 		fileDescription: 'SVG 矢量图',
 		fileExtension: '.svg',
 		encode: function ( json, km ) {
-			return km.getPaper().container.innerHTML;
+			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
+			return km.getPaper().container.innerHTML.replace( /&nbsp;/g, '&#xa0;' );
 		},
 		recognizePriority: -1
 	};
