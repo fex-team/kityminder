@@ -5,6 +5,7 @@
 
 ### 功能更新
 1. 支持本地格式文件导入，包括拖文件和从网盘中打开，格式包含xmind/freemind/mindmanager
+2. 添加只读模式,配置项 readOnly,添加动态调用接口setEnabled,setDisabled
 
 
 ## v1.1.1
