@@ -2,6 +2,9 @@ echo -e "\033[0;33;1mPublish start."
 echo -e "\033[0;33;1m> Checking out gh-pages\033[0m"
 git checkout -q gh-pages
 
+echo -e "\033[0;33;1m> Merging server changes\033[0m"
+git pull origin gh-pages
+
 echo -e "\033[0;33;1m> Merging dev commits\033[0m"
 git merge dev -qm "merge from dev"
 
