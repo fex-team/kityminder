@@ -25,7 +25,7 @@ KityMinder.registerProtocal( 'mindmanager', function () {
 
     function processTopic(topic, obj){
         //处理文本
-        obj.data = { text : topic.Text && topic.Text.PlainText || '_' };  // 节点默认的文本，没有Text属性
+        obj.data = { text : topic.Text && topic.Text.PlainText || '' };  // 节点默认的文本，没有Text属性
 
         // 处理标签
         if(topic.Task){
