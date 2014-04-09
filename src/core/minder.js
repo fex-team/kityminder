@@ -175,14 +175,22 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         //禁用命令
         me.bkqueryCommandState = me.queryCommandState;
         me.bkqueryCommandValue = me.queryCommandValue;
-        me.queryCommandState = function () {
+        me.queryCommandState = function (type) {
+            var cmd = this._getCommand(type);
+            if(cmd && cmd.enableReadOnly === false){
+                return me.bkqueryCommandState.apply(me, arguments);
+            }
             return -1;
         };
-        me.queryCommandValue = function () {
+        me.queryCommandValue = function (type) {
+            var cmd = this._getCommand(type);
+            if(cmd && cmd.enableReadOnly === false){
+                return me.bkqueryCommandValue.apply(me, arguments);
+            }
             return null;
         };
+        this.setStatus('readonly');
 
-        this.readOnly = true;
 
         me.fire('interactchange');
     },
@@ -198,7 +206,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             delete me.bkqueryCommandValue;
         }
 
-        this.readOnly = false;
+        this.rollbackStatus();
 
         me.fire('interactchange');
     }

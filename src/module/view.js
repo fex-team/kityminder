@@ -27,7 +27,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown', function ( e ) {
+        this._minder.on( 'normal.beforemousedown readonly.beforemousedown', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
@@ -94,7 +94,8 @@ KityMinder.registerModule( 'View', function () {
         },
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;
-        }
+        },
+        enableReadOnly : false
     } );
 
     var CameraCommand = kity.createClass( "CameraCommand", {
@@ -106,7 +107,8 @@ KityMinder.registerModule( 'View', function () {
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             this.setContentChanged( false );
-        }
+        },
+        enableReadOnly : false
     } );
 
     return {
@@ -148,7 +150,7 @@ KityMinder.registerModule( 'View', function () {
 
                 e.preventDefault();
             },
-            'normal.dblclick': function ( e ) {
+            'normal.dblclick readonly.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
                 this.execCommand( 'camera', this.getRoot() );
             }
