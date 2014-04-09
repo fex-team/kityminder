@@ -63,6 +63,8 @@ $( function () {
         // 当前连接是否指示要加载一个分享的脑图
         isShareLink,
 
+        isPathLink,
+
         uuid = function () {
             return ( ( +new Date() * 10000 ) + ( Math.random() * 9999 ) ).toString( 36 );
         },
@@ -90,12 +92,11 @@ $( function () {
         initUI();
         initFrontia();
         loadShare();
-        loadPath();
         checkLogin();
         bindShortCuts();
-        watchChanges();
         bindDraft();
-        loadDraft( 0 );
+        watchChanges();
+        if ( !loadPath() && !isShareLink ) loadDraft( 0 );
     }
 
     // 创建 UI
@@ -220,8 +221,17 @@ $( function () {
         // documemt.referrer 是为了支持被嵌在 iframe 里的情况
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
+        if ( !currentAccount ) {
+            setTimeout( function () {
+                if ( !currentAccount ) return login();
+                setRemotePath( decodeURIComponent( match[ 1 ], true ) );
+                loadRemote();
+            }, 1000 );
+            return false;
+        }
         setRemotePath( decodeURIComponent( match[ 1 ], true ) );
         loadRemote();
+        return true;
     }
 
     function setRemotePath( path, saved ) {
