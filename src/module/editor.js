@@ -142,6 +142,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(cmds[e.commandName]){
 
                     var node = km.getSelectedNode();
+                    if( !node ){
+                        return;
+                    }
 
                     var textShape = node.getTextShape();
 

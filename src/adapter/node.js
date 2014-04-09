@@ -28,7 +28,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
     comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        me.execCommand( res.value, new MinderNode( me.getLang().topic ) );
+        me.execCommand( res.value, new MinderNode( me.getLang().topic ), true );
     } ).on( "beforeshow", function () {
         if ( $combox.parent().length === 0 ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );

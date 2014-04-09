@@ -393,6 +393,21 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			Layout.shicon.update();
 		}
 	};
+
+	var showNodeInView = function( node ){
+		var padding = 5;
+        var viewport = minder.getPaper().getViewPort();
+        var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
+
+        var tmpX = viewport.center.x * 2 - (offset.x + offset.width);
+        var tmpY = viewport.center.y * 2 - (offset.y + offset.height);
+
+        var dx = offset.x < 0 ? -offset.x : Math.min(tmpX, 0);
+        var dy = offset.y < 0 ? -offset.y : Math.min(tmpY, 0);
+
+        km.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+	};
+
 	var _style = {
 		highlightNode: function ( node ) {
 			var highlight = node.isHighlight();
@@ -485,7 +500,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
-		appendChildNode: function ( parent, node, sibling ) {
+		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			var Layout = node.getLayout();
@@ -569,10 +584,14 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );
 			}
+
+			if( focus ){
+				showNodeInView( node );
+			}
 		},
-		appendSiblingNode: function ( sibling, node ) {
+		appendSiblingNode: function ( sibling, node, focus ) {
 			var parent = sibling.getParent();
-			this.appendChildNode( parent, node, sibling );
+			this.appendChildNode( parent, node, focus, sibling );
 		},
 		removeNode: function ( nodes ) {
 			while ( nodes.length !== 0 ) {
