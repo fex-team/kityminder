@@ -1,12 +1,12 @@
 // Karma configuration
 // Generated on Wed Oct 09 2013 19:20:49 GMT+0800 (中国标准时间)
-
+//karma-coverage@0.1.4
 module.exports = function(config) {
-//    var base_path = '../';
+    var base_path = '../';
   config.set({
 
     // base path, that will be used to resolve files and exclude
-    basePath: '../',
+    basePath: '',
 
 
     // frameworks to use
@@ -15,86 +15,86 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-       'spec/tools/js/UserAction.js'
-        ,'spec/SpecHelper.js'
-        ,'kity/dist/kitygraph.all.js'
-        ,'lib/jquery-2.1.0.min.js'
-        ,'lib/jquery.xml2json.js'
+        base_path+'spec/tools/js/UserAction.js'
+        ,base_path+'spec/SpecHelper.js'
+        ,base_path+'kity/dist/kitygraph.all.js'
+        ,base_path+'lib/jquery-2.1.0.min.js'
+        ,base_path+'lib/jquery.xml2json.js'
 
-        ,'src/core/kityminder.js'
-        ,'src/core/utils.js'
-        ,'src/core/command.js'
-        ,'src/core/node.js'
-        ,'src/core/module.js'
-        ,'src/core/event.js'
-        ,'src/core/minder.js'
-        ,'src/core/minder.data.js'
-        ,'src/core/minder.event.js'
-        ,'src/core/minder.module.js'
-        ,'src/core/minder.command.js'
-        ,'src/core/minder.node.js'
-        ,'src/core/keymap.js'
-        ,'src/core/minder.lang.js'
-        ,'src/core/minder.defaultoptions.js'
-        ,'src/module/geometry.js'
-        ,'src/module/history.js'
-        ,'src/module/icon.js'
-        ,'src/module/layout.js'
-        ,'src/module/layout.default.js'
-        ,'src/module/layout.bottom.js'
-        ,'src/core/minder.select.js'
-        ,'src/module/view.js'
-        ,'src/module/dragtree.js'
-        ,'src/module/dropfile.js'
-        ,'src/module/keyboard.js'
-        ,'src/module/select.js'
-        ,'src/module/history.js'
-        ,'src/module/editor.js'
-        ,'src/module/editor.range.js'
-        ,'src/module/editor.receiver.js'
-        ,'src/module/editor.selection.js'
-        ,'src/module/basestyle.js'
-        ,'src/module/font.js'
-        ,'src/module/zoom.js'
-        ,'src/ui/jquery-ui-1.10.4.custom.min.js'
-        ,'src/ui/widget.js'
-        ,'src/ui/button.js'
-        ,'src/ui/toolbar.js'
-        ,'src/ui/menu.js'
-        ,'src/ui/dropmenu.js'
-        ,'src/ui/splitbutton.js'
-        ,'src/ui/colorsplitbutton.js'
-        ,'src/ui/popup.js'
-        ,'src/ui/scale.js'
-        ,'src/ui/colorpicker.js'
-        ,'src/ui/combobox.js'
-        ,'src/ui/buttoncombobox.js'
-        ,'src/ui/modal.js'
-        ,'src/ui/tooltip.js'
-        ,'src/ui/tab.js'
-        ,'src/ui/separator.js'
-        ,'src/ui/scale.js'
-        ,'src/adapter/utils.js'
-        ,'src/adapter/adapter.js'
-        ,'src/adapter/button.js'
-        ,'src/adapter/combobox.js'
-        ,'src/adapter/saveto.js'
-        ,'src/adapter/view.js'
-        ,'src/adapter/tooltips.js'
-        ,'src/adapter/layout.js'
-        ,'src/adapter/node.js'
-        ,'src/adapter/contextmenu.js'
-        ,'src/adapter/dialog.js'
-        ,'src/protocal/xmind.js'
-        ,'src/protocal/freemind.js'
-        ,'src/protocal/mindmanager.js'
-        ,'src/protocal/plain.js'
-        ,'src/protocal/json.js'
-        ,'src/protocal/png.js'
-        ,'src/protocal/svg.js'
-        ,'spec/core/*.js'
-        ,'spec/module/*.js'
-        ,'spec/protocal/*.js'
+        ,base_path+'src/core/kityminder.js'
+        ,base_path+'src/core/utils.js'
+        ,base_path+'src/core/command.js'
+        ,base_path+'src/core/node.js'
+        ,base_path+'src/core/module.js'
+        ,base_path+'src/core/event.js'
+        ,base_path+'src/core/minder.js'
+        ,base_path+'src/core/minder.data.js'
+        ,base_path+'src/core/minder.event.js'
+        ,base_path+'src/core/minder.module.js'
+        ,base_path+'src/core/minder.command.js'
+        ,base_path+'src/core/minder.node.js'
+        ,base_path+'src/core/keymap.js'
+        ,base_path+'src/core/minder.lang.js'
+        ,base_path+'src/core/minder.defaultoptions.js'
+        ,base_path+'src/module/geometry.js'
+        ,base_path+'src/module/history.js'
+        ,base_path+'src/module/icon.js'
+        ,base_path+'src/module/layout.js'
+        ,base_path+'src/module/layout.default.js'
+        ,base_path+'src/module/layout.bottom.js'
+        ,base_path+'src/core/minder.select.js'
+        ,base_path+'src/module/view.js'
+        ,base_path+'src/module/dragtree.js'
+        ,base_path+'src/module/dropfile.js'
+        ,base_path+'src/module/keyboard.js'
+        ,base_path+'src/module/select.js'
+        ,base_path+'src/module/history.js'
+        ,base_path+'src/module/editor.js'
+        ,base_path+'src/module/editor.range.js'
+        ,base_path+'src/module/editor.receiver.js'
+        ,base_path+'src/module/editor.selection.js'
+        ,base_path+'src/module/basestyle.js'
+        ,base_path+'src/module/font.js'
+        ,base_path+'src/module/zoom.js'
+        ,base_path+'src/ui/jquery-ui-1.10.4.custom.min.js'
+        ,base_path+'src/ui/widget.js'
+        ,base_path+'src/ui/button.js'
+        ,base_path+'src/ui/toolbar.js'
+        ,base_path+'src/ui/menu.js'
+        ,base_path+'src/ui/dropmenu.js'
+        ,base_path+'src/ui/splitbutton.js'
+        ,base_path+'src/ui/colorsplitbutton.js'
+        ,base_path+'src/ui/popup.js'
+        ,base_path+'src/ui/scale.js'
+        ,base_path+'src/ui/colorpicker.js'
+        ,base_path+'src/ui/combobox.js'
+        ,base_path+'src/ui/buttoncombobox.js'
+        ,base_path+'src/ui/modal.js'
+        ,base_path+'src/ui/tooltip.js'
+        ,base_path+'src/ui/tab.js'
+        ,base_path+'src/ui/separator.js'
+        ,base_path+'src/ui/scale.js'
+        ,base_path+'src/adapter/utils.js'
+        ,base_path+'src/adapter/adapter.js'
+        ,base_path+'src/adapter/button.js'
+        ,base_path+'src/adapter/combobox.js'
+        ,base_path+'src/adapter/saveto.js'
+        ,base_path+'src/adapter/view.js'
+        ,base_path+'src/adapter/tooltips.js'
+        ,base_path+'src/adapter/layout.js'
+        ,base_path+'src/adapter/node.js'
+        ,base_path+'src/adapter/contextmenu.js'
+        ,base_path+'src/adapter/dialog.js'
+        ,base_path+'src/protocal/xmind.js'
+        ,base_path+'src/protocal/freemind.js'
+        ,base_path+'src/protocal/mindmanager.js'
+        ,base_path+'src/protocal/plain.js'
+        ,base_path+'src/protocal/json.js'
+        ,base_path+'src/protocal/png.js'
+        ,base_path+'src/protocal/svg.js'
+        ,base_path+'spec/core/*.js'
+        ,base_path+'spec/module/*.js'
+        ,base_path+'spec/protocal/*.js'
 
     ],
 
@@ -148,20 +148,20 @@ module.exports = function(config) {
     //coverage
       reporters: ['progress', 'coverage','junit'],
           preprocessors: {
-              'src/core/*.js': ['coverage'],
-              'src/adapter/*.js': ['coverage'],
-              'src/module/*.js': ['coverage'],
-              'src/protocal/*.js': ['coverage'],
-              'src/ui/*.js': ['coverage']
+              '../src/core/*.js': ['coverage'],
+              '../src/adapter/*.js': ['coverage'],
+              '../src/module/*.js': ['coverage'],
+              '../src/protocal/*.js': ['coverage'],
+              '../src/ui/*.js': ['coverage']
           }
       ,
     coverageReporter: {
           type: 'text',
-          dir: 'spec/coverage/json_files/'
+          dir: './coverage/json_files/'
     }
       ,
       junitReporter: {
-          outputFile: 'spec/test-results.xml'
+          outputFile: './test-results.xml'
       }
   });
 };
