@@ -4,7 +4,7 @@
 var fs = require('fs');
 var browsers = ['Chrome', 'Firefox', 'PhantomJS', 'IE'];
 var result_forBrowser = {};
-var jsonFileBasePath = './coverage/json_files/';
+var jsonFileBasePath = './spec/coverage/json_files/';
 var jsonFiles = fs.readdirSync(jsonFileBasePath);
 var finalJsonFile = 'defaultFileName';
 var curPath = '/spec';
