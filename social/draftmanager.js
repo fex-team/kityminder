@@ -1,7 +1,8 @@
 function DraftManager( minder ) {
     var current = null,
         localStorage = window.localStorage,
-        drafts;
+        drafts,
+        MAX_SIZE = 15;
 
     init();
 
@@ -32,7 +33,7 @@ function DraftManager( minder ) {
     }
 
     function store() {
-        localStorage.setItem( 'drafts', JSON.stringify( drafts ) );
+        localStorage.setItem( 'drafts', JSON.stringify( drafts.slice( 0, MAX_SIZE ) ) );
     }
 
     function create( path ) {
@@ -62,6 +63,10 @@ function DraftManager( minder ) {
         return current;
     }
 
+    function getCurrent() {
+        return current;
+    }
+
     function openByPath( path ) {
         for ( var i = 0; i < drafts.length; i++ ) {
             if ( drafts[ i ].path == path ) return open( i );
@@ -76,13 +81,20 @@ function DraftManager( minder ) {
             current.path = path || current.path;
             current.name = minder.getMinderTitle();
             current.data = minder.exportData( "json" );
+            current.sync = false;
             current.update = new Date();
             store();
         }
+        return current;
+    }
+
+    function sync() {
+        current.sync = true;
+        store();
     }
 
     function list() {
-        return drafts.slice();
+        return drafts.slice( 0, 15 );
     }
 
     function remove( remove_index ) {
@@ -103,6 +115,8 @@ function DraftManager( minder ) {
         create: create,
         list: list,
         remove: remove,
-        clear: clear
+        clear: clear,
+        getCurrent: getCurrent,
+        sync: sync
     };
 }

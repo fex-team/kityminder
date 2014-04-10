@@ -41,7 +41,8 @@ KityMinder.registerModule( 'Zoom', function () {
 		},
 		queryState: function ( minder ) {
 			return ( minder._zoomValue > 1 / MAX_ZOOM ) ? 0 : -1;
-		}
+		},
+        enableReadOnly : false
 	} );
 
 	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
@@ -53,7 +54,8 @@ KityMinder.registerModule( 'Zoom', function () {
 		},
 		queryState: function ( minder ) {
 			return ( minder._zoomValue < 1 / MIN_ZOOM ) ? 0 : -1;
-		}
+		},
+        enableReadOnly : false
 	} );
 
 	return {
@@ -79,7 +81,7 @@ KityMinder.registerModule( 'Zoom', function () {
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			'normal.mousewheel': function ( e ) {
+			'normal.mousewheel readonly.mousewheel': function ( e ) {
 				if ( !e.originEvent.ctrlKey ) return;
 				var delta = e.originEvent.wheelDelta;
 				var me = this;

@@ -60,11 +60,13 @@
 
     }
     window.KITYMINDER_CONFIG = {
-        'KITYMINDER_HOME_URL': getKMBasePath(),
+        'KITYMINDER_HOME_URL': getKMBasePath()
         //定义工具栏
-        toolbars: [
+        ,toolbars: [
             'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers | node | switchlayout | help'
         ]
+        //只读模式，默认是false
+        //readOnly : false
 
         //设置主题
         //,defaultlayoutstyle : 'default' //设置默认的主题

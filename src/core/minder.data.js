@@ -32,7 +32,8 @@ function exportNode( node ) {
 
 var DEFAULT_TEXT = {
     'root': 'maintopic',
-    'main': 'topic'
+    'main': 'topic',
+    'sub': 'topic'
 };
 
 function importNode( node, json, km ) {
@@ -40,14 +41,14 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text || km.getLang( DEFAULT_TEXT[ data.type ] ) );
+    node.setText( data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
     for ( var i = 0; i < childrenTreeData.length; i++ ) {
         var childNode = new MinderNode();
-        importNode( childNode, childrenTreeData[ i ], km );
         node.appendChild( childNode );
+        importNode( childNode, childrenTreeData[ i ], km );
     }
     return node;
 }
@@ -97,14 +98,27 @@ kity.extendClass( Minder, {
 
         json = params.json || ( params.json = protocal.decode( local ) );
 
-        this._fire( new MinderEvent( 'preimport', params, false ) );
+        if ( typeof json === 'object' && 'then' in json ) {
+            var self = this;
+            json.then( local, function ( data ) {
+                self._afterImportData( data, params );
+            } );
+        } else {
+            this._afterImportData( json, params );
+        }
+        return this;
+    },
 
+    _afterImportData: function ( json, params ) {
+        this._fire( new MinderEvent( 'preimport', params, false ) );
 
         // 删除当前所有节点
         while ( this._root.getChildren().length ) {
             this._root.removeChild( 0 );
         }
-
+        var curLayout = this._root.getData( "currentstyle" );
+        this._root.setData();
+        this._root.setData( "currentstyle", curLayout );
         importNode( this._root, json, this );
 
         this._fire( new MinderEvent( 'import', params, false ) );
@@ -114,7 +128,6 @@ kity.extendClass( Minder, {
         this._firePharse( {
             type: 'interactchange'
         } );
-
-        return this;
     }
+
 } );

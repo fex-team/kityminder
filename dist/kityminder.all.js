@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-03-24
+ * kityminder - v1.0.0 - 2014-03-25
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -1767,6 +1767,9 @@ KityMinder.registerModule( "HistoryModule", function () {
                         km.historyManager.saveScene()
                     }
                 }
+            },
+            "import":function(){
+                this.historyManager.reset()
             }
         }
     };
@@ -3552,6 +3555,7 @@ KityMinder.registerModule( 'View', function () {
             } else {
                 minder.rollbackStatus();
             }
+            this.setContentChanged( false );
 
         },
         queryState: function ( minder ) {
@@ -3567,6 +3571,7 @@ KityMinder.registerModule( 'View', function () {
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+            this.setContentChanged( false );
         }
     } );
 
@@ -4355,7 +4360,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
 
-                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
+
                     receiver.setBaseOffset()
                         .getTextOffsetData();
 

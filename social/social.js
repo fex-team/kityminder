@@ -1,8 +1,15 @@
 /* global Promise: true */
-
 /**
+ * 百度脑图社会化功能
+ *
+ * 1. 百度账号登陆
+ * 2. 百度云存储
+ * 3. 分享
+ * 4. 草稿箱
  * @author techird
  */
+
+
 $.extend( $.fn, {
     disabled: function ( value ) {
         if ( value === undefined ) return !!this.attr( 'disabled' );
@@ -38,11 +45,14 @@ $.extend( $.fn, {
     } )()
 } );
 
-
+/**
+ * 核心业务逻辑
+ */
 $( function () {
 
     // UI 元素
-    var $panel, $login_btn, $save_btn, $share_btn, $user_btn, $user_menu, $draft_btn, $draft_menu,
+    var $panel, $login_btn, $save_btn, $share_btn, $user_btn, $user_menu,
+        $draft_btn, $draft_menu, $share_dialog, $share_url, $copy_url_btn,
 
         // 当前文件的远端路径
         remotePath = null,
@@ -53,31 +63,28 @@ $( function () {
         // 当前连接是否指示要加载一个分享的脑图
         isShareLink,
 
+        isPathLink,
+
         uuid = function () {
             return ( ( +new Date() * 10000 ) + ( Math.random() * 9999 ) ).toString( 36 );
         },
 
-        // 当前脑图的分享连接
+        // 当前脑图的分享ID
         shareId = uuid(),
 
-        // 查找 baseUrl
-        baseUrl = ( function () {
-            var scripts = document.getElementsByTagName( 'script' );
-            for ( var i = 0; i < scripts.length; i++ ) {
-                var index = scripts[ i ].src.indexOf( 'social.js' );
-                if ( ~index ) {
-                    return scripts[ i ].src.substr( 0, index );
-                }
-            }
-        } )(),
+        titleSuffix = document.title || '百度脑图',
 
-        notice = window.alert,
-
+        // 脑图实例
         minder = window.km,
+        // 草稿箱
+        draftManager = window.draftManager || new window.DraftManager( minder ),
 
-        draftManager = new window.DraftManager( minder ),
+        // 当前是否要检测文档内容是否变化的开关
+        watchingChanges = true,
 
-        watchingChanges = true;
+        notice = ( function () {
+            return window.alert;
+        } )();
 
     start();
 
@@ -85,12 +92,11 @@ $( function () {
         initUI();
         initFrontia();
         loadShare();
-        loadPath();
         checkLogin();
         bindShortCuts();
-        watchChanges();
         bindDraft();
-        loadDraft( 0 );
+        watchChanges();
+        if ( !loadPath() && !isShareLink ) loadDraft( 0 );
     }
 
     // 创建 UI
@@ -111,6 +117,9 @@ $( function () {
                     window.open( 'http://pan.baidu.com/disk/home#dir/path=/apps/kityminder' );
                 }
             }, {
+                label: '注销',
+                click: logout
+            }, {
                 divider: true
             } ]
         } ).addClass( 'user-file-menu' ).appendTo( 'body' ).kmui();
@@ -118,16 +127,42 @@ $( function () {
         $user_menu.attachTo( $user_btn );
 
         $save_btn = $( '<button id="save-btn">保存</button>' ).click( save )
-            .addClass( 'baidu-cloud' ).appendTo( $panel ).disabled( true );
+            .addClass( 'baidu-cloud' );
 
         $share_btn = $( '<button id="share-btn">分享</button>' ).click( share )
-            .addClass( 'share' ).appendTo( $panel ).disabled( true );
+            .addClass( 'share' ).appendTo( $panel );
 
         $draft_btn = $( '<button id="draft-btn">草稿箱</button>' ).appendTo( 'body' );
 
         $draft_menu = $.kmuidropmenu().addClass( 'draft-menu kmui-combobox-menu' ).appendTo( 'body' );
         $draft_menu.kmui().attachTo( $draft_btn );
         $draft_menu.on( 'aftershow', showDraftList );
+
+        $share_dialog = $( '#share-dialog' );
+        $share_url = $( '#share-url' );
+        $copy_url_btn = $( '#copy-share-url' );
+
+        $share_dialog.mousedown( function ( e ) {
+            e.stopPropagation();
+        } );
+
+        var copyTrickTimer = 0;
+        $( 'body' ).on( 'mousedown', function ( e ) {
+            copyTrickTimer = setTimeout( function () {
+                $share_dialog.hide();
+                $share_btn.loading( false );
+                $copy_url_btn.loading( false );
+            }, 30 );
+        } );
+
+        var clip = new window.ZeroClipboard( $copy_url_btn, {
+            hoverClass: 'hover',
+            activeClass: 'active'
+        } );
+        clip.on( 'dataRequested', function ( client, args ) {
+            $copy_url_btn.loading( '已复制' );
+            clearTimeout( copyTrickTimer );
+        } );
     }
 
     // 初始化云平台 frontia
@@ -145,7 +180,7 @@ $( function () {
     // 检查 URL 是否分享连接，是则加载分享内容
     function loadShare() {
 
-        var pattern = /shareId=(\w+)([&#]|$)/;
+        var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
 
@@ -158,7 +193,18 @@ $( function () {
 
         baidu.frontia.storage.findData( query, {
             success: function ( ret ) {
-                minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                if ( ret.count === 0 ) {
+                    $share_btn.loading( false );
+                    return notice( '加载分享内容失败！请确认分享链接正确。' );
+                }
+                var draft = draftManager.openByPath( 'share/' + shareId );
+                if ( draft ) {
+                    draftManager.load();
+                } else {
+                    draftManager.create( 'share/' + shareId );
+                    minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                }
+                setRemotePath( null, false );
                 $share_btn.loading( false );
             },
             error: function ( e ) {
@@ -175,8 +221,17 @@ $( function () {
         // documemt.referrer 是为了支持被嵌在 iframe 里的情况
         var match = pattern.exec( window.location ) || pattern.exec( document.referrer );
         if ( !match ) return;
+        if ( !currentAccount ) {
+            setTimeout( function () {
+                if ( !currentAccount ) return login();
+                setRemotePath( decodeURIComponent( match[ 1 ], true ) );
+                loadRemote();
+            }, 1000 );
+            return false;
+        }
         setRemotePath( decodeURIComponent( match[ 1 ], true ) );
         loadRemote();
+        return true;
     }
 
     function setRemotePath( path, saved ) {
@@ -190,6 +245,14 @@ $( function () {
             $user_btn.text( filename );
         } else if ( currentAccount ) {
             $user_btn.text( '* ' + minder.getMinderTitle() );
+        }
+
+        document.title = [ filename || minder.getMinderTitle(), titleSuffix ].join( ' - ' );
+
+        if ( saved ) {
+            $save_btn.disabled( true ).text( '已保存' );
+        } else {
+            $save_btn.disabled( false ).text( '保存' );
         }
     }
 
@@ -211,16 +274,27 @@ $( function () {
         } );
     }
 
+    function logout() {
+        baidu.frontia.logOutCurrentAccount();
+        setAccount( null );
+    }
+
     // 设置用户后为其初始化
     function setAccount( account ) {
         currentAccount = account;
-        $user_btn.prependTo( $panel );
-        $save_btn.disabled( false );
-        $share_btn.disabled( false );
-        $login_btn.detach();
-        loadAvator();
-        loadRecent();
-        window.location.hash = '';
+        if ( account ) {
+            $user_btn.prependTo( $panel );
+            $save_btn.appendTo( $panel );
+            $share_btn.appendTo( $panel );
+            $login_btn.detach();
+            loadAvator();
+            loadRecent();
+            window.location.hash = '';
+        } else {
+            $user_btn.detach();
+            $save_btn.detach();
+            $login_btn.prependTo( $panel );
+        }
     }
 
     // 加载用户头像
@@ -265,30 +339,91 @@ $( function () {
 
         sto.getFileUrl( remotePath, {
             success: function ( url ) {
-                $.ajax( {
-                    cache: false,
-                    url: url,
-                    dataType: 'text',
-                    success: function ( result ) {
-
-                        watchingChanges = false;
-
-                        minder.importData( result, 'json' );
-
-                        if ( !draftManager.openByPath( remotePath ) ) {
-                            draftManager.create();
-                        }
-                        draftManager.save( remotePath );
-
-                        watchingChanges = true;
-
-                        minder.execCommand( 'camera', minder.getRoot() );
-                        $user_btn.loading( false ).text( getFileName( remotePath ) );
-                    }
-                } );
+                // the url to download the file on cloud dist
+                var arr = remotePath.split( '.' );
+                var format = arr[ arr.length - 1 ];
+                if ( format in loadFile ) {
+                    loadFile[ format ]( url );
+                }
             },
             error: notice
         } );
+    }
+
+    var loadFile = {
+        'km': loadPlainType,
+        'json': loadPlainType,
+        'xmind': loadXMind,
+        'mmap': loadMindManager,
+        'mm': loadFreeMind
+    };
+
+    function loadPlainType( url ) {
+        $.ajax( {
+            cache: false,
+            url: url,
+            dataType: 'text',
+            success: function ( result ) {
+                importFile( result, 'json' );
+            }
+        } );
+    }
+
+    function loadXMind( url ) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open( "get", url, true );
+        xhr.responseType = "blob";
+        xhr.onload = function () {
+            if ( this.status == 200 && this.readyState ) {
+                var blob = this.response;
+                importFile( blob, 'xmind' );
+            }
+        };
+        xhr.send();
+    }
+
+    function loadMindManager( url ) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open( "get", url, true );
+        xhr.responseType = "blob";
+        xhr.onload = function () {
+            if ( this.status == 200 && this.readyState ) {
+                var blob = this.response;
+                importFile( blob, 'mindmanager' );
+            }
+        };
+        xhr.send();
+
+    }
+
+    function loadFreeMind( url ) {
+        $.ajax( {
+            cache: false,
+            url: url,
+            dataType: 'text',
+            success: function ( result ) {
+                importFile( result, 'freemind' );
+            }
+        } );
+    }
+
+    // 见文件数据导入minder
+    function importFile( data, format ) {
+        watchingChanges = false;
+
+        minder.importData( data, format );
+
+        if ( !draftManager.openByPath( remotePath ) ) {
+            draftManager.create();
+        }
+        draftManager.save( remotePath );
+        draftManager.sync();
+        minder.execCommand( 'camera', minder.getRoot() );
+        $user_btn.loading( false ).text( getFileName( remotePath ) );
+
+        watchingChanges = true;
     }
 
     // 添加文件到最近文件列表
@@ -313,19 +448,32 @@ $( function () {
 
     // 点击文件菜单
     function openFile( e ) {
-        setRemotePath( $( this ).data( 'value' ), true );
-        loadRemote();
+        var path = $( this ).data( 'value' );
+        var draft = draftManager.getCurrent();
+        if ( draft && draft.path == path ) {
+            if ( !draft.sync && window.confirm( '“' + getFileName( path ) + '”在草稿箱包含未保存的更改，确定加载网盘版本覆盖草稿箱中的版本吗？' ) ) {
+                setRemotePath( path, true );
+                loadRemote();
+            }
+        } else {
+            draft = draftManager.openByPath( path );
+            setRemotePath( path, !draft || draft.sync );
+            if ( draft ) {
+                watchingChanges = false;
+                draftManager.load();
+                watchingChanges = true;
+            } else {
+                loadRemote();
+            }
+        }
     }
 
     // 新建文件
     function newFile() {
         setRemotePath( null, true );
-        watchingChanges = false;
-        minder.importData( '新建脑图', 'plain' );
         draftManager.create();
-        watchingChanges = true;
+        minder.importData( '新建脑图', 'plain' );
         minder.execCommand( 'camera', minder.getRoot() );
-        $user_btn.text( '<新建脑图>' );
     }
 
     function generateRemotePath() {
@@ -356,8 +504,8 @@ $( function () {
                         addToRecentMenu( [ savedFile ] );
                     }
                     setRemotePath( savedFile.path, true );
-                    $save_btn.text( '已保存！' );
                     draftManager.save( remotePath );
+                    draftManager.sync();
                     clearTimeout( timeout );
                 } else {
                     error( '保存到云盘失败，可能是网络问题导致！' );
@@ -376,9 +524,9 @@ $( function () {
             return;
         }
 
-        var currentUrl = window.location.origin + window.location.pathname,
+        var baseUrl = /^(.*?)(\?|\#|$)/.exec( window.location.href )[ 1 ];
 
-            shareUrl = currentUrl + '?shareId=' + shareId,
+        var shareUrl = baseUrl + '?shareId=' + shareId,
 
             shareData = new baidu.frontia.Data( {
                 shareMinder: {
@@ -387,41 +535,21 @@ $( function () {
                 }
             } );
 
+        var shareConfig = window._bd_share_config.common,
+            resetShare = window._bd_share_main.init;
+
         $share_btn.loading( '正在分享...' );
 
         baidu.frontia.storage.insertData( shareData, {
             success: function () {
-                var $popup, $url;
-
-                $popup = $( '<div></div>' ).addClass( 'popup' ).appendTo( 'body' );
-                $popup.css( {
-                    'position': 'absolute',
-                    'right': 10,
-                    'top': $share_btn.offset().top + $share_btn.height() + 10,
-                    'width': 250,
-                    'padding': 10,
-                    'background': 'white',
-                    'border-radius': '5px',
-                    'box-shadow': '1px 2px 4px rgba(0, 0, 0, .3)'
-                } );
-                $popup.append( '<p style="margin: 5px 0; font-size: 12px;">分享成功，请复制URL：</p>' );
-
-                $url = $( '<input type="text" style="width: 250px;" value="' + shareUrl + '"></input>' ).appendTo( $popup );
-
-                $url[ 0 ].select();
-
-                $popup.mousedown( function ( e ) {
-                    e.stopPropagation();
-                } );
-
-                $( 'body' ).one( 'mousedown', function ( e ) {
-                    $popup.fadeOut( 'fast', function () {
-                        $popup.remove();
-                    } );
-                    $share_btn.loading( false );
-                } );
+                $share_dialog.show();
+                $share_url.val( shareUrl )[ 0 ].select();
             }
         } );
+        shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();
+        shareConfig.bdDesc = shareConfig.bdText = '“' + minder.getMinderTitle() + '” - 我用百度脑图制作的思维导图，快看看吧！（地址：' + shareUrl + '）';
+        shareConfig.bdUrl = shareUrl;
+        resetShare();
     }
 
     function bindShortCuts() {
@@ -453,14 +581,10 @@ $( function () {
     function watchChanges() {
         minder.on( 'contentchange', function () {
             if ( !watchingChanges ) return;
-            var currentData = minder.exportData( 'json' );
-            if ( watchChanges.lastData != currentData ) {
-                if ( currentAccount ) {
-                    $save_btn.disabled( false ).text( '保存' );
-                    watchChanges.lastData = currentData;
-                    setRemotePath( remotePath, false );
-                }
-                draftManager.save();
+            var current = draftManager.save();
+            if ( currentAccount ) {
+                $save_btn.disabled( current.sync ).text( '保存' );
+                setRemotePath( remotePath, current.sync );
             }
         } );
     }
@@ -534,10 +658,11 @@ $( function () {
 
         isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
         if ( isRemote ) {
-            setRemotePath( draft.path, false );
+            setRemotePath( draft.path, draft.sync );
         }
-
+        watchingChanges = false;
         draftManager.load();
+        watchingChanges = true;
         if ( !isRemote ) {
             setRemotePath( null, false );
         }

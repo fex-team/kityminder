@@ -30,7 +30,7 @@ KityMinder.registerModule( "basestylemodule", function () {
                         return -1;
                     }
                     utils.each(nodes,function(i,n){
-                        if(n.getData('bold')){
+                        if( n && n.getData('bold') ){
                             result = 1;
                             return false;
                         }
@@ -65,7 +65,7 @@ KityMinder.registerModule( "basestylemodule", function () {
                         return -1;
                     }
                     utils.each(nodes,function(i,n){
-                        if(n.getData('italic')){
+                        if( n && n.getData('italic') ){
                             result = 1;
                             return false;
                         }

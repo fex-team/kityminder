@@ -27,7 +27,6 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'normal.beforemousedown textedit.beforemousedown':function(e){
-
                 if(e.isRightMB()){
                     e.stopPropagationImmediately();
                     return;
@@ -142,6 +141,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(cmds[e.commandName]){
 
                     var node = km.getSelectedNode();
+                    if( !node ){
+                        return;
+                    }
 
                     var textShape = node.getTextShape();
 
@@ -171,7 +173,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
 
-                if(e.commandName == 'priority' || e.commandName == 'progress'){
+                if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
+
                     receiver.setBaseOffset()
                         .getTextOffsetData();
 
