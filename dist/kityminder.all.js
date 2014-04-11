@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-04-09
+ * kityminder - v1.0.0 - 2014-04-11
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -792,6 +792,9 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initContextmenu();
         this._initModules();
 
+        if(this.getOptions('readOnly') === true){
+            this.setDisabled();
+        }
         this.fire( 'ready' );
     },
     getOptions: function ( key ) {
@@ -948,6 +951,46 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     },
     getStatus: function () {
         return this._status;
+    },
+    setDisabled : function(){
+        var me = this;
+        //禁用命令
+        me.bkqueryCommandState = me.queryCommandState;
+        me.bkqueryCommandValue = me.queryCommandValue;
+        me.queryCommandState = function (type) {
+            var cmd = this._getCommand(type);
+            if(cmd && cmd.enableReadOnly === false){
+                return me.bkqueryCommandState.apply(me, arguments);
+            }
+            return -1;
+        };
+        me.queryCommandValue = function (type) {
+            var cmd = this._getCommand(type);
+            if(cmd && cmd.enableReadOnly === false){
+                return me.bkqueryCommandValue.apply(me, arguments);
+            }
+            return null;
+        };
+        this.setStatus('readonly');
+
+
+        me.fire('interactchange');
+    },
+    setEnabled : function(){
+        var me = this;
+
+        if (me.bkqueryCommandState) {
+            me.queryCommandState = me.bkqueryCommandState;
+            delete me.bkqueryCommandState;
+        }
+        if (me.bkqueryCommandValue) {
+            me.queryCommandValue = me.bkqueryCommandValue;
+            delete me.bkqueryCommandValue;
+        }
+
+        this.rollbackStatus();
+
+        me.fire('interactchange');
     }
 } );
 
@@ -1120,6 +1163,10 @@ kity.extendClass( Minder, {
         }
     },
     _firePharse: function ( e ) {
+//        //只读模式下强了所有的事件操作
+//        if(this.readOnly === true){
+//            return false;
+//        }
         var beforeEvent, preEvent, executeEvent;
 
         if ( e.type == 'DOMMouseScroll' ) {
@@ -1490,7 +1537,8 @@ kity.extendClass( Minder, {
 //这里只放不是由模块产生的默认参数
 KM.defaultOptions = {
     zIndex : 1000,
-    lang:'zh-cn'
+    lang:'zh-cn',
+    readyOnly:false
 };
 
 KityMinder.Geometry = ( function () {
@@ -3543,7 +3591,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown', function ( e ) {
+        this._minder.on( 'normal.beforemousedown readonly.beforemousedown', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
@@ -3610,7 +3658,8 @@ KityMinder.registerModule( 'View', function () {
         },
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;
-        }
+        },
+        enableReadOnly : false
     } );
 
     var CameraCommand = kity.createClass( "CameraCommand", {
@@ -3622,7 +3671,8 @@ KityMinder.registerModule( 'View', function () {
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             this.setContentChanged( false );
-        }
+        },
+        enableReadOnly : false
     } );
 
     return {
@@ -3664,7 +3714,7 @@ KityMinder.registerModule( 'View', function () {
 
                 e.preventDefault();
             },
-            'normal.dblclick': function ( e ) {
+            'normal.dblclick readonly.dblclick': function ( e ) {
                 if ( e.getTargetNode() ) return;
                 this.execCommand( 'camera', this.getRoot() );
             }
@@ -4363,7 +4413,6 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'normal.beforemousedown textedit.beforemousedown':function(e){
-
                 if(e.isRightMB()){
                     e.stopPropagationImmediately();
                     return;
@@ -5308,7 +5357,8 @@ KityMinder.registerModule( 'Zoom', function () {
 		},
 		queryState: function ( minder ) {
 			return ( minder._zoomValue > 1 / MAX_ZOOM ) ? 0 : -1;
-		}
+		},
+        enableReadOnly : false
 	} );
 
 	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
@@ -5320,7 +5370,8 @@ KityMinder.registerModule( 'Zoom', function () {
 		},
 		queryState: function ( minder ) {
 			return ( minder._zoomValue < 1 / MIN_ZOOM ) ? 0 : -1;
-		}
+		},
+        enableReadOnly : false
 	} );
 
 	return {
@@ -5346,7 +5397,7 @@ KityMinder.registerModule( 'Zoom', function () {
 			'ready': function () {
 				this._zoomValue = 1;
 			},
-			'normal.mousewheel': function ( e ) {
+			'normal.mousewheel readonly.mousewheel': function ( e ) {
 				if ( !e.originEvent.ctrlKey ) return;
 				var delta = e.originEvent.wheelDelta;
 				var me = this;
@@ -7759,7 +7810,9 @@ KityMinder.registerProtocal( 'xmind', function () {
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
-        processTopic(json.sheet.topic, result);
+        var sheet = json.sheet;
+        var topic = utils.isArray(sheet) ? sheet[0].topic : sheet.topic;
+        processTopic(topic, result);
         return result;
     }
 
