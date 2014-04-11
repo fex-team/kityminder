@@ -69,7 +69,9 @@ KityMinder.registerProtocal( 'xmind', function () {
     function xml2km(xml){
         var json = $.xml2json(xml);
         var result = {};
-        processTopic(json.sheet.topic, result);
+        var sheet = json.sheet;
+        var topic = utils.isArray(sheet) ? sheet[0].topic : sheet.topic;
+        processTopic(topic, result);
         return result;
     }
 

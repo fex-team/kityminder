@@ -32,7 +32,8 @@ function exportNode( node ) {
 
 var DEFAULT_TEXT = {
     'root': 'maintopic',
-    'main': 'topic'
+    'main': 'topic',
+    'sub': 'topic'
 };
 
 function importNode( node, json, km ) {
@@ -40,14 +41,14 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text || km.getLang( DEFAULT_TEXT[ data.type ] ) );
+    node.setText( data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
     for ( var i = 0; i < childrenTreeData.length; i++ ) {
         var childNode = new MinderNode();
-        importNode( childNode, childrenTreeData[ i ], km );
         node.appendChild( childNode );
+        importNode( childNode, childrenTreeData[ i ], km );
     }
     return node;
 }
