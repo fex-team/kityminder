@@ -3311,7 +3311,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				this.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 			}
 		},
-		appendChildNode: function ( parent, node, sibling ) {
+		appendChildNode: function ( parent, node, focus, sibling ) {
 			node.clearLayout();
 			var parentLayout = parent.getLayout();
 			var expand = parent.getData( "expand" );
