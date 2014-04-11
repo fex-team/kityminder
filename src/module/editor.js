@@ -27,7 +27,6 @@ KityMinder.registerModule( "TextEditModule", function () {
         },
         "events": {
             'normal.beforemousedown textedit.beforemousedown':function(e){
-
                 if(e.isRightMB()){
                     e.stopPropagationImmediately();
                     return;

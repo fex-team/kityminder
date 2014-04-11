@@ -25,6 +25,10 @@ kity.extendClass( Minder, {
         }
     },
     _firePharse: function ( e ) {
+//        //只读模式下强了所有的事件操作
+//        if(this.readOnly === true){
+//            return false;
+//        }
         var beforeEvent, preEvent, executeEvent;
 
         if ( e.type == 'DOMMouseScroll' ) {
