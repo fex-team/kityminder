@@ -77,7 +77,7 @@ $( function () {
         // 脑图实例
         minder = window.km,
         // 草稿箱
-        draftManager = window.draftManager || new window.DraftManager( minder ),
+        draftManager = window.draftManager || ( window.draftManager = new window.DraftManager( minder ) ),
 
         // 当前是否要检测文档内容是否变化的开关
         watchingChanges = true,
@@ -681,4 +681,10 @@ $( function () {
         return "很久之前";
     }
 
+    window.social = {
+        setRemotePath: setRemotePath,
+        watchChanges: function ( value ) {
+            watchingChanges = value;
+        }
+    };
 } );
