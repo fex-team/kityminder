@@ -6,7 +6,7 @@
 ### 功能更新
 1. 支持本地格式文件导入
    * 支持文件拖拽和网盘文件导入
-   * 格式支持xmind/freemind/mindmanager，其他格式不支持
+   * 格式支持 xmind/freemind/mindmanager，其他格式不支持
    * 支持标签，包括优先级和任务进度
 2. 新增节点移动到视野中
 
