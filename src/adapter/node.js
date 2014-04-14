@@ -25,7 +25,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
 
     //实例化
     $combox = $.kmuibuttoncombobox( transForInserttopic( options ) ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
-    comboboxWidget = $combox.kmui();
+    var comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         me.execCommand( res.value, new MinderNode( me.getLang().topic ), true );
@@ -43,7 +43,20 @@ KM.registerToolbarUI( 'node', function ( name ) {
             }
         } )
     } );
+    //状态反射
+    me.on( 'interactchange', function () {
+        var state = 0;
+        utils.each(shortcutKeys,function(k){
+            state = me.queryCommandState(k);
+            if(state!=-1){
+                return false;
+            }
+        });
+        //设置按钮状态
+        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 
+    } );
+    //comboboxWidget.button().kmui().disabled(-1);
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 
 
