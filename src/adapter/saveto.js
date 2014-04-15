@@ -50,15 +50,17 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         var filename = me.getMinderTitle() + p.fileExtension;
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
-            doDownload( url, filename );
             if ( navigator.userAgent.indexOf( "MSIE" ) > 0 ) {
+                console.log( "IE" );
                 var iframe = document.createElement( 'iframe' );
                 //iframe.style.display = 'none';
                 document.appendChild( iframe );
                 iframe.src = filename;
                 iframe.contentDocument.body.innerHTML = data;
                 document.execCommand( "SaveAs" );
-                document.removeChild( iframe );
+                //document.removeChild( iframe );
+            } else {
+                doDownload( url, filename );
             }
         } else if ( data && data.then ) {
             data.then( function ( url ) {
