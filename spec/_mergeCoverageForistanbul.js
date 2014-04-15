@@ -8,7 +8,7 @@ var jsonFileBasePath = './spec/coverage/json_files/';
 var jsonFiles = fs.readdirSync(jsonFileBasePath);
 var finalJsonFile = 'defaultFileName';
 var curPath = '/spec';
-var resultPath = '.';
+var resultPath = 'spec/coverage';
 
 //找出所有的json文件
 for (var i = 0; i < jsonFiles.length; i++) {
@@ -119,7 +119,7 @@ function mergeDetail(allEle, addEle, attrName, type) {
 //修正路径
 function fixPath(oldPath){
     //例如把 "D:/workspace/ufinder/_src/core/finder.js" 修正为
-    // ./_src/core/finder.js  注意这里一定要用相对路径(相对于_spec/coverage)
+    // spec/coverage/_src/core/finder.js  注意这里一定要用相对路径(相对于_spec/coverage)
     var s = __dirname.replace(/\\/g,'/');
     if(s.lastIndexOf(curPath)){
         s = s.substring(0,s.lastIndexOf(curPath) );
