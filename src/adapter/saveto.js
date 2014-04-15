@@ -44,13 +44,23 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         a.dispatchEvent( evt );
     }
 
+    var ie_ver = function () {
+        var iev = 0;
+        var ieold = ( /MSIE (\d+\.\d+);/.test( navigator.userAgent ) );
+        var trident = !! navigator.userAgent.match( /Trident\/7.0/ );
+        var rv = navigator.userAgent.indexOf( "rv:11.0" );
+        if ( ieold ) iev = new Number( RegExp.$1 );
+        if ( navigator.appVersion.indexOf( "MSIE 10" ) != -1 ) iev = 10;
+        if ( trident && rv != -1 ) iev = 11;
+        return iev;
+    };
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
         var filename = me.getMinderTitle() + p.fileExtension;
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
-            if ( navigator.userAgent.indexOf( "MSIE" ) > 0 ) {
+            if ( ie_ver() > 0 ) {
                 console.log( "IE" );
                 var iframe = document.createElement( 'iframe' );
                 //iframe.style.display = 'none';
