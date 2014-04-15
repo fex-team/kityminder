@@ -39,7 +39,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             evt = new MouseEvent( 'click' );
         } catch ( error ) {
             evt = document.createEvent( 'MouseEvents' );
-            evt.initMouseEvent( 'click', true, true );
+            evt.initEvent( 'click', true, true );
         }
         a.dispatchEvent( evt );
     }
