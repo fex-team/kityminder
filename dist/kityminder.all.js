@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-04-11
+ * kityminder - v1.0.0 - 2014-04-15
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -792,7 +792,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initContextmenu();
         this._initModules();
 
-        if(this.getOptions('readOnly') === true){
+        if ( this.getOptions( 'readOnly' ) === true ) {
             this.setDisabled();
         }
         this.fire( 'ready' );
@@ -952,45 +952,45 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     getStatus: function () {
         return this._status;
     },
-    setDisabled : function(){
+    setDisabled: function () {
         var me = this;
         //禁用命令
         me.bkqueryCommandState = me.queryCommandState;
         me.bkqueryCommandValue = me.queryCommandValue;
-        me.queryCommandState = function (type) {
-            var cmd = this._getCommand(type);
-            if(cmd && cmd.enableReadOnly === false){
-                return me.bkqueryCommandState.apply(me, arguments);
+        me.queryCommandState = function ( type ) {
+            var cmd = this._getCommand( type );
+            if ( cmd && cmd.enableReadOnly === false ) {
+                return me.bkqueryCommandState.apply( me, arguments );
             }
             return -1;
         };
-        me.queryCommandValue = function (type) {
-            var cmd = this._getCommand(type);
-            if(cmd && cmd.enableReadOnly === false){
-                return me.bkqueryCommandValue.apply(me, arguments);
+        me.queryCommandValue = function ( type ) {
+            var cmd = this._getCommand( type );
+            if ( cmd && cmd.enableReadOnly === false ) {
+                return me.bkqueryCommandValue.apply( me, arguments );
             }
             return null;
         };
-        this.setStatus('readonly');
+        this.setStatus( 'readonly' );
 
 
-        me.fire('interactchange');
+        me.fire( 'interactchange' );
     },
-    setEnabled : function(){
+    setEnabled: function () {
         var me = this;
 
-        if (me.bkqueryCommandState) {
+        if ( me.bkqueryCommandState ) {
             me.queryCommandState = me.bkqueryCommandState;
             delete me.bkqueryCommandState;
         }
-        if (me.bkqueryCommandValue) {
+        if ( me.bkqueryCommandValue ) {
             me.queryCommandValue = me.bkqueryCommandValue;
             delete me.bkqueryCommandValue;
         }
 
         this.rollbackStatus();
 
-        me.fire('interactchange');
+        me.fire( 'interactchange' );
     }
 } );
 
@@ -5125,75 +5125,74 @@ Minder.Selection = kity.createClass( 'Selection', {
 KityMinder.registerModule( "basestylemodule", function () {
     var km = this;
     return {
-
         "commands": {
             "bold": kity.createClass( "boldCommand", {
                 base: Command,
 
-                execute: function (  ) {
+                execute: function () {
 
                     var nodes = km.getSelectedNodes();
-                    if(this.queryState('bold') == 1){
-                        utils.each(nodes,function(i,n){
-                            n.setData('bold');
-                            n.getTextShape().setAttr('font-weight');
-                            km.updateLayout(n)
-                        })
-                    }else{
-                        utils.each(nodes,function(i,n){
-                            n.setData('bold',true);
-                            n.getTextShape().setAttr('font-weight','bold');
-                            km.updateLayout(n)
-                        })
+                    if ( this.queryState( 'bold' ) == 1 ) {
+                        utils.each( nodes, function ( i, n ) {
+                            n.setData( 'bold' );
+                            n.getTextShape().setAttr( 'font-weight' );
+                            km.updateLayout( n )
+                        } )
+                    } else {
+                        utils.each( nodes, function ( i, n ) {
+                            n.setData( 'bold', true );
+                            n.getTextShape().setAttr( 'font-weight', 'bold' );
+                            km.updateLayout( n )
+                        } )
                     }
                 },
-                queryState: function (  ) {
+                queryState: function () {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if(nodes.length == 0){
+                    if ( nodes.length == 0 ) {
                         return -1;
                     }
-                    utils.each(nodes,function(i,n){
-                        if( n && n.getData('bold') ){
+                    utils.each( nodes, function ( i, n ) {
+                        if ( n && n.getData( 'bold' ) ) {
                             result = 1;
                             return false;
                         }
-                    });
+                    } );
                     return result;
                 }
             } ),
             "italic": kity.createClass( "italicCommand", {
                 base: Command,
 
-                execute: function (  ) {
+                execute: function () {
 
                     var nodes = km.getSelectedNodes();
-                    if(this.queryState('italic') == 1){
-                        utils.each(nodes,function(i,n){
-                            n.setData('italic');
-                            n.getTextShape().setAttr('font-style');
-                            km.updateLayout(n)
-                        })
-                    }else{
-                        utils.each(nodes,function(i,n){
-                            n.setData('italic',true);
-                            n.getTextShape().setAttr('font-style','italic');
-                            km.updateLayout(n)
-                        })
+                    if ( this.queryState( 'italic' ) == 1 ) {
+                        utils.each( nodes, function ( i, n ) {
+                            n.setData( 'italic' );
+                            n.getTextShape().setAttr( 'font-style' );
+                            km.updateLayout( n )
+                        } )
+                    } else {
+                        utils.each( nodes, function ( i, n ) {
+                            n.setData( 'italic', true );
+                            n.getTextShape().setAttr( 'font-style', 'italic' );
+                            km.updateLayout( n )
+                        } )
                     }
                 },
-                queryState: function (  ) {
+                queryState: function () {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if(nodes.length == 0){
+                    if ( nodes.length == 0 ) {
                         return -1;
                     }
-                    utils.each(nodes,function(i,n){
-                        if( n && n.getData('italic') ){
+                    utils.each( nodes, function ( i, n ) {
+                        if ( n && n.getData( 'italic' ) ) {
                             result = 1;
                             return false;
                         }
-                    });
+                    } );
                     return result;
                 }
             } )
@@ -5205,12 +5204,12 @@ KityMinder.registerModule( "basestylemodule", function () {
         "events": {
             "beforeRenderNode": function ( e ) {
                 //加粗
-                if(e.node.getData('bold')){
-                    e.node.getTextShape().setAttr('font-weight','bold');
+                if ( e.node.getData( 'bold' ) ) {
+                    e.node.getTextShape().setAttr( 'font-weight', 'bold' );
                 }
 
-                if(e.node.getData('italic')){
-                    e.node.getTextShape().setAttr('font-style','italic');
+                if ( e.node.getData( 'italic' ) ) {
+                    e.node.getTextShape().setAttr( 'font-style', 'italic' );
                 }
             }
         }
@@ -7121,8 +7120,11 @@ utils.extend( KityMinder, function () {
                     } );
                     btns.length && $toolbar.kmui().appendToBtnmenu( btns );
                 } );
+                $toolbar.append( $( '<div class="kmui-dialog-container"></div>' ) );
+            }else{
+                $toolbar.hide()
             }
-            $toolbar.append( $( '<div class="kmui-dialog-container"></div>' ) );
+
         },
         _createStatusbar: function ( $statusbar, km ) {
 
@@ -7523,7 +7525,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
     });
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
-    comboboxWidget = $combox.kmui();
+    var comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         me.execCommand( name, res.value );
@@ -7538,6 +7540,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
         var state = this.queryCommandState( name ),
             value = this.queryCommandValue( name );
         //设置按钮状态
+
         comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 
         if ( value ) {
@@ -7545,6 +7548,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             value = value.replace( /['"]/g, '' ).toLowerCase().split( /['|"]?\s*,\s*[\1]?/ );
             comboboxWidget.selectItemByLabel( value );
         }
+
     } );
 
     var data = [];
@@ -7591,7 +7595,7 @@ KM.registerToolbarUI( 'node', function ( name ) {
 
     //实例化
     $combox = $.kmuibuttoncombobox( transForInserttopic( options ) ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
-    comboboxWidget = $combox.kmui();
+    var comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         me.execCommand( res.value, new MinderNode( me.getLang().topic ), true );
@@ -7609,7 +7613,20 @@ KM.registerToolbarUI( 'node', function ( name ) {
             }
         } )
     } );
+    //状态反射
+    me.on( 'interactchange', function () {
+        var state = 0;
+        utils.each(shortcutKeys,function(k){
+            state = me.queryCommandState(k);
+            if(state!=-1){
+                return false;
+            }
+        });
+        //设置按钮状态
+        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 
+    } );
+    //comboboxWidget.button().kmui().disabled(-1);
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 
 
