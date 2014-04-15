@@ -54,40 +54,29 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( trident && rv != -1 ) iev = 11;
         return iev;
     };
-    var doSave = function ( d, filename ) {
-        //var winname = window.open( '', '_blank', 'height=0,width=0,toolbar=no,menubar=no,scrollbars=no,resizable=on,location=no,status=no' );
-        var winname = window.open( '', '_blank' );
-        winname.document.open( 'text/html', 'replace' );
+    var doSave = function ( urltype, d, filename ) {
+        var winname = window.open( '', '_blank', 'height=0,width=0,toolbar=no,menubar=no,scrollbars=no,resizable=on,location=no,status=no' );
+        winname.document.open( urltype, 'replace' );
         winname.document.writeln( d );
-        // winname.document.execCommand( 'saveas', '', filename );
-        // winname.close();
+        winname.document.execCommand( 'saveas', '', filename );
+        winname.close();
     };
-
-    function downloadFile( fileName, content ) {
-        var aLink = document.createElement( 'a' );
-        var blob = new Blob( [ content ] );
-        var evt = document.createEvent( "HTMLEvents" );
-        evt.initEvent( "click", false, false ); //initEvent 不加后两个参数在FF下会报错, 感谢 Barret Lee 的反馈
-        aLink.download = fileName;
-        aLink.href = URL.createObjectURL( blob );
-        aLink.dispatchEvent( evt );
-    }
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
         var filename = me.getMinderTitle() + p.fileExtension;
         if ( typeof ( data ) == 'string' ) {
-            // var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
-            // //if ( ie_ver() > 0 ) {
-            // doSave( data, filename );
-            // //} else {
-            // //doDownload( url, filename );
-            // //}
-            downloadFile( filename, data );
+            var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
+            if ( ie_ver() > 0 ) {
+                doSave( 'data:text/plain; utf-8,', data, filename );
+            } else {
+                doDownload( url, filename );
+            }
         } else if ( data && data.then ) {
             data.then( function ( url ) {
+                console.log( url );
                 if ( ie_ver() > 0 ) {
-                    doSave( url, filename );
+                    //doSave( url, filename );
                 } else {
                     doDownload( url, filename );
                 }
