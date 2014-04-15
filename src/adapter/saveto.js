@@ -69,7 +69,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
                 if ( p.fileExtension === '.km' ) {
-                    doSave( 'application/x-javascript', data, filename );
+                    console.log( "KM" );
+                    doSave( 'application/x-javascript', data, me.getMinderTitle() );
                 } else {
                     doSave( 'text/html', data, filename );
                 }
