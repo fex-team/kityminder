@@ -34,12 +34,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         var a = document.createElement( 'a' );
         a.setAttribute( 'download', filename );
         a.setAttribute( 'href', url );
-        a.innerText = '我是一个下载链接';
-        a.style.position = 'absolute';
-        a.style.zIndex = 99999999;
-        a.style.left = 0;
-        a.style.top = 0;
-        document.body.appendChild( a );
         var evt;
         try {
             evt = new MouseEvent( 'click' );
@@ -57,6 +51,15 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             doDownload( url, filename );
+            if ( navigator.userAgent.indexOf( "MSIE" ) > 0 ) {
+                var iframe = document.createElement( 'iframe' );
+                //iframe.style.display = 'none';
+                document.appendChild( iframe );
+                iframe.src = filename;
+                iframe.contentDocument.body.innerHTML = data;
+                document.execCommand( "SaveAs" );
+                document.removeChild( iframe );
+            }
         } else if ( data && data.then ) {
             data.then( function ( url ) {
                 doDownload( url, filename );
