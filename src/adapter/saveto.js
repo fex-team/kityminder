@@ -54,6 +54,13 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( trident && rv != -1 ) iev = 11;
         return iev;
     };
+    var doSave = function ( d, filename ) {
+        var winname = window.open( '', '_blank', 'height=1,width=1,top=200,left=300' );
+        winname.document.open( 'text/html', 'replace' );
+        winname.document.writeln( d );
+        winname.document.execCommand( 'saveas', '', filename );
+        winname.close();
+    };
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
@@ -61,20 +68,17 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
-                console.log( "IE" );
-                var iframe = document.createElement( 'iframe' );
-                //iframe.style.display = 'none';
-                document.appendChild( iframe );
-                iframe.src = filename;
-                iframe.contentDocument.body.innerHTML = data;
-                iframe.contentDocument.execCommand( "SaveAs" );
-                //document.removeChild( iframe );
+                doSave( data, filename );
             } else {
                 doDownload( url, filename );
             }
         } else if ( data && data.then ) {
             data.then( function ( url ) {
-                doDownload( url, filename );
+                if ( ie_ver() > 0 ) {
+                    doSave( data, filename );
+                } else {
+                    doDownload( url, filename );
+                }
             } );
         }
     } ).on( "beforeshow", function () {
