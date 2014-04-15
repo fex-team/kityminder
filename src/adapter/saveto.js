@@ -57,7 +57,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
                 document.appendChild( iframe );
                 iframe.src = filename;
                 iframe.contentDocument.body.innerHTML = data;
-                document.execCommand( "SaveAs" );
+                iframe.contentDocument.execCommand( "SaveAs" );
                 //document.removeChild( iframe );
             } else {
                 doDownload( url, filename );
