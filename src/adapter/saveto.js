@@ -34,14 +34,12 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         var a = document.createElement( 'a' );
         a.setAttribute( 'download', filename );
         a.setAttribute( 'href', url );
-        a.onclick = function () {
-            alert( "hahaha" );
-        }
         try {
             a.dispatchEvent( new MouseEvent( 'click' ) );
         } catch ( error ) {
-            console.log( a );
+            document.body.appendChild( a );
             a.click();
+            document.body.removeChild( a );
         }
     }
 
