@@ -55,7 +55,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         return iev;
     };
     var doSave = function ( d, filename ) {
-        var winname = window.open( '', '_blank', 'height=0,width=0,top=0,left=0' );
+        var winname = window.open( '', '_blank', 'height=0,width=0,toolbar=no,menubar=no,scrollbars=no,resizable=on,location=no,status=no' );
         winname.document.open( 'text/html', 'replace' );
         winname.document.writeln( d );
         winname.document.execCommand( 'saveas', '', filename );
