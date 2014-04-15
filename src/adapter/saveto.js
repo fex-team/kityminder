@@ -37,6 +37,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         try {
             a.dispatchEvent( new MouseEvent( 'click' ) );
         } catch ( error ) {
+            console.log( a );
             a.click();
         }
     }
