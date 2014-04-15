@@ -43,7 +43,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
-        console.log( data );
         var p = KityMinder.findProtocal( res.value );
         var filename = me.getMinderTitle() + p.fileExtension;
         if ( typeof ( data ) == 'string' ) {
