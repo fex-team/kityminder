@@ -1,7 +1,6 @@
 KityMinder.registerModule( "basestylemodule", function () {
     var km = this;
     return {
-
         "commands": {
             "bold": kity.createClass( "boldCommand", {
                 base: Command,
