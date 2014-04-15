@@ -35,11 +35,11 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         a.setAttribute( 'download', filename );
         a.setAttribute( 'href', url );
         var evt;
-        if ( document.createEvent ) {
+        try {
+            evt = new MouseEvent( 'click' );
+        } catch ( error ) {
             evt = document.createEvent( 'MouseEvents' );
             evt.initMouseEvent( 'click', true, true );
-        } else {
-            evt = new MouseEvent( 'click' );
         }
         a.dispatchEvent( evt );
     }
