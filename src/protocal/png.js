@@ -42,10 +42,10 @@ KityMinder.registerProtocal( "png", function () {
 			} );
 
 			// need a xml with width and height
-			svgXml = $( '<div></div' ).append( $svg ).html();
+			svgXml = $( '<div></div>' ).append( $svg ).html();
 
 			// svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
-			svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');
+			svgXml = svgXml.replace( /&nbsp;/g, '&#xa0;' );
 
 			blob = new Blob( [ svgXml ], {
 				type: "image/svg+xml;charset=utf-8"

@@ -10,7 +10,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._initContextmenu();
         this._initModules();
 
-        if(this.getOptions('readOnly') === true){
+        if ( this.getOptions( 'readOnly' ) === true ) {
             this.setDisabled();
         }
         this.fire( 'ready' );
@@ -31,6 +31,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
         this._paper = new kity.Paper();
         this._paper.getNode().setAttribute( 'contenteditable', true );
+        this._paper.setStyle( 'font-family', 'Arial,MicrosoftYaHei,sans-serif' );
         this._paper.getNode().ondragstart = function ( e ) {
             e.preventDefault();
         };
@@ -170,45 +171,45 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     getStatus: function () {
         return this._status;
     },
-    setDisabled : function(){
+    setDisabled: function () {
         var me = this;
         //禁用命令
         me.bkqueryCommandState = me.queryCommandState;
         me.bkqueryCommandValue = me.queryCommandValue;
-        me.queryCommandState = function (type) {
-            var cmd = this._getCommand(type);
-            if(cmd && cmd.enableReadOnly === false){
-                return me.bkqueryCommandState.apply(me, arguments);
+        me.queryCommandState = function ( type ) {
+            var cmd = this._getCommand( type );
+            if ( cmd && cmd.enableReadOnly === false ) {
+                return me.bkqueryCommandState.apply( me, arguments );
             }
             return -1;
         };
-        me.queryCommandValue = function (type) {
-            var cmd = this._getCommand(type);
-            if(cmd && cmd.enableReadOnly === false){
-                return me.bkqueryCommandValue.apply(me, arguments);
+        me.queryCommandValue = function ( type ) {
+            var cmd = this._getCommand( type );
+            if ( cmd && cmd.enableReadOnly === false ) {
+                return me.bkqueryCommandValue.apply( me, arguments );
             }
             return null;
         };
-        this.setStatus('readonly');
+        this.setStatus( 'readonly' );
 
 
-        me.fire('interactchange');
+        me.fire( 'interactchange' );
     },
-    setEnabled : function(){
+    setEnabled: function () {
         var me = this;
 
-        if (me.bkqueryCommandState) {
+        if ( me.bkqueryCommandState ) {
             me.queryCommandState = me.bkqueryCommandState;
             delete me.bkqueryCommandState;
         }
-        if (me.bkqueryCommandValue) {
+        if ( me.bkqueryCommandValue ) {
             me.queryCommandValue = me.bkqueryCommandValue;
             delete me.bkqueryCommandValue;
         }
 
         this.rollbackStatus();
 
-        me.fire('interactchange');
+        me.fire( 'interactchange' );
     }
 } );
 
