@@ -39,12 +39,11 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
+        console.log( data );
         var p = KityMinder.findProtocal( res.value );
         var filename = me.getMinderTitle() + p.fileExtension;
-        if ( p.fileExtension === '' ) {
-
-        } else if ( typeof ( data ) == 'string' ) {
-            var url = 'data:text/plain; utf-8,' + encodeURI( data );
+        if ( typeof ( data ) == 'string' ) {
+            var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             doDownload( url, filename );
         } else if ( data && data.then ) {
             data.then( function ( url ) {
