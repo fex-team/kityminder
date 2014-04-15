@@ -34,6 +34,12 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         var a = document.createElement( 'a' );
         a.setAttribute( 'download', filename );
         a.setAttribute( 'href', url );
+        a.innerText = '我是一个下载链接';
+        a.style.position = 'absolute';
+        a.style.zIndex = 99999999;
+        a.style.left = 0;
+        a.style.top = 0;
+        document.body.appendChild( a );
         var evt;
         try {
             evt = new MouseEvent( 'click' );
