@@ -33,14 +33,9 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
     function doDownload( url, filename ) {
         var a = document.createElement( 'a' );
         a.setAttribute( 'download', filename );
-        a.setAttribute( 'href', url );
-        try {
-            a.dispatchEvent( new MouseEvent( 'click' ) );
-        } catch ( error ) {
-            document.body.appendChild( a );
-            a.click();
-            document.body.removeChild( a );
-        }
+        //a.setAttribute( 'href', url );
+        console.log( a );
+        a.dispatchEvent( new MouseEvent( 'click' ) );
     }
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
