@@ -68,7 +68,11 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
-                doSave( 'data:text/plain; utf-8,', data, filename );
+                if ( p.fileExtension === '.km' ) {
+                    doSave( 'application/x-javascript', data, filename );
+                } else {
+                    doSave( 'text/html', data, filename );
+                }
             } else {
                 doDownload( url, filename );
             }
@@ -76,7 +80,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             data.then( function ( url ) {
                 console.log( url );
                 if ( ie_ver() > 0 ) {
-                    //doSave( url, filename );
+                    doSave( 'application/base64', url.replace( 'image/octet-stream,', '' ), filename );
                 } else {
                     doDownload( url, filename );
                 }
