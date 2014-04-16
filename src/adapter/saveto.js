@@ -82,7 +82,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             data.then( function ( url ) {
                 console.log( url );
                 if ( ie_ver() > 0 ) {
-                    doSave( 'application/base64', url.replace( 'image/octet-stream,', '' ), filename );
+                    //doSave( 'application/base64', url.replace( 'image/octet-stream,', '' ), filename );
                 } else {
                     doDownload( url, filename );
                 }
