@@ -10,7 +10,8 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord: false
+            enabledRecord: false,
+            enabledSelected:false
         },
         $combox = null,
         comboboxWidget = null;
