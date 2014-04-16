@@ -22,7 +22,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
     });
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
-    comboboxWidget = $combox.kmui();
+    var comboboxWidget = $combox.kmui();
 
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         me.execCommand( name, res.value );
@@ -37,6 +37,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
         var state = this.queryCommandState( name ),
             value = this.queryCommandValue( name );
         //设置按钮状态
+
         comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 
         if ( value ) {
@@ -44,6 +45,7 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             value = value.replace( /['"]/g, '' ).toLowerCase().split( /['|"]?\s*,\s*[\1]?/ );
             comboboxWidget.selectItemByLabel( value );
         }
+
     } );
 
     var data = [];

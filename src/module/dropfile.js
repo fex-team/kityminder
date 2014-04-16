@@ -1,5 +1,9 @@
 KityMinder.registerModule( "DropFile", function () {
 
+	var social,
+		draftManager,
+		importing = false;
+
 	function init() {
 		var container = this.getPaper().getContainer();
 		container.addEventListener( 'dragover', onDragOver );
@@ -25,51 +29,58 @@ KityMinder.registerModule( "DropFile", function () {
 		var files = e.dataTransfer.files;
 
 		if ( files ) {
-			var file = files[0];
-			var ext = file.type || (/(.)\w+$/).exec(file.name)[0];
+			var file = files[ 0 ];
+			var ext = file.type || ( /(.)\w+$/ ).exec( file.name )[ 0 ];
 
-			if( (/xmind/g).test(ext) ){ //xmind zip
+			if ( ( /xmind/g ).test( ext ) ) { //xmind zip
 				importSync( minder, file, 'xmind' );
-			}else if( (/mmap/g).test(ext) ){ // mindmanager zip
+			} else if ( ( /mmap/g ).test( ext ) ) { // mindmanager zip
 				importSync( minder, file, 'mindmanager' );
-			}else if( (/mm/g).test(ext) ){ //freemind xml
+			} else if ( ( /mm/g ).test( ext ) ) { //freemind xml
 				importAsync( minder, file, 'freemind' );
-			}else{// txt json
+			} else { // txt json
 				importAsync( minder, file );
 			}
 		}
 	}
 
+	function afterImport() {
+		if ( !importing ) return;
+		createDraft( this );
+		social.setRemotePath( null, false );
+		this.execCommand( 'camera', this.getRoot() );
+		setTimeout(function() {
+			social.watchChanges( true );
+		}, 10);
+		importing = false;
+	}
+
 	// 同步加载文件
-	function importSync( minder, file, protocal ){
-		minder.importData( file, protocal );//zip文件的import是同步的
-		manageDraft( minder );
-		minder.execCommand( 'camera', minder.getRoot() );
+	function importSync( minder, file, protocal ) {
+		social = social || window.social;
+		social.watchChanges( false );
+		importing = true;
+		minder.importData( file, protocal ); //zip文件的import是同步的
 	}
 
 	// 异步加载文件
-	function importAsync( minder, file, protocal ){
+	function importAsync( minder, file, protocal ) {
 		var reader = new FileReader();
 		reader.onload = function ( e ) {
-			minder.importData( e.target.result, protocal );//纯文本文件的import是同步的
-			manageDraft( minder );
-			minder.execCommand( 'camera', minder.getRoot() );
+			importSync( minder, e.target.result, protocal );
 		};
 		reader.readAsText( file );
 	}
 
-	function manageDraft( minder ){
-
-		if( !window.draftManager ){
-			window.draftManager = new window.DraftManager( minder );
-		}
-
-		window.draftManager.create();
+	function createDraft( minder ) {
+		draftManager = window.draftManager;
+		draftManager.create();
 	}
 
 	return {
 		events: {
-			ready: init
+			'ready': init,
+			'import': afterImport
 		}
 	};
 } );

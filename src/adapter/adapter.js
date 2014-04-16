@@ -55,8 +55,11 @@ utils.extend( KityMinder, function () {
                     } );
                     btns.length && $toolbar.kmui().appendToBtnmenu( btns );
                 } );
+                $toolbar.append( $( '<div class="kmui-dialog-container"></div>' ) );
+            }else{
+                $toolbar.hide()
             }
-            $toolbar.append( $( '<div class="kmui-dialog-container"></div>' ) );
+
         },
         _createStatusbar: function ( $statusbar, km ) {
 
