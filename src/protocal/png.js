@@ -38,7 +38,7 @@ KityMinder.registerProtocal( "png", function () {
 			$svg.attr( {
 				width: renderBox.width,
 				height: renderBox.height,
-				style: 'font-family: Arial, "Heiti SC", "Microsoft Yahei";'
+				style: 'font-family: Arial, "Microsoft Yahei","Heiti SC";'
 			} );
 
 			// need a xml with width and height
