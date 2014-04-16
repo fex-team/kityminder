@@ -6,7 +6,7 @@ KityMinder.registerProtocal( "png", function () {
 	}
 
 	return {
-		fileDescription: 'PNG 图片',
+		fileDescription: 'PNG 图片（暂不支持IE）',
 		fileExtension: '.png',
 		encode: function ( json, km ) {
 			var domContainer = km.getPaper().container,
@@ -38,7 +38,7 @@ KityMinder.registerProtocal( "png", function () {
 			$svg.attr( {
 				width: renderBox.width,
 				height: renderBox.height,
-				style: 'font-family: Arial, "Heiti SC", "Microsoft Yahei";'
+				style: 'font-family: Arial, "Microsoft Yahei","Heiti SC";'
 			} );
 
 			// need a xml with width and height

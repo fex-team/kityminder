@@ -21,6 +21,11 @@ KityMinder.registerModule( "DropFile", function () {
 		e.stopPropagation();
 		var minder = this;
 
+		if( kity.Browser.ie && Number(kity.Browser.version) < 10 ){
+			alert('文件导入对IE浏览器仅支持10以上版本');
+			return;
+		}
+
 		var files = e.dataTransfer.files;
 
 		if ( files ) {
