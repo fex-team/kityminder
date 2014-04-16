@@ -46,12 +46,12 @@ KM.registerToolbarUI( 'node', function ( name ) {
     //状态反射
     me.on( 'interactchange', function () {
         var state = 0;
-        utils.each(shortcutKeys,function(k){
-            state = me.queryCommandState(k);
-            if(state!=-1){
+        utils.each( shortcutKeys, function ( k ) {
+            state = me.queryCommandState( k );
+            if ( state != -1 ) {
                 return false;
             }
-        });
+        } );
         //设置按钮状态
         comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
 

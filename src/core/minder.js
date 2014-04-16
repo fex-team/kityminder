@@ -41,7 +41,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this._root.setType( "root" );
         if ( this._options.renderTo ) {
             this.renderTo( this._options.renderTo );
-            this._paper.setStyle( 'font-family', 'Arial,Microsoft YaHei,sans-serif' );
+            //this._paper.setStyle( 'font-family', 'Arial,"Microsoft YaHei",sans-serif' );
         }
     },
     _addRenderContainer: function () {

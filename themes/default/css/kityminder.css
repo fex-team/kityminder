@@ -42,5 +42,5 @@ html, body, #kityminder, div.kmui-editor-body {
     overflow: hidden;
 }
 svg {
-    font-family: Arial, "Heiti SC", "Microsoft Yahei";
+    font-family: Arial, "Microsoft Yahei","Heiti SC",sans-serif;
 }
