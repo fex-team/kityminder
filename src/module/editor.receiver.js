@@ -22,7 +22,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.setAttribute('contenteditable',true);
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
-        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;');//clip:rect(1em 1em 1em 1em);}
+        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
         this.km.on('textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
