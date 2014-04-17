@@ -22,7 +22,7 @@ Minder.Receiver = kity.createClass('Receiver',{
         _div.setAttribute('contenteditable',true);
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore(_div,document.body.firstChild);
-        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}');//
+        utils.addCssRule('km_receiver_css',' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;');//clip:rect(1em 1em 1em 1em);}
         this.km.on('textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy(this.keyboardEvents,this));
         this.timer = null;
         this.index = 0;
@@ -80,6 +80,10 @@ Minder.Receiver = kity.createClass('Receiver',{
 
             if(me.textShape.getOpacity() == 0){
                 me.textShape.setOpacity(1);
+            }
+            //#46 修复在ff下定位到文字后方空格光标不移动问题
+            if(browser.gecko && /\s$/.test(text)){
+                text += "\u200b";
             }
             me.textShape.setContent(text);
             me.setContainerStyle();
@@ -216,7 +220,12 @@ Minder.Receiver = kity.createClass('Receiver',{
         this.textData = [];
 
         for(var i= 0,l = text.length;i<l;i++){
-            var box = this.textShape.getExtentOfChar(i);
+            try{
+                var box = this.textShape.getExtentOfChar(i);
+            }catch(e){
+                debugger
+            }
+
             this.textData.push({
                 x:box.x + this.offset.x,
                 y:this.offset.y,

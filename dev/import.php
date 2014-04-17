@@ -16,6 +16,7 @@ $dependency = Array(
         ,'src/core/keymap.js'
         ,'src/core/minder.lang.js'
         ,'src/core/minder.defaultoptions.js'
+        ,'src/core/browser.js'
         ,'src/module/geometry.js'
         ,'src/module/history.js'
         ,'src/module/icon.js'
