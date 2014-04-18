@@ -245,11 +245,6 @@ Minder.Receiver = kity.createClass('Receiver',{
                 me.index = 0;
                 return false;
             }
-
-            if(i == me.textData.length -1 && offset.x >= v.x){
-                me.index = me.textData.length;
-                return false;
-            }
             if(offset.x >= v.x && offset.x <= v.x + v.width){
                 if(offset.x  - v.x > v.width/2){
                     me.index = i + 1;
@@ -261,7 +256,12 @@ Minder.Receiver = kity.createClass('Receiver',{
                 hadChanged = true;
                 return false;
             }
+            if(i == me.textData.length -1 && offset.x >= v.x){
+                me.index = me.textData.length;
+                return false;
+            }
         });
+
         return this;
 
     },

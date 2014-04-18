@@ -98,13 +98,12 @@ Minder.Selection = kity.createClass( 'Selection', {
         clearInterval( this.timer );
         var me = this,
             state = '';
+        me.setStyle( 'display', '' );
         if(this.collapsed){
             this.timer = setInterval( function () {
                 me.setStyle( 'display', state );
                 state = state ? '' : 'none';
-            }, 300 );
-        }else{
-            me.setStyle( 'display', '' );
+            }, 400 );
         }
 
         return this;
