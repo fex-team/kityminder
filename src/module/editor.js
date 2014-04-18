@@ -195,6 +195,9 @@ KityMinder.registerModule( "TextEditModule", function () {
             'selectionclear':function(){
                 km.setStatus('normal');
                 receiver.setTextEditStatus(false).clear()
+            },
+            blur:function(){
+                receiver.clear()
             }
         }
     };
