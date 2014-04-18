@@ -11,7 +11,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             value: [],
             autowidthitem: [],
             enabledRecord: false,
-            enabledSelected:false
+            enabledSelected: false
         },
         $combox = null,
         comboboxWidget = null;
@@ -70,9 +70,12 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         if ( typeof ( data ) == 'string' ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
+                alert( '11111111' );
+                console.log( p.fileExtension );
                 if ( p.fileExtension === '.km' ) {
-                    console.log( "KM" );
                     doSave( 'application/x-javascript', data, me.getMinderTitle() );
+                } else( p.fileExtension === '.svg' ) {
+                    doSave( 'image/svg+xml', data, filename );
                 } else {
                     doSave( 'text/html', data, filename );
                 }
@@ -81,7 +84,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             }
         } else if ( data && data.then ) {
             data.then( function ( url ) {
-                console.log( url );
                 if ( ie_ver() > 0 ) {
                     //doSave( 'application/base64', url.replace( 'image/octet-stream,', '' ), filename );
                 } else {
