@@ -53,6 +53,7 @@ function importNode( node, json, km ) {
     return node;
 }
 
+
 // 导入导出
 kity.extendClass( Minder, {
     exportData: function ( protocalName ) {
@@ -60,6 +61,13 @@ kity.extendClass( Minder, {
 
         json = exportNode( this.getRoot() );
         protocal = KityMinder.findProtocal( protocalName );
+
+        if(this._fire( new MinderEvent( 'beforeexport',  {
+            json:json,
+            protocalName: protocalName,
+            protocal: protocal
+        },true ) ) === true) return;
+
         if ( protocal ) {
             return protocal.encode( json, this );
         } else {
