@@ -71,8 +71,9 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
                 if ( p.fileExtension === '.km' ) {
-                    console.log( "KM" );
                     doSave( 'application/x-javascript', data, me.getMinderTitle() );
+                } else( p.fileExtension === '.svg' ) {
+                    doSave( 'image/svg+xml', data, filename );
                 } else {
                     doSave( 'text/html', data, filename );
                 }
