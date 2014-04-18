@@ -91,8 +91,10 @@ $( function () {
     function start() {
         initUI();
         initFrontia();
+        if ( checkLogin() ) {
+            return;
+        }
         loadShare();
-        checkLogin();
         bindShortCuts();
         bindDraft();
         watchChanges();
@@ -260,8 +262,10 @@ $( function () {
     function checkLogin() {
         var account = baidu.frontia.getCurrentAccount();
         if ( account ) {
-            setAccount( account );
+            login();
+            return true;
         }
+        return false;
     }
 
     // 用户点击登录按钮主动登录
@@ -299,14 +303,16 @@ $( function () {
 
     // 加载用户头像
     function loadAvator() {
+        var $img = $( '<img />' ).attr( {
+            'src': '../social/loading.gif',
+            'width': 16,
+            'height': 16
+        } ).prependTo( $user_btn );
         currentAccount.getDetailInfo( {
             success: function ( user ) {
-                var $img = $( '<img />' ).attr( {
-                    'src': user.extra.tinyurl,
-                    'width': 16,
-                    'height': 16
+                $img.attr( {
+                    'src': user.extra.tinyurl
                 } );
-                $img.prependTo( $user_btn );
             }
         } );
     }
