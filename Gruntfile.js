@@ -20,7 +20,8 @@ module.exports = function ( grunt ) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
         ' */\n\n',
-        buildPath = 'dev/import.php';
+        buildPath = 'dev/import.php',
+        distPath = 'dist/';
 
     var getPath = function ( readFile ) {
 
@@ -43,7 +44,6 @@ module.exports = function ( grunt ) {
         pkg: grunt.file.readJSON( 'package.json' ),
 
         concat: {
-
             js: {
                 options: {
                     banner: banner + '(function(kity, window) {\n\n',
@@ -53,19 +53,39 @@ module.exports = function ( grunt ) {
                     }
                 },
                 src: getPath( buildPath ),
-                dest: 'dist/kityminder.all.js'
+                dest: distPath + 'kityminder.all.js'
             }
-
         },
-
         uglify: {
             minimize: {
                 options: {
                     banner: banner
                 },
-                files: {
-                    'dist/kityminder.all.min.js': 'dist/kityminder.all.js'
-                }
+                files: (function(){
+                    var files = {};
+                    files[distPath + 'kityminder.all.js'] = distPath + 'kityminder.all.min.js';
+                    return files;
+                })()
+            }
+        },
+        copy: {
+            dir: {
+                files: [
+                    {
+                        src: [ 'dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**' ],
+                        dest: distPath
+                    }
+                ]
+            }
+        },
+        replace: {
+            online: {
+                src: distPath+'index.html',
+                overwrite: true,
+                replacements: [ {
+                    from: /1234567890/ig,
+                    to: '1234567890'
+                }]
             }
         },
 
@@ -103,8 +123,10 @@ module.exports = function ( grunt ) {
     /* [Build plugin & task ] ------------------------------------*/
     grunt.loadNpmTasks( 'grunt-contrib-concat' );
     grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-text-replace');
     // Build task(s).
-    grunt.registerTask( 'default', [ 'concat:js', 'uglify:minimize' ] );
+    grunt.registerTask( 'default', [ 'concat', 'uglify', 'copy', 'replace' ] );
 
     /* [liverload plugin & task ] ------------------------------------*/
     grunt.loadNpmTasks( 'grunt-regarde' );

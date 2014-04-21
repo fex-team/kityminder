@@ -27,6 +27,7 @@ button {
     font-family: Arial, "Heiti SC", "Microsoft Yahei";
     outline: none;
     display: inline-block;
+    vertical-align: middle;
     padding: 0 15px;
     height: 35px;
     font-size: 13px;
@@ -47,7 +48,7 @@ button {
     background: -o-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* IE10+ */
     background: linear-gradient(to bottom,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* W3C */
-
+    
     &:hover, &.hover {
         background: #009fff;
     }
@@ -99,6 +100,15 @@ button {
     }
     &.user-file {
         position: relative;
+        img {
+            border: none;
+            outline: none;
+        }
+        span.text {
+            display: inline-block;
+            height: 24px;
+            line-height: 24px;
+        }
         .dropdown;
     }
 }
