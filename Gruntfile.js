@@ -61,9 +61,11 @@ module.exports = function ( grunt ) {
                 options: {
                     banner: banner
                 },
-                files: {
-                    'dist/kityminder.all.min.js': 'dist/kityminder.all.js'
-                }
+                files: (function(){
+                    var files = {};
+                    files[distPath + 'kityminder.all.js'] = distPath + 'kityminder.all.min.js';
+                    return files;
+                })()
             }
         },
         copy: {
