@@ -25,6 +25,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			return name;
 		},
 		getCurrentLayoutStyle: function () {
+			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).getCurrentLayoutStyle.call( this );
 		},
 		highlightNode: function ( node ) {

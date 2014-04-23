@@ -153,7 +153,6 @@ KityMinder.registerModule( "HistoryModule", function () {
         },
         "events": {
             "saveScene": function ( e ) {
-                debugger;
                 this.historyManager.saveScene();
             },
             "renderNode": function ( e ) {
