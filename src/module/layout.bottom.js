@@ -481,6 +481,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			// this._fire( new MinderEvent( "RenderNode", {
 			// 	node: node
 			// }, false ) );
+			node.getRenderContainer().clear();
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
