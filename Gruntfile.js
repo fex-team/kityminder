@@ -61,31 +61,29 @@ module.exports = function ( grunt ) {
                 options: {
                     banner: banner
                 },
-                files: (function(){
+                files: ( function () {
                     var files = {};
-                    files[distPath + 'kityminder.all.js'] = distPath + 'kityminder.all.min.js';
+                    files[ distPath + 'kityminder.all.js' ] = distPath + 'kityminder.all.min.js';
                     return files;
-                })()
+                } )()
             }
         },
         copy: {
             dir: {
-                files: [
-                    {
-                        src: [ 'dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**' ],
-                        dest: distPath
-                    }
-                ]
+                files: [ {
+                    src: [ 'dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**' ],
+                    dest: distPath
+                } ]
             }
         },
         replace: {
             online: {
-                src: distPath+'index.html',
+                src: distPath + 'index.html',
                 overwrite: true,
                 replacements: [ {
                     from: /1234567890/ig,
                     to: '1234567890'
-                }]
+                } ]
             }
         },
 
@@ -123,8 +121,8 @@ module.exports = function ( grunt ) {
     /* [Build plugin & task ] ------------------------------------*/
     grunt.loadNpmTasks( 'grunt-contrib-concat' );
     grunt.loadNpmTasks( 'grunt-contrib-uglify' );
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks( 'grunt-contrib-copy' );
+    grunt.loadNpmTasks( 'grunt-text-replace' );
     // Build task(s).
     grunt.registerTask( 'default', [ 'concat', 'uglify', 'copy', 'replace' ] );
 

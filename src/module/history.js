@@ -58,8 +58,8 @@ KityMinder.registerModule( "HistoryModule", function () {
             this.km.initStyle();
 
             this.update();
-            this.km.fire('restoreScene');
-            this.km.fire('contentChange');
+            this.km.fire( 'restoreScene' );
+            this.km.fire( 'contentChange' );
         },
         getScene: function () {
             return new Scene( this.km.getRoot() )
@@ -95,16 +95,26 @@ KityMinder.registerModule( "HistoryModule", function () {
     this.historyManager = new HistoryManager( this );
 
     var keys = {
-            /*Shift*/ 16:1, /*Ctrl*/ 17:1, /*Alt*/ 18:1,/*Command*/91:1,
-            37:1, 38:1, 39:1, 40:1
-        },
+        /*Shift*/
+        16: 1,
+        /*Ctrl*/
+        17: 1,
+        /*Alt*/
+        18: 1,
+        /*Command*/
+        91: 1,
+        37: 1,
+        38: 1,
+        39: 1,
+        40: 1
+    },
         keycont = 0,
         lastKeyCode,
         saveSceneTimer;
     return {
         defaultOptions: {
             maxUndoCount: 20,
-            maxInputCount:20
+            maxInputCount: 20
         },
         "commands": {
             "undo": kity.createClass( "UndoCommand", {
@@ -143,38 +153,39 @@ KityMinder.registerModule( "HistoryModule", function () {
         },
         "events": {
             "saveScene": function ( e ) {
+                debugger;
                 this.historyManager.saveScene();
             },
-            "renderNode":function(e){
+            "renderNode": function ( e ) {
                 var node = e.node;
 
-                if(node.isHighlight()){
-                    km.select(node);
+                if ( node.isHighlight() ) {
+                    km.select( node );
                 }
             },
-            "keydown":function(e){
+            "keydown": function ( e ) {
                 var orgEvt = e.originEvent;
                 var keyCode = orgEvt.keyCode || orgEvt.which;
-                if (!keys[keyCode] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+                if ( !keys[ keyCode ] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey ) {
 
 
-                    if (km.historyManager.list.length == 0) {
+                    if ( km.historyManager.list.length == 0 ) {
                         km.historyManager.saveScene();
                     }
-                    clearTimeout(saveSceneTimer);
+                    clearTimeout( saveSceneTimer );
 
-                    saveSceneTimer = setTimeout(function(){
+                    saveSceneTimer = setTimeout( function () {
                         km.historyManager.saveScene();
-                    },200);
+                    }, 200 );
 
                     lastKeyCode = keyCode;
                     keycont++;
-                    if (keycont >= km.getOptions('maxInputCount') ) {
+                    if ( keycont >= km.getOptions( 'maxInputCount' ) ) {
                         km.historyManager.saveScene()
                     }
                 }
             },
-            "import":function(){
+            "import": function () {
                 this.historyManager.reset()
             }
         }

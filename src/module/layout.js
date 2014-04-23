@@ -107,7 +107,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			execute: function ( km, node, focus, silbling ) {
 				var parent = km.getSelectedNode();
 
-				if( !parent ){
+				if ( !parent ) {
 					return null;
 				}
 
@@ -134,7 +134,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km, node, focus ) {
 				var selectedNode = km.getSelectedNode();
-				if( !selectedNode ){
+				if ( !selectedNode ) {
 					return null;
 				}
 
@@ -163,7 +163,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			base: Command,
 			execute: function ( km ) {
 
-				if( km.getRoot().children.length == 0 ){
+				if ( km.getRoot().children.length == 0 ) {
 					return;
 				}
 
