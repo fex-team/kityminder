@@ -351,35 +351,9 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			default:
 				break;
 			}
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: node
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: node
-			// }, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeLeft", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeCenter", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeRight", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeBottom", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeTop", {
-				node: node
-			}, false ) );
 		},
 		updateLayout: function ( node ) {
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: node
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: node
-			// }, false ) );
+			node.getRenderContainer().clear();
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
@@ -416,22 +390,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			_root.getLayout().align = "center";
 			updateBg( _root );
 			initLayout( _root );
-			this._firePharse( new MinderEvent( "RenderNodeLeft", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeCenter", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeRight", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeBottom", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeTop", {
-				node: _root
-			}, false ) );
-			updateShapeByCont( _root );
+			this.updateLayout( _root );
 			updateLayoutAll( _root );
 			translateNode( _root );
 			var _buffer = [ _root ];
