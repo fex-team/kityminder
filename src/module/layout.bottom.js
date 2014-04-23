@@ -390,6 +390,21 @@ KityMinder.registerModule( "LayoutBottom", function () {
 			_root.getLayout().align = "center";
 			updateBg( _root );
 			initLayout( _root );
+			this._firePharse( new MinderEvent( "RenderNodeLeft", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeCenter", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeRight", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeBottom", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeTop", {
+				node: _root
+			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutAll( _root );
 			translateNode( _root );
