@@ -440,6 +440,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		updateLayout: function ( node ) {
+            node.getRenderContainer().clear();
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );

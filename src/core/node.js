@@ -311,6 +311,8 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
                 return false;
             }
         } );
+        if(textShape === undefined)
+            debugger
         return textShape;
     },
     isSelected: function () {

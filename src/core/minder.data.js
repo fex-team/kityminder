@@ -41,7 +41,7 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setText( data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
+    node.setData( 'text',data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
