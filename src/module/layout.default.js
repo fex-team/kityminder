@@ -440,6 +440,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		updateLayout: function ( node ) {
+			node.getRenderContainer().clear();
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
@@ -474,27 +475,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.getLayout().align = "center";
 			updateBg( _root );
 			initLayout( _root );
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: _root
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: _root
-			// }, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeLeft", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeCenter", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeRight", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeBottom", {
-				node: _root
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeTop", {
-				node: _root
-			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
