@@ -438,21 +438,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			default:
 				break;
 			}
-			this._firePharse( new MinderEvent( "RenderNodeLeft", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeCenter", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeRight", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeBottom", {
-				node: node
-			}, false ) );
-			this._firePharse( new MinderEvent( "RenderNodeTop", {
-				node: node
-			}, false ) );
 		},
 		updateLayout: function ( node ) {
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
