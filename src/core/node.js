@@ -16,7 +16,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         this.rc = new kity.Group();
         this.rc.addClass( 'km-minderNode' );
         this.rc.minderNode = this;
-
         this._createBgGroup();
         this._createContGroup();
     },
