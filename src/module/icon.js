@@ -91,26 +91,27 @@ KityMinder.registerModule( "IconModule", function () {
 		},
 		"events": {
 			"RenderNodeLeft": function ( e ) {
-				var node = e.node;
-				var iconRc = node.getIconRc();
-				var contRc = node.getContRc();
-				var PriorityIconVal = node.getData( "PriorityIcon" );
-				var ProgressIconVal = node.getData( "ProgressIcon" );
-				//依次排布图标、文字
-				iconRc.clear();
-				var PriorityIconWidth = 0;
-				if ( PriorityIconVal ) {
-					renderPriorityIcon( node, PriorityIconVal );
-					PriorityIconWidth = 22;
-				}
-				if ( ProgressIconVal ) {
-					renderProgressIcon( node, ProgressIconVal, PriorityIconWidth + 10 );
-				}
-				var iconWidth = iconRc.getWidth();
-				var textShape = node.getTextShape();
-				if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
-				else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
-				iconRc.setTransform( new kity.Matrix().translate( 0, -( iconRc.getHeight() + textShape.getHeight() ) / 2 ) );
+				//alert( '111111' );
+				// var node = e.node;
+				// var iconRc = node.getIconRc();
+				// var contRc = node.getContRc();
+				// var PriorityIconVal = node.getData( "PriorityIcon" );
+				// var ProgressIconVal = node.getData( "ProgressIcon" );
+				// //依次排布图标、文字
+				// iconRc.clear();
+				// var PriorityIconWidth = 0;
+				// if ( PriorityIconVal ) {
+				// 	renderPriorityIcon( node, PriorityIconVal );
+				// 	PriorityIconWidth = 22;
+				// }
+				// if ( ProgressIconVal ) {
+				// 	renderProgressIcon( node, ProgressIconVal, PriorityIconWidth + 10 );
+				// }
+				// var iconWidth = iconRc.getWidth();
+				// var textShape = node.getTextShape();
+				// if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
+				// else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
+				// iconRc.setTransform( new kity.Matrix().translate( 0, -( iconRc.getHeight() + textShape.getHeight() ) / 2 ) );
 			}
 		}
 	};

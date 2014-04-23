@@ -19,8 +19,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
         this._createBgGroup();
         this._createContGroup();
-        this._createIconShape();
-        this._createTextShape();
     },
     _createGroup: function ( type ) {
         var g = new kity.Group();
@@ -38,11 +36,11 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         textShape.setAttr( '_nodeTextShape', true );
         this.getContRc().appendShape( textShape );
     },
-    _createIconShape: function () {
-        var g = new kity.Group();
-        this.getContRc().appendShape( g );
-        this._iconRc = g;
-    },
+    // _createIconShape: function () {
+    //     var g = new kity.Group();
+    //     this.getContRc().appendShape( g );
+    //     this._iconRc = g;
+    // },
     getContRc: function () {
         var groups = this.rc.getShapesByType( 'group' ),
             result;
@@ -65,9 +63,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } );
         return result;
     },
-    getIconRc: function () {
-        return this._iconRc;
-    },
+    // getIconRc: function () {
+    //     return this._iconRc;
+    // },
     setPoint: function ( x, y ) {
         if ( arguments.length < 2 ) {
             this.setData( "point", x );

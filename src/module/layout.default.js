@@ -133,8 +133,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var Layout = node.getLayout();
 		var nodeType = node.getType();
 		var nodeStyle = nodeStyles[ nodeType ];
-		var txtShape = node.getTextShape();
-		txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
+		//var txtShape = node.getTextShape();
+		//txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
 		if ( nodeType === "root" ) {
 			Layout.leftList = [];
 			Layout.rightList = [];
@@ -409,6 +409,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	};
 
 	var _style = {
+		getCurrentLayoutStyle: function () {
+			return nodeStyles;
+		},
 		highlightNode: function ( node ) {
 			var highlight = node.isHighlight();
 			var nodeType = node.getType();
