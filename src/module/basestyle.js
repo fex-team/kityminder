@@ -78,7 +78,7 @@ KityMinder.registerModule( "basestylemodule", function () {
             "italic": "ctrl+i" //italic
         },
         "events": {
-            "beforeRenderNode": function ( e ) {
+            "afterrendernodecenter": function ( e ) {
                 //加粗
                 if ( e.node.getData( 'bold' ) ) {
                     e.node.getTextShape().setAttr( 'font-weight', 'bold' );

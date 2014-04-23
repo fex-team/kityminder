@@ -90,7 +90,7 @@ KityMinder.registerModule( "fontmodule", function () {
         },
 
         "events": {
-            "beforeRenderNode": function ( e ) {
+            "afterrendernodecenter": function ( e ) {
                 var val;
                 if ( val = e.node.getData( 'fontfamily' ) ) {
                     e.node.getTextShape().setAttr( 'font-family', val );
