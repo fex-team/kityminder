@@ -435,18 +435,36 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			default:
 				break;
 			}
-			this._fire( new MinderEvent( "beforeRenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
-			this._fire( new MinderEvent( "RenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeCenter", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeRight", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeBottom", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
 		},
 		updateLayout: function ( node ) {
-			this._fire( new MinderEvent( "beforeRenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
-			this._fire( new MinderEvent( "RenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeCenter", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeRight", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeBottom", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
 
@@ -468,10 +486,25 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.getLayout().align = "center";
 			updateBg( _root );
 			initLayout( _root );
-			this._fire( new MinderEvent( "beforeRenderNode", {
+			// this._fire( new MinderEvent( "beforeRenderNode", {
+			// 	node: _root
+			// }, false ) );
+			// this._fire( new MinderEvent( "RenderNode", {
+			// 	node: _root
+			// }, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: _root
 			}, false ) );
-			this._fire( new MinderEvent( "RenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeCenter", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeRight", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeBottom", {
+				node: _root
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: _root
 			}, false ) );
 			updateShapeByCont( _root );
@@ -570,10 +603,25 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//计算位置等流程
 			updateBg( node );
 			initLayout( node );
-			this._fire( new MinderEvent( "beforeRenderNode", {
+			// this._fire( new MinderEvent( "beforeRenderNode", {
+			// 	node: node
+			// }, false ) );
+			// this._fire( new MinderEvent( "RenderNode", {
+			// 	node: node
+			// }, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
-			this._fire( new MinderEvent( "RenderNode", {
+			this._firePharse( new MinderEvent( "RenderNodeCenter", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeRight", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeBottom", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );

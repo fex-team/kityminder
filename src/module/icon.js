@@ -90,7 +90,8 @@ KityMinder.registerModule( "IconModule", function () {
 			"progress": setProgressCommand
 		},
 		"events": {
-			"RenderNode": function ( e ) {
+			"RenderNodeLeft": function ( e ) {
+				//alert( '1111111' );
 				var node = e.node;
 				var iconRc = node.getIconRc();
 				var contRc = node.getContRc();
