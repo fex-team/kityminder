@@ -465,6 +465,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				translateNode( set[ i ] );
 				updateConnectAndshIcon( set[ i ] );
 			}
+            if(this.isNodeSelected(node)){
+                this.highlightNode(node)
+            }
 		},
 		initStyle: function () {
 			var _root = minder.getRoot();

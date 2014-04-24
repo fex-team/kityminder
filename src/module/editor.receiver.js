@@ -94,7 +94,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.textShape.setOpacity( 0 );
             }
             me.km.updateLayout( me.minderNode );
-            me.km.highlightNode( me.minderNode );
+
 
             me.textShape = me.minderNode.getTextShape();
             me.setBaseOffset();
