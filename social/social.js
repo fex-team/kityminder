@@ -304,7 +304,7 @@ $( function () {
     // 加载用户头像
     function loadAvator() {
         var $img = $( '<img />' ).attr( {
-            'src': '../social/loading.gif',
+            'src': 'social/loading.gif',
             'width': 16,
             'height': 16
         } ).prependTo( $user_btn );
@@ -483,7 +483,8 @@ $( function () {
     }
 
     function generateRemotePath() {
-        return '/apps/kityminder/' + minder.getMinderTitle() + '.km';
+        var filename = prompt("文件名字:",minder.getMinderTitle() )||minder.getMinderTitle() ;
+        return '/apps/kityminder/' + filename + '.km';
     }
 
     function save() {
@@ -501,7 +502,6 @@ $( function () {
         var timeout = setTimeout( function () {
             error( '保存到云盘超时，可能是网络不稳定导致。' );
         }, 15000 );
-
         sto.uploadTextFile( data, remotePath || generateRemotePath(), {
             ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
             success: function ( savedFile ) {
