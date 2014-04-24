@@ -176,7 +176,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		default:
 			break;
 		}
-		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] ) );
+		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + _contRCHeight / 2 ) );
 	};
 	//计算节点在垂直方向的位置
 	var updateLayoutVertical = function ( node, parent, action ) {
