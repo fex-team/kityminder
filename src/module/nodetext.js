@@ -10,7 +10,7 @@ KityMinder.registerModule( "NodeText", function () {
                 node.getContRc().appendShape( textShape );
                 var style = this.getCurrentLayoutStyle()[node.getType()];
                 textShape.fill(style.color).setSize(style.fontSize);
-                textShape.setPosition(width,textShape.getHeight() * 0.25)
+                textShape.setPosition(width,textShape.getHeight()*.81)
             }
         }
     }
