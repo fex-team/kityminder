@@ -29,6 +29,17 @@ KityMinder.registerProtocal( 'xmind', function () {
         ,'task-7oct'    : null
     };
 
+    //*******************
+    function ts(d, str){
+        var h = d.getHours(),
+            m = d.getMinutes(),
+            s = d.getSeconds(),
+            ms = d.getMilliseconds();
+        console.log('--- '+str+': '+(h+':'+m+':'+s+' '+ms)+' ---');
+        return d;
+    }
+    //*******************
+
     function processTopic(topic, obj){
 
         //处理文本
