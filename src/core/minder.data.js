@@ -104,15 +104,38 @@ kity.extendClass( Minder, {
         var stoped = this._fire( new MinderEvent( 'beforeimport', params, true ) );
         if ( stoped ) return this;
 
+
+        //*******************
+        function ts(d, str){
+            var h = d.getHours(),
+                m = d.getMinutes(),
+                s = d.getSeconds(),
+                ms = d.getMilliseconds();
+            console.log('--- '+str+': '+(h+':'+m+':'+s+' '+ms)+' ---');
+            return d;
+        }
+
+        var start = ts(new Date(), '开始解析');
+        //*******************
+
         json = params.json || ( params.json = protocal.decode( local ) );
 
         if ( typeof json === 'object' && 'then' in json ) {
             var self = this;
             json.then( local, function ( data ) {
                 self._afterImportData( data, params );
+
+                //*******************
+                var dur = ts(new Date(), '解析和转化格式结束') - start;
+                console.log('--- 共'+dur+'ms ---');
+                //*******************
             } );
         } else {
             this._afterImportData( json, params );
+            //*******************
+            var dur = ts(new Date(), '解析和转化格式结束') - start;
+            console.log('--- 共'+dur+'ms ---');
+            //*******************
         }
         return this;
     },
