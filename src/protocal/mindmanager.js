@@ -22,17 +22,6 @@ KityMinder.registerProtocal( 'mindmanager', function () {
         '100': [ 'ProgressIcon', 5 ]
     };
 
-    //*******************
-    function ts(d, str){
-        var h = d.getHours(),
-            m = d.getMinutes(),
-            s = d.getSeconds(),
-            ms = d.getMilliseconds();
-        console.log('--- '+str+': '+(h+':'+m+':'+s+' '+ms)+' ---');
-        return d;
-    }
-    //*******************
-
     function processTopic( topic, obj ) {
         //处理文本
         obj.data = {
@@ -99,10 +88,6 @@ KityMinder.registerProtocal( 'mindmanager', function () {
                         entries.forEach( function ( entry ) {
                             if ( entry.filename == 'Document.xml' ) {
                                 entry.getData( new zip.TextWriter(), function ( text ) {
-                                    //*******************
-                                    var dur = ts(new Date(), '解压完成') - window.start;
-                                    console.log('--- 解压用了'+dur+'ms ---');
-                                    //*******************
                                     var km = xml2km( $.parseXML( text ) );
                                     callback && callback( km );
                                 } );

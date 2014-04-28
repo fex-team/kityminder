@@ -106,16 +106,22 @@ kity.extendClass( Minder, {
 
 
         //*******************
-        function ts(d, str){
+        function ts(d, str, last){
             var h = d.getHours(),
                 m = d.getMinutes(),
                 s = d.getSeconds(),
                 ms = d.getMilliseconds();
-            console.log('--- '+str+': '+(h+':'+m+':'+s+' '+ms)+' ---');
+
+            if(last){
+                console.log('--- '+str+': '+(d-last)+' ---');
+            }else{
+                console.log('--- '+str+' ---');
+            }
+            
             return d;
         }
 
-        window.start = ts(new Date(), '开始解析');
+        var t1 = ts(new Date(), '开始解析');
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
@@ -124,17 +130,21 @@ kity.extendClass( Minder, {
             var self = this;
             json.then( local, function ( data ) {
                 //*******************
-                var dur = ts(new Date(), '解析和转化格式结束') - window.start;
-                console.log('--- 共'+dur+'ms ---');
+                var t2 = ts(new Date(), '解压解析耗时', t1);
                 //*******************
                 self._afterImportData( data, params );
+                //*******************
+                ts(new Date(), '渲染耗时', t2);
+                //*******************
             } );
         } else {
             //*******************
-            var dur = ts(new Date(), '解析和转化格式结束') - window.start;
-            console.log('--- 共'+dur+'ms ---');
+            var t2 = ts(new Date(), '解压解析耗时', t1);
             //*******************
             this._afterImportData( json, params );
+            //*******************
+            ts(new Date(), '渲染耗时', t2);
+            //*******************
         }
         return this;
     },
