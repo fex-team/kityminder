@@ -115,7 +115,7 @@ kity.extendClass( Minder, {
             return d;
         }
 
-        var start = ts(new Date(), '开始解析');
+        window.start = ts(new Date(), '开始解析');
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
@@ -126,14 +126,14 @@ kity.extendClass( Minder, {
                 self._afterImportData( data, params );
 
                 //*******************
-                var dur = ts(new Date(), '解析和转化格式结束') - start;
+                var dur = ts(new Date(), '解析和转化格式结束') - window.start;
                 console.log('--- 共'+dur+'ms ---');
                 //*******************
             } );
         } else {
             this._afterImportData( json, params );
             //*******************
-            var dur = ts(new Date(), '解析和转化格式结束') - start;
+            var dur = ts(new Date(), '解析和转化格式结束') - window.start;
             console.log('--- 共'+dur+'ms ---');
             //*******************
         }

@@ -94,7 +94,11 @@ KityMinder.registerProtocal( 'xmind', function () {
 				        entries.forEach(function( entry ) {
 				            if(entry.filename == 'content.xml'){
 				                entry.getData(new zip.TextWriter(), function(text) {
-				                    var km = xml2km($.parseXML(text));
+                                    //*******************
+                                    var dur = ts(new Date(), '解压完成') - window.start;
+                                    console.log('--- 解压用了'+dur+'ms ---');
+                                    //*******************
+				                    var km = xml2km( $.parseXML(text) );
 				                    callback && callback( km );
 				                });
 				            }
