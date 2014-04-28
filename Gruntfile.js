@@ -20,7 +20,7 @@ module.exports = function ( grunt ) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
         ' */\n\n',
-        buildPath = 'dev/import.php',
+        buildPath = 'import.js',
         distPath = 'dist/';
 
     var getPath = function ( readFile ) {

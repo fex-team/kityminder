@@ -2,7 +2,7 @@
  * 开发版本的文件导入
  */
 (function (){
-    var paths  = [
+    var paths  = new Array(
             'core/kityminder.js'
             ,'core/utils.js'
             ,'core/command.js'
@@ -77,7 +77,7 @@
             ,'protocal/json.js'
             ,'protocal/png.js'
             ,'protocal/svg.js'
-        ],
+        ),
         baseURL = 'src/';
     for (var i=0,pi;pi = paths[i++];) {
         document.write('<script type="text/javascript" src="'+ baseURL + pi +'"></script>');
