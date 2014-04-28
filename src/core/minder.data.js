@@ -123,19 +123,18 @@ kity.extendClass( Minder, {
         if ( typeof json === 'object' && 'then' in json ) {
             var self = this;
             json.then( local, function ( data ) {
-                self._afterImportData( data, params );
-
                 //*******************
                 var dur = ts(new Date(), '解析和转化格式结束') - window.start;
                 console.log('--- 共'+dur+'ms ---');
                 //*******************
+                self._afterImportData( data, params );
             } );
         } else {
-            this._afterImportData( json, params );
             //*******************
             var dur = ts(new Date(), '解析和转化格式结束') - window.start;
             console.log('--- 共'+dur+'ms ---');
             //*******************
+            this._afterImportData( json, params );
         }
         return this;
     },
