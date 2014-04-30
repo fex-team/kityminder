@@ -64,7 +64,7 @@
         //定义工具栏
         ,
         toolbars: [
-            'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers | node | switchlayout | help'
+            'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers | node | help'
         ],
         //只读模式，默认是false
         //readOnly: true
