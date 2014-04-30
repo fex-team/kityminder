@@ -517,8 +517,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var j = 0;
 			var me = this;
 			var ITV = window.setInterval( function () {
-				me.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
-				j++;
+				for ( var k = 0; k < 50; k++ ) {
+					me.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
+					j++;
+					if ( j === _cleanbuffer.length ) break;
+				}
 				if ( j === _cleanbuffer.length ) {
 					window.clearInterval( ITV );
 				}
