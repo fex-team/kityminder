@@ -20,7 +20,8 @@ module.exports = function ( grunt ) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
         ' */\n\n',
-        buildPath = 'dev/import.php',
+        buildPath = 'import.js',
+        srcPath = 'src/',
         distPath = 'dist/';
 
     var getPath = function ( readFile ) {
@@ -30,7 +31,7 @@ module.exports = function ( grunt ) {
         sources = sources[ 1 ].replace( /\/\/.*\n/g, '\n' ).replace( /'|"|\n|\t|\s/g, '' );
         sources = sources.split( "," );
         sources.forEach( function ( filepath, index ) {
-            sources[ index ] = filepath;
+            sources[ index ] = srcPath + filepath;
         } );
 
         return sources;
@@ -63,7 +64,8 @@ module.exports = function ( grunt ) {
                 },
                 files: ( function () {
                     var files = {};
-                    files[ distPath + 'kityminder.all.js' ] = distPath + 'kityminder.all.min.js';
+                    files[ distPath + 'kityminder.all.min.js' ] = distPath + 'kityminder.all.js';
+                    console.log(files);
                     return files;
                 } )()
             }
