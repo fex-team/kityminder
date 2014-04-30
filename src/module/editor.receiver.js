@@ -203,17 +203,17 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         }
         return this;
     },
-    getBaseOffset: function () {
-        return this.textShape.getRenderBox( 'top' );
+    getBaseOffset: function (node) {
+        return this.textShape.getRenderBox( node || this.minderNode.getRenderContainer() );
     },
     setBaseOffset: function () {
-        this.offset = this.textShape.getRenderBox( 'top' );
+        this.offset = this.textShape.getRenderBox( this.minderNode.getRenderContainer() );
         return this;
     },
     setContainerStyle: function () {
-        var textShapeBox = this.textShape.getRenderBox();
+        var textShapeBox = this.getBaseOffset('top');
 
-        this.container.style.cssText = ";left:" + this.offset.x + 'px;top:' + ( this.offset.y + textShapeBox.height ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
         return this;
     },
     getTextOffsetData: function () {

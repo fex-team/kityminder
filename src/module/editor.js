@@ -21,11 +21,11 @@ KityMinder.registerModule( "TextEditModule", function () {
     var selectionByClick = false;
 
     return {
-        //插入光标
-        "init":function(){
-            this.getPaper().addShape(sel);
-        },
         "events": {
+            //插入光标
+            "afterinitstyle":function(){
+                this.getRenderContainer().addShape(sel);
+            },
             'normal.beforemousedown textedit.beforemousedown':function(e){
                 if(e.isRightMB()){
                     e.stopPropagationImmediately();
@@ -49,6 +49,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     textShape.setStyle('cursor','default');
 
                     if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
+
                         sel.collapse();
                         node.getTextShape().setStyle('cursor','text');
                         km.setStatus('textedit');
@@ -198,6 +199,9 @@ KityMinder.registerModule( "TextEditModule", function () {
             },
             blur:function(){
                 receiver.clear()
+            },
+            'textedit.mousewheel':function(){
+                receiver.setContainerStyle()
             }
         }
     };
