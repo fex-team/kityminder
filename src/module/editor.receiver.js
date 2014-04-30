@@ -111,14 +111,20 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
         case 'keydown':
             switch ( e.originEvent.keyCode ) {
-            case keys.Enter:
-            case keys.Tab:
-                this.selection.setHide();
-                this.clear().setTextEditStatus( false );
-                this.km.fire( 'contentchange' );
-                this.km.setStatus( 'normal' );
-                e.preventDefault();
-                break;
+                case keys.Enter:
+                case keys.Tab:
+                    this.selection.setHide();
+                    this.clear().setTextEditStatus( false );
+                    this.km.fire( 'contentchange' );
+                    this.km.setStatus( 'normal' );
+                    e.preventDefault();
+                    return;
+                    break;
+                case keymap.Shift:
+                case keymap.Control:
+                case keymap.Alt:
+                case keymap.Cmd:
+                    return;
             }
 
             if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
@@ -143,29 +149,26 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 }
                 return;
             }
+            setTextToContainer();
             break;
         case 'beforekeyup':
 
 
             switch ( keyCode ) {
-            case keymap.Enter:
-            case keymap.Tab:
-                if ( this.keydownNode === this.minderNode ) {
-                    this.rollbackStatus();
-                    this.setTextEditStatus( false );
-                    this.clear();
-                }
-                e.preventDefault();
-                return;
-            case keymap.Shift:
-            case keymap.Control:
-            case keymap.Alt:
-            case keymap.Cmd:
-                return;
+                case keymap.Enter:
+                case keymap.Tab:
+                    if ( this.keydownNode === this.minderNode ) {
+                        this.rollbackStatus();
+                        this.setTextEditStatus( false );
+                        this.clear();
+                    }
+                    e.preventDefault();
+                    return;
+
 
             }
 
-            setTextToContainer();
+
             return true;
         }
 
