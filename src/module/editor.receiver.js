@@ -23,7 +23,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore( _div, document.body.firstChild );
         utils.addCssRule( 'km_receiver_css', ' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}' ); //
-        this.km.on( 'textedit.beforekeyup textedit.keydown textedit.paste', utils.proxy( this.keyboardEvents, this ) );
+        this.km.on( 'textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy( this.keyboardEvents, this ) );
         this.timer = null;
         this.index = 0;
     },
@@ -107,9 +107,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.selection.setShow()
             }, 500 );
         }
+        var isTypeText = false;
+        var isKeypress = false;
         switch ( e.type ) {
 
         case 'keydown':
+            isTypeText = false;
+            isKeypress = false;
             switch ( e.originEvent.keyCode ) {
                 case keys.Enter:
                 case keys.Tab:
@@ -149,8 +153,18 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 }
                 return;
             }
-            setTextToContainer();
+            isTypeText = true;
+
             break;
+
+
+
+        case 'keypress':
+           if(isTypeText)
+               setTextToContainer();
+           isKeypress = true;
+           break;
+
         case 'beforekeyup':
 
 
@@ -168,7 +182,9 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             }
 
-
+            if(!isKeypress){
+                setTextToContainer();
+            }
             return true;
         }
 
