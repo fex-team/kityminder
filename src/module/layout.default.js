@@ -514,19 +514,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( historyPoint ) {
 				_root.setPoint( historyPoint );
 			}
-			// var j = 0;
-			// var me = this;
-			// var ITV = window.setInterval( function () {
-			// 	for ( var k = 0; k < 0; k++ ) {
-			// 		me.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
-			// 		j++;
-			// 		if ( j === _cleanbuffer.length ) break;
-			// 	}
-			// 	if ( j === _cleanbuffer.length ) {
-			// 		window.clearInterval( ITV );
-			// 	}
-			// }, 0 );
-			//重组结构
 			for ( var j = 0; j < _cleanbuffer.length; j++ ) {
 				this.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 			}
@@ -544,6 +531,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.appendside = siblingLayout.appendside;
 				Layout.align = siblingLayout.align;
 				if ( parent.getType() === "root" ) {
+					minder.handelNodeInsert( node );
 					var len = parent.getChildren().length;
 					if ( len < 7 ) {
 						if ( len % 2 ) {
@@ -603,12 +591,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//计算位置等流程
 			updateBg( node );
 			initLayout( node );
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: node
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: node
-			// }, false ) );
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
