@@ -58,7 +58,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					nodeX = nodeShape.getRenderBox().closurePoints[ 0 ].x + 6;
 					if ( node.getType() === "main" ) nodeX -= 3;
 				}
-				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
+				this.shape.setTranslate( nodeX, nodeY );
 			},
 			remove: function () {
 				this.shape.remove();
@@ -176,7 +176,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		default:
 			break;
 		}
-		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + _contRCHeight / 2 ) );
+		contRc.setTranslate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + _contRCHeight / 2 );
 	};
 	//计算节点在垂直方向的位置
 	var updateLayoutVertical = function ( node, parent, action ) {
@@ -304,13 +304,13 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var _rectWidth = nodeShape.getWidth();
 		switch ( align ) {
 		case "right":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y - _rectHeight / 2 ) );
+			nodeShape.setTranslate( Layout.x - _rectWidth, Layout.y - _rectHeight / 2 );
 			break;
 		case "center":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y - _rectHeight / 2 ) );
+			nodeShape.setTranslate( Layout.x - _rectWidth / 2, Layout.y - _rectHeight / 2 );
 			break;
 		default:
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y - _rectHeight / 2 ) );
+			nodeShape.setTranslate( Layout.x, Layout.y - _rectHeight / 2 );
 			break;
 		}
 		node.setPoint( Layout.x, Layout.y );
@@ -370,8 +370,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					.clear()
 					.moveTo( sX, sY )
 					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
-				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY, 0, 1 );
-				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY, 0, 1 );
+				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY );
 				connect.stroke( nodeStyle.stroke );
 			} else {
 				sX = parentBox.closurePoints[ 0 ].x + parentStyle.margin[ 1 ];
@@ -380,8 +380,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					.clear()
 					.moveTo( sX, sY )
 					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
-				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY );
-				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], nodeX, nodeY, 0, 1 );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY );
+				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 1, nodeX, nodeY );
 				connect.stroke( nodeStyle.stroke );
 			}
 		}

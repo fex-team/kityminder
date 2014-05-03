@@ -34,9 +34,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
-			var lastTransform = this._rc.getTransform();
 			this._rc.remove();
-			this._rc = new kity.Group().setTransform( lastTransform );
+			this._rc = new kity.Group();
 			this._paper.addShape( this._rc );
 
 			var _root = this.getRoot();

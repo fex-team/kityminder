@@ -22,7 +22,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.width = 1;
         this.collapsed = true;
         if(toEnd){
-            this.startOffset = this.endOffset
+            this.startOffset = this.endOffset;
         }else{
             this.endOffset = this.startOffset;
         }

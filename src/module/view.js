@@ -102,7 +102,7 @@ KityMinder.registerModule( 'View', function () {
         base: Command,
         execute: function ( km, focusNode ) {
             var viewport = km.getPaper().getViewPort();
-            var offset = focusNode.getRenderContainer().getRenderBox( km.getRenderContainer() );
+            var offset = focusNode.getRenderContainer().getRenderBox( 'paper' );
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
