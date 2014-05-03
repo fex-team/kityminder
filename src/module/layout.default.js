@@ -523,18 +523,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
-			var _buffer = [ _root ];
-			while ( _buffer.length !== 0 ) {
-				var children = _buffer[ 0 ].getChildren();
-				var parent = _buffer[ 0 ];
-				var Layout = parent.getLayout();
-				if ( _buffer[ 0 ].getType() === 'root' ) {
-					for ( var i = 0; i < children.length; i++ ) {
-						this.appendChildNode( parent, children[ i ] );
-					}
+			var mains = _root.getChildren();
+			for ( var i = 0; i < mains.length; i++ ) {
+				this.appendChildNode( _root, mains[ i ] );
+			}
+			for ( var j = 0; j < mains.length; j++ ) {
+				var c = mains[ j ].getChildren();
+				if ( c.length < 10 && c.length !== 0 ) {
+					this.expandNode( mains[ j ] );
 				}
-				_buffer = _buffer.concat( children );
-				_buffer.shift();
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
@@ -706,7 +703,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var _buffer = node.getChildren();
 			if ( isExpand ) {
 				for ( var j = 0; j < _buffer.length; j++ ) {
-					debugger;
 					minder.appendChildNode( node, _buffer[ j ] );
 				}
 			} else {
