@@ -84,7 +84,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			padding: [ 15.5, 25.5, 15.5, 25.5 ],
 			margin: [ 0, 0, 0, 0 ],
 			radius: 30,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 3,
+			spaceRight: 0,
+			spaceTop: 3,
+			spaceBottom: 3
 		},
 		"main": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -94,7 +98,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 16,
 			margin: [ 0, 10, 30, 50 ],
 			radius: 10,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 5,
+			spaceRight: 0,
+			spaceTop: 2,
+			spaceBottom: 2
+
 		},
 		"sub": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -102,7 +111,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 12,
 			margin: [ 0, 10, 20, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 4,
+			spaceRight: 0,
+			spaceTop: 2,
+			spaceBottom: 2
 		}
 	};
 	//更新背景

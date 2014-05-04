@@ -1,4 +1,5 @@
 KityMinder.registerModule( "IconModule", function () {
+	var minder = this;
 	var renderPriorityIcon = function ( node, val ) {
 		var colors = [ "", "#A92E24", "#29A6BD", "#1E8D54", "#eb6100", "#876DDA" ];
 		var _bg = new kity.Rect().fill( colors[ val ] ).setRadius( 3 ).setWidth( 20 ).setHeight( 20 );
@@ -45,8 +46,9 @@ KityMinder.registerModule( "IconModule", function () {
 		if ( val < 5 ) d.close();
 		_percent.fill( "#29A6BD" );
 		var pre = node.getData( "PriorityIcon" );
-		if ( !pre ) _rc.setTranslate( _contRc.getWidth() - _rc.getWidth() / 2, 0 );
-		else _rc.setTranslate( _contRc.getWidth() + _rc.getWidth() / 2, 0 );
+		var style = minder.getCurrentLayoutStyle()[ node.getType() ];
+		if ( !pre ) _rc.setTranslate( _rc.getWidth() / 2, 0 );
+		else _rc.setTranslate( _contRc.getWidth() + style.spaceLeft, 0 );
 	};
 	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {
