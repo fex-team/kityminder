@@ -175,6 +175,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             switch ( keyCode ) {
             case keymap.Enter:
             case keymap.Tab:
+            case keymap.F2:
                 if ( this.keydownNode === this.minderNode ) {
                     this.rollbackStatus();
                     this.setTextEditStatus( false );

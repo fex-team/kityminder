@@ -135,12 +135,13 @@ KityMinder.registerModule( "TextEditModule", function () {
             "resize": function ( e ) {
                 sel.setHide();
             },
-            'execCommand':function(e){
+            "execCommand": function( e ) {
                 var cmds = {
-                    'appendchildnode':1,
-                    'appendsiblingnode':1
+                    'appendchildnode' : 1,
+                    'appendsiblingnode' : 1,
+                    'editnode' : 1
                 };
-                if(cmds[e.commandName]){
+                if ( cmds[ e.commandName ] ){
 
                     var node = km.getSelectedNode();
                     if( !node ){

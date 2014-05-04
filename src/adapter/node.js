@@ -2,7 +2,8 @@ KM.registerToolbarUI( 'node', function ( name ) {
     var shortcutKeys = {
         "appendsiblingnode": "enter",
         "appendchildnode": "tab",
-        "removenode": "del|backspace"
+        "removenode": "del|backspace",
+        "editnode": "F2"
     };
 
     var me = this,
