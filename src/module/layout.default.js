@@ -33,7 +33,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				minder.getRenderContainer().addShape( iconShape );
 				iconShape.addShapes( [ circle, plus, dec ] );
 				this.update();
-				//this.switchState();
 			},
 			switchState: function () {
 				if ( !this._show ) {
@@ -554,9 +553,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				return items;
 			} )();
 			next = [];
-			var layer_nolimit =  ( expand_layer < 1 ) || ( !expand_layer ) || false;
-			//debugger;
-			var sub_nolimit =  ( expandoptions.sub < 0 ) || false;
+			var layer_nolimit = ( expand_layer < 1 ) || ( !expand_layer ) || false;
+			debugger;
+			var sub_nolimit = ( expandoptions.sub < 1 ) || false;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
 			};

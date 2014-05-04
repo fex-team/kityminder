@@ -251,10 +251,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 				'appendchildnode': 'appendchildnode',
 				'removenode': 'removenode'
 			},
-            expand:{
-                layer:0,
-                sub:0
-            }
+			expand: {
+				layer: 0,
+				sub: 0
+			}
 		}
 	};
 } );
