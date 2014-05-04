@@ -44,7 +44,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				n.clearLayout();
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this );
-            this.fire('afterinitstyle');
+			this.fire( 'afterinitstyle' );
 		},
 		appendChildNode: function ( parent, node, focus, index ) {
 			var curStyle = this.getCurrentStyle();
@@ -116,7 +116,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !parent ) {
 					return null;
 				}
-
 				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
 					km.expandNode( parent );
 				}

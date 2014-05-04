@@ -33,7 +33,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				minder.getRenderContainer().addShape( iconShape );
 				iconShape.addShapes( [ circle, plus, dec ] );
 				this.update();
-				this.switchState();
+				//this.switchState();
 			},
 			switchState: function () {
 				if ( !this._show ) {
@@ -219,7 +219,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			effectSet.push( node );
 		} else {
 			if ( action === "append" || action === "contract" ) {
-				Layout.branchheight = node.getRenderContainer().getHeight() + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
+				var nodeHeight = node.getRenderContainer().getHeight() || ( node.getContRc().getHeight() + nodeStyle.padding[ 0 ] + nodeStyle.padding[ 2 ] );
+				Layout.branchheight = nodeHeight + nodeStyle.margin[ 0 ] + nodeStyle.margin[ 2 ];
 			} else if ( action === "change" ) {
 				Layout.branchheight = countBranchHeight( node );
 			}
@@ -243,6 +244,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			while ( _buffer.length > 0 ) {
 				var _buffer0Layout = _buffer[ 0 ].getLayout();
 				var children = _buffer0Layout[ appendside + "List" ] || _buffer[ 0 ].getChildren();
+				var children = ( function () {
+					var result = [];
+					for ( var len = 0; len < children.length; len++ ) {
+						var l = children[ len ].getLayout();
+						if ( l.added ) {
+							result.push( children[ len ] );
+						}
+					}
+					return result;
+				} )();
 				_buffer = _buffer.concat( children );
 				var sY = _buffer0Layout.y - ( _buffer0Layout[ appendside + "Height" ] || _buffer0Layout.branchheight ) / 2;
 				for ( var i = 0; i < children.length; i++ ) {
@@ -250,7 +261,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					childLayout.y = sY + childLayout.branchheight / 2;
 					sY += childLayout.branchheight;
 				}
-				if ( _buffer[ 0 ] !== root ) effectSet.push( _buffer[ 0 ] );
+				if ( _buffer[ 0 ] !== root && _buffer[ 0 ].getLayout().added ) effectSet.push( _buffer[ 0 ] );
 				_buffer.shift();
 			}
 		};
@@ -272,7 +283,18 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var _buffer = [ node ];
 		while ( _buffer.length !== 0 ) {
 			var prt = _buffer[ 0 ].getParent();
-			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+			var children = _buffer[ 0 ].getChildren();
+			children = ( function () {
+				var result = [];
+				for ( var len = 0; len < children.length; len++ ) {
+					var l = children[ len ].getLayout();
+					if ( l.added ) {
+						result.push( children[ len ] );
+					}
+				}
+				return result;
+			} )();
+			_buffer = _buffer.concat( children );
 			if ( !prt ) {
 				Layout.x = getMinderSize().width / 2;
 				_buffer.shift();
@@ -389,6 +411,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
+				if ( node.getData( 'expand' ) ) {
+					Layout.shicon.switchState();
+				}
 			}
 			Layout.shicon.update();
 		}
@@ -498,37 +523,15 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
-			var _buffer = [ _root ];
-			var _cleanbuffer = [];
-			//打散结构
-			while ( _buffer.length !== 0 ) {
-				var children = _buffer[ 0 ].getChildren();
-				_buffer = _buffer.concat( children );
-				for ( var i = 0; i < children.length; i++ ) {
-					children[ i ].getLayout().parent = _buffer[ 0 ];
+			var mains = _root.getChildren();
+			for ( var i = 0; i < mains.length; i++ ) {
+				this.appendChildNode( _root, mains[ i ] );
+			}
+			for ( var j = 0; j < mains.length; j++ ) {
+				var c = mains[ j ].getChildren();
+				if ( c.length < 10 && c.length !== 0 ) {
+					this.expandNode( mains[ j ] );
 				}
-				_buffer[ 0 ].clearChildren();
-				if ( _buffer[ 0 ] !== _root ) _cleanbuffer.push( _buffer[ 0 ] );
-				_buffer.shift();
-			}
-			if ( historyPoint ) {
-				_root.setPoint( historyPoint );
-			}
-			// var j = 0;
-			// var me = this;
-			// var ITV = window.setInterval( function () {
-			// 	for ( var k = 0; k < 0; k++ ) {
-			// 		me.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
-			// 		j++;
-			// 		if ( j === _cleanbuffer.length ) break;
-			// 	}
-			// 	if ( j === _cleanbuffer.length ) {
-			// 		window.clearInterval( ITV );
-			// 	}
-			// }, 0 );
-			//重组结构
-			for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-				this.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
@@ -536,14 +539,22 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			node.getContRc().clear();
+			node.setData( 'expand', false );
+			if ( parent.getType() !== 'root' ) {
+				parent.setData( 'expand', true );
+			}
 			var Layout = node.getLayout();
+			Layout.added = true;
 			var parentLayout = parent.getLayout();
+			var children = parent.getChildren();
+			var exist = ( children.indexOf( node ) !== -1 );
 			if ( sibling ) {
-				parent.insertChild( node, sibling.getIndex() + 1 );
+				if ( !exist ) parent.insertChild( node, sibling.getIndex() + 1 );
 				var siblingLayout = sibling.getLayout();
 				Layout.appendside = siblingLayout.appendside;
 				Layout.align = siblingLayout.align;
 				if ( parent.getType() === "root" ) {
+					minder.handelNodeInsert( node );
 					var len = parent.getChildren().length;
 					if ( len < 7 ) {
 						if ( len % 2 ) {
@@ -563,7 +574,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					var prtLayout = parent.getLayout();
 					Layout.appendside = prtLayout.appendside;
 					Layout.align = prtLayout.align;
-					parent.appendChild( node );
+					if ( !exist ) parent.appendChild( node );
 				} else {
 					var nodeP = node.getPoint();
 					if ( nodeP && nodeP.x && nodeP.y ) {
@@ -591,7 +602,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					} else {
 						idx1 = parent.getChildren().length;
 					}
-					parent.insertChild( node, idx1 );
+					if ( !exist ) parent.insertChild( node, idx1 );
 				}
 			}
 			//设置分支类型
@@ -603,12 +614,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			//计算位置等流程
 			updateBg( node );
 			initLayout( node );
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: node
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: node
-			// }, false ) );
 			this._firePharse( new MinderEvent( "RenderNodeLeft", {
 				node: node
 			}, false ) );
@@ -696,33 +701,22 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			node.setData( "expand", isExpand );
 			var _buffer = node.getChildren();
-			var _cleanbuffer = [];
-
-			while ( _buffer.length !== 0 ) {
-				var Layout = _buffer[ 0 ].getLayout();
-				if ( isExpand ) {
-					var parent = _buffer[ 0 ].getParent();
-					Layout.parent = parent;
-					_cleanbuffer.push( _buffer[ 0 ] );
-					Layout.connect = null;
-					Layout.shicon = null;
-				} else {
-					try {
+			if ( isExpand ) {
+				for ( var j = 0; j < _buffer.length; j++ ) {
+					minder.appendChildNode( node, _buffer[ j ] );
+				}
+			} else {
+				var _buffer = node.getChildren();
+				while ( _buffer.length !== 0 ) {
+					var Layout = _buffer[ 0 ].getLayout();
+					if ( Layout.added ) {
+						Layout.added = false;
 						_buffer[ 0 ].getRenderContainer().remove();
 						Layout.connect.remove();
 						if ( Layout.shicon ) Layout.shicon.remove();
-					} catch ( error ) {}
-				}
-				//if ( _buffer[ 0 ].getData( "expand" ) !== false )
-				_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-				_buffer.shift();
-			}
-			if ( isExpand ) {
-				node.clearChildren();
-				for ( var j = 0; j < _cleanbuffer.length; j++ ) {
-					//if ( _cleanbuffer[ j ].getData( "expand" ) !== false )
-					_cleanbuffer[ j ].clearChildren();
-					minder.appendChildNode( _cleanbuffer[ j ].getLayout().parent, _cleanbuffer[ j ] );
+					}
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					_buffer.shift();
 				}
 			}
 			var set = [];

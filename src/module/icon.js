@@ -5,11 +5,15 @@ KityMinder.registerModule( "IconModule", function () {
 		var _number = new kity.Text().setContent( val ).fill( "white" ).setSize( 12 );
 		var _rc = new kity.Group();
 		_rc.addShapes( [ _bg, _number ] );
-		node.getIconRc().addShape( _rc );
+		node.getContRc().addShape( _rc );
 		_number.setTransform( new kity.Matrix().translate( 6, 15 ) );
+		var rcHeight = _rc.getHeight();
+		_rc.setTransform( new kity.Matrix().translate( 0, -rcHeight / 2 ) );
 	};
-	var renderProgressIcon = function ( node, val, left ) {
+
+	var renderProgressIcon = function ( node, val ) {
 		var _rc = new kity.Group();
+		var _contRc = node.getContRc();
 		var _bg = new kity.Circle().setRadius( 8 ).fill( "white" ).stroke( new kity.Pen( "#29A6BD", 2 ) );
 		var _percent, d;
 		if ( val < 5 ) {
@@ -18,8 +22,7 @@ KityMinder.registerModule( "IconModule", function () {
 			d.moveTo( 0, 0 ).lineTo( 6, 0 );
 		} else _percent = new kity.Group();
 		_rc.addShapes( [ _bg, _percent ] );
-		node.getIconRc().addShape( _rc );
-		_rc.setTransform( new kity.Matrix().translate( left, 10 ) );
+		_contRc.addShape( _rc );
 		switch ( val ) {
 		case 1:
 			break;
@@ -41,6 +44,7 @@ KityMinder.registerModule( "IconModule", function () {
 		}
 		if ( val < 5 ) d.close();
 		_percent.fill( "#29A6BD" );
+		_rc.setTransform( new kity.Matrix().translate( _contRc.getWidth() + 5, 0 ) );
 	};
 	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {
@@ -91,26 +95,16 @@ KityMinder.registerModule( "IconModule", function () {
 		},
 		"events": {
 			"RenderNodeLeft": function ( e ) {
-				// var node = e.node;
-				// var iconRc = new kity.Group();
-				// var contRc = node.getContRc();
-				// var PriorityIconVal = node.getData( "PriorityIcon" );
-				// var ProgressIconVal = node.getData( "ProgressIcon" );
-				// //依次排布图标、文字
-				// //iconRc.clear();
-				// var PriorityIconWidth = 0;
-				// if ( PriorityIconVal ) {
-				// 	renderPriorityIcon( node, PriorityIconVal );
-				// 	PriorityIconWidth = 22;
-				// }
-				// if ( ProgressIconVal ) {
-				// 	renderProgressIcon( node, ProgressIconVal, PriorityIconWidth + 10 );
-				// }
-				// var iconWidth = iconRc.getWidth();
-				// //var textShape = node.getTextShape();
-				// //if ( iconWidth ) textShape.setTransform( new kity.Matrix().translate( iconWidth + 5, 0 ) );
-				// //else textShape.setTransform( new kity.Matrix().translate( 0, 0 ) );
-				// iconRc.setTransform( new kity.Matrix().translate( 0, -( iconRc.getHeight() + textShape.getHeight() ) / 2 ) );
+				var node = e.node;
+				var PriorityIconVal = node.getData( "PriorityIcon" );
+				var ProgressIconVal = node.getData( "ProgressIcon" );
+				var contRc = node.getContRc();
+				if ( PriorityIconVal ) {
+					renderPriorityIcon( node, PriorityIconVal );
+				}
+				if ( ProgressIconVal ) {
+					renderProgressIcon( node, ProgressIconVal );
+				}
 			}
 		}
 	};
