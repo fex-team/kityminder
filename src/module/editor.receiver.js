@@ -66,7 +66,6 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setMinderNode: function ( node ) {
         this.minderNode = node;
-        node.addShape(this.textShape);
         return this;
     },
     keyboardEvents: function ( e ) {
@@ -228,10 +227,10 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this;
     },
     getBaseOffset: function (node) {
-        return this.textShape.getRenderBox( node || this.minderNode.getRenderContainer() );
+        return this.textShape.getRenderBox( node || this.km.getRenderContainer() );
     },
     setBaseOffset: function () {
-        this.offset = this.textShape.getRenderBox( this.minderNode.getRenderContainer() );
+        this.offset = this.textShape.getRenderBox( this.km.getRenderContainer() );
         return this;
     },
     setContainerStyle: function () {
