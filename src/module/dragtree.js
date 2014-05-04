@@ -21,11 +21,10 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 		for ( var i = nodes.length - 1; i >= 0; i-- ) {
 			node = nodes[ i ];
 			if ( node.getParent() ) {
-				node.getParent().removeChild( node );
-				parent.appendChild( node );
+                minder.removeNode([node]);
+                minder.appendChildNode(parent,node)
 			}
 		}
-		minder.initStyle( minder.getRoot() );
 		minder.select( nodes, true );
 	}
 } );
