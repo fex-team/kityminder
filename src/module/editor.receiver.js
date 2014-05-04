@@ -66,6 +66,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setMinderNode: function ( node ) {
         this.minderNode = node;
+        node.addShape(this.textShape);
         return this;
     },
     keyboardEvents: function ( e ) {

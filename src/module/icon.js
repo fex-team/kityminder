@@ -6,9 +6,9 @@ KityMinder.registerModule( "IconModule", function () {
 		var _rc = new kity.Group();
 		_rc.addShapes( [ _bg, _number ] );
 		node.getContRc().addShape( _rc );
-		_number.setTransform( new kity.Matrix().translate( 6, 15 ) );
+		_number.setTranslate( 6, 15 );
 		var rcHeight = _rc.getHeight();
-		_rc.setTransform( new kity.Matrix().translate( 0, -rcHeight / 2 ) );
+		_rc.setTranslate( 0, -rcHeight / 2 );
 	};
 
 	var renderProgressIcon = function ( node, val ) {
@@ -27,13 +27,13 @@ KityMinder.registerModule( "IconModule", function () {
 		case 1:
 			break;
 		case 2:
-			d.carcTo( 6, 0, -6 );
+			d.carcTo( 6, 0, 0, 0, -6 );
 			break;
 		case 3:
-			d.carcTo( 6, -6, 0 );
+			d.carcTo( 6, 0, 0, -6, 0 );
 			break;
 		case 4:
-			d.carcTo( 6, 0, 6, 1, 0 );
+			d.carcTo( 6, 1, 0, 0, 6 );
 			break;
 		case 5:
 			var check = new kity.Path();
@@ -44,7 +44,7 @@ KityMinder.registerModule( "IconModule", function () {
 		}
 		if ( val < 5 ) d.close();
 		_percent.fill( "#29A6BD" );
-		_rc.setTransform( new kity.Matrix().translate( _contRc.getWidth() + 5, 0 ) );
+		_rc.setTranslate( _contRc.getWidth() + 5, 0 );
 	};
 	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {

@@ -228,7 +228,7 @@ var DragBox = kity.createClass( "DragBox", {
 
 		var movement = kity.Vector.fromPoints( this._startPosition, this._dragPosition );
 
-		this.setTransform( new kity.Matrix().translate( movement.x, movement.y ) );
+		this.setTranslate( movement );
 
 		this._dropTest();
 		this._updateDropHint();

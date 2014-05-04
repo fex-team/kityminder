@@ -57,7 +57,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 				var nodeType = node.getType();
 				var nodeX = nodeShape.getRenderBox().closurePoints[ 1 ].x + 5;
 				var nodeY = nodeShape.getRenderBox().closurePoints[ 0 ].y;
-				this.shape.setTransform( new kity.Matrix().translate( nodeX, nodeY ) );
+				this.shape.setTranslate( nodeX, nodeY );
 			},
 			remove: function () {
 				this.shape.remove();
@@ -154,7 +154,7 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		default:
 			break;
 		}
-		contRc.setTransform( new kity.Matrix().translate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + _contRCHeight / 2 ) );
+		contRc.setTranslate( nodeStyle.padding[ 3 ], nodeStyle.padding[ 0 ] + _contRCHeight / 2 );
 	};
 	var updateLayoutMain = function () {
 		var _root = minder.getRoot();
@@ -260,17 +260,17 @@ KityMinder.registerModule( "LayoutBottom", function () {
 		var _rectWidth = nodeShape.getWidth();
 		switch ( align ) {
 		case "right":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth, Layout.y ) );
+			nodeShape.setTranslate( Layout.x - _rectWidth, Layout.y );
 			break;
 		case "center":
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x - _rectWidth / 2, Layout.y ) );
+			nodeShape.setTranslate( Layout.x - _rectWidth / 2, Layout.y );
 			break;
 		default:
-			nodeShape.setTransform( new kity.Matrix().translate( Layout.x, Layout.y ) );
+			nodeShape.setTranslate( Layout.x, Layout.y );
 			break;
 		}
 		if ( node.getType() === "main" ) {
-			Layout.subgroup.setTransform( new kity.Matrix().translate( Layout.x, Layout.y + node.getRenderContainer().getHeight() ) );
+			Layout.subgroup.setTranslate( Layout.x, Layout.y + node.getRenderContainer().getHeight() );
 		}
 		node.setPoint( Layout.x, Layout.y );
 	};
