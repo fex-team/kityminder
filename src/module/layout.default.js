@@ -536,9 +536,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-			var expandoptions = minder.getOptions( 'expand' );
+			var expandoptions = minder.getOptions( 'defaultExpand' );
 			var cur_layer = 0;
-			var expand_layer = expandoptions.layer;
+			var expand_layer = expandoptions.defaultLayer;
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
@@ -554,8 +554,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			} )();
 			next = [];
 			var layer_nolimit = ( expand_layer < 1 ) || ( !expand_layer ) || false;
-			debugger;
-			var sub_nolimit = ( expandoptions.sub < 1 ) || false;
+			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
 			};
@@ -564,7 +563,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				var layer_len = _buffer.length;
 				for ( var j = 0; j < layer_len; j++ ) {
 					var c = _buffer[ j ].getChildren();
-					if ( ( sub_nolimit || ( c.length <= expandoptions.sub ) ) && c.length !== 0 ) {
+					if ( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && c.length !== 0 ) {
 						this.expandNode( _buffer[ j ] );
 						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
 					}

@@ -251,9 +251,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 				'appendchildnode': 'appendchildnode',
 				'removenode': 'removenode'
 			},
-			expand: {
-				layer: 0,
-				sub: 0
+			'defaultExpand': {
+				'defaultLayer': 0,
+				'defaultSubShow': 0
 			}
 		}
 	};
