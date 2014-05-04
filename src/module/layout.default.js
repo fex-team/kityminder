@@ -569,7 +569,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					}
 				}
 				_buffer.splice( 0, layer_len );
-				console.log( cur_layer );
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
