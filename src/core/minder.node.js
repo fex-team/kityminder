@@ -8,9 +8,10 @@ kity.extendClass( Minder, {
     },
     handelNodeInsert: function ( node ) {
         var rc = this._rc;
-        node.traverse( function ( current ) {
-            rc.addShape( current.getRenderContainer() );
-        } );
+        // node.traverse( function ( current ) {
+        //     rc.addShape( current.getRenderContainer() );
+        // } );
+        rc.addShape( node.getRenderContainer() );
     },
     handelNodeRemove: function ( node ) {
         var rc = this._rc;
@@ -29,7 +30,7 @@ kity.extendClass( Minder, {
             km.renderNode( nodes );
         }
     },
-    getMinderTitle: function() {
+    getMinderTitle: function () {
         return this.getRoot().getText();
     }
 
