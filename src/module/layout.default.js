@@ -524,16 +524,41 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-
+			var expandoptions = minder.getOptions( 'expand' );
+			var cur_layer = 0;
+			var expand_layer = expandoptions && expandoptions.layer;
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
 			}
-			for ( var j = 0; j < mains.length; j++ ) {
-				var c = mains[ j ].getChildren();
-				if ( c.length < 10 && c.length !== 0 ) {
-					this.expandNode( mains[ j ] );
+			cur_layer++;
+			//创建一级节点的副本
+			var _buffer = ( function () {
+				var items = [];
+				for ( var i = 0; i < mains.length; i++ ) {
+					items.push( mains[ i ] );
 				}
+				return items;
+			} )();
+			next = [];
+			var layer_nolimit = ( !expandoptions ) || ( expand_layer < 1 ) || ( !expand_layer ) || false;
+			//debugger;
+			var sub_nolimit = ( !expandoptions ) || ( !expandoptions.sub ) || ( expandoptions.sub < 0 ) || false;
+			var loopcontinue = function () {
+				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
+			};
+			while ( loopcontinue() ) {
+				cur_layer++;
+				var layer_len = _buffer.length;
+				for ( var j = 0; j < layer_len; j++ ) {
+					var c = _buffer[ j ].getChildren();
+					if ( ( sub_nolimit || ( c.length <= expandoptions.sub ) ) && c.length !== 0 ) {
+						this.expandNode( _buffer[ j ] );
+						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+					}
+				}
+				_buffer.splice( 0, layer_len );
+				console.log( cur_layer );
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
