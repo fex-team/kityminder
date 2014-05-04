@@ -579,7 +579,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					if ( !exist ) parent.appendChild( node );
 				} else {
 					var nodeP = node.getPoint();
-					debugger;
 					if ( nodeP && nodeP.x && nodeP.y ) {
 						if ( nodeP.x > parent.getPoint().x ) {
 							Layout.appendside = "right";
