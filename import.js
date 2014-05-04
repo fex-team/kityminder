@@ -70,6 +70,7 @@
             ,'adapter/node.js'
             ,'adapter/contextmenu.js'
             ,'adapter/dialog.js'
+            ,'adapter/preference.js'
             ,'protocal/xmind.js'
             ,'protocal/freemind.js'
             ,'protocal/mindmanager.js'
@@ -77,6 +78,7 @@
             ,'protocal/json.js'
             ,'protocal/png.js'
             ,'protocal/svg.js'
+
         ),
         baseURL = 'src/';
     for (var i=0,pi;pi = paths[i++];) {

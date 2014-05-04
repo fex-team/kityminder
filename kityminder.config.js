@@ -81,6 +81,7 @@
         //设置km整体的z-index大小
         //,zIndex : 1000
         //设置初始加载时展开的层数和子节点数目阈值
+        //默认是全部展开，0表示全部展开
         //,defaultExpand: {
         //defaultLayer: 0,
         //defaultSubShow: 0

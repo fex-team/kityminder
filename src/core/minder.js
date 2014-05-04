@@ -18,14 +18,17 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     getOptions: function ( key ) {
         return this._options[ key ];
     },
-    setDefaultOptions: function ( key, val ) {
+    setDefaultOptions: function ( key, val,cover) {
         var obj = {};
         if ( Utils.isString( key ) ) {
             obj[ key ] = val;
         } else {
             obj = key;
         }
-        utils.extend( this._options, obj, true );
+        utils.extend( this._options, obj, !cover );
+    },
+    setOptions: function ( key, val ) {
+       this.setDefaultOptions(key,val,true)
     },
     _initMinder: function () {
 
