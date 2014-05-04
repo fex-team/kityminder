@@ -523,6 +523,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
+			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
+
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
@@ -555,7 +557,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.align = siblingLayout.align;
 				if ( parent.getType() === "root" ) {
 					minder.handelNodeInsert( node );
-					var len = parent.getChildren().length;
+					var len = children.length;
 					if ( len < 7 ) {
 						if ( len % 2 ) {
 							Layout.appendside = "right";
@@ -577,6 +579,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					if ( !exist ) parent.appendChild( node );
 				} else {
 					var nodeP = node.getPoint();
+					debugger;
 					if ( nodeP && nodeP.x && nodeP.y ) {
 						if ( nodeP.x > parent.getPoint().x ) {
 							Layout.appendside = "right";
