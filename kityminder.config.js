@@ -60,9 +60,9 @@
 
     }
     window.KITYMINDER_CONFIG = {
-        'KITYMINDER_HOME_URL': getKMBasePath()
+        'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
-        ,toolbars: [
+        toolbars: [
             'hand zoom-in zoom-out | undo redo | bold italic | fontfamily fontsize forecolor | saveto | markers | node | help'
         ]
         //只读模式，默认是false
@@ -80,5 +80,11 @@
 
         //设置km整体的z-index大小
         //,zIndex : 1000
+        //设置初始加载时展开的层数和子节点数目阈值
+        ,
+        expand: {
+            layer: 2,
+            sub: 10
+        }
     };
 } )();
