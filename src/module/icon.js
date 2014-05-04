@@ -44,7 +44,9 @@ KityMinder.registerModule( "IconModule", function () {
 		}
 		if ( val < 5 ) d.close();
 		_percent.fill( "#29A6BD" );
-		_rc.setTranslate( _contRc.getWidth() / 2, 0 );
+		var pre = node.getData( "PriorityIcon" );
+		if ( !pre ) _rc.setTranslate( _contRc.getWidth() - _rc.getWidth() / 2, 0 );
+		else _rc.setTranslate( _contRc.getWidth() + _rc.getWidth() / 2, 0 );
 	};
 	var setPriorityCommand = kity.createClass( "SetPriorityCommand", ( function () {
 		return {
