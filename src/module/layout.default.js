@@ -539,7 +539,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
 			var expandoptions = minder.getOptions( 'expand' );
 			var cur_layer = 0;
-			var expand_layer = expandoptions && expandoptions.layer;
+			var expand_layer = expandoptions.layer;
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
@@ -554,9 +554,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				return items;
 			} )();
 			next = [];
-			var layer_nolimit = ( !expandoptions ) || ( expand_layer < 1 ) || ( !expand_layer ) || false;
+			var layer_nolimit =  ( expand_layer < 1 ) || ( !expand_layer ) || false;
 			//debugger;
-			var sub_nolimit = ( !expandoptions ) || ( !expandoptions.sub ) || ( expandoptions.sub < 0 ) || false;
+			var sub_nolimit =  ( expandoptions.sub < 0 ) || false;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
 			};

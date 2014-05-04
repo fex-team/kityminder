@@ -250,7 +250,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 				'appendsiblingnode': 'appendsiblingnode',
 				'appendchildnode': 'appendchildnode',
 				'removenode': 'removenode'
-			}
+			},
+            expand:{
+                layer:0,
+                sub:0
+            }
 		}
 	};
 } );
