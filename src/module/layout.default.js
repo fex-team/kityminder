@@ -573,6 +573,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
+			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+				minder.expandNode( parent );
+			}
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			node.getContRc().clear();
