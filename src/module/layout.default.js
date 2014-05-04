@@ -392,7 +392,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					.clear()
 					.moveTo( sX, sY )
 					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
-				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY, 0, 1 );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 1, nodeX, nodeY, 0, 1 );
 				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY );
 				connect.stroke( nodeStyle.stroke );
 			} else {
@@ -523,6 +523,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
+			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
+
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
@@ -555,7 +557,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				Layout.align = siblingLayout.align;
 				if ( parent.getType() === "root" ) {
 					minder.handelNodeInsert( node );
-					var len = parent.getChildren().length;
+					var len = children.length;
 					if ( len < 7 ) {
 						if ( len % 2 ) {
 							Layout.appendside = "right";
