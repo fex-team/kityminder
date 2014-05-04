@@ -97,7 +97,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     var offset = e.getPosition();
 
-                    if(Math.abs(offset.y - lastEvtPosition.y) > 2 && Math.abs(lastEvtPosition.x - offset.x) < 1 ){
+                    if(Math.abs(offset.y - lastEvtPosition.y) >= 1 && Math.abs(lastEvtPosition.x - offset.x) <= 1 ){
+
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
