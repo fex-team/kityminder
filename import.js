@@ -18,6 +18,7 @@
             ,'core/keymap.js'
             ,'core/minder.lang.js'
             ,'core/minder.defaultoptions.js'
+            ,'core/minder.preference.js'
             ,'core/browser.js'
             ,'module/geometry.js'
             ,'module/history.js'

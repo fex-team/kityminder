@@ -16,7 +16,18 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         this.fire( 'ready' );
     },
     getOptions: function ( key ) {
-        return this._options[ key ];
+        var val;
+        if(key){
+            val = this.getPreferences(key);
+            return  val === null || val === undefined ? this._options[ key ] : val;
+        }else{
+            val = this.getPreferences();
+            if(val){
+                return utils.extend(val,this._options,true)
+            }else{
+                return this._options;
+            }
+        }
     },
     setDefaultOptions: function ( key, val,cover) {
         var obj = {};
@@ -26,9 +37,10 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             obj = key;
         }
         utils.extend( this._options, obj, !cover );
+
     },
     setOptions: function ( key, val ) {
-       this.setDefaultOptions(key,val,true)
+        this.setPreferences(key,val)
     },
     _initMinder: function () {
 

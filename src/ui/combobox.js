@@ -333,7 +333,7 @@
 
                 var options = this.data("options"),
                     newStack = [];
-                debugger
+
                 if(this.data('options').enabledRecord){
                     $.each( options.recordStack, function( i, item ){
 
