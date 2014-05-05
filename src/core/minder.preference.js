@@ -66,7 +66,7 @@ kity.extendClass( Minder, function(){
             return null;
         },
         resetPreferences:function(pres){
-            var str = pres ? JSON.parse(pres) : '';
+            var str = pres ? JSON.stringify(pres) : '';
             LocalStorage.saveLocalData(str)
         }
     }
