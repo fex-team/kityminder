@@ -207,6 +207,21 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"ready": function () {
 				this.setDefaultOptions( 'layoutstyle', this.getLayoutStyleItems() );
 				switchLayout( this, this.getOptions( 'defaultlayoutstyle' ) );
+				//读取cookies
+				var getCookie = function ( name ) {
+					var arr, reg = new RegExp( "(^| )" + name + "=([^;]*)(;|$)" );
+					if ( arr = document.cookie.match( reg ) ) return unescape( arr[ 2 ] );
+					else return null;
+				}
+				var expand = getCookie( 'expand' );
+				if ( expand ) {
+					if ( expand === 'all' ) {
+						this.setOptions( 'defaultExpand', {
+							'defaultLayer': 0,
+							'defaultSubShow': 0
+						} );
+					}
+				}
 			},
 			"click": function ( e ) {
 				var ico = e.kityEvent.targetShape && e.kityEvent.targetShape.container;

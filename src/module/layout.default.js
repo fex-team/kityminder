@@ -553,7 +553,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				return items;
 			} )();
 			next = [];
-			var layer_nolimit = ( expand_layer < 1 ) || ( !expand_layer ) || false;
+			var layer_nolimit = ( expand_layer < 1 ) || false;
 			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
