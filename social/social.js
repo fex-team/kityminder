@@ -449,7 +449,7 @@ $( function () {
     // 从路径中抽取文件名
     function getFileName( path ) {
         var filename = path.substr( path.lastIndexOf( '/' ) + 1 );
-        return filename.substr( 0, filename.lastIndexOf( '.' ) );
+        return filename//.substr( 0, filename.lastIndexOf( '.' ) );
     }
 
     // 点击文件菜单

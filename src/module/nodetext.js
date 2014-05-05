@@ -9,7 +9,8 @@ KityMinder.registerModule( "NodeText", function () {
                 node.getContRc().appendShape( textShape );
                 var style = this.getCurrentLayoutStyle()[ node.getType() ];
                 textShape.fill( style.color ).setSize( style.fontSize );
-                textShape.setPosition( width, textShape.getHeight() * .25 )
+                textShape.setTranslate( width + style.spaceLeft, 0 );
+                textShape.setVerticalAlign( 'middle' );
             }
         }
     }

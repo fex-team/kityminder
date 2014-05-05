@@ -33,7 +33,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				minder.getRenderContainer().addShape( iconShape );
 				iconShape.addShapes( [ circle, plus, dec ] );
 				this.update();
-				//this.switchState();
 			},
 			switchState: function () {
 				if ( !this._show ) {
@@ -84,7 +83,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			padding: [ 15.5, 25.5, 15.5, 25.5 ],
 			margin: [ 0, 0, 0, 0 ],
 			radius: 30,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 3,
+			spaceRight: 0,
+			spaceTop: 3,
+			spaceBottom: 3
 		},
 		"main": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -94,7 +97,12 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 16,
 			margin: [ 0, 10, 30, 50 ],
 			radius: 10,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 5,
+			spaceRight: 0,
+			spaceTop: 2,
+			spaceBottom: 2
+
 		},
 		"sub": {
 			stroke: new kity.Pen( "white", 2 ).setLineCap( "round" ).setLineJoin( "round" ),
@@ -102,7 +110,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			fontSize: 12,
 			margin: [ 0, 10, 20, 6 ],
 			padding: [ 5, 10, 5.5, 10 ],
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 4,
+			spaceRight: 0,
+			spaceTop: 2,
+			spaceBottom: 2
 		}
 	};
 	//更新背景
@@ -392,7 +404,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					.clear()
 					.moveTo( sX, sY )
 					.lineTo( sX, nodeY > sY ? ( nodeY - nodeStyle.margin[ 3 ] ) : ( nodeY + nodeStyle.margin[ 3 ] ) );
-				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 1, nodeX, nodeY, 0, 1 );
+				if ( nodeY > sY ) connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 1, nodeX, nodeY );
 				else connect.getDrawer().carcTo( nodeStyle.margin[ 3 ], 0, 0, nodeX, nodeY );
 				connect.stroke( nodeStyle.stroke );
 			} else {
@@ -430,7 +442,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
 		var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
 
-		km.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+		minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
 	};
 
 	var _style = {
@@ -524,20 +536,46 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-
+			var expandoptions = minder.getOptions( 'defaultExpand' );
+			var cur_layer = 0;
+			var expand_layer = expandoptions.defaultLayer;
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
 			}
-			for ( var j = 0; j < mains.length; j++ ) {
-				var c = mains[ j ].getChildren();
-				if ( c.length < 10 && c.length !== 0 ) {
-					this.expandNode( mains[ j ] );
+			cur_layer++;
+			//创建一级节点的副本
+			var _buffer = ( function () {
+				var items = [];
+				for ( var i = 0; i < mains.length; i++ ) {
+					items.push( mains[ i ] );
 				}
+				return items;
+			} )();
+			next = [];
+			var layer_nolimit = ( expand_layer < 1 ) || false;
+			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
+			var loopcontinue = function () {
+				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
+			};
+			while ( loopcontinue() ) {
+				cur_layer++;
+				var layer_len = _buffer.length;
+				for ( var j = 0; j < layer_len; j++ ) {
+					var c = _buffer[ j ].getChildren();
+					if ( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && c.length !== 0 ) {
+						this.expandNode( _buffer[ j ] );
+						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+					}
+				}
+				_buffer.splice( 0, layer_len );
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
+			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+				minder.expandNode( parent );
+			}
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			node.getContRc().clear();

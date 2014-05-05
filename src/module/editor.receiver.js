@@ -175,6 +175,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             switch ( keyCode ) {
             case keymap.Enter:
             case keymap.Tab:
+            case keymap.F2:
                 if ( this.keydownNode === this.minderNode ) {
                     this.rollbackStatus();
                     this.setTextEditStatus( false );
@@ -226,8 +227,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         }
         return this;
     },
-    getBaseOffset: function ( node ) {
+    getBaseOffset: function (  ) {
         var rb = this.textShape.getRenderBox( this.km.getRenderContainer() );
+//        if(!this.pr) {
+//            this.km.getRenderContainer().addShape(this.pr = new kity.Rect().stroke('green'));
+//        }
+//        this.pr.setSize(rb.width, rb.height).setPosition(rb.x, rb.y);
         return rb;
     },
     setBaseOffset: function () {
@@ -235,7 +240,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this;
     },
     setContainerStyle: function () {
-        var textShapeBox = this.getBaseOffset( 'top' );
+        var textShapeBox = this.getBaseOffset();
 
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
         return this;

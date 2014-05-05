@@ -97,7 +97,8 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     var offset = e.getPosition();
 
-                    if(Math.abs(offset.y - lastEvtPosition.y) > 2 && Math.abs(lastEvtPosition.x - offset.x) < 1 ){
+                    if(Math.abs(offset.y - lastEvtPosition.y) >= 1 && Math.abs(lastEvtPosition.x - offset.x) <= 1 ){
+
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
@@ -134,12 +135,13 @@ KityMinder.registerModule( "TextEditModule", function () {
             "resize": function ( e ) {
                 sel.setHide();
             },
-            'execCommand':function(e){
+            "execCommand": function( e ) {
                 var cmds = {
-                    'appendchildnode':1,
-                    'appendsiblingnode':1
+                    'appendchildnode' : 1,
+                    'appendsiblingnode' : 1,
+                    'editnode' : 1
                 };
-                if(cmds[e.commandName]){
+                if ( cmds[ e.commandName ] ){
 
                     var node = km.getSelectedNode();
                     if( !node ){

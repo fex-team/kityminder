@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'markers help', function ( name ) {
+KM.registerToolbarUI( 'markers help preference', function ( name ) {
 
     var me = this,
         currentRange, $dialog,
