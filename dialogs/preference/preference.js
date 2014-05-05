@@ -1,9 +1,19 @@
 ( function () {
+    //todo 这里先写死成中文
     var preferenceContent = '<div class="help-content" style="padding:20px;width:360px;">';
     preferenceContent += '<h3>展开属性设置</h3>';
-    preferenceContent += '<p><label><input type="radio" name="expand" checked value="all"/>全部展开</label><label><input type="radio" name="expand" value="limit"/>局部展开</label></p>';
+    preferenceContent += '<p><label><input type="checkbox" name="expand" />是否全部展开</label></p>';
     preferenceContent += '</div>';
 
+
+    //todo 偏好设置暂时都在这里处理
+
+    function execExpand(km,$w){
+        var checked = $w.find('[name=expand]').checked();
+        if(checked){
+
+        }
+    }
     KM.registerWidget( 'preference', {
         tpl: preferenceContent,
         initContent: function ( km ) {
@@ -13,19 +23,13 @@
                 html = $.parseTmpl( this.tpl, lang );
             }
             this.root().html( html );
+
         },
         initEvent: function ( km, $w ) {
+
             $w.on( 'click', '.kmui-close', function ( e ) {
-                //写cookies
-                var setCookie = function ( name, value, exp ) {
-                    document.cookie = name + "=" + escape( value ) + ";expires=" + exp.toGMTString();
-                }
-                var expand = $( "input[type='radio'][name='expand']:checked" ).val();
-                var Days = 30;
-                var exp = new Date();
-                exp.setTime( exp.getTime() + Days * 24 * 60 * 60 * 1000 );
-                setCookie( 'expand', expand, exp );
-                console.log( document.cookie );
+
+                km.fire('preferencechange')
             } );
         },
         width: 400
