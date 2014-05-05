@@ -71,7 +71,6 @@
             ,'adapter/node.js'
             ,'adapter/contextmenu.js'
             ,'adapter/dialog.js'
-            ,'adapter/preference.js'
             ,'protocal/xmind.js'
             ,'protocal/freemind.js'
             ,'protocal/mindmanager.js'
