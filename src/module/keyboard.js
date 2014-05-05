@@ -146,6 +146,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
                     e.preventDefault();
                     if ( this.queryCommandState( 'removenode' ) !== -1 ) this.execCommand( 'removenode' );
                     break;
+                case keys.F2:
+                    e.preventDefault();
+                    if ( this.queryCommandState( 'editnode' ) !== -1 ) this.execCommand( 'editnode' );
+                    break;
 
                 case keys.Left:
                     navigateTo( this, 'left' );

@@ -195,12 +195,33 @@ KityMinder.registerModule( "LayoutModule", function () {
 			}
 		};
 	} )() );
+	var EditNodeCommand = kity.createClass( "EditNodeCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode ) {
+					return null;
+				}
+				km.select( selectedNode, true );
+			},
+			queryState: function ( km ) {
+				var selectedNode = km.getSelectedNode();
+				if ( !selectedNode ) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		};
+	} )() );
 
 	return {
 		"commands": {
 			"appendchildnode": AppendChildNodeCommand,
 			"appendsiblingnode": AppendSiblingNodeCommand,
 			"removenode": RemoveNodeCommand,
+			"editnode": EditNodeCommand,
 			"switchlayout": SwitchLayoutCommand
 		},
 		"events": {
@@ -252,6 +273,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 				},
 				cmdName: 'appendchildnode'
 			}, {
+				label: this.getLang( 'node.editnode' ),
+				exec: function () {
+					this.execCommand( 'editnode', null );
+				},
+				cmdName: 'editnode'
+			}, {
 				label: this.getLang( 'node.removenode' ),
 				cmdName: 'removenode'
 			}, {
@@ -264,6 +291,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"node": {
 				'appendsiblingnode': 'appendsiblingnode',
 				'appendchildnode': 'appendchildnode',
+				'editnode': 'editnode',
 				'removenode': 'removenode'
 			},
 			'defaultExpand': {
