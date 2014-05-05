@@ -76,6 +76,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'normal.mouseup textedit.mouseup':function(e){
+
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
                         try{
@@ -86,7 +87,36 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     }else
                        sel.setShow()
+                }else{
+                    //当选中节点后，输入状态准备
+                    var node = e.getTargetNode();
+                    if(node){
+                        if ( this.isSingleSelect() && node.isSelected()) {
+                            var textShape = node.getTextShape();
+
+                            km.setStatus('textedit');
+                            sel.setHide();
+                            sel.setStartOffset(0);
+                            sel.setEndOffset(textShape.getContent().length);
+
+                            receiver.setTextEditStatus(true)
+                                .setSelection(sel)
+                                .setKityMinder(this)
+                                .setMinderNode(node)
+                                .setTextShape(textShape)
+                                .setRange(range)
+                                .setBaseOffset()
+                                .setContainerStyle()
+                                .setSelectionHeight()
+                                .setContainerTxt(textShape.getContent())
+                                .updateRange(range).setTextEditStatus(true);
+
+                            sel.setData('relatedNode',node);
+
+                        }
+                    }
                 }
+
 
                 mouseDownStatus = false;
                 oneTime = 0;
