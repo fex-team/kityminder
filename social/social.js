@@ -5,7 +5,8 @@
  * 1. 百度账号登陆
  * 2. 百度云存储
  * 3. 分享
- * 4. 草稿箱
+ * 4. 草稿箱同步
+ * 5. 配置文件同步
  * @author techird
  */
 
@@ -76,7 +77,8 @@ $( function () {
 
         // 脑图实例
         minder = window.km,
-        // 草稿箱
+
+        // 草稿箱实例
         draftManager = window.draftManager || ( window.draftManager = new window.DraftManager( minder ) ),
 
         // 当前是否要检测文档内容是否变化的开关
@@ -177,6 +179,12 @@ $( function () {
                 notice( '登录失败！' );
             }
         } );
+    }
+
+    function initPreferneceSync() {
+        if ( currentAccount ) {
+
+        }
     }
 
     // 检查 URL 是否分享连接，是则加载分享内容
@@ -292,7 +300,7 @@ $( function () {
             $share_btn.appendTo( $panel );
             $login_btn.detach();
             loadAvator();
-            loadRecent();
+            loadUserFiles();
             window.location.hash = '';
         } else {
             $user_btn.detach();
@@ -318,7 +326,7 @@ $( function () {
     }
 
     // 加载用户最近使用的文件
-    function loadRecent() {
+    function loadUserFiles() {
         var sto = baidu.frontia.personalStorage;
         //$user_btn.loading( '加载最近脑图...' );
 
@@ -327,7 +335,10 @@ $( function () {
             success: function ( result ) {
                 if ( result.list.length ) {
                     //$user_btn.loading( false );
-                    addToRecentMenu( result.list );
+                    addToRecentMenu( result.list.filter( function ( file ) {
+                        return getFileFormat( file.path ) in fileLoader;
+                    } ) );
+                    syncPreference( result.list );
                 }
             },
             error: function () {
@@ -335,6 +346,108 @@ $( function () {
                 //$user_btn.loading( false );
             }
         } );
+    }
+
+    // 同步用户配置文件
+    function syncPreference( fileList ) {
+
+        // frontia 接口对象引用
+        var sto = baidu.frontia.personalStorage;
+
+        // 配置文件在网盘的路径
+        var remotePreferencesPath = '/apps/kityminder/app.preferences';
+
+        // 检查是否存在线上的配置文件
+        var hasRemotePreferences = ~fileList.map( function ( file ) {
+            return file.path;
+        } ).indexOf( remotePreferencesPath );
+
+        // 记录远端配置的和本地配置的版本
+        // - 远端配置保存在 json 内容的 version 字段中
+        // - 本地配置用 localStorage 来记录
+        var remoteVersion = 0,
+            localVersion = localStorage.preferencesVersion || 0;
+
+        // 远端配置和本地配置的内容
+        var remotePreferences, localPreferences;
+
+
+        // 远端有配置，下载远端配置
+        if ( hasRemotePreferences ) {
+            downloadPreferences();
+        }
+
+        // 绑定实例上配置改变的事件，配置有变需要上传
+        minder.on( 'preferenceschange', function () {
+            localStorage.preferencesVersion = ++localVersion;
+            uploadPreferences();
+        } );
+
+        // 下载远端配置
+        function downloadPreferences() {
+
+            // 比较远端和本地版本
+            // - 远端版本较新则设置本地版本为远端版本
+            // - 本地版本较新则上传本地版本
+            function merge( remote ) {
+
+                remoteVersion = remote.version;
+
+                remotePreferences = remote.preferences;
+                localPreferences = minder.getPreferences();
+
+                if ( localVersion < remoteVersion ) {
+                    minder.resetPreferences( remotePreferences );
+                } else if ( localVersion > remoteVersion ) {
+                    uploadPreferences();
+                }
+
+            }
+
+            // 下载配置的过程
+            // 需要先获得下载的 URL 再使用 ajax 请求内容
+            sto.getFileUrl( remotePreferencesPath, {
+                success: function ( url ) {
+                    $.ajax( {
+                        url: url,
+                        cache: false,
+                        dataType: 'json',
+                        success: merge,
+                        error: function () {
+                            notice( '下载配置失败！' );
+                        }
+                    } );
+                }
+            } );
+        }
+
+        // 上传本地配置
+        function uploadPreferences() {
+
+            localPreferences = minder.getPreferences();
+
+            // 上传的数据需要附带版本信息
+            var data = {
+                version: localVersion,
+                preferences: localPreferences
+            };
+
+            var text = JSON.stringify( data );
+
+            sto.uploadTextFile( text, remotePreferencesPath, {
+
+                // 文件重复选择覆盖
+                ondup: sto.constant.ONDUP_OVERWRITE,
+
+                success: function ( savedFile ) {
+                    console && console.log( '配置已上传' );
+                },
+
+                error: function ( e ) {
+                    notice( '上传配置失败' );
+                }
+            } );
+        }
     }
 
     // 加载当前 remoteUrl 中制定的文件
@@ -346,17 +459,20 @@ $( function () {
         sto.getFileUrl( remotePath, {
             success: function ( url ) {
                 // the url to download the file on cloud dist
-                var arr = remotePath.split( '.' );
-                var format = arr[ arr.length - 1 ];
-                if ( format in loadFile ) {
-                    loadFile[ format ]( url );
+                var format = getFileFormat( remotePath );
+                if ( format in fileLoader ) {
+                    fileLoader[ format ]( url );
                 }
             },
             error: notice
         } );
     }
 
-    var loadFile = {
+    function getFileFormat( fileUrl ) {
+        return fileUrl.split( '.' ).pop();
+    }
+
+    var fileLoader = {
         'km': loadPlainType,
         'json': loadPlainType,
         'xmind': loadXMind,
@@ -448,8 +564,7 @@ $( function () {
 
     // 从路径中抽取文件名
     function getFileName( path ) {
-        var filename = path.substr( path.lastIndexOf( '/' ) + 1 );
-        return filename//.substr( 0, filename.lastIndexOf( '.' ) );
+        return path.split( '/' ).pop();
     }
 
     // 点击文件菜单
@@ -483,7 +598,7 @@ $( function () {
     }
 
     function generateRemotePath() {
-        var filename = prompt("文件名字:",minder.getMinderTitle() )||minder.getMinderTitle() ;
+        var filename = window.prompt( "请输入文件名: ", minder.getMinderTitle() ) || minder.getMinderTitle();
         return '/apps/kityminder/' + filename + '.km';
     }
 

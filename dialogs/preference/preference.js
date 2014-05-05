@@ -29,7 +29,7 @@
 
             $w.on( 'click', '.kmui-close', function ( e ) {
 
-                km.fire('preferencechange')
+                km.fire('preferenceschange')
             } );
         },
         width: 400
