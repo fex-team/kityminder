@@ -43,6 +43,11 @@ KityMinder.registerProtocal( 'mindmanager', function () {
             }
         }
 
+        // 处理超链接
+        if ( topic.Hyperlink ) {
+            obj.data.hyperlink = topic.Hyperlink.Url;
+        }
+
         //处理子节点
         if ( topic.SubTopics && topic.SubTopics.Topic ) {
 

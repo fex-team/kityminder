@@ -41,6 +41,11 @@ KityMinder.registerProtocal( 'freemind', function () {
             }
         }
         
+        // 处理超链接
+        if(topic.LINK){
+            obj.data.hyperlink = topic.LINK;
+        }
+
         //处理子节点
         if( topic.node ){
 
@@ -67,19 +72,19 @@ KityMinder.registerProtocal( 'freemind', function () {
         return result;
     }
 
-	return {
-		fileDescription: 'xmind格式文件',
-		fileExtension: '.xmind',
+    return {
+        fileDescription: 'xmind格式文件',
+        fileExtension: '.xmind',
 
-		decode: function ( local ) {
+        decode: function ( local ) {
             var json = xml2km( local );
 
-		    return json;
-		},
-		// recognize: recognize,
-		recognizePriority: -1
-	};
-	
+            return json;
+        },
+        // recognize: recognize,
+        recognizePriority: -1
+    };
+    
 } );
 
 
