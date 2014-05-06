@@ -54,18 +54,15 @@
                 html = $.parseTmpl( this.tpl, lang );
             }
             this.root().html( html );
-
         },
         initEvent: function ( km, $w ) {
             //绑定默认值
             initEverything( km, $w );
-
             $w.find( '#reset_preference' ).on( 'click', function ( e ) {
                 resetPreferences( km );
                 //重置系统默认的偏好设置
                 initEverything( km, $w )
             } );
-
             $w.on( 'click', '.kmui-close', function ( e ) {
                 checkEverything( km, $w );
                 km.fire( 'preferencechange' )
