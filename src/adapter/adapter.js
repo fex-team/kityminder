@@ -126,7 +126,7 @@ utils.extend( KityMinder, function () {
             km.fire('selectionclear');
             pro.initContent( km, $widget );
             //在dialog上阻止键盘冒泡，导致跟编辑输入冲突的问题
-            $widget.on('keydown keyup keypress mousedown mouseup',function(e){
+            $widget.on('keydown keyup keypress',function(e){
                 e.stopPropagation()
             });
             if ( !pro._preventDefault ) {

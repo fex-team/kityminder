@@ -43,23 +43,6 @@
                 $w.find( "li[type='progress'][value='" + valPro + "']" ).addClass( "active" );
             } );
         },
-        buttons: {
-            'ok': {
-                exec: function ( km, $w ) {
-                    var href = $( '#kmui-link-Jhref' ).val().replace( /^\s+|\s+$/g, '' );
-
-                    if ( href ) {
-                        km.execCommand( 'link', {
-                            'href': href,
-                            'target': $( "#kmui-link-Jtarget:checked" ).length ? "_blank" : '_self',
-                            'title': $( "#kmui-link-Jtitle" ).val().replace( /^\s+|\s+$/g, '' ),
-                            '_href': href
-                        } );
-                    }
-                }
-            },
-            'cancel': {}
-        },
         width: 200
 
     } )
