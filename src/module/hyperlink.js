@@ -43,6 +43,14 @@ KityMinder.registerModule( "hyperlink", function () {
                         n.setData( 'hyperlink' );
                         km.updateLayout(n)
                     } )
+                },
+                queryState: function (km) {
+                    var nodes = km.getSelectedNodes();
+
+                    if ( nodes.length == 0 ) {
+                        return -1;
+                    }
+
                 }
             } )
 		},
