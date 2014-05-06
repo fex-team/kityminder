@@ -84,7 +84,7 @@
         //默认是全部展开，0表示全部展开
         ,
         defaultExpand: {
-            defaultLayer: 3,
+            defaultLayer: 1,
             defaultSubShow: 5
         }
     };

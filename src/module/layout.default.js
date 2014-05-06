@@ -580,10 +580,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				minder.expandNode( parent );
 			}
 			minder.handelNodeInsert( node );
+			var Layout = node.getLayout();
+			var oldExpand;
+			if ( Layout ) {
+				oldExpand = Layout.expand;
+			}
 			node.clearLayout();
 			node.getContRc().clear();
-			var Layout = node.getLayout();
-			Layout.expand = false;
+			Layout = node.getLayout();
+			Layout.expand = oldExpand || false;
+			console.log( oldExpand );
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}
