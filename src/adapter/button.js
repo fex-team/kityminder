@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'bold italic redo undo',
+KM.registerToolbarUI( 'bold italic redo undo unhyperlink',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {

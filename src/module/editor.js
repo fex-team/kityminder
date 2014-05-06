@@ -82,8 +82,10 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(node){
                     if ( this.isSingleSelect() && node.isSelected()) {
                         var keyCode = e.originEvent.keyCode;
-                        if(!keymap.notContentInput[keyCode]){
-                            km.setStatus('textedit')
+                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount != 0){
+                            var nativeRange = range.nativeSel.getRangeAt(0);
+                            if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer )))
+                                km.setStatus('textedit')
                         }
                     }
                 }
