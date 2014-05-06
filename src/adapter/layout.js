@@ -10,16 +10,16 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             itemStyles: [],
             value: me.getLayoutStyleItems(),
             autowidthitem: [],
-            enabledRecord:false
+            enabledRecord: false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
         return null;
     }
 
-    utils.each(options.items,function(i,item){
-        options.items[i] = me.getLang('layout')[item];
-    });
+    utils.each( options.items, function ( i, item ) {
+        options.items[ i ] = me.getLang( 'layout' )[ item ];
+    } );
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     var comboboxWidget = $combox.kmui();
@@ -49,18 +49,18 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
     } );
 
     var data = [];
-    utils.each(me.getLayoutStyleItems(),function(i,v){
-        data.push({
-            label:me.getLang( 'tooltips.' + name  ) + ' ' + v,
-            cmdName:'switchlayout',
-            exec:function(){
-                me.execCommand('switchlayout',v);
+    utils.each( me.getLayoutStyleItems(), function ( i, v ) {
+        data.push( {
+            label: me.getLang( 'tooltips.' + name ) + ' ' + v,
+            cmdName: 'switchlayout',
+            exec: function () {
+                me.execCommand( 'switchlayout', v );
             }
-        })
-    });
-    data.push({
-        divider:1
-    });
-    me.addContextmenu(data);
+        } )
+    } );
+    data.push( {
+        divider: 1
+    } );
+    me.addContextmenu( data );
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );

@@ -32,7 +32,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).highlightNode.call( this, node );
 		},
-		initStyle: function () {
+		initStyle: function ( expandall ) {
 			var curStyle = this.getCurrentStyle();
 			this._rc.remove();
 			this._rc = new kity.Group();
@@ -42,7 +42,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			_root.preTraverse( function ( n ) {
 				n.clearLayout();
 			} );
-			this.getLayoutStyle( curStyle ).initStyle.call( this );
+			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );
 			this.fire( 'afterinitstyle' );
 		},
 		appendChildNode: function ( parent, node, focus, index ) {
@@ -213,9 +213,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return 0;
 				}
 			},
-            isNeedUndo: function () {
-                return false;
-            }
+			isNeedUndo: function () {
+				return false;
+			}
 		};
 	} )() );
 
@@ -246,7 +246,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				}.bind( this ), 100 );
 			},
 			"import": function ( e ) {
-				this.initStyle( this.getRoot() );
+				this.initStyle();
 			}
 		},
 		'contextmenu': [ {

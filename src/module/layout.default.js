@@ -506,7 +506,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				this.highlightNode( node )
 			}
 		},
-		initStyle: function () {
+		initStyle: function ( expandall ) {
+			console.log( expandall );
 			var _root = minder.getRoot();
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
@@ -553,8 +554,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				return items;
 			} )();
 			next = [];
-			var layer_nolimit = ( expand_layer < 1 ) || false;
-			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
+			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
+			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
+			debugger;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
 			};

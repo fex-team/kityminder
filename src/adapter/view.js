@@ -4,6 +4,7 @@ KM.registerToolbarUI( 'hand zoom-in zoom-out expand contract',
         var $btn = $.kmuibutton( {
             icon: name,
             click: function () {
+                console.log( name );
                 me.execCommand( name );
             },
             title: this.getLang( 'tooltips.' )[ name ] || ''
