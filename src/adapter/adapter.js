@@ -123,8 +123,12 @@ utils.extend( KityMinder, function () {
             pro.root( $widget.kmui().getBodyContainer() );
 
             //清除光标
-            km.fire('selectionclear')
+            km.fire('selectionclear');
             pro.initContent( km, $widget );
+            //在dialog上阻止键盘冒泡，导致跟编辑输入冲突的问题
+            $widget.on('keydown keyup keypress mousedown mouseup',function(e){
+                e.stopPropagation()
+            });
             if ( !pro._preventDefault ) {
                 pro.initEvent( km, $widget );
             }
