@@ -534,7 +534,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node: _root
 			}, false ) );
 			this._firePharse( new MinderEvent( "RenderNode", {
-				node: node
+				node: _root
 			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutHorizon( _root );
