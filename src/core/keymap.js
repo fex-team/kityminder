@@ -50,6 +50,8 @@ var keymap = KityMinder.keymap  = {
 
     'n' : 78,
     'notContentInput':{
+        8:1,
+        46:1,
         13:1,
         9:1,
         33:1,
