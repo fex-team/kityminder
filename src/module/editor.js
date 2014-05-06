@@ -20,6 +20,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var selectionByClick = false;
 
+
     return {
         "events": {
             //插入光标
@@ -75,6 +76,49 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }
                 }
             },
+            //当输入键值是内容时，进入textedit状态
+            'normal.beforekeydown':function(e){
+                var node = this.getSelectedNode();
+                if(node){
+                    if ( this.isSingleSelect() && node.isSelected()) {
+                        var keyCode = e.originEvent.keyCode;
+                        if(!keymap.notContentInput[keyCode]){
+                            km.setStatus('textedit')
+                        }
+                    }
+                }
+            },
+            //当节点选区通过键盘发生变化时，输入状态要准备好
+            'normal.keyup':function(e){
+                var node = this.getSelectedNode();
+                if(node){
+                    if ( this.isSingleSelect() && node.isSelected()) {
+                        var keyCode = e.originEvent.keyCode;
+                        if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit'){
+                           //准备输入状态
+                            var textShape = node.getTextShape();
+
+                            sel.setHide();
+                            sel.setStartOffset(0);
+                            sel.setEndOffset(textShape.getContent().length);
+
+                            receiver.setTextEditStatus(true)
+                                .setSelection(sel)
+                                .setKityMinder(this)
+                                .setMinderNode(node)
+                                .setTextShape(textShape)
+                                .setRange(range)
+                                .setBaseOffset()
+                                .setContainerStyle()
+                                .setSelectionHeight()
+                                .setContainerTxt(textShape.getContent())
+                                .updateRange(range).setTextEditStatus(true);
+
+                            sel.setData('relatedNode',node);
+                        }
+                    }
+                }
+            },
             'normal.mouseup textedit.mouseup':function(e){
 
                 if(mouseDownStatus){
@@ -92,9 +136,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                     var node = e.getTargetNode();
                     if(node){
                         if ( this.isSingleSelect() && node.isSelected()) {
+                            //准备输入状态
                             var textShape = node.getTextShape();
 
-                            km.setStatus('textedit');
                             sel.setHide();
                             sel.setStartOffset(0);
                             sel.setEndOffset(textShape.getContent().length);
@@ -166,45 +210,45 @@ KityMinder.registerModule( "TextEditModule", function () {
                 sel.setHide();
             },
             "execCommand": function( e ) {
-                var cmds = {
-                    'appendchildnode' : 1,
-                    'appendsiblingnode' : 1,
-                    'editnode' : 1
-                };
-                if ( cmds[ e.commandName ] ){
-
-                    var node = km.getSelectedNode();
-                    if( !node ){
-                        return;
-                    }
-
-                    var textShape = node.getTextShape();
-
-                    textShape.setStyle('cursor','default');
-                    node.getTextShape().setStyle('cursor','text');
-                    km.setStatus('textedit');
-                    receiver.setTextEditStatus(true)
-                        .setSelection(sel)
-                        .setKityMinder(this)
-                        .setMinderNode(node)
-                        .setTextShape(textShape)
-                        .setBaseOffset()
-                        .setContainerStyle()
-                        .setSelectionHeight()
-                        .getTextOffsetData()
-                        .setIndex(0)
-                        .updateSelection()
-                        .setRange(range);
-
-                    sel.setStartOffset(0);
-                    sel.setEndOffset(textShape.getContent().length);
-                    sel.setShow();
-
-                    receiver.updateSelectionShow(1)
-                        .updateRange(range);
-                    return;
-
-                }
+//                var cmds = {
+//                    'appendchildnode' : 1,
+//                    'appendsiblingnode' : 1,
+//                    'editnode' : 1
+//                };
+//                if ( cmds[ e.commandName ] ){
+//
+//                    var node = km.getSelectedNode();
+//                    if( !node ){
+//                        return;
+//                    }
+//
+//                    var textShape = node.getTextShape();
+//
+//                    textShape.setStyle('cursor','default');
+//                    node.getTextShape().setStyle('cursor','text');
+//                    km.setStatus('textedit');
+//                    receiver.setTextEditStatus(true)
+//                        .setSelection(sel)
+//                        .setKityMinder(this)
+//                        .setMinderNode(node)
+//                        .setTextShape(textShape)
+//                        .setBaseOffset()
+//                        .setContainerStyle()
+//                        .setSelectionHeight()
+//                        .getTextOffsetData()
+//                        .setIndex(0)
+//                        .updateSelection()
+//                        .setRange(range);
+//
+//                    sel.setStartOffset(0);
+//                    sel.setEndOffset(textShape.getContent().length);
+//                    sel.setShow();
+//
+//                    receiver.updateSelectionShow(1)
+//                        .updateRange(range);
+//                    return;
+//
+//                }
 
                 if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
 
