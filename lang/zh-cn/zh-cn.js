@@ -19,7 +19,8 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'switchlayout': '切换主题',
         'help': '帮助',
         'preference': '偏好设置',
-        'hyperlink':'插入链接'
+        'hyperlink':'插入链接',
+        'unhyperlink':"删除链接"
     },
     'popupcolor': {
         'clearColor': '清空颜色',
