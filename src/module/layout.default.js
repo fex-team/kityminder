@@ -493,7 +493,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
-
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( node );
 			var set1 = updateLayoutHorizon( node );
 			var set2 = updateLayoutVertical( node, node.getParent(), "change" );
