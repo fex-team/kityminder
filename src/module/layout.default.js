@@ -533,6 +533,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: _root
 			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
@@ -678,6 +681,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node: node
 			}, false ) );
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );
