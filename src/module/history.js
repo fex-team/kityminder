@@ -4,13 +4,23 @@ KityMinder.registerModule( "HistoryModule", function () {
 
     var Scene = kity.createClass( 'Scene', {
         constructor: function ( root ) {
-            this.data = root.clone();
+            this.data = root.clone(function(node,cloneNode){
+                km.fire('cloneNode',{
+                    'targetNode':cloneNode,
+                    'sourceNode':node
+                })
+            });
         },
         getData: function () {
             return this.data;
         },
         cloneData: function () {
-            return this.getData().clone();
+            var fn = function(node,cloneNode){
+                    km.fire('cloneNode',{
+                        'targetNode':cloneNode,
+                        'sourceNode':node
+                    })};
+            return this.getData().clone(fn);
         },
         equals: function ( scene ) {
             return this.getData().equals( scene.getData() )
@@ -155,11 +165,10 @@ KityMinder.registerModule( "HistoryModule", function () {
             "saveScene": function ( e ) {
                 this.historyManager.saveScene();
             },
-            "renderNode": function ( e ) {
+            'renderNode':function(e){
                 var node = e.node;
-
-                if ( node.isHighlight() ) {
-                    km.select( node );
+                if(node.isSelected()){
+                    this.select(node)
                 }
             },
             "keydown": function ( e ) {
