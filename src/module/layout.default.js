@@ -569,7 +569,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					var c = _buffer[ j ].getChildren();
 					if (
 						(
-							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( cur_layer <= expand_layer ) ) ||
+							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
 							_buffer[ j ].getLayout().expand
 						) && c.length !== 0 ) {
 						this.expandNode( _buffer[ j ] );
@@ -594,7 +594,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			node.getContRc().clear();
 			Layout = node.getLayout();
 			Layout.expand = oldExpand || false;
-			console.log( oldExpand );
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}
