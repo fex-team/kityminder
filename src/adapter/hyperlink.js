@@ -33,7 +33,7 @@ KM.registerToolbarUI( 'hyperlink', function ( name ) {
                 me.$container.find( '.kmui-dialog-container' ).append( $root );
             }
             KM.setWidgetBody( name, $dialog, me );
-        } ).attachTo( $btn);
+        } ).attachTo( $btn );
 
 
     } );

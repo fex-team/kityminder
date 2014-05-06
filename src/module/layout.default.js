@@ -561,7 +561,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			next = [];
 			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
 			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
-
 			while ( _buffer.length !== 0 ) {
 				cur_layer++;
 				var layer_len = _buffer.length;
