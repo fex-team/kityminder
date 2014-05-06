@@ -493,7 +493,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
-
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( node );
 			var set1 = updateLayoutHorizon( node );
 			var set2 = updateLayoutVertical( node, node.getParent(), "change" );
@@ -531,6 +533,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: _root
 			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
@@ -544,26 +549,29 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				this.appendChildNode( _root, mains[ i ] );
 			}
 			cur_layer++;
-			//创建一级节点的副本
-			var _buffer = ( function () {
+			var clonelayer0 = function () {
 				var items = [];
 				for ( var i = 0; i < mains.length; i++ ) {
 					items.push( mains[ i ] );
 				}
 				return items;
-			} )();
+			};
+			//创建一级节点的副本
+			var _buffer = clonelayer0();
 			next = [];
 			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
 			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
-			var loopcontinue = function () {
-				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
-			};
-			while ( loopcontinue() ) {
+
+			while ( _buffer.length !== 0 ) {
 				cur_layer++;
 				var layer_len = _buffer.length;
 				for ( var j = 0; j < layer_len; j++ ) {
 					var c = _buffer[ j ].getChildren();
-					if ( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && c.length !== 0 ) {
+					if (
+						(
+							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( cur_layer <= expand_layer ) ) ||
+							_buffer[ j ].getLayout().expand
+						) && c.length !== 0 ) {
 						this.expandNode( _buffer[ j ] );
 						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
 					}
@@ -577,10 +585,16 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				minder.expandNode( parent );
 			}
 			minder.handelNodeInsert( node );
+			var Layout = node.getLayout();
+			var oldExpand;
+			if ( Layout ) {
+				oldExpand = Layout.expand;
+			}
 			node.clearLayout();
 			node.getContRc().clear();
-			var Layout = node.getLayout();
-			Layout.expand = false;
+			Layout = node.getLayout();
+			Layout.expand = oldExpand || false;
+			console.log( oldExpand );
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}
@@ -667,6 +681,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node: node
 			}, false ) );
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
+				node: node
+			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
 				node: node
 			}, false ) );
 			updateShapeByCont( node );
