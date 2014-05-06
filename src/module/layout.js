@@ -254,7 +254,8 @@ KityMinder.registerModule( "LayoutModule", function () {
 				target.clearLayout();
 				var sourceLayout = source.getLayout();
 				var targetLayout = target.getLayout();
-				targetLayout.expand = sourceLayout.expand;
+
+				targetLayout.expand = utils.clone(sourceLayout.expand);
 				console.log( targetLayout );
 			}
 		},
