@@ -507,7 +507,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		initStyle: function ( expandall ) {
-			console.log( expandall );
 			var _root = minder.getRoot();
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
