@@ -247,6 +247,15 @@ KityMinder.registerModule( "LayoutModule", function () {
 			},
 			"import": function ( e ) {
 				this.initStyle();
+			},
+			"cloneNode": function ( e ) {
+				var target = e.targetNode;
+				var source = e.sourceNode;
+				target.clearLayout();
+				var sourceLayout = source.getLayout();
+				var targetLayout = target.getLayout();
+				targetLayout.expand = sourceLayout.expand;
+				console.log( targetLayout );
 			}
 		},
 		'contextmenu': [ {

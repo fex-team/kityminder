@@ -510,6 +510,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		initStyle: function ( expandall ) {
 			var _root = minder.getRoot();
+			debugger;
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
@@ -588,6 +589,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var oldExpand;
 			if ( Layout ) {
 				oldExpand = Layout.expand;
+			}
+			if ( oldExpand ) {
+				alert( 'aru' );
 			}
 			node.clearLayout();
 			node.getContRc().clear();
