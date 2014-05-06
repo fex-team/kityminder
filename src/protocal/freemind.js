@@ -69,7 +69,6 @@ KityMinder.registerProtocal( 'freemind', function () {
         var json = $.xml2json(xml);
         var result = {};
         processTopic(json.node, result);
-        console.log(result);
         return result;
     }
 
