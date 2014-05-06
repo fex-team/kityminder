@@ -252,23 +252,25 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     clone: function () {
-        function cloneNode( parent, isClonedNode ) {
+        function cloneNode( parent, isClonedNode,fn ) {
             var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
-            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() )
+            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() );
             _tmp.parent = parent;
+
             if ( parent ) {
                 parent.children.push( _tmp );
             }
             for ( var i = 0, ci;
                 ( ci = isClonedNode.children[ i++ ] ); ) {
-                cloneNode( _tmp, ci );
+                cloneNode( _tmp, ci ,fn);
             }
+            fn && fn(isClonedNode,_tmp);
             return _tmp;
         }
-        return function () {
-            return cloneNode( null, this );
+        return function (fn) {
+            return cloneNode( null, this,fn );
         };
     }(),
     equals: function ( node ) {
@@ -310,6 +312,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     isHighlight: function () {
         return this.getTmpData( 'highlight' )
+    },
+    select:function(){
+        this.setTmpData('highlight',true)
     },
     setTmpData: function ( a, v ) {
         var me = this;
