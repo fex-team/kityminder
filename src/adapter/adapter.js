@@ -122,6 +122,8 @@ utils.extend( KityMinder, function () {
 
             pro.root( $widget.kmui().getBodyContainer() );
 
+            //清除光标
+            km.fire('selectionclear')
             pro.initContent( km, $widget );
             if ( !pro._preventDefault ) {
                 pro.initEvent( km, $widget );
