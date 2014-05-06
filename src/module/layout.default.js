@@ -423,7 +423,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
-				if ( node.getData( 'expand' ) ) {
+				if ( Layout.expand ) {
 					Layout.shicon.switchState();
 				}
 			}
@@ -506,7 +506,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				this.highlightNode( node )
 			}
 		},
-		initStyle: function () {
+		initStyle: function ( expandall ) {
 			var _root = minder.getRoot();
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
@@ -553,8 +553,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				return items;
 			} )();
 			next = [];
-			var layer_nolimit = ( expand_layer < 1 ) || false;
-			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
+			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
+			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
 			var loopcontinue = function () {
 				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
 			};
@@ -573,17 +573,17 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
-			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
 				minder.expandNode( parent );
 			}
 			minder.handelNodeInsert( node );
 			node.clearLayout();
 			node.getContRc().clear();
-			node.setData( 'expand', false );
-			if ( parent.getType() !== 'root' ) {
-				parent.setData( 'expand', true );
-			}
 			var Layout = node.getLayout();
+			Layout.expand = false;
+			if ( parent.getType() !== 'root' ) {
+				parent.getLayout().expand = true;
+			}
 			Layout.added = true;
 			var parentLayout = parent.getLayout();
 			var children = parent.getChildren();
@@ -739,7 +739,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				isExpand = ico.icon.switchState();
 				node = ico.icon._node;
 			}
-			node.setData( "expand", isExpand );
+			var Layout = node.getLayout();
+			Layout.expand = isExpand;
 			var _buffer = node.getChildren();
 			if ( isExpand ) {
 				for ( var j = 0; j < _buffer.length; j++ ) {
