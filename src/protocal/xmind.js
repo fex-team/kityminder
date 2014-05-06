@@ -48,6 +48,11 @@ KityMinder.registerProtocal( 'xmind', function () {
             }
         }
 
+        // 处理超链接
+        if(topic['xlink:href']){
+            obj.data.hyperlink = topic['xlink:href'];
+        }
+
         //处理子节点
         if( topic.children && topic.children.topics && topic.children.topics.topic ){
             var tmp = topic.children.topics.topic;
@@ -81,33 +86,33 @@ KityMinder.registerProtocal( 'xmind', function () {
         }, onerror);
     }
 
-	return {
-		fileDescription: 'xmind格式文件',
-		fileExtension: '.xmind',
+    return {
+        fileDescription: 'xmind格式文件',
+        fileExtension: '.xmind',
         
-		decode: function ( local ) {
+        decode: function ( local ) {
 
-		    return {
-		    	then : function(local, callback){
+            return {
+                then : function(local, callback){
 
-				    getEntries( local, function( entries ) {
-				        entries.forEach(function( entry ) {
-				            if(entry.filename == 'content.xml'){
-				                entry.getData(new zip.TextWriter(), function(text) {
-				                    var km = xml2km($.parseXML(text));
-				                    callback && callback( km );
-				                });
-				            }
-				        });
-				    });
-		    	}
-		    };
+                    getEntries( local, function( entries ) {
+                        entries.forEach(function( entry ) {
+                            if(entry.filename == 'content.xml'){
+                                entry.getData(new zip.TextWriter(), function(text) {
+                                    var km = xml2km($.parseXML(text));
+                                    callback && callback( km );
+                                });
+                            }
+                        });
+                    });
+                }
+            };
 
-		},
-		// recognize: recognize,
-		recognizePriority: -1
-	};
-	
+        },
+        // recognize: recognize,
+        recognizePriority: -1
+    };
+    
 } );
 
 
