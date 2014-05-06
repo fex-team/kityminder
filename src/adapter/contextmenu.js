@@ -28,19 +28,25 @@ KM.registerUI( 'contextmenu', function () {
     });
     me.$container.append($menu);
     me.on('contextmenu',function(e){
+        if(this.getSelectedNodes().length == 0){
+            var node = e.getTargetNode();
+            if(node){
+                this.select(node);
+            }
+        }
+
         var items = me.getContextmenu();
         var data = [];
 
         utils.each(items,function(i,item){
             if(item.divider){
-                data.push(item)
+                data.length &&  data.push(item);
                 return;
             }
             if(me.queryCommandState(item.cmdName)!=-1){
                 data.push({
                     label:item.label,
                     value:item.cmdName
-
                 })
             }
         });
@@ -52,10 +58,8 @@ KM.registerUI( 'contextmenu', function () {
             $menu.kmui().setData({
                 data:data
             }).position(e.getPosition()).show();
-
-
-            e.preventDefault()
         }
+        e.preventDefault()
 
     });
     me.on('click',function(){
