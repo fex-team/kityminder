@@ -510,7 +510,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		initStyle: function ( expandall ) {
 			var _root = minder.getRoot();
-			debugger;
+			//debugger;
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );

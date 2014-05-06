@@ -43,8 +43,8 @@
 }
 
 .kmui-btn-toolbar .kmui-btn .kmui-icon-hyperlink {
-    background: url(../images/contract.png) no-repeat 2px 2px;
+    background: url(../images/link.png) no-repeat 2px 2px;
 }
 .kmui-btn-toolbar .kmui-btn .kmui-icon-unhyperlink {
-    background: url(../images/contract.png) no-repeat 2px 2px;
+    background: url(../images/unlink.png) no-repeat 2px 2px;
 }
