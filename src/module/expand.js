@@ -51,6 +51,11 @@ KityMinder.registerModule( "Expand", function () {
 		}
 	} );
 	return {
+		'events': {
+			'importData': function ( e ) {
+				var data = e.data;
+			}
+		},
 		'commands': {}
 	};
 } );
