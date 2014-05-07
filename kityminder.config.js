@@ -63,7 +63,7 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand zoom-in zoom-out expand contract | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink | markers | node | help'
+            'hand zoom-in zoom-out expand contract | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink | markers | node | preference | help'
         ]
         //只读模式，默认是false
         //readOnly: true
@@ -82,10 +82,10 @@
         //,zIndex : 1000
         //设置初始加载时展开的层数和子节点数目阈值
         //默认是全部展开，0表示全部展开
-        // ,
-        // defaultExpand: {
-        //     defaultLayer: 1,
-        //     defaultSubShow: 5
-        // }
+        //,
+        //defaultExpand: {
+        //    defaultLayer: 1,
+        //    defaultSubShow: 5
+        //}
     };
 } )();
