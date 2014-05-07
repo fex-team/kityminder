@@ -17,7 +17,8 @@ KM.registerToolbarUI( 'node', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord: false
+            enabledRecord: false,
+            enabledSelected: false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
