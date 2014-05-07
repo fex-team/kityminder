@@ -125,10 +125,6 @@ kity.extendClass( Minder, {
 
         json = params.json || ( params.json = protocal.decode( local ) );
 
-        this._fire( new MinderEvent( 'importData', {
-            data: json
-        }, true ) );
-
         if ( typeof json === 'object' && 'then' in json ) {
             var self = this;
             json.then( local, function ( data ) {
