@@ -1,4 +1,10 @@
 KityMinder.registerModule( "LayoutModule", function () {
+	var me = this;
+	var clearPaper = function () {
+		me._rc.remove();
+		me._rc = new kity.Group();
+		me._paper.addShape( this._rc );
+	};
 	kity.extendClass( Minder, {
 		addLayoutStyle: function ( name, style ) {
 			if ( !this._layoutStyles ) this._layoutStyles = {};
@@ -40,15 +46,15 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 			var _root = this.getRoot();
 			_root.preTraverse( function ( n ) {
-				var oldExpand;
-				if ( n.getLayout() ) {
-					oldExpand = n.getLayout().expand;
-				}
 				n.clearLayout();
-				n.getLayout().expand = oldExpand;
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );
 			this.fire( 'afterinitstyle' );
+		},
+		restoreStyle: function () {
+			var curStyle = this.getCurrentStyle();
+			clearPaper();
+			var _root = this.getRoot();
 		},
 		appendChildNode: function ( parent, node, focus, index ) {
 			var curStyle = this.getCurrentStyle();
@@ -120,7 +126,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !parent ) {
 					return null;
 				}
-				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
 					km.expandNode( parent );
 				}
 

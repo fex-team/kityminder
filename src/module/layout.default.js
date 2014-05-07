@@ -571,13 +571,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
 							_buffer[ j ].getLayout().expand
 						) && c.length !== 0 ) {
-						if ( _buffer[ j ].getLayout().expand ) {
-							console.log( (
-								(
-									( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
-									_buffer[ j ].getLayout().expand
-								) && c.length !== 0 ) );
-						}
 						this.expandNode( _buffer[ j ] );
 						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
 					}
@@ -587,19 +580,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
-			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
-				minder.expandNode( parent );
-			}
 			minder.handelNodeInsert( node );
-			var Layout = node.getLayout();
-			var oldExpand;
-			if ( Layout ) {
-				oldExpand = Layout.expand;
-			}
 			node.clearLayout();
 			node.getContRc().clear();
-			Layout = node.getLayout();
-			Layout.expand = oldExpand || false;
+			var Layout = node.getLayout();
+			Layout.expand = false;
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}
