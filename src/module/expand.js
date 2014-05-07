@@ -45,7 +45,7 @@ KityMinder.registerModule( "Expand", function () {
 	 * @param {Enum}       state  取值为 "expand" | "collapse"，表示要对节点进行的操作是展开还是收缩
 	 * @param {Function}   policy 提供当前策略的函数，方便递归调用
 	 */
-	var EXPAND_POLICY = MinderNode.EXAPND_POLICY = {
+	var EXPAND_POLICY = MinderNode.EXPAND_POLICY = {
 
 		/**
 		 * 策略 1：只修改当前节点的状态，不递归子节点的状态
@@ -75,7 +75,7 @@ KityMinder.registerModule( "Expand", function () {
 		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
 		 */
 		expand: function ( policy ) {
-			policy = policy || EXAPND_POLICY.KEEP_STATE;
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
 			policy( this, STATE_EXPAND, policy );
 			return this;
 		},
@@ -85,7 +85,7 @@ KityMinder.registerModule( "Expand", function () {
 		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
 		 */
 		collapse: function ( policy ) {
-			policy = policy || EXAPND_POLICY.KEEP_STATE;
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
 			policy( this, STATE_EXPAND, policy );
 			return this;
 		},
