@@ -1,0 +1,46 @@
+
+html, body, div {
+    margin: 0;
+    padding: 0;
+}
+html, body, #kityminder, div.kmui-editor-body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    -moz-user-select: none;
+}
+.km_receiver{
+    width:0;
+    height:0;
+}
+.km-minderNode{
+    cursor:default;
+}
+.kmui-container {
+    height: 100%;
+}
+.kmui-container {
+}
+.kmui-container .kmui-toolbar{
+    background-color: #fafafa;
+    z-index: 99999;
+    margin-right: 400px;
+}
+.kmui-toolbar .kmui-btn-toolbar{
+    padding: 5px;
+}
+.kmui-toolbar {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    border-radius: 4px;
+    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
+}
+.kmui-container .kmui-editor-body {
+    background: rgb(50, 60, 61) url(../images/grid.png) repeat;
+    /*line-height: 0;*/
+    overflow: hidden;
+}
+svg {
+    font-family: Arial, "Microsoft Yahei","Heiti SC",sans-serif;
+}

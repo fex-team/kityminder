@@ -1,0 +1,28 @@
+.kmui-modal-header .kmui-title{
+	font-size: 14px;
+}
+.kmui-dialog-markers-body {
+    padding-bottom: 5px
+}
+.icon-list{
+    margin: 0;
+    padding: 0
+}
+.icon-list li{
+    padding: 5px 10px;
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    color: #333;
+    font-family:Arial, "Heiti SC", "Microsoft Yahei";
+}
+.icon-list li:hover,.icon-list li.active{
+    background: #cfe0f7
+}
+.icon-list li span.icon{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
