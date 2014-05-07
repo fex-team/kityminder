@@ -75,7 +75,7 @@ KityMinder.registerModule( "Expand", function () {
 		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
 		 */
 		expand: function ( policy ) {
-			policy = policy || EXAPND_POLICY.KEEP_STATE;
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
 			policy( this, STATE_EXPAND, policy );
 			return this;
 		},
@@ -85,7 +85,7 @@ KityMinder.registerModule( "Expand", function () {
 		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
 		 */
 		collapse: function ( policy ) {
-			policy = policy || EXAPND_POLICY.KEEP_STATE;
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
 			policy( this, STATE_EXPAND, policy );
 			return this;
 		},

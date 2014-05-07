@@ -543,9 +543,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
-				//console.log( mains[ i ].isExpanded() );
+				console.log( mains[ i ].isExpanded() );
 				if ( mains[ i ].isExpanded() && mains[ i ].getChildren().length > 0 ) {
-					debugger;
 					minder.expandNode( mains[ i ] );
 				}
 			}
@@ -565,7 +564,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				node.expand();
 				//遍历子树展开需要展开的节点
 				_buffer = [ node ];
-				debugger;
 				while ( _buffer.length !== 0 ) {
 					var c = _buffer[ 0 ].getChildren();
 					if ( _buffer[ 0 ].isExpanded() && c.length !== 0 ) {
