@@ -510,7 +510,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		initStyle: function () {
 			//渲染根节点
 			var _root = minder.getRoot();
-			console.log( _root );
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
