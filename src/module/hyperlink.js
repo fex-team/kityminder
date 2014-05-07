@@ -22,7 +22,7 @@ KityMinder.registerModule( "hyperlink", function () {
                     }
                     utils.each( nodes, function ( i, n ) {
                         if ( n && n.getData( 'hyperlink' ) ) {
-                            result = 1;
+                            result = 0;
                             return false;
                         }
                     } );
@@ -51,7 +51,17 @@ KityMinder.registerModule( "hyperlink", function () {
                     if ( nodes.length == 0 ) {
                         return -1;
                     }
-
+                    var link = false;
+                    utils.each( nodes, function ( i, n ) {
+                        if(n.getData( 'hyperlink' )){
+                            link = true;
+                            return false;
+                        }
+                    } );
+                    if(link){
+                        return 0
+                    }
+                    return -1;
                 }
             } )
         },
