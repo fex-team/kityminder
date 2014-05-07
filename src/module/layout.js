@@ -40,7 +40,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 			var _root = this.getRoot();
 			_root.preTraverse( function ( n ) {
+				var oldExpand;
+				if ( n.getLayout() ) {
+					oldExpand = n.getLayout().expand;
+				}
 				n.clearLayout();
+				n.getLayout().expand = oldExpand;
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );
 			this.fire( 'afterinitstyle' );
@@ -251,12 +256,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"cloneNode": function ( e ) {
 				var target = e.targetNode;
 				var source = e.sourceNode;
-				target.clearLayout();
-				var sourceLayout = source.getLayout();
-				var targetLayout = target.getLayout();
-
-				targetLayout.expand = utils.clone(sourceLayout.expand);
-				console.log( targetLayout );
+				target._layout = utils.extend( {}, source._layout );
 			}
 		},
 		'contextmenu': [ {
