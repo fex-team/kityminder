@@ -510,7 +510,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		initStyle: function ( expandall ) {
 			var _root = minder.getRoot();
-			//debugger;
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
@@ -581,22 +580,11 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
-			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
-				minder.expandNode( parent );
-			}
 			minder.handelNodeInsert( node );
-			var Layout = node.getLayout();
-			var oldExpand;
-			if ( Layout ) {
-				oldExpand = Layout.expand;
-			}
-			if ( oldExpand ) {
-				alert( 'aru' );
-			}
 			node.clearLayout();
 			node.getContRc().clear();
-			Layout = node.getLayout();
-			Layout.expand = oldExpand || false;
+			var Layout = node.getLayout();
+			Layout.expand = false;
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}

@@ -1,4 +1,10 @@
 KityMinder.registerModule( "LayoutModule", function () {
+	var me = this;
+	var clearPaper = function () {
+		me._rc.remove();
+		me._rc = new kity.Group();
+		me._paper.addShape( this._rc );
+	};
 	kity.extendClass( Minder, {
 		addLayoutStyle: function ( name, style ) {
 			if ( !this._layoutStyles ) this._layoutStyles = {};
@@ -44,6 +50,11 @@ KityMinder.registerModule( "LayoutModule", function () {
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );
 			this.fire( 'afterinitstyle' );
+		},
+		restoreStyle: function () {
+			var curStyle = this.getCurrentStyle();
+			clearPaper();
+			var _root = this.getRoot();
 		},
 		appendChildNode: function ( parent, node, focus, index ) {
 			var curStyle = this.getCurrentStyle();
@@ -115,7 +126,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !parent ) {
 					return null;
 				}
-				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
 					km.expandNode( parent );
 				}
 
@@ -251,12 +262,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			"cloneNode": function ( e ) {
 				var target = e.targetNode;
 				var source = e.sourceNode;
-				target.clearLayout();
-				var sourceLayout = source.getLayout();
-				var targetLayout = target.getLayout();
-
-				targetLayout.expand = utils.clone(sourceLayout.expand);
-				console.log( targetLayout );
+				target._layout = utils.extend( {}, source._layout );
 			}
 		},
 		'contextmenu': [ {
