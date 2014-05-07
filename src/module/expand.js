@@ -86,7 +86,7 @@ KityMinder.registerModule( "Expand", function () {
 		 */
 		collapse: function ( policy ) {
 			policy = policy || EXPAND_POLICY.KEEP_STATE;
-			policy( this, STATE_EXPAND, policy );
+			policy( this, STATE_COLLAPSE, policy );
 			return this;
 		},
 
