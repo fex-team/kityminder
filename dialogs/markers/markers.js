@@ -1,7 +1,14 @@
 ( function () {
-    var utils = KM.utils;
     KM.registerWidget( 'markers', {
-        tpl: "<ul class='icon-list priority'>" +
+        tpl:"<style>"+
+            "<%= container %> .priority .icon{background:url(dialogs/markers/images/iconpriority.png) 0 0}"+
+             "<%= container %> .progress .icon{background:url(dialogs/markers/images/iconprogress.png) 0 0}"+
+             "<%= container %> .icon.p2{background-position: -20px 0}"+
+             "<%= container %> .icon.p3{background-position: -40px 0}"+
+             "<%= container %> .icon.p4{background-position: -60px 0}"+
+             "<%= container %> .icon.p5{background-position: -80px 0}"+
+            "</style>"+
+            "<ul class='icon-list priority'>" +
             "<li value='1' type='priority'><span class='icon p1'></span><span><%= priority %>1</span></li>" +
             "<li value='2' type='priority'><span class='icon p2'></span><span><%= priority %>2</span></li>" +
             "<li value='3' type='priority'><span class='icon p3'></span><span><%= priority %>3</span></li>" +
@@ -15,10 +22,10 @@
             "<li value='4' type='progress'><span class='icon p4'></span><span><%= progress.threequartersdone %></span></li>" +
             "<li value='5' type='progress'><span class='icon p5'></span><span><%= progress.done %></span></li>" +
             "</ul>",
-        initContent: function ( km ) {
+        initContent: function ( km ,$w) {
             var lang = km.getLang( 'dialogs.markers' );
             if ( lang ) {
-                var html = $.parseTmpl( this.tpl, lang );
+                var html = $.parseTmpl( this.tpl, utils.extend({'container':$w.attr('class')},lang) );
             }
             this.root().html( html );
         },

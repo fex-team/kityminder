@@ -25,7 +25,11 @@
             });
             var url = km.queryCommandValue('hyperlink');
 
-            $w.find('#hyperlink_href').val(url || '')
+            var $input = $w.find('#hyperlink_href');
+            $input.val(url || 'http://');
+            setTimeout(function(){
+                $input.focus()
+            })
         },
         width: 400
     } );
