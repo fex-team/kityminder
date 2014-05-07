@@ -99,7 +99,9 @@ Minder.Selection = kity.createClass( 'Selection', {
         var me = this,
             state = '';
         me.setStyle( 'display', '' );
+
         if(this.collapsed){
+            me.setOpacity(1);
             this.timer = setInterval( function () {
                 me.setStyle( 'display', state );
                 state = state ? '' : 'none';

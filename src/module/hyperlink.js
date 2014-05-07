@@ -29,10 +29,8 @@ KityMinder.registerModule( "hyperlink", function () {
                     return result;
                 },
                 queryValue: function ( km ) {
-                    if ( km.queryCommandState( 'hyperlink' ) == 1 ) {
-                        var node = km.getSelectedNode();
-                        return node.getData( 'hyperlink' );
-                    }
+                    var node = km.getSelectedNode();
+                    return node.getData( 'hyperlink' );
                 }
             } ),
             "unhyperlink": kity.createClass( "hyperlink", {

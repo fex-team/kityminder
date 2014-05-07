@@ -349,7 +349,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             endOffset = this.textData[ this.selection.endOffset ],
             width = 0;
         if ( this.selection.collapsed ) {
-            this.selection.updateShow( startOffset || this.textData[ this.textData.length - 1 ], 0 );
+            this.selection.updateShow( startOffset || this.textData[ this.textData.length - 1 ],1 );
             return this;
         }
         if ( !endOffset ) {
