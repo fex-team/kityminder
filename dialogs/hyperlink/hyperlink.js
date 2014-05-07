@@ -24,7 +24,6 @@
                 $w.kmui().hide();
             });
             var url = km.queryCommandValue('hyperlink');
-
             var $input = $w.find('#hyperlink_href');
             $input.val(url || 'http://');
             setTimeout(function(){

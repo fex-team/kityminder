@@ -20,7 +20,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var selectionByClick = false;
 
-
+    var dragmoveTimer;
     return {
         "events": {
             //插入光标
@@ -62,7 +62,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setBaseOffset()
                             .setContainerStyle()
                             .setSelectionHeight()
-                            .setCurrentIndex(e.getPosition())
+                            .setCurrentIndex(e.getPosition(this.getRenderContainer()))
                             .updateSelection()
                             .setRange(range);
                         sel.setData('relatedNode',node);
@@ -73,6 +73,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             selectionByClick = false;
                         }
                         km.setStatus('textedit')
+                        lastMousedownTimer = +new Date;
                     }
                 }
             },
@@ -125,6 +126,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
+
                         try{
                             receiver.updateRange(range)
                         }catch(e){
@@ -171,10 +173,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
 
-                    var offset = e.getPosition();
-
-                    if(Math.abs(offset.y - lastEvtPosition.y) >= 1 && Math.abs(lastEvtPosition.x - offset.x) <= 1 ){
-
+                    var offset = e.getPosition(this.getRenderContainer());
+                    if(Math.abs(offset.y - lastEvtPosition.y) >= 2 && Math.abs(lastEvtPosition.x - offset.x) <= 2 ){
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
