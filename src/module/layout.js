@@ -51,11 +51,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			this.getLayoutStyle( curStyle ).initStyle.call( this );
 			this.fire( 'afterinitstyle' );
 		},
-		restoreStyle: function () {
-			var curStyle = this.getCurrentStyle();
-			clearPaper();
-			var _root = this.getRoot();
-		},
 		appendChildNode: function ( parent, node, focus, index ) {
 			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).appendChildNode.call( this, parent, node, focus, index );

@@ -3,7 +3,30 @@ KityMinder.registerModule( "Expand", function () {
 		STATE_EXPAND = 'expand',
 		STATE_COLLAPSE = 'collapse';
 
-
+	var layerTravel = function ( root, fn ) {
+		var _buffer = [ root ];
+		while ( _buffer.length !== 0 ) {
+			fn( _buffer[ 0 ] );
+			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+			_buffer.shift();
+		}
+	}
+	// var setOptionValue = function ( root, layer, sub ) {
+	// 	var cur_layer = 1;
+	// 	var _buffer = root.getChildren();
+	// 	while ( cur_layer < layer ) {
+	// 		var layer_len = _buffer.length;
+	// 		for ( var i = 0; i < layer_len; i++ ) {
+	// 			var c = _buffer[ i ].getChildren();
+	// 			if ( c.length < sub || ( !sub ) ) {
+	// 				_buffer[ i ].expand();
+	// 				_buffer = _buffer.concat( c );
+	// 			}
+	// 		}
+	// 		_buffer.splice( 0, layer_len );
+	// 		cur_layer++;
+	// 	}
+	// }
 	/**
 	 * 该函数返回一个策略，表示递归到节点指定的层数
 	 *
@@ -13,38 +36,38 @@ KityMinder.registerModule( "Expand", function () {
 	 * @param {int} deep_level 指定的层数
 	 * @param {Function} policy_after_level 超过的层数执行的策略
 	 */
-	function generateDeepPolicy( deep_level, policy_after_level ) {
+		function generateDeepPolicy( deep_level, policy_after_level ) {
 
-		return function ( node, state, policy, level ) {
-			var children, child, i;
+			return function ( node, state, policy, level ) {
+				var children, child, i;
 
-			node.setData( EXPAND_STATE_DATA, state );
-			level = level || 1;
+				node.setData( EXPAND_STATE_DATA, state );
+				level = level || 1;
 
-			children = node.getChildren();
+				children = node.getChildren();
 
-			for ( i = 0; i < children.length; i++ ) {
-				child = children[ i ];
+				for ( i = 0; i < children.length; i++ ) {
+					child = children[ i ];
 
-				if ( level <= deep_level ) {
-					policy( child, state, policy, level + 1 );
-				} else if ( policy_after_level ) {
-					policy_after_level( child, state, policy, level + 1 );
+					if ( level <= deep_level ) {
+						policy( child, state, policy, level + 1 );
+					} else if ( policy_after_level ) {
+						policy_after_level( child, state, policy, level + 1 );
+					}
 				}
-			}
 
-		};
-	}
+			};
+		}
 
-	/**
-	 * 节点展开和收缩的策略常量
-	 *
-	 * 策略是一个处理函数，处理函数接受 3 个参数：
-	 *
-	 * @param {MinderNode} node   要处理的节点
-	 * @param {Enum}       state  取值为 "expand" | "collapse"，表示要对节点进行的操作是展开还是收缩
-	 * @param {Function}   policy 提供当前策略的函数，方便递归调用
-	 */
+		/**
+		 * 节点展开和收缩的策略常量
+		 *
+		 * 策略是一个处理函数，处理函数接受 3 个参数：
+		 *
+		 * @param {MinderNode} node   要处理的节点
+		 * @param {Enum}       state  取值为 "expand" | "collapse"，表示要对节点进行的操作是展开还是收缩
+		 * @param {Function}   policy 提供当前策略的函数，方便递归调用
+		 */
 	var EXPAND_POLICY = MinderNode.EXPAND_POLICY = {
 
 		/**
@@ -101,7 +124,10 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				alert( '2' );
+				layerTravel( km.getRoot(), function ( n ) {
+					n.expand();
+				} );
+				km.initStyle();
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -112,7 +138,10 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				alert( '1' );
+				layerTravel( km.getRoot(), function ( n ) {
+					n.collapse();
+				} );
+				km.initStyle();
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -121,8 +150,11 @@ KityMinder.registerModule( "Expand", function () {
 	} )() );
 	return {
 		'events': {
-			'import': function ( e ) {
-				//console.log( this.getRoot() );
+			'beforeimport': function ( e ) {
+				var _root = this.getRoot();
+				var options = this.getOptions();
+				var defaultExpand = options.defaultExpand;
+				//setOptionValue( _root, defaultExpand.defaultLayer, defaultExpand.defaultSubShow );
 			}
 		},
 		'commands': {

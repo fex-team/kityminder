@@ -510,6 +510,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		initStyle: function () {
 			//渲染根节点
 			var _root = minder.getRoot();
+			console.log( _root );
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
@@ -545,7 +546,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
-				if ( mains[ i ].isExpanded() && mains[ i ].getChildren().length > 0 ) {
+				if ( mains[ i ].isExpanded() && ( mains[ i ].getChildren().length > 0 ) ) {
 					minder.expandNode( mains[ i ] );
 				}
 			}
@@ -568,7 +569,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				while ( _buffer.length !== 0 ) {
 					var c = _buffer[ 0 ].getChildren();
 					if ( _buffer[ 0 ].isExpanded() && c.length !== 0 ) {
-						//_buffer[ 0 ].getLayout().shicon.switchState( true );
 						for ( var x = 0; x < c.length; x++ ) {
 							minder.appendChildNode( _buffer[ 0 ], c[ x ] );
 						}
