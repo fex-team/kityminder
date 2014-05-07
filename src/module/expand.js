@@ -53,7 +53,10 @@ KityMinder.registerModule( "Expand", function () {
 	return {
 		'events': {
 			'importData': function ( e ) {
-				var data = e.data;
+				// var data = e.data;
+				// console.log( data );
+				// var options = this.getOptions();
+				// console.log( options );
 			}
 		},
 		'commands': {}
