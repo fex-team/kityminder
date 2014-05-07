@@ -46,6 +46,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 
 			var _root = this.getRoot();
 			_root.preTraverse( function ( n ) {
+				var oldLayout = n.getLayout();
 				n.clearLayout();
 			} );
 			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );

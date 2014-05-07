@@ -510,6 +510,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		},
 		initStyle: function ( expandall ) {
 			var _root = minder.getRoot();
+			console.log( _root.getLayout() );
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
 			minder.handelNodeInsert( _root );
@@ -541,50 +542,74 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-			var expandoptions = minder.getOptions( 'defaultExpand' );
-			var cur_layer = 0;
-			var expand_layer = expandoptions.defaultLayer;
-			var mains = _root.getChildren();
-			for ( var i = 0; i < mains.length; i++ ) {
-				this.appendChildNode( _root, mains[ i ] );
-			}
-			cur_layer++;
-			var clonelayer0 = function () {
-				var items = [];
-				for ( var i = 0; i < mains.length; i++ ) {
-					items.push( mains[ i ] );
-				}
-				return items;
-			};
-			//创建一级节点的副本
-			var _buffer = clonelayer0();
-			next = [];
-			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
-			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
+			var _buffer = [ _root ];
 			while ( _buffer.length !== 0 ) {
-				cur_layer++;
-				var layer_len = _buffer.length;
-				for ( var j = 0; j < layer_len; j++ ) {
-					var c = _buffer[ j ].getChildren();
-					if (
-						(
-							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
-							_buffer[ j ].getLayout().expand
-						) && c.length !== 0 ) {
-						this.expandNode( _buffer[ j ] );
-						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+				var parent = _buffer[ 0 ].getParent();
+				var c = _buffer[ 0 ].getChildren();
+				if ( parent ) {
+					for ( var i = 0; i < c.length; i++ ) {
+						this.appendChildNode( parent, c[ i ] );
 					}
 				}
-				_buffer.splice( 0, layer_len );
+				_buffer = _buffer.concat( c );
+				_buffer.shift();
 			}
+			// var expandoptions = minder.getOptions( 'defaultExpand' );
+			// var cur_layer = 0;
+			// var expand_layer = expandoptions.defaultLayer;
+			// var mains = _root.getChildren();
+			// for ( var i = 0; i < mains.length; i++ ) {
+			// 	this.appendChildNode( _root, mains[ i ] );
+			// }
+			// cur_layer++;
+			// var clonelayer0 = function () {
+			// 	var items = [];
+			// 	for ( var i = 0; i < mains.length; i++ ) {
+			// 		items.push( mains[ i ] );
+			// 	}
+			// 	return items;
+			// };
+			//创建一级节点的副本
+			// var _buffer = clonelayer0();
+			// while ( _buffer.length !== 0 ) {
+			// 	var layer_len = _buffer.length;
+			// 	for ( var j = 0; j < layer_len; j++ ) {
+			// 		var c = _buffer[ j ].getChildren();
+			// 		if ( c.length !== 0 ) {
+			// 			this.expandNode( _buffer[ j ] );
+			// 			_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+			// 		}
+			// 	}
+			// 	_buffer.splice( 0, layer_len );
+			// }
+			// var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
+			// var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
+			// while ( _buffer.length !== 0 ) {
+			// 	cur_layer++;
+			// 	var layer_len = _buffer.length;
+			// 	for ( var j = 0; j < layer_len; j++ ) {
+			// 		var c = _buffer[ j ].getChildren();
+			// 		// if (
+			// 		// 	(
+			// 		// 		( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
+			// 		// 		_buffer[ j ].getLayout().expand
+			// 		// 	) && c.length !== 0 ) {
+			// 		if ( c.length !== 0 ) this.expandNode( _buffer[ j ] );
+			// 		_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+			// 		//}
+			// 	}
+			// 	_buffer.splice( 0, layer_len );
+			// }
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
+			var oldLayout = node.getLayout();
 			node.clearLayout();
 			node.getContRc().clear();
 			var Layout = node.getLayout();
 			Layout.expand = false;
+			if ( oldLayout ) Layout.expand = oldLayout;
 			if ( parent.getType() !== 'root' ) {
 				parent.getLayout().expand = true;
 			}
@@ -741,6 +766,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			var isExpand, node;
 			if ( ico instanceof MinderNode ) {
 				node = ico;
+				debugger;
 				isExpand = node.getLayout().shicon.switchState();
 			} else {
 				isExpand = ico.icon.switchState();
