@@ -47,8 +47,7 @@ KityMinder.registerModule( "Expand", function () {
 			node.setData( EXPAND_STATE_DATA, STATE_COLLAPSE );
 		},
 		isExpanded: function () {
-			//return this.getData( EXPAND_STATE_DATA ) === STATE_EXPAND;
-			return true;
+			return this.getData( EXPAND_STATE_DATA ) === STATE_EXPAND;
 		}
 	} );
 	return {

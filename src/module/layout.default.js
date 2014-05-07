@@ -562,6 +562,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 			var _buffer;
 			if ( isExpand ) {
+				node.expand();
 				//遍历子树展开需要展开的节点
 				_buffer = [ node ];
 				debugger;
@@ -576,6 +577,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					_buffer.shift();
 				}
 			} else {
+				node.collapse();
 				//遍历子树移除需要移除的节点
 				_buffer = node.getChildren();
 				while ( _buffer.length !== 0 ) {
@@ -595,31 +597,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					updateConnectAndshIcon( set[ i ] );
 				}
 			}
-			// var _buffer = node.getChildren();
-			// if ( isExpand ) {
-			// 	for ( var j = 0; j < _buffer.length; j++ ) {
-			// 		minder.appendChildNode( node, _buffer[ j ] );
-			// 	}
-			// } else {
-			// 	var _buffer = node.getChildren();
-			// 	while ( _buffer.length !== 0 ) {
-			// 		var Layout = _buffer[ 0 ].getLayout();
-			// 		if ( Layout.added ) {
-			// 			Layout.added = false;
-			// 			_buffer[ 0 ].getRenderContainer().remove();
-			// 			Layout.connect.remove();
-			// 			if ( Layout.shicon ) Layout.shicon.remove();
-			// 		}
-			// 		_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-			// 		_buffer.shift();
-			// 	}
-			// }
-			// var set = [];
-			// if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
-			// for ( var i = 0; i < set.length; i++ ) {
-			// 	translateNode( set[ i ] );
-			// 	updateConnectAndshIcon( set[ i ] );
-			// }
 		},
 		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
