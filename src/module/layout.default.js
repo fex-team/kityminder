@@ -508,7 +508,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				this.highlightNode( node )
 			}
 		},
-		initStyle: function ( expandall ) {
+		initStyle: function () {
+			//渲染根节点
 			var _root = minder.getRoot();
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
@@ -541,61 +542,126 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-			var expandoptions = minder.getOptions( 'defaultExpand' );
-			var cur_layer = 0;
-			var expand_layer = expandoptions.defaultLayer;
+			//渲染首层节点
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
 			}
-			cur_layer++;
-			var clonelayer0 = function () {
-				var items = [];
-				for ( var i = 0; i < mains.length; i++ ) {
-					items.push( mains[ i ] );
-				}
-				return items;
-			};
-			//创建一级节点的副本
-			var _buffer = clonelayer0();
-			next = [];
-			var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
-			var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
-			while ( _buffer.length !== 0 ) {
-				cur_layer++;
-				var layer_len = _buffer.length;
-				for ( var j = 0; j < layer_len; j++ ) {
-					var c = _buffer[ j ].getChildren();
-					if (
-						(
-							( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
-							_buffer[ j ].getLayout().expand
-						) && c.length !== 0 ) {
-						this.expandNode( _buffer[ j ] );
-						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
-					}
-				}
-				_buffer.splice( 0, layer_len );
-			}
-			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
-		appendChildNode: function ( parent, node, focus, sibling ) {
-			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
-				minder.expandNode( parent );
+		expandNode: function ( ico ) {
+			var isExpand, node;
+			if ( ico instanceof MinderNode ) {
+				node = ico;
+				isExpand = node.getLayout().shicon.switchState();
+			} else {
+				isExpand = ico.icon.switchState();
+				node = ico.icon._node;
 			}
+			var Layout = node.getLayout();
+			Layout.expand = isExpand;
+			var _buffer = node.getChildren();
+			if ( isExpand ) {
+				for ( var j = 0; j < _buffer.length; j++ ) {
+					minder.appendChildNode( node, _buffer[ j ] );
+				}
+			} else {
+				var _buffer = node.getChildren();
+				while ( _buffer.length !== 0 ) {
+					var Layout = _buffer[ 0 ].getLayout();
+					if ( Layout.added ) {
+						Layout.added = false;
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					}
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					_buffer.shift();
+				}
+			}
+			var set = [];
+			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
+			for ( var i = 0; i < set.length; i++ ) {
+				translateNode( set[ i ] );
+				updateConnectAndshIcon( set[ i ] );
+			}
+		},
+		// initStyle: function ( expandall ) {
+		// 	var _root = minder.getRoot();
+		// 	var historyPoint = _root.getPoint();
+		// 	if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
+		// 	minder.handelNodeInsert( _root );
+		// 	//设置root的align
+		// 	_root.getLayout().align = "center";
+		// 	updateBg( _root );
+		// 	initLayout( _root );
+		// 	_root.getContRc().clear();
+		// 	this._firePharse( new MinderEvent( "RenderNodeLeft", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	this._firePharse( new MinderEvent( "RenderNodeCenter", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	this._firePharse( new MinderEvent( "RenderNodeRight", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	this._firePharse( new MinderEvent( "RenderNodeBottom", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	this._firePharse( new MinderEvent( "RenderNodeTop", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	this._firePharse( new MinderEvent( "RenderNode", {
+		// 		node: _root
+		// 	}, false ) );
+		// 	updateShapeByCont( _root );
+		// 	updateLayoutHorizon( _root );
+		// 	updateLayoutVertical( _root );
+		// 	translateNode( _root );
+		// 	if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
+		// 	var expandoptions = minder.getOptions( 'defaultExpand' );
+		// 	var cur_layer = 0;
+		// 	var expand_layer = expandoptions.defaultLayer;
+		// 	var mains = _root.getChildren();
+		// 	for ( var i = 0; i < mains.length; i++ ) {
+		// 		this.appendChildNode( _root, mains[ i ] );
+		// 	}
+		// 	cur_layer++;
+		// 	var clonelayer0 = function () {
+		// 		var items = [];
+		// 		for ( var i = 0; i < mains.length; i++ ) {
+		// 			items.push( mains[ i ] );
+		// 		}
+		// 		return items;
+		// 	};
+		// 	//创建一级节点的副本
+		// 	var _buffer = clonelayer0();
+		// 	next = [];
+		// 	var layer_nolimit = expandall || ( expand_layer < 1 ) || false;
+		// 	var sub_nolimit = expandall || ( expandoptions.defaultSubShow < 1 ) || false;
+		// 	while ( _buffer.length !== 0 ) {
+		// 		cur_layer++;
+		// 		var layer_len = _buffer.length;
+		// 		for ( var j = 0; j < layer_len; j++ ) {
+		// 			var c = _buffer[ j ].getChildren();
+		// 			if (
+		// 				(
+		// 					( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && ( layer_nolimit || ( cur_layer <= expand_layer ) ) ) ||
+		// 					_buffer[ j ].getLayout().expand
+		// 				) && c.length !== 0 ) {
+		// 				this.expandNode( _buffer[ j ] );
+		// 				_buffer = _buffer.concat( _buffer[ j ].getChildren() );
+		// 			}
+		// 		}
+		// 		_buffer.splice( 0, layer_len );
+		// 	}
+		// 	_root.setPoint( _root.getLayout().x, _root.getLayout().y );
+		// },
+		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
 			var Layout = node.getLayout();
-			var oldExpand;
-			if ( Layout ) {
-				oldExpand = Layout.expand;
-			}
 			node.clearLayout();
 			node.getContRc().clear();
 			Layout = node.getLayout();
-			Layout.expand = oldExpand || false;
-			if ( parent.getType() !== 'root' ) {
-				parent.getLayout().expand = true;
-			}
 			Layout.added = true;
 			var parentLayout = parent.getLayout();
 			var children = parent.getChildren();
@@ -746,42 +812,46 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		expandNode: function ( ico ) {
-			var isExpand, node;
-			if ( ico instanceof MinderNode ) {
-				node = ico;
-				isExpand = node.getLayout().shicon.switchState();
-			} else {
-				isExpand = ico.icon.switchState();
-				node = ico.icon._node;
-			}
-			var Layout = node.getLayout();
-			Layout.expand = isExpand;
-			var _buffer = node.getChildren();
-			if ( isExpand ) {
-				for ( var j = 0; j < _buffer.length; j++ ) {
-					minder.appendChildNode( node, _buffer[ j ] );
-				}
-			} else {
-				var _buffer = node.getChildren();
-				while ( _buffer.length !== 0 ) {
-					var Layout = _buffer[ 0 ].getLayout();
-					if ( Layout.added ) {
-						Layout.added = false;
-						_buffer[ 0 ].getRenderContainer().remove();
-						Layout.connect.remove();
-						if ( Layout.shicon ) Layout.shicon.remove();
-					}
-					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-					_buffer.shift();
-				}
-			}
-			var set = [];
-			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-				updateConnectAndshIcon( set[ i ] );
-			}
+
 		}
+		//,
+		// expandNode: function ( ico ) {
+		// 	var isExpand, node;
+		// 	if ( ico instanceof MinderNode ) {
+		// 		node = ico;
+		// 		isExpand = node.getLayout().shicon.switchState();
+		// 	} else {
+		// 		isExpand = ico.icon.switchState();
+		// 		node = ico.icon._node;
+		// 	}
+		// 	var Layout = node.getLayout();
+		// 	Layout.expand = isExpand;
+		// 	var _buffer = node.getChildren();
+		// 	if ( isExpand ) {
+		// 		for ( var j = 0; j < _buffer.length; j++ ) {
+		// 			minder.appendChildNode( node, _buffer[ j ] );
+		// 		}
+		// 	} else {
+		// 		var _buffer = node.getChildren();
+		// 		while ( _buffer.length !== 0 ) {
+		// 			var Layout = _buffer[ 0 ].getLayout();
+		// 			if ( Layout.added ) {
+		// 				Layout.added = false;
+		// 				_buffer[ 0 ].getRenderContainer().remove();
+		// 				Layout.connect.remove();
+		// 				if ( Layout.shicon ) Layout.shicon.remove();
+		// 			}
+		// 			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+		// 			_buffer.shift();
+		// 		}
+		// 	}
+		// 	var set = [];
+		// 	if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
+		// 	for ( var i = 0; i < set.length; i++ ) {
+		// 		translateNode( set[ i ] );
+		// 		updateConnectAndshIcon( set[ i ] );
+		// 	}
+		// }
 	};
 	this.addLayoutStyle( "default", _style );
 	return {};
