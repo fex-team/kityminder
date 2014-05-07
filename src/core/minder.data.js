@@ -41,7 +41,7 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setData( 'text',data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
+    node.setData( 'text', data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
@@ -53,7 +53,6 @@ function importNode( node, json, km ) {
     return node;
 }
 
-
 // 导入导出
 kity.extendClass( Minder, {
     exportData: function ( protocalName ) {
@@ -62,11 +61,11 @@ kity.extendClass( Minder, {
         json = exportNode( this.getRoot() );
         protocal = KityMinder.findProtocal( protocalName );
 
-        if(this._fire( new MinderEvent( 'beforeexport',  {
-            json:json,
+        if ( this._fire( new MinderEvent( 'beforeexport', {
+            json: json,
             protocalName: protocalName,
             protocal: protocal
-        },true ) ) === true) return;
+        }, true ) ) === true ) return;
 
         if ( protocal ) {
             return protocal.encode( json, this );
@@ -106,44 +105,48 @@ kity.extendClass( Minder, {
 
 
         //*******************
-        function ts(d, str, last){
+        function ts( d, str, last ) {
             var h = d.getHours(),
                 m = d.getMinutes(),
                 s = d.getSeconds(),
                 ms = d.getMilliseconds();
 
-            if(last){
-                console.log('--- '+str+': '+(d-last)+' ---');
-            }else{
-                console.log('--- '+str+' ---');
+            if ( last ) {
+                console.log( '--- ' + str + ': ' + ( d - last ) + ' ---' );
+            } else {
+                console.log( '--- ' + str + ' ---' );
             }
-            
+
             return d;
         }
 
-        var t1 = ts(new Date(), '开始解析');
+        var t1 = ts( new Date(), '开始解析' );
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
+
+        this._fire(new MinderEvent('importData',{
+            data:json
+        },true));
 
         if ( typeof json === 'object' && 'then' in json ) {
             var self = this;
             json.then( local, function ( data ) {
                 //*******************
-                var t2 = ts(new Date(), '解压解析耗时', t1);
+                var t2 = ts( new Date(), '解压解析耗时', t1 );
                 //*******************
                 self._afterImportData( data, params );
                 //*******************
-                ts(new Date(), '渲染耗时', t2);
+                ts( new Date(), '渲染耗时', t2 );
                 //*******************
             } );
         } else {
             //*******************
-            var t2 = ts(new Date(), '解压解析耗时', t1);
+            var t2 = ts( new Date(), '解压解析耗时', t1 );
             //*******************
             this._afterImportData( json, params );
             //*******************
-            ts(new Date(), '渲染耗时', t2);
+            ts( new Date(), '渲染耗时', t2 );
             //*******************
         }
         return this;

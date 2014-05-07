@@ -14,6 +14,7 @@ KityMinder.registerModule( "Expand", function () {
 	 * @param {Function} policy_after_level 超过的层数执行的策略
 	 */
 	function generateDeepPolicy( deep_level, policy_after_level ) {
+		
 		return function ( node, state, policy, level ) {
 			var children, child, i;
 
@@ -93,10 +94,15 @@ KityMinder.registerModule( "Expand", function () {
 		 * 判断节点当前的状态是否为展开
 		 */
 		isExpanded: function () {
-			return !!node.getData( EXPAND_STATE_DATA );
+			return this.getData( EXPAND_STATE_DATA ) === STATE_EXPAND;
 		}
 	} );
 	return {
+		'events': {
+			'importData': function ( e ) {
+				var data = e.data;
+			}
+		},
 		'commands': {}
 	};
 } );
