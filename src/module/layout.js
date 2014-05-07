@@ -38,7 +38,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			var curStyle = this.getCurrentStyle();
 			this.getLayoutStyle( curStyle ).highlightNode.call( this, node );
 		},
-		initStyle: function ( expandall ) {
+		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
 			this._rc.remove();
 			this._rc = new kity.Group();
@@ -48,7 +48,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			_root.preTraverse( function ( n ) {
 				n.clearLayout();
 			} );
-			this.getLayoutStyle( curStyle ).initStyle.call( this, expandall );
+			this.getLayoutStyle( curStyle ).initStyle.call( this );
 			this.fire( 'afterinitstyle' );
 		},
 		restoreStyle: function () {
@@ -126,7 +126,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !parent ) {
 					return null;
 				}
-				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getLayout().expand === false ) {
+				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && !parent.isExpanded() ) {
 					km.expandNode( parent );
 				}
 

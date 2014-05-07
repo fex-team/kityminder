@@ -1,0 +1,83 @@
+.kmui-modal {
+    position: fixed;
+    top: 60px;
+    right:10px;
+    background-color: #ffffff;
+    outline: 0;
+    border-radius: 5px;
+    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
+}
+.kmui-modal-header {
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    cursor: move;
+}
+.kmui-modal-header .kmui-close {
+    float: right;
+    width:20px;
+    height:20px;
+    margin-top: 2px;
+    padding: 1px;
+    border: 0;
+    background: url("../images/close.png") no-repeat center center;
+    cursor: pointer;
+}
+.kmui-modal-header .kmui-close.kmui-hover {
+    background-color: #d5e1f2;
+    padding:0;
+    border: 1px solid #a3bde3;
+}
+.kmui-modal-header .kmui-title {
+    margin: 0;
+    line-height: 25px;
+    font-size: 20px;
+}
+.kmui-modal-body {
+    position: relative;
+    max-height: 400px;
+    font-size: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.kmui-modal-footer {
+    float: right;
+    padding: 5px 15px 15px;
+    overflow: hidden;
+}
+.kmui-modal-footer .kmui-btn {
+    float: left;
+    height: 24px;
+    width: 96px;
+    margin: 0 10px;
+    background-color: #ffffff;
+    padding: 0;
+    border: 1px solid #ababab;
+    font-size: 12px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+}
+.kmui-modal-footer .kmui-btn.kmui-hover{
+    background-color: #d5e1f2;
+    border: 1px solid #a3bde3;
+}
+.kmui-modal-backdrop{
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #c6c6c6;
+}
+
+.kmui-modal .kmui-modal-tip {
+    color: red;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    height: 30px;
+    line-height: 30px;
+    display: none;
+}

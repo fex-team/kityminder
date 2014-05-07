@@ -1,0 +1,22 @@
+.kmui-popup{
+    display: none;
+    /*background: url('../images/pop-bg.png') repeat #fff;*/
+    background: white;
+    padding: 2px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+}
+.kmui-popup .kmui-popup-body{
+    /*border: 1px solid #bfbfbf;*/
+    background-color: #fff;
+}
+.kmui-popup .kmui-popup-caret{
+    width: 21px;
+    height: 11px;
+}
+.kmui-popup .kmui-popup-caret.up{
+    /*background:url('../images/caret.png') no-repeat 0 0;*/
+}
+.kmui-popup .kmui-popup-caret.down{
+    /*background:url('../images/caret.png') no-repeat 0 0;*/
+}
+
