@@ -201,7 +201,6 @@ KityMinder.registerModule( "Expand", function () {
 			queryState: function ( km ) {
 				return 0;
 			}
-
 		};
 	} )() );
 	return {
