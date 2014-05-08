@@ -164,9 +164,8 @@ KityMinder.registerModule( "Expand", function () {
 					if ( !selectedNode.isExpanded() ) {
 						km.expandNode( selectedNode );
 					} else {
-						for ( var i = 0; i < children.length; i++ ) {
-							if ( children[ i ].getChildren().length !== 0 ) km.expandNode( children[ i ] );
-						}
+						km.expandNode( selectedNode );
+						km.expandNode( selectedNode );
 					}
 				}
 			},
