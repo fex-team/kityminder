@@ -11,6 +11,8 @@ KityMinder.registerModule( "Expand", function () {
 			_buffer.shift();
 		}
 	}
+
+
 	// var setOptionValue = function ( root, layer, sub ) {
 	// 	var cur_layer = 1;
 	// 	var _buffer = root.getChildren();
@@ -120,7 +122,7 @@ KityMinder.registerModule( "Expand", function () {
 			return this.getData( EXPAND_STATE_DATA ) === STATE_EXPAND;
 		}
 	} );
-	var ExpandAllNodeCommand = kity.createClass( "ExpandAllNodeCommand", ( function () {
+	var ExpandNodeCommand = kity.createClass( "ExpandNodeCommand", ( function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
@@ -128,16 +130,18 @@ KityMinder.registerModule( "Expand", function () {
 					n.expand();
 				} );
 				km.initStyle();
+
 			},
 			queryState: function ( km ) {
 				return 0;
 			}
 		};
 	} )() );
-	var CollapseAllNodeCommand = kity.createClass( "ExpandAllNodeCommand", ( function () {
+	var CollapseNodeCommand = kity.createClass( "CollapseNodeCommand", ( function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
+
 				layerTravel( km.getRoot(), function ( n ) {
 					n.collapse();
 				} );
@@ -146,6 +150,7 @@ KityMinder.registerModule( "Expand", function () {
 			queryState: function ( km ) {
 				return 0;
 			}
+
 		};
 	} )() );
 	return {
@@ -158,8 +163,9 @@ KityMinder.registerModule( "Expand", function () {
 			}
 		},
 		'commands': {
-			'expand': ExpandAllNodeCommand,
-			'contract': CollapseAllNodeCommand
+			'ExpandNode': ExpandNodeCommand,
+			'CollapseNode': CollapseNodeCommand
 		}
+
 	};
 } );

@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'bold italic redo undo unhyperlink',
+KM.registerToolbarUI( 'bold italic redo undo unhyperlink expandnode collapsenode hand zoom-in zoom-out',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {

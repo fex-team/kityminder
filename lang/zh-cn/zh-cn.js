@@ -20,7 +20,9 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'help': '帮助',
         'preference': '偏好设置',
         'hyperlink':'插入链接',
-        'unhyperlink':"删除链接"
+        'unhyperlink':"删除链接",
+        'expandnode':"展开所有节点",
+        'collapsenode':"闭合所有节点"
     },
     'popupcolor': {
         'clearColor': '清空颜色',
