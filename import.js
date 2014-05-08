@@ -66,7 +66,6 @@
             ,'adapter/button.js'
             ,'adapter/combobox.js'
             ,'adapter/saveto.js'
-            ,'adapter/view.js'
             ,'adapter/tooltips.js'
             ,'adapter/layout.js'
             ,'adapter/node.js'
