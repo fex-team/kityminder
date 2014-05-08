@@ -1,4 +1,5 @@
 KityMinder.registerModule( "Expand", function () {
+	var minder = this;
 	var EXPAND_STATE_DATA = 'expandState',
 		STATE_EXPAND = 'expand',
 		STATE_COLLAPSE = 'collapse';
@@ -11,27 +12,68 @@ KityMinder.registerModule( "Expand", function () {
 			_buffer.shift();
 		}
 	}
+	//获取选中的最上层节点
+	var filterDuplicate = function ( nodes ) {
+		var _buffer = ( [] ).concat( nodes );
+		var resultSet = [];
+		for ( var i = 0; i < _buffer.length; i++ ) {
+			var parent = _buffer[ i ].getParent();
+			if ( !parent ) {
+				resultSet = [ _buffer[ i ] ];
+				break;
+			} else {
+				//筛选
+				while ( parent ) {
+					if ( _buffer.indexOf( parent ) !== -1 ) {
+						_buffer[ i ] = null;
+						break;
+					}
+					parent = parent.getParent();
+				}
+				if ( _buffer[ i ] ) resultSet.push( _buffer[ i ] );
+			}
+		}
+		return resultSet;
+	}
 
-	// var getCommonParents = function ( nodes ) {
-	// 	var _buffer = [];
-	// 	var resultSet = [];
-	// 	for ( var i = 0; i < nodes.length; i++ ) {
-	// 		_buffer.push( nodes[ i ] );
-	// 	}
-	// 	while ( _buffer.length !== 0 ) {
-	// 		var parent = _buffer[ 0 ].getParent();
-	// 		if ( parent.getType() === 'root' || _buffer.length === 1 ) {
-	// 			resultSet.push( _buffer[ 0 ] );
-	// 		} else {
-	// 			if ( _buffer.indexOf( parent ) === -1 ) {
-	// 				_buffer.push( parent );
-	// 			}
-	// 		}
-	// 		_buffer.shift();
-	// 	}
-	// 	return resultSet;
-	// }
-
+	var expandAll = function ( km, deal ) {
+		var selectedNodes = km.getSelectedNodes();
+		var topNodes = filterDuplicate( selectedNodes );
+		if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' || topNodes[ 0 ].getType() === 'root' ) {
+			layerTravel( km.getRoot(), function ( n ) {
+				if ( deal === 'expand' ) n.expand();
+				else n.collapse();
+			} );
+			km.initStyle();
+		} else {
+			for ( var i = 0; i < topNodes.length; i++ ) {
+				var node = topNodes[ i ];
+				var children = node.getChildren();
+				if ( children.length === 0 ) {
+					continue;
+				} else {
+					layerTravel( node, function ( n ) {
+						if ( n !== node ) {
+							if ( deal === 'expand' ) n.expand();
+							else n.collapse();
+						}
+					} );
+					var judge_val;
+					if ( deal === 'expand' ) {
+						judge_val = !node.isExpanded();
+					} else {
+						judge_val = node.isExpanded();
+					}
+					if ( judge_val ) {
+						km.expandNode( node );
+					} else {
+						km.expandNode( node );
+						km.expandNode( node );
+					}
+				}
+			}
+		}
+	}
 
 	// var setOptionValue = function ( root, layer, sub ) {
 	// 	var cur_layer = 1;
@@ -146,28 +188,7 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
-					layerTravel( km.getRoot(), function ( n ) {
-						n.expand();
-					} );
-					km.initStyle();
-				} else {
-					var selectedNode = km.getSelectedNode();
-					var children = selectedNode.getChildren();
-					if ( children.length === 0 ) {
-						return false;
-					}
-					layerTravel( selectedNode, function ( n ) {
-						if ( n !== selectedNode ) n.expand();
-					} );
-					if ( !selectedNode.isExpanded() ) {
-						km.expandNode( selectedNode );
-					} else {
-						km.expandNode( selectedNode );
-						km.expandNode( selectedNode );
-					}
-				}
+				expandAll( km, 'expand' );
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -178,25 +199,7 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
-					layerTravel( km.getRoot(), function ( n ) {
-						n.collapse();
-					} );
-					km.initStyle();
-				} else {
-					var selectedNode = km.getSelectedNode();
-					var children = selectedNode.getChildren();
-					if ( children.length === 0 ) {
-						return false;
-					}
-					if ( selectedNode.isExpanded() ) {
-						layerTravel( selectedNode, function ( n ) {
-							if ( n !== selectedNode ) n.collapse();
-						} );
-						km.expandNode( selectedNode );
-					}
-				}
+				expandAll( km, 'collapse' );
 			},
 			queryState: function ( km ) {
 				return 0;
