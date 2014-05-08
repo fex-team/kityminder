@@ -35,10 +35,10 @@
 .kmui-btn-toolbar .kmui-btn .kmui-icon-preference {
     background: url(../images/setting.png) no-repeat 2px 2px;
 }
-.kmui-btn-toolbar .kmui-btn .kmui-icon-expand {
+.kmui-btn-toolbar .kmui-btn .kmui-icon-expandnode {
     background: url(../images/expand.png) no-repeat 2px 2px;
 }
-.kmui-btn-toolbar .kmui-btn .kmui-icon-contract {
+.kmui-btn-toolbar .kmui-btn .kmui-icon-collapsenode {
     background: url(../images/contract.png) no-repeat 2px 2px;
 }
 
