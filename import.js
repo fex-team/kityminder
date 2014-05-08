@@ -72,6 +72,7 @@
             ,'adapter/contextmenu.js'
             ,'adapter/dialog.js'
             ,'adapter/hyperlink.js'
+            ,'adapter/zoom.js'
             ,'protocal/xmind.js'
             ,'protocal/freemind.js'
             ,'protocal/mindmanager.js'

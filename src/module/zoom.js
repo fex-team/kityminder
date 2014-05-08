@@ -1,4 +1,7 @@
 KityMinder.registerModule( 'Zoom', function () {
+    var me = this;
+    me.setOptions('zoom',[50,80,100,120,150,200]);
+
 	var MAX_ZOOM = 2,
 		MIN_ZOOM = kity.Browser.chrome ? 1 : 0.5,
 		ZOOM_STEP = Math.sqrt( 2 );
