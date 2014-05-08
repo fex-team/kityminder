@@ -147,7 +147,7 @@ KityMinder.registerModule( "Expand", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 ) {
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
 					layerTravel( km.getRoot(), function ( n ) {
 						n.expand();
 					} );
@@ -164,9 +164,8 @@ KityMinder.registerModule( "Expand", function () {
 					if ( !selectedNode.isExpanded() ) {
 						km.expandNode( selectedNode );
 					} else {
-						for ( var i = 0; i < children.length; i++ ) {
-							if ( children[ i ].getChildren().length !== 0 ) km.expandNode( children[ i ] );
-						}
+						km.expandNode( selectedNode );
+						km.expandNode( selectedNode );
 					}
 				}
 			},
@@ -180,7 +179,7 @@ KityMinder.registerModule( "Expand", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 ) {
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
 					layerTravel( km.getRoot(), function ( n ) {
 						n.collapse();
 					} );
