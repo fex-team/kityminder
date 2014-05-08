@@ -1,12 +1,17 @@
 KityMinder.registerModule( 'Zoom', function () {
+    var me = this;
+
+    me.setOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
 
     function zoomMinder( minder, zoom ) {
         var paper = minder.getPaper();
         var viewport = paper.getViewPort();
 
+        if ( !zoom ) return;
+
         var animator = new kity.Animator( {
             beginValue: viewport.zoom,
-            finishValue: zoom,
+            finishValue: zoom / 100,
             setter: function ( target, value ) {
                 viewport.zoom = value;
                 target.setViewPort( viewport );
@@ -19,41 +24,44 @@ KityMinder.registerModule( 'Zoom', function () {
 
     var ZoomCommand = kity.createClass( 'Zoom', {
         base: Command,
-        execute: zoomMinder
+        execute: zoomMinder,
+        queryValue: function ( minder ) {
+            return minder.zoom;
+        }
     } );
 
     var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
         base: Command,
         execute: function ( minder ) {
-            zoomMinder( minder, this.nextValue() );
+            zoomMinder( minder, this.nextValue( minder ) );
         },
         queryState: function ( minder ) {
-            return !!this.nextValue();
+            return !!this.nextValue( minder );
         },
-        nextValue: function () {
-            var stack = this.getOption( 'zoom' ),
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
                 i;
-            for ( i = 0; i < stack.length - 1; i++ ) {
-                if ( stack[ i ] > this.zoom ) return stack[ i ];
+            for ( i = 0; i < stack.length; i++ ) {
+                if ( stack[ i ] > minder.zoom ) return stack[ i ];
             }
             return 0;
         },
-        enableReadOnly: falsed
+        enableReadOnly: false
     } );
 
     var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
         base: Command,
         execute: function ( minder ) {
-            zoomMinder( minder, this.nextValue() );
+            zoomMinder( minder, this.nextValue( minder ) );
         },
         queryState: function ( minder ) {
-            return !!this.nextValue();
+            return !!this.nextValue( minder );
         },
-        nextValue: function () {
-            var stack = this.getOption( 'zoom' ),
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
                 i;
-            for ( i = stack.length - 1; i >= 0l i-- ) {
-                if ( stack[ i ] < this.zoom ) return stack[ i ];
+            for ( i = stack.length - 1; i >= 0; i-- ) {
+                if ( stack[ i ] < minder.zoom ) return stack[ i ];
             }
             return 0;
         },
@@ -61,6 +69,9 @@ KityMinder.registerModule( 'Zoom', function () {
     } );
 
     return {
+        init: function () {
+            this.zoom = 100;
+        },
         commands: {
             'zoom-in': ZoomInCommand,
             'zoom-out': ZoomOutCommand,
