@@ -79,7 +79,7 @@ $( function () {
         minder = window.km,
 
         // 草稿箱实例
-        draftManager = window.draftManager || ( window.draftManager = new window.DraftManager( minder ) ),
+        draftManager,
 
         // 当前是否要检测文档内容是否变化的开关
         watchingChanges = true,
@@ -99,8 +99,8 @@ $( function () {
         loadShare();
         bindShortCuts();
         bindDraft();
-        watchChanges();
-        if ( !loadPath() && !isShareLink ) loadDraft( 0 );
+        draftManager && watchChanges();
+        if ( draftManager && !loadPath() && !isShareLink ) loadDraft( 0 );
     }
 
     // 创建 UI
@@ -159,14 +159,16 @@ $( function () {
             }, 30 );
         } );
 
-        var clip = new window.ZeroClipboard( $copy_url_btn, {
-            hoverClass: 'hover',
-            activeClass: 'active'
-        } );
-        clip.on( 'dataRequested', function ( client, args ) {
-            $copy_url_btn.loading( '已复制' );
-            clearTimeout( copyTrickTimer );
-        } );
+        if ( window.ZeroClipboard ) {
+            var clip = new window.ZeroClipboard( $copy_url_btn, {
+                hoverClass: 'hover',
+                activeClass: 'active'
+            } );
+            clip.on( 'dataRequested', function ( client, args ) {
+                $copy_url_btn.loading( '已复制' );
+                clearTimeout( copyTrickTimer );
+            } );
+        }
     }
 
     // 初始化云平台 frontia
@@ -207,11 +209,16 @@ $( function () {
                     $share_btn.loading( false );
                     return notice( '加载分享内容失败！请确认分享链接正确。' );
                 }
-                var draft = draftManager.openByPath( 'share/' + shareId );
-                if ( draft ) {
-                    draftManager.load();
+
+                if ( draftManager ) {
+                    var draft = draftManager.openByPath( 'share/' + shareId );
+                    if ( draft ) {
+                        draftManager.load();
+                    } else {
+                        draftManager.create( 'share/' + shareId );
+                        minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                    }
                 } else {
-                    draftManager.create( 'share/' + shareId );
                     minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
                 }
                 setRemotePath( null, false );
@@ -537,11 +544,14 @@ $( function () {
 
         minder.importData( data, format );
 
-        if ( !draftManager.openByPath( remotePath ) ) {
-            draftManager.create();
+        if ( draftManager ) {
+            if ( !draftManager.openByPath( remotePath ) ) {
+                draftManager.create();
+            }
+            draftManager.save( remotePath );
+            draftManager.sync();
         }
-        draftManager.save( remotePath );
-        draftManager.sync();
+
         minder.execCommand( 'camera', minder.getRoot() );
         $user_btn.loading( false ).text( getFileName( remotePath ) );
 
@@ -570,13 +580,13 @@ $( function () {
     // 点击文件菜单
     function openFile( e ) {
         var path = $( this ).data( 'value' );
-        var draft = draftManager.getCurrent();
+        var draft = draftManager && draftManager.getCurrent();
         if ( draft && draft.path == path ) {
             if ( !draft.sync && window.confirm( '“' + getFileName( path ) + '”在草稿箱包含未保存的更改，确定加载网盘版本覆盖草稿箱中的版本吗？' ) ) {
                 setRemotePath( path, true );
                 loadRemote();
             }
-        } else {
+        } else if ( draftManager ) {
             draft = draftManager.openByPath( path );
             setRemotePath( path, !draft || draft.sync );
             if ( draft ) {
@@ -586,6 +596,9 @@ $( function () {
             } else {
                 loadRemote();
             }
+        } else {
+            setRemotePath( path, true );
+            loadRemote();
         }
     }
 
@@ -625,8 +638,10 @@ $( function () {
                         addToRecentMenu( [ savedFile ] );
                     }
                     setRemotePath( savedFile.path, true );
-                    draftManager.save( remotePath );
-                    draftManager.sync();
+                    if ( draftManager ) {
+                        draftManager.save( remotePath );
+                        draftManager.sync();
+                    }
                     clearTimeout( timeout );
                 } else {
                     error( '保存到云盘失败，可能是网络问题导致！' );
@@ -751,6 +766,12 @@ $( function () {
     }
 
     function bindDraft() {
+        if ( !draftManager ) {
+            if ( window.DraftManager ) {
+                draftManager = new window.DraftManager( minder );
+            }
+        }
+
         $draft_menu.delegate( 'a.delete', 'click', function ( e ) {
             var $li = $( this ).closest( 'li.draft-item' );
             draftManager.remove( +$li.data( 'draft-index' ) );
