@@ -1,6 +1,8 @@
 KityMinder.registerModule( 'Zoom', function () {
     var me = this;
 
+    var timeline;
+
     me.setOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
 
     function zoomMinder( minder, zoom ) {
@@ -17,9 +19,11 @@ KityMinder.registerModule( 'Zoom', function () {
                 target.setViewPort( viewport );
             }
         } );
-        this.zoom = zoom;
-
-        animator.start( paper, 500, 'ease' );
+        minder.zoom = zoom;
+        if ( timeline ) {
+            timeline.pause();
+        }
+        timeline = animator.start( paper, 500, 'ease' );
     }
 
     var ZoomCommand = kity.createClass( 'Zoom', {
