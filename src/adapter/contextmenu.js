@@ -28,12 +28,12 @@ KM.registerUI( 'contextmenu', function () {
     });
     me.$container.append($menu);
     me.on('contextmenu',function(e){
-        if(this.getSelectedNodes().length == 0){
-            var node = e.getTargetNode();
-            if(node){
-                this.select(node);
-            }
+        var node = e.getTargetNode();
+        if(node){
+            this.removeAllSelectedNodes();
+            this.select(node)
         }
+
 
         var items = me.getContextmenu();
         var data = [];

@@ -210,6 +210,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return null;
 				}
 				km.select( selectedNode, true );
+                km.textEditNode(selectedNode);
 			},
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
@@ -253,11 +254,6 @@ KityMinder.registerModule( "LayoutModule", function () {
 			},
 			"import": function ( e ) {
 				this.initStyle();
-			},
-			"cloneNode": function ( e ) {
-				var target = e.targetNode;
-				var source = e.sourceNode;
-				target._layout = utils.extend( {}, source._layout );
 			}
 		},
 		'contextmenu': [ {

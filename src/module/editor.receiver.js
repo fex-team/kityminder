@@ -198,9 +198,11 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
     updateIndex: function () {
         this.index = this.range.getStart().startOffset;
+        return this;
     },
     updateTextData: function () {
         this.textShape.textData = this.getTextOffsetData();
+        return this;
     },
     setSelection: function ( selection ) {
         this.selection = selection;

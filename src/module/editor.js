@@ -18,6 +18,30 @@ KityMinder.registerModule( "TextEditModule", function () {
         return km.receiver.isTextEditStatus();
     };
 
+    km.textEditNode = function(node){
+        var textShape = node.getTextShape();
+        this.setStatus('textedit');
+        sel.setHide();
+        sel.setStartOffset(0);
+        sel.setEndOffset(textShape.getContent().length);
+
+        receiver.setTextEditStatus(true)
+            .setSelection(sel)
+            .setKityMinder(this)
+            .setMinderNode(node)
+            .setTextShape(textShape)
+            .setRange(range)
+            .setBaseOffset()
+            .setContainerStyle()
+            .setSelectionHeight()
+            .setContainerTxt(textShape.getContent())
+            .updateTextData()
+            .updateSelectionShow()
+            .updateRange(range).setTextEditStatus(true);
+
+
+        sel.setData('relatedNode',node);
+    };
     var selectionByClick = false;
 
     var dragmoveTimer;
@@ -72,7 +96,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             sel.setShow();
                             selectionByClick = false;
                         }
-                        km.setStatus('textedit')
+                        km.setStatus('textedit');
                         lastMousedownTimer = +new Date;
                     }
                 }

@@ -4,24 +4,13 @@ KityMinder.registerModule( "HistoryModule", function () {
 
     var Scene = kity.createClass( 'Scene', {
         constructor: function ( root ) {
-            this.data = root.clone( function ( node, cloneNode ) {
-                km.fire( 'cloneNode', {
-                    'targetNode': cloneNode,
-                    'sourceNode': node
-                } )
-            } );
+            this.data = root.clone();
         },
         getData: function () {
             return this.data;
         },
         cloneData: function () {
-            var fn = function ( node, cloneNode ) {
-                km.fire( 'cloneNode', {
-                    'targetNode': cloneNode,
-                    'sourceNode': node
-                } )
-            };
-            return this.getData().clone( fn );
+            return this.getData().clone(  );
         },
         equals: function ( scene ) {
             return this.getData().equals( scene.getData() )
