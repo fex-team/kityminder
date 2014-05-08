@@ -12,6 +12,26 @@ KityMinder.registerModule( "Expand", function () {
 		}
 	}
 
+	// var getCommonParents = function ( nodes ) {
+	// 	var _buffer = [];
+	// 	var resultSet = [];
+	// 	for ( var i = 0; i < nodes.length; i++ ) {
+	// 		_buffer.push( nodes[ i ] );
+	// 	}
+	// 	while ( _buffer.length !== 0 ) {
+	// 		var parent = _buffer[ 0 ].getParent();
+	// 		if ( parent.getType() === 'root' || _buffer.length === 1 ) {
+	// 			resultSet.push( _buffer[ 0 ] );
+	// 		} else {
+	// 			if ( _buffer.indexOf( parent ) === -1 ) {
+	// 				_buffer.push( parent );
+	// 			}
+	// 		}
+	// 		_buffer.shift();
+	// 	}
+	// 	return resultSet;
+	// }
+
 
 	// var setOptionValue = function ( root, layer, sub ) {
 	// 	var cur_layer = 1;
@@ -126,11 +146,29 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				layerTravel( km.getRoot(), function ( n ) {
-					n.expand();
-				} );
-				km.initStyle();
-
+				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 ) {
+					layerTravel( km.getRoot(), function ( n ) {
+						n.expand();
+					} );
+					km.initStyle();
+				} else {
+					var selectedNode = km.getSelectedNode();
+					var children = selectedNode.getChildren();
+					if ( children.length === 0 ) {
+						return false;
+					}
+					layerTravel( selectedNode, function ( n ) {
+						if ( n !== selectedNode ) n.expand();
+					} );
+					if ( !selectedNode.isExpanded() ) {
+						km.expandNode( selectedNode );
+					} else {
+						for ( var i = 0; i < children.length; i++ ) {
+							if ( children[ i ].getChildren().length !== 0 ) km.expandNode( children[ i ] );
+						}
+					}
+				}
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -141,11 +179,25 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-
-				layerTravel( km.getRoot(), function ( n ) {
-					n.collapse();
-				} );
-				km.initStyle();
+				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 ) {
+					layerTravel( km.getRoot(), function ( n ) {
+						n.collapse();
+					} );
+					km.initStyle();
+				} else {
+					var selectedNode = km.getSelectedNode();
+					var children = selectedNode.getChildren();
+					if ( children.length === 0 ) {
+						return false;
+					}
+					if ( selectedNode.isExpanded() ) {
+						layerTravel( selectedNode, function ( n ) {
+							if ( n !== selectedNode ) n.collapse();
+						} );
+						km.expandNode( selectedNode );
+					}
+				}
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -156,11 +208,14 @@ KityMinder.registerModule( "Expand", function () {
 	return {
 		'events': {
 			'beforeimport': function ( e ) {
-				var _root = this.getRoot();
-				var options = this.getOptions();
-				var defaultExpand = options.defaultExpand;
+				// var _root = this.getRoot();
+				// var options = this.getOptions();
+				// var defaultExpand = options.defaultExpand;
 				//setOptionValue( _root, defaultExpand.defaultLayer, defaultExpand.defaultSubShow );
 			}
+		},
+		'addShortcutKeys': {
+
 		},
 		'commands': {
 			'ExpandNode': ExpandNodeCommand,
