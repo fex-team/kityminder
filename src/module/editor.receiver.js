@@ -46,7 +46,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             textShape = new kity.Text();
         }
         this.textShape = textShape;
-        this.container.innerHTML = textShape.getContent();
+        this.container.innerHTML = utils.unhtml(textShape.getContent());
         return this;
     },
     setTextShapeSize: function ( size ) {
@@ -90,9 +90,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             me.setContainerStyle();
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
-
                 me.minderNode.setText( 'a' );
-
             }
             me.km.updateLayout( me.minderNode );
 
@@ -142,7 +140,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
                     setTimeout( function () {
                         me.range.updateNativeRange().insertNode( $( '<span>$$_kityminder_bookmark_$$</span>' )[ 0 ] );
-                        me.container.innerHTML = me.container.textContent.replace( /[\u200b\t\r\n]/g, '' );
+                        me.container.innerHTML = utils.unhtml(me.container.textContent.replace( /[\u200b\t\r\n]/g, '' ));
                         var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
                         me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
                         me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
