@@ -1486,6 +1486,14 @@ kity.extendClass( Minder, {
             this._hasEnterExecCommand = false;
         } else {
             result = cmd.execute.apply( cmd, [ me ].concat( cmdArgs ) );
+
+            if(!this._hasEnterExecCommand){
+                if ( cmd.isSelectionChanged() ) {
+                    this._firePharse( new MinderEvent( 'selectionchange' ) );
+                }
+
+                this._firePharse( new MinderEvent( 'interactchange' ) );
+            }
         }
 
         return result === undefined ? null : result;
@@ -6390,6 +6398,9 @@ KityMinder.registerModule( "Expand", function () {
 					}
 				}
 			}
+		}
+		for ( var j = 0; j < selectedNodes.length; j++ ) {
+			km.highlightNode( selectedNodes[ j ] );
 		}
 	}
 
