@@ -18,10 +18,10 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'switchlayout': '切换主题',
         'help': '帮助',
         'preference': '偏好设置',
-        'hyperlink':'插入链接',
-        'unhyperlink':"删除链接",
-        'expandnode':"展开节点",
-        'collapsenode':"闭合节点"
+        'hyperlink': '插入链接',
+        'unhyperlink': "删除链接",
+        'expandnode': "展开节点",
+        'collapsenode': "收起节点"
     },
     'popupcolor': {
         'clearColor': '清空颜色',
@@ -48,7 +48,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'help': {
 
         },
-        hyperlink:{}
+        hyperlink: {}
     },
     'node': {
         'appendsiblingnode': '插入同级节点',
