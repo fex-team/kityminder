@@ -22,6 +22,9 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 			node = nodes[ i ];
 			if ( node.getParent() ) {
 				minder.removeNode( [ node ] );
+				if ( !parent.isExpanded() && parent.getChildren().length > 0 && parent.getType() !== 'root' ) {
+					minder.expandNode( parent );
+				}
 				minder.appendChildNode( parent, node );
 			}
 		}
