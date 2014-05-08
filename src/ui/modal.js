@@ -141,7 +141,7 @@ KM.ui.define( 'modal', {
         if ( !$obj.data( '$mergeObj' ) ) {
 
             $obj.data( '$mergeObj', me.root() );
-            $obj.on( 'click', function () {
+            $obj.on( 'wrapclick', function () {
                 me.toggle( $obj )
             } );
             me.data( '$mergeObj', $obj )
