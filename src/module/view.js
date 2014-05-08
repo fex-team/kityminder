@@ -27,13 +27,14 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown readonly.beforemousedown', function ( e ) {
+        this._minder.on( 'normal.beforemousedown readonly.beforemousedown readonly.beforetouchstart', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
                 dragger.setEnabled( true );
                 isRootDrag = true;
+                e.originEvent.preventDefault();
                 var me = this;
                 setTimeout( function () {
                     me.setStatus( 'hand' );
@@ -41,16 +42,15 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'hand.beforemousedown', function ( e ) {
+        .on( 'hand.beforemousedown hand.beforetouchend', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
-                e.originEvent.preventDefault();
             }
         } )
 
-        .on( 'hand.beforemousemove', function ( e ) {
+        .on( 'hand.beforemousemove hand.beforetouchmove', function ( e ) {
             if ( lastPosition ) {
                 currentPosition = e.getPosition();
 
@@ -58,6 +58,8 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
                 dragger.move( offset );
                 e.stopPropagation();
+                e.preventDefault();
+                e.originEvent.preventDefault();
                 lastPosition = currentPosition;
             }
         } )
@@ -102,7 +104,7 @@ KityMinder.registerModule( 'View', function () {
         base: Command,
         execute: function ( km, focusNode ) {
             var viewport = km.getPaper().getViewPort();
-            var offset = focusNode.getRenderContainer().getRenderBox( 'paper' );
+            var offset = focusNode.getRenderContainer().getRenderBox( 'view' );
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );

@@ -210,7 +210,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return null;
 				}
 				km.select( selectedNode, true );
-                km.textEditNode(selectedNode);
+				km.textEditNode( selectedNode );
 			},
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
@@ -244,6 +244,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				var ico = e.kityEvent.targetShape && e.kityEvent.targetShape.container;
 				if ( ico && ico.class === "shicon" ) {
 					this.expandNode( ico );
+					this.fire( 'contentchange' );
 				}
 			},
 			"resize": function ( e ) {
