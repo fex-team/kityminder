@@ -215,7 +215,8 @@ KityMinder.registerModule( "Expand", function () {
 			}
 		},
 		'addShortcutKeys': {
-
+			"ExpandNode": "ctrl+/", //expand
+			"CollapseNode": "ctrl+." //collapse
 		},
 		'commands': {
 			'ExpandNode': ExpandNodeCommand,
