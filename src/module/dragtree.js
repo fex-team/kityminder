@@ -18,14 +18,17 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 	base: Command,
 	execute: function ( minder, nodes, parent ) {
 		var node;
+		if ( ( !parent.isExpanded() ) && ( parent.getChildren().length > 0 ) && ( parent.getType() !== 'root' ) ) {
+			minder.expandNode( parent );
+		}
 		for ( var i = nodes.length - 1; i >= 0; i-- ) {
 			node = nodes[ i ];
 			if ( node.getParent() ) {
 				minder.removeNode( [ node ] );
-				if ( !parent.isExpanded() && parent.getChildren().length > 0 && parent.getType() !== 'root' ) {
-					minder.expandNode( parent );
-				}
 				minder.appendChildNode( parent, node );
+				if ( node.isExpanded() && node.getChildren().length !== 0 ) {
+					minder.expandNode( node );
+				}
 			}
 		}
 		minder.select( nodes, true );
