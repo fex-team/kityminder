@@ -67,7 +67,8 @@ var keymap = KityMinder.keymap = {
         37: 1,
         38: 1,
         39: 1,
-        40: 1
+        40: 1,
+        113:1
     },
     'isSelectedNodeKey': {
         //上下左右

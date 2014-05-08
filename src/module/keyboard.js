@@ -144,11 +144,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 case keys.Backspace:
                 case keys.Del:
                     e.preventDefault();
-                    if ( this.queryCommandState( 'removenode' ) !== -1 ) this.execCommand( 'removenode' );
+                    this.execCommand( 'removenode' );
                     break;
                 case keys.F2:
                     e.preventDefault();
-                    if ( this.queryCommandState( 'editnode' ) !== -1 ) this.execCommand( 'editnode' );
+                    this.execCommand( 'editnode' );
                     break;
 
                 case keys.Left:
