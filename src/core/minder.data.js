@@ -120,7 +120,7 @@ kity.extendClass( Minder, {
             return d;
         }
 
-        var t1 = ts( new Date(), '开始解析' );
+        //var t1 = ts( new Date(), '开始解析' );
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
@@ -129,20 +129,20 @@ kity.extendClass( Minder, {
             var self = this;
             json.then( local, function ( data ) {
                 //*******************
-                var t2 = ts( new Date(), '解压解析耗时', t1 );
+                //var t2 = ts( new Date(), '解压解析耗时', t1 );
                 //*******************
                 self._afterImportData( data, params );
                 //*******************
-                ts( new Date(), '渲染耗时', t2 );
+                //ts( new Date(), '渲染耗时', t2 );
                 //*******************
             } );
         } else {
             //*******************
-            var t2 = ts( new Date(), '解压解析耗时', t1 );
+            //var t2 = ts( new Date(), '解压解析耗时', t1 );
             //*******************
             this._afterImportData( json, params );
             //*******************
-            ts( new Date(), '渲染耗时', t2 );
+            //ts( new Date(), '渲染耗时', t2 );
             //*******************
         }
         return this;
