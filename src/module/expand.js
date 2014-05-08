@@ -11,6 +11,8 @@ KityMinder.registerModule( "Expand", function () {
 			_buffer.shift();
 		}
 	}
+
+
 	// var setOptionValue = function ( root, layer, sub ) {
 	// 	var cur_layer = 1;
 	// 	var _buffer = root.getChildren();
@@ -131,10 +133,13 @@ KityMinder.registerModule( "Expand", function () {
 			},
 			queryState: function ( km ) {
 				return 0;
-			}
+			},
+            isNeedUndo: function () {
+                return false;
+            }
 		};
 	} )() );
-	var CollapseAllNodeCommand = kity.createClass( "ExpandAllNodeCommand", ( function () {
+	var CollapseAllNodeCommand = kity.createClass( "CollapseAllNodeCommand", ( function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
@@ -145,7 +150,10 @@ KityMinder.registerModule( "Expand", function () {
 			},
 			queryState: function ( km ) {
 				return 0;
-			}
+			},
+            isNeedUndo: function () {
+                return false;
+            }
 		};
 	} )() );
 	return {
