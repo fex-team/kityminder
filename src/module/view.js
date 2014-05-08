@@ -39,7 +39,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
         .on('normal.mousemove normal.touchmove', function (e) {
             if (!isRootDrag) return;
             var offset = kity.Vector.fromPoints( lastPosition, e.getPosition());
-            if (offset.length() > 10) this.setStatus( 'hand' );
+            if (offset.length() > 3) this.setStatus( 'hand' );
         })
 
         .on( 'hand.beforemousedown hand.beforetouchend', function ( e ) {
