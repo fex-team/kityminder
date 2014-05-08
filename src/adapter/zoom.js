@@ -10,8 +10,8 @@ KM.registerToolbarUI( 'zoom', function ( name ) {
             itemStyles: [],
             value: me.getOptions( name ),
             autowidthitem: [],
-            enabledRecord: false,
-            enabledSelected: false
+            enabledRecord: false
+
         },
         $combox = null;
     if ( options.items.length == 0 ) {
@@ -31,9 +31,15 @@ KM.registerToolbarUI( 'zoom', function ( name ) {
     } );
     //状态反射
     me.on( 'interactchange', function () {
-        var state = 0;
+
+        var state = this.queryCommandState( name ),
+            value = this.queryCommandValue( name );
         //设置按钮状态
         comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
+        if ( value ) {
+            //设置label
+            comboboxWidget.selectItemByLabel( value + '%' );
+        }
 
     } );
     //comboboxWidget.button().kmui().disabled(-1);

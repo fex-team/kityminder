@@ -40,7 +40,7 @@ KityMinder.registerModule( 'Zoom', function () {
             zoomMinder( minder, this.nextValue( minder ) );
         },
         queryState: function ( minder ) {
-            return !!this.nextValue( minder );
+            return ~this.nextValue( minder );
         },
         nextValue: function ( minder ) {
             var stack = minder.getOptions( 'zoom' ),
@@ -59,7 +59,7 @@ KityMinder.registerModule( 'Zoom', function () {
             zoomMinder( minder, this.nextValue( minder ) );
         },
         queryState: function ( minder ) {
-            return !!this.nextValue( minder );
+            return ~this.nextValue( minder );
         },
         nextValue: function ( minder ) {
             var stack = minder.getOptions( 'zoom' ),
