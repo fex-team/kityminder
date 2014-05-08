@@ -147,7 +147,7 @@ KityMinder.registerModule( "Expand", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 ) {
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
 					layerTravel( km.getRoot(), function ( n ) {
 						n.expand();
 					} );
@@ -180,7 +180,7 @@ KityMinder.registerModule( "Expand", function () {
 			base: Command,
 			execute: function ( km ) {
 				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 ) {
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
 					layerTravel( km.getRoot(), function ( n ) {
 						n.collapse();
 					} );
