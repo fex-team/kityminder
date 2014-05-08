@@ -73,6 +73,9 @@ KityMinder.registerModule( "Expand", function () {
 				}
 			}
 		}
+		for ( var j = 0; j < selectedNodes.length; j++ ) {
+			km.highlightNode( selectedNodes[ j ] );
+		}
 	}
 
 	// var setOptionValue = function ( root, layer, sub ) {
