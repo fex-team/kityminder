@@ -73,8 +73,12 @@ module.exports = function ( grunt ) {
         copy: {
             dir: {
                 files: [ {
-                    src: [ 'dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**' ],
+                    src: [ 'dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**', 'index.html' ],
                     dest: distPath
+                }, {
+                    src: [ 'kity/dist/kitygraph.all.min.js' ],
+                    dest: distPath + 'lib/',
+                    flatten: true
                 } ]
             }
         },
@@ -83,8 +87,8 @@ module.exports = function ( grunt ) {
                 src: distPath + 'index.html',
                 overwrite: true,
                 replacements: [ {
-                    from: /1234567890/ig,
-                    to: '1234567890'
+                    from: /kity\/dist\/kitygraph\.all\.js/ig,
+                    to: 'lib/kitygraph.all.min.js'
                 } ]
             }
         },

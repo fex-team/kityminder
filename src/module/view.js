@@ -97,7 +97,7 @@ KityMinder.registerModule( 'View', function () {
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;
         },
-        enableReadOnly : false
+        enableReadOnly: false
     } );
 
     var CameraCommand = kity.createClass( "CameraCommand", {
@@ -110,7 +110,7 @@ KityMinder.registerModule( 'View', function () {
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             this.setContentChanged( false );
         },
-        enableReadOnly : false
+        enableReadOnly: false
     } );
 
     return {
@@ -153,8 +153,9 @@ KityMinder.registerModule( 'View', function () {
                 e.preventDefault();
             },
             'normal.dblclick readonly.dblclick': function ( e ) {
-                if ( e.getTargetNode() ) return;
-                this.execCommand( 'camera', this.getRoot() );
+                if ( e.kityEvent.targetShape instanceof kity.Paper ) {
+                    this.execCommand( 'camera', this.getRoot() );
+                }
             }
         }
     };

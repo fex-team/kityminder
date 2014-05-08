@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-05-07
+ * kityminder - v1.0.0 - 2014-05-08
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -292,7 +292,7 @@ var utils = Utils = KityMinder.Utils = {
                 }
             };
             element.onerror = function () {
-                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file umeditor.config.js ')
+                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
             };
             doc.getElementsByTagName("head")[0].appendChild(element);
         }
@@ -614,12 +614,13 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
 
     },
     clone: function () {
-        function cloneNode( parent, isClonedNode ) {
+        function cloneNode( parent, isClonedNode) {
             var _tmp = new KM.MinderNode( isClonedNode.getText() );
 
             _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
-            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() )
+            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() );
             _tmp.parent = parent;
+
             if ( parent ) {
                 parent.children.push( _tmp );
             }
@@ -672,6 +673,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     },
     isHighlight: function () {
         return this.getTmpData( 'highlight' )
+    },
+    select:function(){
+        this.setTmpData('highlight',true)
     },
     setTmpData: function ( a, v ) {
         var me = this;
@@ -1047,7 +1051,7 @@ function importNode( node, json, km ) {
     for ( var field in data ) {
         node.setData( field, data[ field ] );
     }
-    node.setData( 'text',data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
+    node.setData( 'text', data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
     var childrenTreeData = json.children;
     if ( !childrenTreeData ) return;
@@ -1059,7 +1063,6 @@ function importNode( node, json, km ) {
     return node;
 }
 
-
 // 导入导出
 kity.extendClass( Minder, {
     exportData: function ( protocalName ) {
@@ -1068,11 +1071,11 @@ kity.extendClass( Minder, {
         json = exportNode( this.getRoot() );
         protocal = KityMinder.findProtocal( protocalName );
 
-        if(this._fire( new MinderEvent( 'beforeexport',  {
-            json:json,
+        if ( this._fire( new MinderEvent( 'beforeexport', {
+            json: json,
             protocalName: protocalName,
             protocal: protocal
-        },true ) ) === true) return;
+        }, true ) ) === true ) return;
 
         if ( protocal ) {
             return protocal.encode( json, this );
@@ -1112,22 +1115,22 @@ kity.extendClass( Minder, {
 
 
         //*******************
-        function ts(d, str, last){
+        function ts( d, str, last ) {
             var h = d.getHours(),
                 m = d.getMinutes(),
                 s = d.getSeconds(),
                 ms = d.getMilliseconds();
 
-            if(last){
-                console.log('--- '+str+': '+(d-last)+' ---');
-            }else{
-                console.log('--- '+str+' ---');
+            if ( last ) {
+                console.log( '--- ' + str + ': ' + ( d - last ) + ' ---' );
+            } else {
+                console.log( '--- ' + str + ' ---' );
             }
-            
+
             return d;
         }
 
-        var t1 = ts(new Date(), '开始解析');
+        var t1 = ts( new Date(), '开始解析' );
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
@@ -1136,20 +1139,20 @@ kity.extendClass( Minder, {
             var self = this;
             json.then( local, function ( data ) {
                 //*******************
-                var t2 = ts(new Date(), '解压解析耗时', t1);
+                var t2 = ts( new Date(), '解压解析耗时', t1 );
                 //*******************
                 self._afterImportData( data, params );
                 //*******************
-                ts(new Date(), '渲染耗时', t2);
+                ts( new Date(), '渲染耗时', t2 );
                 //*******************
             } );
         } else {
             //*******************
-            var t2 = ts(new Date(), '解压解析耗时', t1);
+            var t2 = ts( new Date(), '解压解析耗时', t1 );
             //*******************
             this._afterImportData( json, params );
             //*******************
-            ts(new Date(), '渲染耗时', t2);
+            ts( new Date(), '渲染耗时', t2 );
             //*******************
         }
         return this;
@@ -1166,7 +1169,7 @@ kity.extendClass( Minder, {
         this._root.setData();
         this._root.setData( "currentstyle", curLayout );
         importNode( this._root, json, this );
-
+        this.fire( 'beforeimport' );
         this._fire( new MinderEvent( 'import', params, false ) );
         this._firePharse( {
             type: 'contentchange'
@@ -1512,57 +1515,87 @@ kity.extendClass( Minder, {
 
 } );
 
-var keymap = KityMinder.keymap  = {
-    'Backspace' : 8,
-    'Tab' : 9,
-    'Enter' : 13,
+var keymap = KityMinder.keymap = {
+    'Backspace': 8,
+    'Tab': 9,
+    'Enter': 13,
 
-    'Shift' : 16,
-    'Control' : 17,
-    'Alt' : 18,
-    'CapsLock' : 20,
+    'Shift': 16,
+    'Control': 17,
+    'Alt': 18,
+    'CapsLock': 20,
 
     'Esc': 27,
 
-    'Spacebar' : 32,
+    'Spacebar': 32,
 
-    'PageUp' : 33,
-    'PageDown' : 34,
-    'End' : 35,
-    'Home' : 36,
+    'PageUp': 33,
+    'PageDown': 34,
+    'End': 35,
+    'Home': 36,
 
-    'Left' : 37,
-    'Up' : 38,
-    'Right' : 39,
-    'Down' : 40,
+    'Left': 37,
+    'Up': 38,
+    'Right': 39,
+    'Down': 40,
 
-    'Insert' : 45,
+    'Insert': 45,
 
-    'Del' : 46,
+    'Del': 46,
 
-    'NumLock' : 144,
+    'NumLock': 144,
 
-    'Cmd' : 91,
+    'Cmd': 91,
 
-    'F2' : 113,
-    'F3' : 114,
-    'F4' : 115,
+    'F2': 113,
+    'F3': 114,
+    'F4': 115,
 
-    '=' : 187,
-    '-' : 189,
+    '=': 187,
+    '-': 189,
 
-    "b" : 66,
-    'i' : 73,
+    "b": 66,
+    'i': 73,
     //回退
-    'z' : 90,
-    'y' : 89,
+    'z': 90,
+    'y': 89,
     //粘贴
-    'v' : 86,
-    'x' : 88,
+    'v': 86,
+    'x': 88,
 
-    's' : 83,
+    's': 83,
 
-    'n' : 78
+    'n': 78,
+    '/': 191,
+    '.': 190,
+    'notContentInput': {
+        8: 1,
+        46: 1,
+        13: 1,
+        9: 1,
+        33: 1,
+        34: 1,
+        35: 1,
+        36: 1,
+        16: 1,
+        17: 1,
+        18: 1,
+        //上下左右
+        37: 1,
+        38: 1,
+        39: 1,
+        40: 1,
+        113:1
+    },
+    'isSelectedNodeKey': {
+        //上下左右
+        37: 1,
+        38: 1,
+        39: 1,
+        40: 1,
+        13: 1,
+        9: 1
+    }
 };
 
 //添加多语言模块
@@ -2043,7 +2076,7 @@ KityMinder.registerModule( "HistoryModule", function () {
             return this.data;
         },
         cloneData: function () {
-            return this.getData().clone();
+            return this.getData().clone(  );
         },
         equals: function ( scene ) {
             return this.getData().equals( scene.getData() )
@@ -2188,11 +2221,10 @@ KityMinder.registerModule( "HistoryModule", function () {
             "saveScene": function ( e ) {
                 this.historyManager.saveScene();
             },
-            "renderNode": function ( e ) {
+            'renderNode': function ( e ) {
                 var node = e.node;
-
-                if ( node.isHighlight() ) {
-                    km.select( node );
+                if ( node.isSelected() ) {
+                    this.select( node )
                 }
             },
             "keydown": function ( e ) {
@@ -2341,6 +2373,12 @@ KityMinder.registerModule( "IconModule", function () {
 } );
 
 KityMinder.registerModule( "LayoutModule", function () {
+	var me = this;
+	var clearPaper = function () {
+		me._rc.remove();
+		me._rc = new kity.Group();
+		me._paper.addShape( this._rc );
+	};
 	kity.extendClass( Minder, {
 		addLayoutStyle: function ( name, style ) {
 			if ( !this._layoutStyles ) this._layoutStyles = {};
@@ -2457,10 +2495,10 @@ KityMinder.registerModule( "LayoutModule", function () {
 				if ( !parent ) {
 					return null;
 				}
-				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
+				if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && !parent.isExpanded() ) {
 					km.expandNode( parent );
 				}
-
+				parent.expand();
 				km.appendChildNode( parent, node, focus, silbling );
 				km.select( node, true );
 				return node;
@@ -2546,6 +2584,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return null;
 				}
 				km.select( selectedNode, true );
+                km.textEditNode(selectedNode);
 			},
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
@@ -2555,9 +2594,9 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return 0;
 				}
 			},
-            isNeedUndo: function () {
-                return false;
-            }
+			isNeedUndo: function () {
+				return false;
+			}
 		};
 	} )() );
 
@@ -2588,7 +2627,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				}.bind( this ), 100 );
 			},
 			"import": function ( e ) {
-				this.initStyle( this.getRoot() );
+				this.initStyle();
 			}
 		},
 		'contextmenu': [ {
@@ -2669,7 +2708,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				iconShape.addShapes( [ circle, plus, dec ] );
 				this.update();
 			},
-			switchState: function () {
+			switchState: function ( val ) {
+				if ( val === true || val === false )
+					this._show = !val;
 				if ( !this._show ) {
 					this._plus.setOpacity( 0 );
 					this._dec.setOpacity( 1 );
@@ -3058,9 +3099,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		if ( nodeType !== "root" && node.getChildren().length !== 0 ) {
 			if ( !Layout.shicon ) {
 				Layout.shicon = new ShIcon( node );
-				if ( node.getData( 'expand' ) ) {
-					Layout.shicon.switchState();
-				}
 			}
 			Layout.shicon.update();
 		}
@@ -3128,7 +3166,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
-
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( node );
 			var set1 = updateLayoutHorizon( node );
 			var set2 = updateLayoutVertical( node, node.getParent(), "change" );
@@ -3142,6 +3182,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			}
 		},
 		initStyle: function () {
+			//渲染根节点
 			var _root = minder.getRoot();
 			var historyPoint = _root.getPoint();
 			if ( historyPoint ) historyPoint = JSON.parse( JSON.stringify( historyPoint ) );
@@ -3166,59 +3207,76 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: _root
 			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: _root
+			}, false ) );
 			updateShapeByCont( _root );
 			updateLayoutHorizon( _root );
 			updateLayoutVertical( _root );
 			translateNode( _root );
 			if ( historyPoint ) _root.setPoint( historyPoint.x, historyPoint.y );
-			var expandoptions = minder.getOptions( 'defaultExpand' );
-			var cur_layer = 0;
-			var expand_layer = expandoptions.defaultLayer;
+			//渲染首层节点
 			var mains = _root.getChildren();
 			for ( var i = 0; i < mains.length; i++ ) {
 				this.appendChildNode( _root, mains[ i ] );
-			}
-			cur_layer++;
-			//创建一级节点的副本
-			var _buffer = ( function () {
-				var items = [];
-				for ( var i = 0; i < mains.length; i++ ) {
-					items.push( mains[ i ] );
+				if ( mains[ i ].isExpanded() && ( mains[ i ].getChildren().length > 0 ) ) {
+					minder.expandNode( mains[ i ] );
 				}
-				return items;
-			} )();
-			next = [];
-			var layer_nolimit = ( expand_layer < 1 ) || false;
-			var sub_nolimit = ( expandoptions.defaultSubShow < 1 ) || false;
-			var loopcontinue = function () {
-				return ( layer_nolimit ? ( _buffer.length !== 0 ) : ( _buffer.length !== 0 && cur_layer < expand_layer ) );
-			};
-			while ( loopcontinue() ) {
-				cur_layer++;
-				var layer_len = _buffer.length;
-				for ( var j = 0; j < layer_len; j++ ) {
-					var c = _buffer[ j ].getChildren();
-					if ( ( sub_nolimit || ( c.length <= expandoptions.defaultSubShow ) ) && c.length !== 0 ) {
-						this.expandNode( _buffer[ j ] );
-						_buffer = _buffer.concat( _buffer[ j ].getChildren() );
-					}
-				}
-				_buffer.splice( 0, layer_len );
 			}
 			_root.setPoint( _root.getLayout().x, _root.getLayout().y );
 		},
-		appendChildNode: function ( parent, node, focus, sibling ) {
-			if ( parent.getType() !== "root" && parent.getChildren().length !== 0 && parent.getData( "expand" ) === false ) {
-				minder.expandNode( parent );
+		expandNode: function ( ico ) {
+			var isExpand, node;
+			if ( ico instanceof MinderNode ) {
+				node = ico;
+				isExpand = node.getLayout().shicon.switchState();
+			} else {
+				isExpand = ico.icon.switchState();
+				node = ico.icon._node;
 			}
+			var _buffer;
+			if ( isExpand ) {
+				node.expand();
+				//遍历子树展开需要展开的节点
+				_buffer = [ node ];
+				while ( _buffer.length !== 0 ) {
+					var c = _buffer[ 0 ].getChildren();
+					if ( _buffer[ 0 ].isExpanded() && c.length !== 0 ) {
+						for ( var x = 0; x < c.length; x++ ) {
+							minder.appendChildNode( _buffer[ 0 ], c[ x ] );
+						}
+						_buffer = _buffer.concat( c );
+					}
+					_buffer.shift();
+				}
+			} else {
+				node.collapse();
+				//遍历子树移除需要移除的节点
+				_buffer = node.getChildren();
+				while ( _buffer.length !== 0 ) {
+					var Layout = _buffer[ 0 ].getLayout();
+					if ( Layout.added ) {
+						Layout.added = false;
+						_buffer[ 0 ].getRenderContainer().remove();
+						Layout.connect.remove();
+						if ( Layout.shicon ) Layout.shicon.remove();
+					}
+					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+					_buffer.shift();
+				}
+				var set = updateLayoutVertical( node, node.getParent(), "contract" );
+				for ( var i = 0; i < set.length; i++ ) {
+					translateNode( set[ i ] );
+					updateConnectAndshIcon( set[ i ] );
+				}
+			}
+		},
+		appendChildNode: function ( parent, node, focus, sibling ) {
 			minder.handelNodeInsert( node );
+			var Layout = node.getLayout();
 			node.clearLayout();
 			node.getContRc().clear();
-			node.setData( 'expand', false );
-			if ( parent.getType() !== 'root' ) {
-				parent.setData( 'expand', true );
-			}
-			var Layout = node.getLayout();
+			Layout = node.getLayout();
 			Layout.added = true;
 			var parentLayout = parent.getLayout();
 			var children = parent.getChildren();
@@ -3304,6 +3362,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this._firePharse( new MinderEvent( "RenderNodeTop", {
 				node: node
 			}, false ) );
+			this._firePharse( new MinderEvent( "RenderNode", {
+				node: node
+			}, false ) );
 			updateShapeByCont( node );
 			var set1 = updateLayoutVertical( node, parent, "append" );
 			var set2 = updateLayoutHorizon( node );
@@ -3316,6 +3377,8 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( focus ) {
 				showNodeInView( node );
 			}
+			var shicon = parent.getLayout().shicon;
+			if ( shicon ) shicon.switchState( true );
 		},
 		appendSiblingNode: function ( sibling, node, focus ) {
 			var parent = sibling.getParent();
@@ -3363,42 +3426,6 @@ KityMinder.registerModule( "LayoutDefault", function () {
 					}
 					_buffer.shift();
 				}
-			}
-		},
-		expandNode: function ( ico ) {
-			var isExpand, node;
-			if ( ico instanceof MinderNode ) {
-				node = ico;
-				isExpand = node.getLayout().shicon.switchState();
-			} else {
-				isExpand = ico.icon.switchState();
-				node = ico.icon._node;
-			}
-			node.setData( "expand", isExpand );
-			var _buffer = node.getChildren();
-			if ( isExpand ) {
-				for ( var j = 0; j < _buffer.length; j++ ) {
-					minder.appendChildNode( node, _buffer[ j ] );
-				}
-			} else {
-				var _buffer = node.getChildren();
-				while ( _buffer.length !== 0 ) {
-					var Layout = _buffer[ 0 ].getLayout();
-					if ( Layout.added ) {
-						Layout.added = false;
-						_buffer[ 0 ].getRenderContainer().remove();
-						Layout.connect.remove();
-						if ( Layout.shicon ) Layout.shicon.remove();
-					}
-					_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
-					_buffer.shift();
-				}
-			}
-			var set = [];
-			if ( !isExpand ) set = updateLayoutVertical( node, node.getParent(), "contract" );
-			for ( var i = 0; i < set.length; i++ ) {
-				translateNode( set[ i ] );
-				updateConnectAndshIcon( set[ i ] );
 			}
 		}
 	};
@@ -4131,13 +4158,14 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown readonly.beforemousedown', function ( e ) {
+        this._minder.on( 'normal.beforemousedown readonly.beforemousedown readonly.beforetouchstart', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
                 dragger.setEnabled( true );
                 isRootDrag = true;
+                e.originEvent.preventDefault();
                 var me = this;
                 setTimeout( function () {
                     me.setStatus( 'hand' );
@@ -4145,16 +4173,15 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'hand.beforemousedown', function ( e ) {
+        .on( 'hand.beforemousedown hand.beforetouchend', function ( e ) {
             // 已经被用户打开拖放模式
             if ( dragger.isEnabled() ) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
-                e.originEvent.preventDefault();
             }
         } )
 
-        .on( 'hand.beforemousemove', function ( e ) {
+        .on( 'hand.beforemousemove hand.beforetouchmove', function ( e ) {
             if ( lastPosition ) {
                 currentPosition = e.getPosition();
 
@@ -4162,6 +4189,8 @@ var ViewDragger = kity.createClass( "ViewDragger", {
                 var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
                 dragger.move( offset );
                 e.stopPropagation();
+                e.preventDefault();
+                e.originEvent.preventDefault();
                 lastPosition = currentPosition;
             }
         } )
@@ -4206,7 +4235,7 @@ KityMinder.registerModule( 'View', function () {
         base: Command,
         execute: function ( km, focusNode ) {
             var viewport = km.getPaper().getViewPort();
-            var offset = focusNode.getRenderContainer().getRenderBox( 'paper' );
+            var offset = focusNode.getRenderContainer().getRenderBox( 'view' );
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
@@ -4286,6 +4315,9 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 			node = nodes[ i ];
 			if ( node.getParent() ) {
 				minder.removeNode( [ node ] );
+				if ( !parent.isExpanded() && parent.getChildren().length > 0 && parent.getType() !== 'root' ) {
+					minder.expandNode( parent );
+				}
 				minder.appendChildNode( parent, node );
 			}
 		}
@@ -4778,11 +4810,11 @@ KityMinder.registerModule( "KeyboardModule", function () {
                 case keys.Backspace:
                 case keys.Del:
                     e.preventDefault();
-                    if ( this.queryCommandState( 'removenode' ) !== -1 ) this.execCommand( 'removenode' );
+                    this.execCommand( 'removenode' );
                     break;
                 case keys.F2:
                     e.preventDefault();
-                    if ( this.queryCommandState( 'editnode' ) !== -1 ) this.execCommand( 'editnode' );
+                    this.execCommand( 'editnode' );
                     break;
 
                 case keys.Left:
@@ -4971,8 +5003,33 @@ KityMinder.registerModule( "TextEditModule", function () {
         return km.receiver.isTextEditStatus();
     };
 
+    km.textEditNode = function(node){
+        var textShape = node.getTextShape();
+        this.setStatus('textedit');
+        sel.setHide();
+        sel.setStartOffset(0);
+        sel.setEndOffset(textShape.getContent().length);
+
+        receiver.setTextEditStatus(true)
+            .setSelection(sel)
+            .setKityMinder(this)
+            .setMinderNode(node)
+            .setTextShape(textShape)
+            .setRange(range)
+            .setBaseOffset()
+            .setContainerStyle()
+            .setSelectionHeight()
+            .setContainerTxt(textShape.getContent())
+            .updateTextData()
+            .updateSelectionShow()
+            .updateRange(range).setTextEditStatus(true);
+
+
+        sel.setData('relatedNode',node);
+    };
     var selectionByClick = false;
 
+    var dragmoveTimer;
     return {
         "events": {
             //插入光标
@@ -5014,7 +5071,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setBaseOffset()
                             .setContainerStyle()
                             .setSelectionHeight()
-                            .setCurrentIndex(e.getPosition())
+                            .setCurrentIndex(e.getPosition(this.getRenderContainer()))
                             .updateSelection()
                             .setRange(range);
                         sel.setData('relatedNode',node);
@@ -5024,13 +5081,61 @@ KityMinder.registerModule( "TextEditModule", function () {
                             sel.setShow();
                             selectionByClick = false;
                         }
-                        km.setStatus('textedit')
+                        km.setStatus('textedit');
+                        lastMousedownTimer = +new Date;
+                    }
+                }
+            },
+            //当输入键值是内容时，进入textedit状态
+            'normal.beforekeydown':function(e){
+                var node = this.getSelectedNode();
+                if(node){
+                    if ( this.isSingleSelect() && node.isSelected()) {
+                        var keyCode = e.originEvent.keyCode;
+                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount != 0){
+                            var nativeRange = range.nativeSel.getRangeAt(0);
+                            if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer )))
+                                km.setStatus('textedit')
+                        }
+                    }
+                }
+            },
+            //当节点选区通过键盘发生变化时，输入状态要准备好
+            'normal.keyup':function(e){
+                var node = this.getSelectedNode();
+                if(node){
+                    if ( this.isSingleSelect() && node.isSelected()) {
+                        var keyCode = e.originEvent.keyCode;
+                        if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit'){
+                           //准备输入状态
+                            var textShape = node.getTextShape();
+
+                            sel.setHide();
+                            sel.setStartOffset(0);
+                            sel.setEndOffset(textShape.getContent().length);
+
+                            receiver.setTextEditStatus(true)
+                                .setSelection(sel)
+                                .setKityMinder(this)
+                                .setMinderNode(node)
+                                .setTextShape(textShape)
+                                .setRange(range)
+                                .setBaseOffset()
+                                .setContainerStyle()
+                                .setSelectionHeight()
+                                .setContainerTxt(textShape.getContent())
+                                .updateRange(range).setTextEditStatus(true);
+
+                            sel.setData('relatedNode',node);
+                        }
                     }
                 }
             },
             'normal.mouseup textedit.mouseup':function(e){
+
                 if(mouseDownStatus){
                     if(!sel.collapsed ){
+
                         try{
                             receiver.updateRange(range)
                         }catch(e){
@@ -5039,7 +5144,36 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     }else
                        sel.setShow()
+                }else{
+                    //当选中节点后，输入状态准备
+                    var node = e.getTargetNode();
+                    if(node){
+                        if ( this.isSingleSelect() && node.isSelected()) {
+                            //准备输入状态
+                            var textShape = node.getTextShape();
+
+                            sel.setHide();
+                            sel.setStartOffset(0);
+                            sel.setEndOffset(textShape.getContent().length);
+
+                            receiver.setTextEditStatus(true)
+                                .setSelection(sel)
+                                .setKityMinder(this)
+                                .setMinderNode(node)
+                                .setTextShape(textShape)
+                                .setRange(range)
+                                .setBaseOffset()
+                                .setContainerStyle()
+                                .setSelectionHeight()
+                                .setContainerTxt(textShape.getContent())
+                                .updateRange(range).setTextEditStatus(true);
+
+                            sel.setData('relatedNode',node);
+
+                        }
+                    }
                 }
+
 
                 mouseDownStatus = false;
                 oneTime = 0;
@@ -5048,10 +5182,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(mouseDownStatus){
                     e.stopPropagationImmediately();
 
-                    var offset = e.getPosition();
-
-                    if(Math.abs(offset.y - lastEvtPosition.y) >= 1 && Math.abs(lastEvtPosition.x - offset.x) <= 1 ){
-
+                    var offset = e.getPosition(this.getRenderContainer());
+                    if(Math.abs(offset.y - lastEvtPosition.y) >= 2 && Math.abs(lastEvtPosition.x - offset.x) <= 2 ){
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
@@ -5089,45 +5221,45 @@ KityMinder.registerModule( "TextEditModule", function () {
                 sel.setHide();
             },
             "execCommand": function( e ) {
-                var cmds = {
-                    'appendchildnode' : 1,
-                    'appendsiblingnode' : 1,
-                    'editnode' : 1
-                };
-                if ( cmds[ e.commandName ] ){
-
-                    var node = km.getSelectedNode();
-                    if( !node ){
-                        return;
-                    }
-
-                    var textShape = node.getTextShape();
-
-                    textShape.setStyle('cursor','default');
-                    node.getTextShape().setStyle('cursor','text');
-                    km.setStatus('textedit');
-                    receiver.setTextEditStatus(true)
-                        .setSelection(sel)
-                        .setKityMinder(this)
-                        .setMinderNode(node)
-                        .setTextShape(textShape)
-                        .setBaseOffset()
-                        .setContainerStyle()
-                        .setSelectionHeight()
-                        .getTextOffsetData()
-                        .setIndex(0)
-                        .updateSelection()
-                        .setRange(range);
-
-                    sel.setStartOffset(0);
-                    sel.setEndOffset(textShape.getContent().length);
-                    sel.setShow();
-
-                    receiver.updateSelectionShow(1)
-                        .updateRange(range);
-                    return;
-
-                }
+//                var cmds = {
+//                    'appendchildnode' : 1,
+//                    'appendsiblingnode' : 1,
+//                    'editnode' : 1
+//                };
+//                if ( cmds[ e.commandName ] ){
+//
+//                    var node = km.getSelectedNode();
+//                    if( !node ){
+//                        return;
+//                    }
+//
+//                    var textShape = node.getTextShape();
+//
+//                    textShape.setStyle('cursor','default');
+//                    node.getTextShape().setStyle('cursor','text');
+//                    km.setStatus('textedit');
+//                    receiver.setTextEditStatus(true)
+//                        .setSelection(sel)
+//                        .setKityMinder(this)
+//                        .setMinderNode(node)
+//                        .setTextShape(textShape)
+//                        .setBaseOffset()
+//                        .setContainerStyle()
+//                        .setSelectionHeight()
+//                        .getTextOffsetData()
+//                        .setIndex(0)
+//                        .updateSelection()
+//                        .setRange(range);
+//
+//                    sel.setStartOffset(0);
+//                    sel.setEndOffset(textShape.getContent().length);
+//                    sel.setShow();
+//
+//                    receiver.updateSelectionShow(1)
+//                        .updateRange(range);
+//                    return;
+//
+//                }
 
                 if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
 
@@ -5415,9 +5547,11 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
     updateIndex: function () {
         this.index = this.range.getStart().startOffset;
+        return this;
     },
     updateTextData: function () {
         this.textShape.textData = this.getTextOffsetData();
+        return this;
     },
     setSelection: function ( selection ) {
         this.selection = selection;
@@ -5566,7 +5700,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             endOffset = this.textData[ this.selection.endOffset ],
             width = 0;
         if ( this.selection.collapsed ) {
-            this.selection.updateShow( startOffset || this.textData[ this.textData.length - 1 ], 0 );
+            this.selection.updateShow( startOffset || this.textData[ this.textData.length - 1 ],1 );
             return this;
         }
         if ( !endOffset ) {
@@ -5697,7 +5831,9 @@ Minder.Selection = kity.createClass( 'Selection', {
         var me = this,
             state = '';
         me.setStyle( 'display', '' );
+
         if(this.collapsed){
+            me.setOpacity(1);
             this.timer = setInterval( function () {
                 me.setStyle( 'display', state );
                 state = state ? '' : 'none';
@@ -6061,27 +6197,21 @@ KityMinder.registerModule( "NodeText", function () {
 } );
 
 KityMinder.registerModule( "hyperlink", function () {
-
-	return {
-		"commands": {
-			"createlink" : kity.createClass( "hyperlink", {
+    var linkShapePath = "M16.614,10.224h-1.278c-1.668,0-3.07-1.07-3.599-2.556h4.877c0.707,0,1.278-0.571,1.278-1.278V3.834 c0-0.707-0.571-1.278-1.278-1.278h-4.877C12.266,1.071,13.668,0,15.336,0h1.278c2.116,0,3.834,1.716,3.834,3.834V6.39 C20.448,8.508,18.73,10.224,16.614,10.224z M5.112,5.112c0-0.707,0.573-1.278,1.278-1.278h7.668c0.707,0,1.278,0.571,1.278,1.278 S14.765,6.39,14.058,6.39H6.39C5.685,6.39,5.112,5.819,5.112,5.112z M2.556,3.834V6.39c0,0.707,0.573,1.278,1.278,1.278h4.877 c-0.528,1.486-1.932,2.556-3.599,2.556H3.834C1.716,10.224,0,8.508,0,6.39V3.834C0,1.716,1.716,0,3.834,0h1.278 c1.667,0,3.071,1.071,3.599,2.556H3.834C3.129,2.556,2.556,3.127,2.556,3.834z";
+    return {
+        "commands": {
+            "hyperlink": kity.createClass( "hyperlink", {
                 base: Command,
 
-                execute: function (url) {
-
+                execute: function ( km, url ) {
                     var nodes = km.getSelectedNodes();
-                    if ( this.queryState( 'hyperlink' ) == 1 ) {
-                        utils.each( nodes, function ( i, n ) {
-                            n.setData( 'hyperlink' );
+                    utils.each( nodes, function ( i, n ) {
+                        n.setData( 'hyperlink', url );
+                        km.updateLayout( n )
+                    } )
 
-                        } )
-                    } else {
-                        utils.each( nodes, function ( i, n ) {
-                            n.setData( 'hyperlink', url );
-                        } )
-                    }
                 },
-                queryState: function () {
+                queryState: function ( km ) {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
                     if ( nodes.length == 0 ) {
@@ -6089,28 +6219,292 @@ KityMinder.registerModule( "hyperlink", function () {
                     }
                     utils.each( nodes, function ( i, n ) {
                         if ( n && n.getData( 'hyperlink' ) ) {
-                            result = 1;
+                            result = 0;
                             return false;
                         }
                     } );
                     return result;
+                },
+                queryValue: function ( km ) {
+                    var node = km.getSelectedNode();
+                    return node.getData( 'hyperlink' );
+                }
+            } ),
+            "unhyperlink": kity.createClass( "hyperlink", {
+                base: Command,
+
+                execute: function ( km ) {
+                    var nodes = km.getSelectedNodes();
+                    utils.each( nodes, function ( i, n ) {
+                        n.setData( 'hyperlink' );
+                        km.updateLayout( n )
+                    } )
+                },
+                queryState: function ( km ) {
+                    var nodes = km.getSelectedNodes();
+
+                    if ( nodes.length == 0 ) {
+                        return -1;
+                    }
+                    var link = false;
+                    utils.each( nodes, function ( i, n ) {
+                        if ( n.getData( 'hyperlink' ) ) {
+                            link = true;
+                            return false;
+                        }
+                    } );
+                    if ( link ) {
+                        return 0
+                    }
+                    return -1;
                 }
             } )
-		},
-		"events": {
-			"RenderNodeRight": function ( e ) {
-		        var node = e.node,url;
-                if(url = node.getData('h')){
-                    var link = new kity.HyperLink(url);
-                    var rect = new kity.Rect();
+        },
+        "events": {
+            "RenderNodeRight": function ( e ) {
+                var node = e.node,
+                    url;
+                if ( url = node.getData( 'hyperlink' ) ) {
+                    var link = new kity.HyperLink( url );
+                    var linkshape = new kity.Path();
                     var box = node.getContRc().getBoundaryBox();
-                    rect.setWidth(10).setHeight(10).fill('#ccc').setPosition(box.x + box.width + 2,rect.getHeight()/-2);
-                    link.appendChild(rect);
-                    node.getContRc().appendChild(link);
+                    var style = this.getCurrentLayoutStyle()[ node.getType() ];
+                    linkshape.setPathData( linkShapePath ).fill( '#666' ).setTranslate( box.x + box.width + style.spaceLeft, -5 );
+                    link.addShape( linkshape );
+                    link.setTarget( '_blank' );
+                    link.setStyle( 'cursor', 'pointer' );
+                    node.getContRc().addShape( link );
 
                 }
-			}
+            }
+        }
+    };
+} );
+
+KityMinder.registerModule( "Expand", function () {
+	var EXPAND_STATE_DATA = 'expandState',
+		STATE_EXPAND = 'expand',
+		STATE_COLLAPSE = 'collapse';
+
+	var layerTravel = function ( root, fn ) {
+		var _buffer = [ root ];
+		while ( _buffer.length !== 0 ) {
+			fn( _buffer[ 0 ] );
+			_buffer = _buffer.concat( _buffer[ 0 ].getChildren() );
+			_buffer.shift();
 		}
+	}
+
+	// var getCommonParents = function ( nodes ) {
+	// 	var _buffer = [];
+	// 	var resultSet = [];
+	// 	for ( var i = 0; i < nodes.length; i++ ) {
+	// 		_buffer.push( nodes[ i ] );
+	// 	}
+	// 	while ( _buffer.length !== 0 ) {
+	// 		var parent = _buffer[ 0 ].getParent();
+	// 		if ( parent.getType() === 'root' || _buffer.length === 1 ) {
+	// 			resultSet.push( _buffer[ 0 ] );
+	// 		} else {
+	// 			if ( _buffer.indexOf( parent ) === -1 ) {
+	// 				_buffer.push( parent );
+	// 			}
+	// 		}
+	// 		_buffer.shift();
+	// 	}
+	// 	return resultSet;
+	// }
+
+
+	// var setOptionValue = function ( root, layer, sub ) {
+	// 	var cur_layer = 1;
+	// 	var _buffer = root.getChildren();
+	// 	while ( cur_layer < layer ) {
+	// 		var layer_len = _buffer.length;
+	// 		for ( var i = 0; i < layer_len; i++ ) {
+	// 			var c = _buffer[ i ].getChildren();
+	// 			if ( c.length < sub || ( !sub ) ) {
+	// 				_buffer[ i ].expand();
+	// 				_buffer = _buffer.concat( c );
+	// 			}
+	// 		}
+	// 		_buffer.splice( 0, layer_len );
+	// 		cur_layer++;
+	// 	}
+	// }
+	/**
+	 * 该函数返回一个策略，表示递归到节点指定的层数
+	 *
+	 * 返回的策略表示把操作（展开/收起）进行到指定的层数
+	 * 也可以给出一个策略指定超过层数的节点如何操作，默认不进行任何操作
+	 *
+	 * @param {int} deep_level 指定的层数
+	 * @param {Function} policy_after_level 超过的层数执行的策略
+	 */
+		function generateDeepPolicy( deep_level, policy_after_level ) {
+
+			return function ( node, state, policy, level ) {
+				var children, child, i;
+
+				node.setData( EXPAND_STATE_DATA, state );
+				level = level || 1;
+
+				children = node.getChildren();
+
+				for ( i = 0; i < children.length; i++ ) {
+					child = children[ i ];
+
+					if ( level <= deep_level ) {
+						policy( child, state, policy, level + 1 );
+					} else if ( policy_after_level ) {
+						policy_after_level( child, state, policy, level + 1 );
+					}
+				}
+
+			};
+		}
+
+		/**
+		 * 节点展开和收缩的策略常量
+		 *
+		 * 策略是一个处理函数，处理函数接受 3 个参数：
+		 *
+		 * @param {MinderNode} node   要处理的节点
+		 * @param {Enum}       state  取值为 "expand" | "collapse"，表示要对节点进行的操作是展开还是收缩
+		 * @param {Function}   policy 提供当前策略的函数，方便递归调用
+		 */
+	var EXPAND_POLICY = MinderNode.EXPAND_POLICY = {
+
+		/**
+		 * 策略 1：只修改当前节点的状态，不递归子节点的状态
+		 */
+		KEEP_STATE: function ( node, state, policy ) {
+			node.setData( EXPAND_STATE_DATA, state );
+		},
+
+		generateDeepPolicy: generateDeepPolicy,
+
+		/**
+		 * 策略 2：把操作进行到儿子
+		 */
+		DEEP_TO_CHILD: generateDeepPolicy( 1 ),
+
+		/**
+		 * 策略 3：把操作进行到叶子
+		 */
+		DEEP_TO_LEAF: generateDeepPolicy( Number.MAX_VALUE )
+	};
+
+	// 将展开的操作和状态读取接口拓展到 MinderNode 上
+	kity.extendClass( MinderNode, {
+
+		/**
+		 * 使用指定的策略展开节点
+		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
+		 */
+		expand: function ( policy ) {
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
+			policy( this, STATE_EXPAND, policy );
+			return this;
+		},
+
+		/**
+		 * 使用指定的策略收起节点
+		 * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
+		 */
+		collapse: function ( policy ) {
+			policy = policy || EXPAND_POLICY.KEEP_STATE;
+			policy( this, STATE_COLLAPSE, policy );
+			return this;
+		},
+
+		/**
+		 * 判断节点当前的状态是否为展开
+		 */
+		isExpanded: function () {
+			return this.getData( EXPAND_STATE_DATA ) === STATE_EXPAND;
+		}
+	} );
+	var ExpandNodeCommand = kity.createClass( "ExpandNodeCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
+					layerTravel( km.getRoot(), function ( n ) {
+						n.expand();
+					} );
+					km.initStyle();
+				} else {
+					var selectedNode = km.getSelectedNode();
+					var children = selectedNode.getChildren();
+					if ( children.length === 0 ) {
+						return false;
+					}
+					layerTravel( selectedNode, function ( n ) {
+						if ( n !== selectedNode ) n.expand();
+					} );
+					if ( !selectedNode.isExpanded() ) {
+						km.expandNode( selectedNode );
+					} else {
+						km.expandNode( selectedNode );
+						km.expandNode( selectedNode );
+					}
+				}
+			},
+			queryState: function ( km ) {
+				return 0;
+			}
+		};
+	} )() );
+	var CollapseNodeCommand = kity.createClass( "CollapseNodeCommand", ( function () {
+		return {
+			base: Command,
+			execute: function ( km ) {
+				var selectedNodes = km.getSelectedNodes();
+				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
+					layerTravel( km.getRoot(), function ( n ) {
+						n.collapse();
+					} );
+					km.initStyle();
+				} else {
+					var selectedNode = km.getSelectedNode();
+					var children = selectedNode.getChildren();
+					if ( children.length === 0 ) {
+						return false;
+					}
+					if ( selectedNode.isExpanded() ) {
+						layerTravel( selectedNode, function ( n ) {
+							if ( n !== selectedNode ) n.collapse();
+						} );
+						km.expandNode( selectedNode );
+					}
+				}
+			},
+			queryState: function ( km ) {
+				return 0;
+			}
+
+		};
+	} )() );
+	return {
+		'events': {
+			'beforeimport': function ( e ) {
+				// var _root = this.getRoot();
+				// var options = this.getOptions();
+				// var defaultExpand = options.defaultExpand;
+				//setOptionValue( _root, defaultExpand.defaultLayer, defaultExpand.defaultSubShow );
+			}
+		},
+		'addShortcutKeys': {
+			"ExpandNode": "ctrl+/", //expand
+			"CollapseNode": "ctrl+." //collapse
+		},
+		'commands': {
+			'ExpandNode': ExpandNodeCommand,
+			'CollapseNode': CollapseNodeCommand
+		}
+
 	};
 } );
 
@@ -7863,7 +8257,13 @@ utils.extend( KityMinder, function () {
 
             pro.root( $widget.kmui().getBodyContainer() );
 
+            //清除光标
+            km.fire('selectionclear');
             pro.initContent( km, $widget );
+            //在dialog上阻止键盘冒泡，导致跟编辑输入冲突的问题
+            $widget.on('keydown keyup keypress',function(e){
+                e.stopPropagation()
+            });
             if ( !pro._preventDefault ) {
                 pro.initEvent( km, $widget );
             }
@@ -7876,7 +8276,7 @@ utils.extend( KityMinder, function () {
     }
 }() );
 
-KM.registerToolbarUI( 'bold italic redo undo',
+KM.registerToolbarUI( 'bold italic redo undo unhyperlink expandnode collapsenode hand zoom-in zoom-out',
     function ( name ) {
         var me = this;
         var $btn = $.kmuibutton( {
@@ -8174,24 +8574,6 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
 
 } );
 
-KM.registerToolbarUI( 'hand zoom-in zoom-out',
-    function ( name ) {
-        var me = this;
-        var $btn = $.kmuibutton( {
-            icon: name,
-            click: function () {
-                me.execCommand( name );
-            },
-            title: this.getLang( 'tooltips.' )[ name ] || ''
-        } );
-        me.on('interactchange', function() {
-            var state = me.queryCommandState( name );
-            $btn.kmui().disabled( state == -1 ).active( state == 1 );
-        });
-        return $btn;
-    }
-);
-
 KM.registerUI( 'tooltips',
     function ( name ) {
         var km = this;
@@ -8229,16 +8611,16 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
             itemStyles: [],
             value: me.getLayoutStyleItems(),
             autowidthitem: [],
-            enabledRecord:false
+            enabledRecord: false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
         return null;
     }
 
-    utils.each(options.items,function(i,item){
-        options.items[i] = me.getLang('layout')[item];
-    });
+    utils.each( options.items, function ( i, item ) {
+        options.items[ i ] = me.getLang( 'layout' )[ item ];
+    } );
     //实例化
     $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
     var comboboxWidget = $combox.kmui();
@@ -8268,19 +8650,19 @@ KM.registerToolbarUI( 'switchlayout', function ( name ) {
     } );
 
     var data = [];
-    utils.each(me.getLayoutStyleItems(),function(i,v){
-        data.push({
-            label:me.getLang( 'tooltips.' + name  ) + ' ' + v,
-            cmdName:'switchlayout',
-            exec:function(){
-                me.execCommand('switchlayout',v);
+    utils.each( me.getLayoutStyleItems(), function ( i, v ) {
+        data.push( {
+            label: me.getLang( 'tooltips.' + name ) + ' ' + v,
+            cmdName: 'switchlayout',
+            exec: function () {
+                me.execCommand( 'switchlayout', v );
             }
-        })
-    });
-    data.push({
-        divider:1
-    });
-    me.addContextmenu(data);
+        } )
+    } );
+    data.push( {
+        divider: 1
+    } );
+    me.addContextmenu( data );
     return comboboxWidget.button().addClass( 'kmui-combobox' );
 } );
 
@@ -8303,7 +8685,8 @@ KM.registerToolbarUI( 'node', function ( name ) {
             itemStyles: [],
             value: [],
             autowidthitem: [],
-            enabledRecord: false
+            enabledRecord: false,
+            enabledSelected: false
         },
         $combox = null;
     if ( options.items.length == 0 ) {
@@ -8396,19 +8779,25 @@ KM.registerUI( 'contextmenu', function () {
     });
     me.$container.append($menu);
     me.on('contextmenu',function(e){
+        var node = e.getTargetNode();
+        if(node){
+            this.removeAllSelectedNodes();
+            this.select(node)
+        }
+
+
         var items = me.getContextmenu();
         var data = [];
 
         utils.each(items,function(i,item){
             if(item.divider){
-                data.push(item)
+                data.length &&  data.push(item);
                 return;
             }
             if(me.queryCommandState(item.cmdName)!=-1){
                 data.push({
                     label:item.label,
                     value:item.cmdName
-
                 })
             }
         });
@@ -8420,10 +8809,8 @@ KM.registerUI( 'contextmenu', function () {
             $menu.kmui().setData({
                 data:data
             }).position(e.getPosition()).show();
-
-
-            e.preventDefault()
         }
+        e.preventDefault()
 
     });
     me.on('click',function(){
@@ -8484,6 +8871,53 @@ KM.registerToolbarUI( 'markers help preference', function ( name ) {
     return $btn;
 } );
 
+KM.registerToolbarUI( 'hyperlink', function ( name ) {
+
+    var me = this,
+        currentRange, $dialog,
+        opt = {
+            title: this.getLang( 'tooltips' )[ name ] || '',
+            url: me.getOptions( 'KITYMINDER_HOME_URL' ) + 'dialogs/' + name + '/' + name + '.js'
+
+        };
+
+    var $btn = $.kmuibutton( {
+        icon: name,
+        title: this.getLang( 'tooltips' )[ name ] || ''
+    } );
+    //加载模版数据
+    utils.loadFile( document, {
+        src: opt.url,
+        tag: "script",
+        type: "text/javascript",
+        defer: "defer"
+    }, function () {
+
+        $dialog = $.kmuimodal( opt );
+
+        $dialog.attr( 'id', 'kmui-dialog-' + name ).addClass( 'kmui-dialog-' + name )
+            .find( '.kmui-modal-body' ).addClass( 'kmui-dialog-' + name + '-body' );
+
+        $dialog.kmui().on( 'beforeshow', function () {
+            var $root = this.root(),
+                win = null,
+                offset = null;
+            if ( !$root.parent()[ 0 ] ) {
+                me.$container.find( '.kmui-dialog-container' ).append( $root );
+            }
+            KM.setWidgetBody( name, $dialog, me );
+        } ).attachTo( $btn );
+
+
+    } );
+
+    me.on( 'interactchange', function () {
+        var state = this.queryCommandState( name );
+        $btn.kmui().disabled( state == -1 ).active( state == 1 )
+    } );
+    return $btn;
+} );
+
 /*
 
     http://www.xmind.net/developer/
@@ -8534,6 +8968,11 @@ KityMinder.registerProtocal( 'xmind', function () {
             }
         }
 
+        // 处理超链接
+        if(topic['xlink:href']){
+            obj.data.hyperlink = topic['xlink:href'];
+        }
+
         //处理子节点
         if( topic.children && topic.children.topics && topic.children.topics.topic ){
             var tmp = topic.children.topics.topic;
@@ -8567,33 +9006,33 @@ KityMinder.registerProtocal( 'xmind', function () {
         }, onerror);
     }
 
-	return {
-		fileDescription: 'xmind格式文件',
-		fileExtension: '.xmind',
+    return {
+        fileDescription: 'xmind格式文件',
+        fileExtension: '.xmind',
         
-		decode: function ( local ) {
+        decode: function ( local ) {
 
-		    return {
-		    	then : function(local, callback){
+            return {
+                then : function(local, callback){
 
-				    getEntries( local, function( entries ) {
-				        entries.forEach(function( entry ) {
-				            if(entry.filename == 'content.xml'){
-				                entry.getData(new zip.TextWriter(), function(text) {
-				                    var km = xml2km($.parseXML(text));
-				                    callback && callback( km );
-				                });
-				            }
-				        });
-				    });
-		    	}
-		    };
+                    getEntries( local, function( entries ) {
+                        entries.forEach(function( entry ) {
+                            if(entry.filename == 'content.xml'){
+                                entry.getData(new zip.TextWriter(), function(text) {
+                                    var km = xml2km($.parseXML(text));
+                                    callback && callback( km );
+                                });
+                            }
+                        });
+                    });
+                }
+            };
 
-		},
-		// recognize: recognize,
-		recognizePriority: -1
-	};
-	
+        },
+        // recognize: recognize,
+        recognizePriority: -1
+    };
+    
 } );
 
 
@@ -8642,6 +9081,11 @@ KityMinder.registerProtocal( 'freemind', function () {
             }
         }
         
+        // 处理超链接
+        if(topic.LINK){
+            obj.data.hyperlink = topic.LINK;
+        }
+
         //处理子节点
         if( topic.node ){
 
@@ -8668,19 +9112,19 @@ KityMinder.registerProtocal( 'freemind', function () {
         return result;
     }
 
-	return {
-		fileDescription: 'xmind格式文件',
-		fileExtension: '.xmind',
+    return {
+        fileDescription: 'xmind格式文件',
+        fileExtension: '.xmind',
 
-		decode: function ( local ) {
+        decode: function ( local ) {
             var json = xml2km( local );
 
-		    return json;
-		},
-		// recognize: recognize,
-		recognizePriority: -1
-	};
-	
+            return json;
+        },
+        // recognize: recognize,
+        recognizePriority: -1
+    };
+    
 } );
 
 
@@ -8729,6 +9173,11 @@ KityMinder.registerProtocal( 'mindmanager', function () {
                 type = markerMap[ topic.Task.TaskPercentage ];
                 type && ( obj.data[ type[ 0 ] ] = type[ 1 ] );
             }
+        }
+
+        // 处理超链接
+        if ( topic.Hyperlink ) {
+            obj.data.hyperlink = topic.Hyperlink.Url;
         }
 
         //处理子节点

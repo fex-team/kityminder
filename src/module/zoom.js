@@ -1,117 +1,130 @@
 KityMinder.registerModule( 'Zoom', function () {
     var me = this;
-    me.setOptions('zoom',[50,80,100,120,150,200]);
 
-	var MAX_ZOOM = 2,
-		MIN_ZOOM = kity.Browser.chrome ? 1 : 0.5,
-		ZOOM_STEP = Math.sqrt( 2 );
+    var timeline;
 
-	function zoom( minder, rate ) {
-		var paper = minder.getPaper();
-		var viewbox = paper.getViewBox();
-		var zoomValue = minder._zoomValue;
-		var w = viewbox.width,
-			h = viewbox.height,
-			x = viewbox.x,
-			y = viewbox.y;
-		var ww = w * rate,
-			hh = h * rate,
-			xx = x + ( w - ww ) / 2,
-			yy = y + ( h - hh ) / 2;
-		var animator = new kity.Animator( {
-			beginValue: viewbox,
-			finishValue: {
-				width: ww,
-				height: hh,
-				x: xx,
-				y: yy
-			},
-			setter: function ( target, value ) {
-				target.setViewBox( value.x, value.y, value.width, value.height );
-			}
-		} );
+    me.setOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
 
-		animator.start( paper, 500, 'ease' );
-		minder._zoomValue = zoomValue *= rate;
-	}
+    function zoomMinder( minder, zoom ) {
+        var paper = minder.getPaper();
+        var viewport = paper.getViewPort();
 
-	var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
-		base: Command,
-		execute: function ( minder ) {
-			if ( !this.queryState( minder ) ) {
-				zoom( minder, 1 / ZOOM_STEP );
-			}
-		},
-		queryState: function ( minder ) {
-			return ( minder._zoomValue > 1 / MAX_ZOOM ) ? 0 : -1;
-		},
-        enableReadOnly : false
-	} );
+        if ( !zoom ) return;
 
-	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
-		base: Command,
-		execute: function ( minder ) {
-			if ( !this.queryState( minder ) ) {
-				zoom( minder, ZOOM_STEP );
-			}
-		},
-		queryState: function ( minder ) {
-			return ( minder._zoomValue < 1 / MIN_ZOOM ) ? 0 : -1;
-		},
-        enableReadOnly : false
-	} );
+        var animator = new kity.Animator( {
+            beginValue: viewport.zoom,
+            finishValue: zoom / 100,
+            setter: function ( target, value ) {
+                viewport.zoom = value;
+                target.setViewPort( viewport );
+            }
+        } );
+        minder.zoom = zoom;
+        if ( timeline ) {
+            timeline.pause();
+        }
+        timeline = animator.start( paper, 500, 'ease' );
+    }
 
-	return {
-		commands: {
-			'zoom-in': ZoomInCommand,
-			'zoom-out': ZoomOutCommand
-		},
+    var ZoomCommand = kity.createClass( 'Zoom', {
+        base: Command,
+        execute: zoomMinder,
+        queryValue: function ( minder ) {
+            return minder.zoom;
+        }
+    } );
 
+    var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
+        base: Command,
+        execute: function ( minder ) {
+            zoomMinder( minder, this.nextValue( minder ) );
+        },
+        queryState: function ( minder ) {
+            return ~this.nextValue( minder );
+        },
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
+                i;
+            for ( i = 0; i < stack.length; i++ ) {
+                if ( stack[ i ] > minder.zoom ) return stack[ i ];
+            }
+            return 0;
+        },
+        enableReadOnly: false
+    } );
 
-		events: {
-			'normal.keydown': function ( e ) {
-				var me = this;
-				var originEvent = e.originEvent;
-				var keyCode = originEvent.keyCode || originEvent.which;
-				if ( keymap[ '=' ] == keyCode ) {
-					me.execCommand( 'zoom-in' );
-				}
-				if ( keymap[ '-' ] == keyCode ) {
-					me.execCommand( 'zoom-out' );
+    var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
+        base: Command,
+        execute: function ( minder ) {
+            zoomMinder( minder, this.nextValue( minder ) );
+        },
+        queryState: function ( minder ) {
+            return ~this.nextValue( minder );
+        },
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
+                i;
+            for ( i = stack.length - 1; i >= 0; i-- ) {
+                if ( stack[ i ] < minder.zoom ) return stack[ i ];
+            }
+            return 0;
+        },
+        enableReadOnly: false
+    } );
 
-				}
-			},
-			'ready': function () {
-				this._zoomValue = 1;
-			},
-			'normal.mousewheel readonly.mousewheel': function ( e ) {
-				if ( !e.originEvent.ctrlKey ) return;
-				var delta = e.originEvent.wheelDelta;
-				var me = this;
+    return {
+        init: function () {
+            this.zoom = 100;
+        },
+        commands: {
+            'zoom-in': ZoomInCommand,
+            'zoom-out': ZoomOutCommand,
+            'zoom': ZoomCommand
+        },
+        events: {
+            'normal.keydown': function ( e ) {
+                var me = this;
+                var originEvent = e.originEvent;
+                var keyCode = originEvent.keyCode || originEvent.which;
+                if ( keymap[ '=' ] == keyCode ) {
+                    me.execCommand( 'zoom-in' );
+                }
+                if ( keymap[ '-' ] == keyCode ) {
+                    me.execCommand( 'zoom-out' );
 
-				if ( !kity.Browser.mac ) {
-					delta = -delta;
-				}
+                }
+            },
+            'ready': function () {
+                this._zoomValue = 1;
+            },
+            'normal.mousewheel readonly.mousewheel': function ( e ) {
+                if ( !e.originEvent.ctrlKey ) return;
+                var delta = e.originEvent.wheelDelta;
+                var me = this;
 
-				// 稀释
-				if ( Math.abs( delta ) > 100 ) {
-					clearTimeout( this._wheelZoomTimeout );
-				} else {
-					return;
-				}
+                if ( !kity.Browser.mac ) {
+                    delta = -delta;
+                }
 
-				this._wheelZoomTimeout = setTimeout( function () {
-					var value;
-					var lastValue = me.getPaper()._zoom || 1;
-					if ( delta < 0 ) {
-						me.execCommand( 'zoom-in' );
-					} else if ( delta > 0 ) {
-						me.execCommand( 'zoom-out' );
-					}
-				}, 100 );
+                // 稀释
+                if ( Math.abs( delta ) > 100 ) {
+                    clearTimeout( this._wheelZoomTimeout );
+                } else {
+                    return;
+                }
 
-				e.originEvent.preventDefault();
-			}
-		}
-	};
+                this._wheelZoomTimeout = setTimeout( function () {
+                    var value;
+                    var lastValue = me.getPaper()._zoom || 1;
+                    if ( delta < 0 ) {
+                        me.execCommand( 'zoom-in' );
+                    } else if ( delta > 0 ) {
+                        me.execCommand( 'zoom-out' );
+                    }
+                }, 100 );
+
+                e.originEvent.preventDefault();
+            }
+        }
+    };
 } );

@@ -59,6 +59,10 @@ KityMinder.LANG[ 'zh-cn' ] = {
     'layout': {
         'default': '左右展开',
         'bottom': '向下展开'
+    },
+    'hyperlink':{
+        'hyperlink':'插入超链接',
+        'unhyperlink':"取消超链接"
     }
 
 };
