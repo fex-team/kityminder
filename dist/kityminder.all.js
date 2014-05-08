@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.0.0 - 2014-05-08
+ * kityminder - v1.0.0 - 2014-05-09
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -313,6 +313,21 @@ var utils = Utils = KityMinder.Utils = {
         }
         return target;
     },
+    unhtml:function (str, reg) {
+        return str ? str.replace(reg || /[&<">'](?:(amp|lt|quot|gt|#39|nbsp);)?/g, function (a, b) {
+            if (b) {
+                return a;
+            } else {
+                return {
+                    '<':'&lt;',
+                    '&':'&amp;',
+                    '"':'&quot;',
+                    '>':'&gt;',
+                    "'":'&#39;'
+                }[a]
+            }
+        }) : '';
+    }
 
 };
 
@@ -1130,7 +1145,7 @@ kity.extendClass( Minder, {
             return d;
         }
 
-        var t1 = ts( new Date(), '开始解析' );
+        //var t1 = ts( new Date(), '开始解析' );
         //*******************
 
         json = params.json || ( params.json = protocal.decode( local ) );
@@ -1139,20 +1154,20 @@ kity.extendClass( Minder, {
             var self = this;
             json.then( local, function ( data ) {
                 //*******************
-                var t2 = ts( new Date(), '解压解析耗时', t1 );
+                //var t2 = ts( new Date(), '解压解析耗时', t1 );
                 //*******************
                 self._afterImportData( data, params );
                 //*******************
-                ts( new Date(), '渲染耗时', t2 );
+                //ts( new Date(), '渲染耗时', t2 );
                 //*******************
             } );
         } else {
             //*******************
-            var t2 = ts( new Date(), '解压解析耗时', t1 );
+            //var t2 = ts( new Date(), '解压解析耗时', t1 );
             //*******************
             this._afterImportData( json, params );
             //*******************
-            ts( new Date(), '渲染耗时', t2 );
+            //ts( new Date(), '渲染耗时', t2 );
             //*******************
         }
         return this;
@@ -2584,7 +2599,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 					return null;
 				}
 				km.select( selectedNode, true );
-                km.textEditNode(selectedNode);
+				km.textEditNode( selectedNode );
 			},
 			queryState: function ( km ) {
 				var selectedNode = km.getSelectedNode();
@@ -2618,6 +2633,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 				var ico = e.kityEvent.targetShape && e.kityEvent.targetShape.container;
 				if ( ico && ico.class === "shicon" ) {
 					this.expandNode( ico );
+					this.fire( 'contentchange' );
 				}
 			},
 			"resize": function ( e ) {
@@ -3377,6 +3393,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( focus ) {
 				showNodeInView( node );
 			}
+			parent.expand();
 			var shicon = parent.getLayout().shicon;
 			if ( shicon ) shicon.switchState( true );
 		},
@@ -4158,20 +4175,20 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown readonly.beforemousedown readonly.beforetouchstart', function ( e ) {
+        this._minder.on( 'normal.mousedown readonly.mousedown readonly.touchstart', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
-                dragger.setEnabled( true );
                 isRootDrag = true;
-                e.originEvent.preventDefault();
-                var me = this;
-                setTimeout( function () {
-                    me.setStatus( 'hand' );
-                }, 1 );
             }
         } )
+
+        .on('normal.mousemove normal.touchmove', function (e) {
+            if (!isRootDrag) return;
+            var offset = kity.Vector.fromPoints( lastPosition, e.getPosition());
+            if (offset.length() > 3) this.setStatus( 'hand' );
+        })
 
         .on( 'hand.beforemousedown hand.beforetouchend', function ( e ) {
             // 已经被用户打开拖放模式
@@ -4195,7 +4212,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'hand.mouseup', function ( e ) {
+        .on( 'mouseup', function ( e ) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
@@ -4228,7 +4245,7 @@ KityMinder.registerModule( 'View', function () {
         queryState: function ( minder ) {
             return minder._viewDragger.isEnabled() ? 1 : 0;
         },
-        enableReadOnly : false
+        enableReadOnly: false
     } );
 
     var CameraCommand = kity.createClass( "CameraCommand", {
@@ -4241,7 +4258,7 @@ KityMinder.registerModule( 'View', function () {
             km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
             this.setContentChanged( false );
         },
-        enableReadOnly : false
+        enableReadOnly: false
     } );
 
     return {
@@ -4284,8 +4301,9 @@ KityMinder.registerModule( 'View', function () {
                 e.preventDefault();
             },
             'normal.dblclick readonly.dblclick': function ( e ) {
-                if ( e.getTargetNode() ) return;
-                this.execCommand( 'camera', this.getRoot() );
+                if ( e.kityEvent.targetShape instanceof kity.Paper ) {
+                    this.execCommand( 'camera', this.getRoot() );
+                }
             }
         }
     };
@@ -4311,14 +4329,17 @@ var MoveToParentCommand = kity.createClass( 'MoveToParentCommand', {
 	base: Command,
 	execute: function ( minder, nodes, parent ) {
 		var node;
+		if ( ( !parent.isExpanded() ) && ( parent.getChildren().length > 0 ) && ( parent.getType() !== 'root' ) ) {
+			minder.expandNode( parent );
+		}
 		for ( var i = nodes.length - 1; i >= 0; i-- ) {
 			node = nodes[ i ];
 			if ( node.getParent() ) {
 				minder.removeNode( [ node ] );
-				if ( !parent.isExpanded() && parent.getChildren().length > 0 && parent.getType() !== 'root' ) {
-					minder.expandNode( parent );
-				}
 				minder.appendChildNode( parent, node );
+				if ( node.isExpanded() && node.getChildren().length !== 0 ) {
+					minder.expandNode( node );
+				}
 			}
 		}
 		minder.select( nodes, true );
@@ -5395,7 +5416,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             textShape = new kity.Text();
         }
         this.textShape = textShape;
-        this.container.innerHTML = textShape.getContent();
+        this.container.innerHTML = utils.unhtml(textShape.getContent());
         return this;
     },
     setTextShapeSize: function ( size ) {
@@ -5439,9 +5460,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             me.setContainerStyle();
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
-
                 me.minderNode.setText( 'a' );
-
             }
             me.km.updateLayout( me.minderNode );
 
@@ -5491,7 +5510,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
                     setTimeout( function () {
                         me.range.updateNativeRange().insertNode( $( '<span>$$_kityminder_bookmark_$$</span>' )[ 0 ] );
-                        me.container.innerHTML = me.container.textContent.replace( /[\u200b\t\r\n]/g, '' );
+                        me.container.innerHTML = utils.unhtml(me.container.textContent.replace( /[\u200b\t\r\n]/g, '' ));
                         var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
                         me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
                         me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
@@ -6064,118 +6083,134 @@ KityMinder.registerModule( "fontmodule", function () {
 } );
 
 KityMinder.registerModule( 'Zoom', function () {
-	var MAX_ZOOM = 2,
-		MIN_ZOOM = kity.Browser.chrome ? 1 : 0.5,
-		ZOOM_STEP = Math.sqrt( 2 );
+    var me = this;
 
-	function zoom( minder, rate ) {
-		var paper = minder.getPaper();
-		var viewbox = paper.getViewBox();
-		var zoomValue = minder._zoomValue;
-		var w = viewbox.width,
-			h = viewbox.height,
-			x = viewbox.x,
-			y = viewbox.y;
-		var ww = w * rate,
-			hh = h * rate,
-			xx = x + ( w - ww ) / 2,
-			yy = y + ( h - hh ) / 2;
-		var animator = new kity.Animator( {
-			beginValue: viewbox,
-			finishValue: {
-				width: ww,
-				height: hh,
-				x: xx,
-				y: yy
-			},
-			setter: function ( target, value ) {
-				target.setViewBox( value.x, value.y, value.width, value.height );
-			}
-		} );
+    var timeline;
 
-		animator.start( paper, 500, 'ease' );
-		minder._zoomValue = zoomValue *= rate;
-	}
+    me.setOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
 
-	var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
-		base: Command,
-		execute: function ( minder ) {
-			if ( !this.queryState( minder ) ) {
-				zoom( minder, 1 / ZOOM_STEP );
-			}
-		},
-		queryState: function ( minder ) {
-			return ( minder._zoomValue > 1 / MAX_ZOOM ) ? 0 : -1;
-		},
-        enableReadOnly : false
-	} );
+    function zoomMinder( minder, zoom ) {
+        var paper = minder.getPaper();
+        var viewport = paper.getViewPort();
 
-	var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
-		base: Command,
-		execute: function ( minder ) {
-			if ( !this.queryState( minder ) ) {
-				zoom( minder, ZOOM_STEP );
-			}
-		},
-		queryState: function ( minder ) {
-			return ( minder._zoomValue < 1 / MIN_ZOOM ) ? 0 : -1;
-		},
-        enableReadOnly : false
-	} );
+        if ( !zoom ) return;
 
-	return {
-		commands: {
-			'zoom-in': ZoomInCommand,
-			'zoom-out': ZoomOutCommand
-		},
+        var animator = new kity.Animator( {
+            beginValue: viewport.zoom,
+            finishValue: zoom / 100,
+            setter: function ( target, value ) {
+                viewport.zoom = value;
+                target.setViewPort( viewport );
+            }
+        } );
+        minder.zoom = zoom;
+        if ( timeline ) {
+            timeline.pause();
+        }
+        timeline = animator.start( paper, 500, 'ease' );
+    }
 
+    var ZoomCommand = kity.createClass( 'Zoom', {
+        base: Command,
+        execute: zoomMinder,
+        queryValue: function ( minder ) {
+            return minder.zoom;
+        }
+    } );
 
-		events: {
-			'normal.keydown': function ( e ) {
-				var me = this;
-				var originEvent = e.originEvent;
-				var keyCode = originEvent.keyCode || originEvent.which;
-				if ( keymap[ '=' ] == keyCode ) {
-					me.execCommand( 'zoom-in' );
-				}
-				if ( keymap[ '-' ] == keyCode ) {
-					me.execCommand( 'zoom-out' );
+    var ZoomInCommand = kity.createClass( 'ZoomInCommand', {
+        base: Command,
+        execute: function ( minder ) {
+            zoomMinder( minder, this.nextValue( minder ) );
+        },
+        queryState: function ( minder ) {
+            return ~this.nextValue( minder );
+        },
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
+                i;
+            for ( i = 0; i < stack.length; i++ ) {
+                if ( stack[ i ] > minder.zoom ) return stack[ i ];
+            }
+            return 0;
+        },
+        enableReadOnly: false
+    } );
 
-				}
-			},
-			'ready': function () {
-				this._zoomValue = 1;
-			},
-			'normal.mousewheel readonly.mousewheel': function ( e ) {
-				if ( !e.originEvent.ctrlKey ) return;
-				var delta = e.originEvent.wheelDelta;
-				var me = this;
+    var ZoomOutCommand = kity.createClass( 'ZoomOutCommand', {
+        base: Command,
+        execute: function ( minder ) {
+            zoomMinder( minder, this.nextValue( minder ) );
+        },
+        queryState: function ( minder ) {
+            return ~this.nextValue( minder );
+        },
+        nextValue: function ( minder ) {
+            var stack = minder.getOptions( 'zoom' ),
+                i;
+            for ( i = stack.length - 1; i >= 0; i-- ) {
+                if ( stack[ i ] < minder.zoom ) return stack[ i ];
+            }
+            return 0;
+        },
+        enableReadOnly: false
+    } );
 
-				if ( !kity.Browser.mac ) {
-					delta = -delta;
-				}
+    return {
+        init: function () {
+            this.zoom = 100;
+        },
+        commands: {
+            'zoom-in': ZoomInCommand,
+            'zoom-out': ZoomOutCommand,
+            'zoom': ZoomCommand
+        },
+        events: {
+            'normal.keydown': function ( e ) {
+                var me = this;
+                var originEvent = e.originEvent;
+                var keyCode = originEvent.keyCode || originEvent.which;
+                if ( keymap[ '=' ] == keyCode ) {
+                    me.execCommand( 'zoom-in' );
+                }
+                if ( keymap[ '-' ] == keyCode ) {
+                    me.execCommand( 'zoom-out' );
 
-				// 稀释
-				if ( Math.abs( delta ) > 100 ) {
-					clearTimeout( this._wheelZoomTimeout );
-				} else {
-					return;
-				}
+                }
+            },
+            'ready': function () {
+                this._zoomValue = 1;
+            },
+            'normal.mousewheel readonly.mousewheel': function ( e ) {
+                if ( !e.originEvent.ctrlKey ) return;
+                var delta = e.originEvent.wheelDelta;
+                var me = this;
 
-				this._wheelZoomTimeout = setTimeout( function () {
-					var value;
-					var lastValue = me.getPaper()._zoom || 1;
-					if ( delta < 0 ) {
-						me.execCommand( 'zoom-in' );
-					} else if ( delta > 0 ) {
-						me.execCommand( 'zoom-out' );
-					}
-				}, 100 );
+                if ( !kity.Browser.mac ) {
+                    delta = -delta;
+                }
 
-				e.originEvent.preventDefault();
-			}
-		}
-	};
+                // 稀释
+                if ( Math.abs( delta ) > 100 ) {
+                    clearTimeout( this._wheelZoomTimeout );
+                } else {
+                    return;
+                }
+
+                this._wheelZoomTimeout = setTimeout( function () {
+                    var value;
+                    var lastValue = me.getPaper()._zoom || 1;
+                    if ( delta < 0 ) {
+                        me.execCommand( 'zoom-in' );
+                    } else if ( delta > 0 ) {
+                        me.execCommand( 'zoom-out' );
+                    }
+                }, 100 );
+
+                e.originEvent.preventDefault();
+            }
+        }
+    };
 } );
 
 KityMinder.registerModule( "NodeText", function () {
@@ -6282,6 +6317,7 @@ KityMinder.registerModule( "hyperlink", function () {
 } );
 
 KityMinder.registerModule( "Expand", function () {
+	var minder = this;
 	var EXPAND_STATE_DATA = 'expandState',
 		STATE_EXPAND = 'expand',
 		STATE_COLLAPSE = 'collapse';
@@ -6294,27 +6330,68 @@ KityMinder.registerModule( "Expand", function () {
 			_buffer.shift();
 		}
 	}
+	//获取选中的最上层节点
+	var filterDuplicate = function ( nodes ) {
+		var _buffer = ( [] ).concat( nodes );
+		var resultSet = [];
+		for ( var i = 0; i < _buffer.length; i++ ) {
+			var parent = _buffer[ i ].getParent();
+			if ( !parent ) {
+				resultSet = [ _buffer[ i ] ];
+				break;
+			} else {
+				//筛选
+				while ( parent ) {
+					if ( _buffer.indexOf( parent ) !== -1 ) {
+						_buffer[ i ] = null;
+						break;
+					}
+					parent = parent.getParent();
+				}
+				if ( _buffer[ i ] ) resultSet.push( _buffer[ i ] );
+			}
+		}
+		return resultSet;
+	}
 
-	// var getCommonParents = function ( nodes ) {
-	// 	var _buffer = [];
-	// 	var resultSet = [];
-	// 	for ( var i = 0; i < nodes.length; i++ ) {
-	// 		_buffer.push( nodes[ i ] );
-	// 	}
-	// 	while ( _buffer.length !== 0 ) {
-	// 		var parent = _buffer[ 0 ].getParent();
-	// 		if ( parent.getType() === 'root' || _buffer.length === 1 ) {
-	// 			resultSet.push( _buffer[ 0 ] );
-	// 		} else {
-	// 			if ( _buffer.indexOf( parent ) === -1 ) {
-	// 				_buffer.push( parent );
-	// 			}
-	// 		}
-	// 		_buffer.shift();
-	// 	}
-	// 	return resultSet;
-	// }
-
+	var expandAll = function ( km, deal ) {
+		var selectedNodes = km.getSelectedNodes();
+		var topNodes = filterDuplicate( selectedNodes );
+		if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' || topNodes[ 0 ].getType() === 'root' ) {
+			layerTravel( km.getRoot(), function ( n ) {
+				if ( deal === 'expand' ) n.expand();
+				else n.collapse();
+			} );
+			km.initStyle();
+		} else {
+			for ( var i = 0; i < topNodes.length; i++ ) {
+				var node = topNodes[ i ];
+				var children = node.getChildren();
+				if ( children.length === 0 ) {
+					continue;
+				} else {
+					layerTravel( node, function ( n ) {
+						if ( n !== node ) {
+							if ( deal === 'expand' ) n.expand();
+							else n.collapse();
+						}
+					} );
+					var judge_val;
+					if ( deal === 'expand' ) {
+						judge_val = !node.isExpanded();
+					} else {
+						judge_val = node.isExpanded();
+					}
+					if ( judge_val ) {
+						km.expandNode( node );
+					} else {
+						km.expandNode( node );
+						km.expandNode( node );
+					}
+				}
+			}
+		}
+	}
 
 	// var setOptionValue = function ( root, layer, sub ) {
 	// 	var cur_layer = 1;
@@ -6429,28 +6506,7 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
-					layerTravel( km.getRoot(), function ( n ) {
-						n.expand();
-					} );
-					km.initStyle();
-				} else {
-					var selectedNode = km.getSelectedNode();
-					var children = selectedNode.getChildren();
-					if ( children.length === 0 ) {
-						return false;
-					}
-					layerTravel( selectedNode, function ( n ) {
-						if ( n !== selectedNode ) n.expand();
-					} );
-					if ( !selectedNode.isExpanded() ) {
-						km.expandNode( selectedNode );
-					} else {
-						km.expandNode( selectedNode );
-						km.expandNode( selectedNode );
-					}
-				}
+				expandAll( km, 'expand' );
 			},
 			queryState: function ( km ) {
 				return 0;
@@ -6461,30 +6517,11 @@ KityMinder.registerModule( "Expand", function () {
 		return {
 			base: Command,
 			execute: function ( km ) {
-				var selectedNodes = km.getSelectedNodes();
-				if ( selectedNodes.length === 0 || selectedNodes[ 0 ].getType() === 'root' ) {
-					layerTravel( km.getRoot(), function ( n ) {
-						n.collapse();
-					} );
-					km.initStyle();
-				} else {
-					var selectedNode = km.getSelectedNode();
-					var children = selectedNode.getChildren();
-					if ( children.length === 0 ) {
-						return false;
-					}
-					if ( selectedNode.isExpanded() ) {
-						layerTravel( selectedNode, function ( n ) {
-							if ( n !== selectedNode ) n.collapse();
-						} );
-						km.expandNode( selectedNode );
-					}
-				}
+				expandAll( km, 'collapse' );
 			},
 			queryState: function ( km ) {
 				return 0;
 			}
-
 		};
 	} )() );
 	return {
@@ -7929,7 +7966,7 @@ KM.ui.define( 'modal', {
         if ( !$obj.data( '$mergeObj' ) ) {
 
             $obj.data( '$mergeObj', me.root() );
-            $obj.on( 'click', function () {
+            $obj.on( 'wrapclick', function () {
                 me.toggle( $obj )
             } );
             me.data( '$mergeObj', $obj )
@@ -8911,11 +8948,93 @@ KM.registerToolbarUI( 'hyperlink', function ( name ) {
 
     } );
 
+    me.addContextmenu( [ {
+            label: me.getLang( 'hyperlink.hyperlink' ),
+            exec: function (url) {
+                $dialog.kmui().show();
+                this.execCommand( 'hyperlink', url )
+            },
+            cmdName: 'hyperlink'
+        },{
+            label: me.getLang( 'hyperlink.unhyperlink' ),
+            exec: function (url) {
+                this.execCommand( 'unhyperlink' )
+            },
+            cmdName: 'hyperlink'
+        }
+    ]);
+
     me.on( 'interactchange', function () {
         var state = this.queryCommandState( name );
         $btn.kmui().disabled( state == -1 ).active( state == 1 )
     } );
     return $btn;
+} );
+
+KM.registerToolbarUI( 'zoom', function ( name ) {
+
+    var me = this,
+        label = me.getLang( 'tooltips.' + name ),
+        options = {
+            label: label,
+            title: label,
+            comboboxName: name,
+            items: me.getOptions( name ) || [],
+            itemStyles: [],
+            value: me.getOptions( name ),
+            autowidthitem: [],
+            enabledRecord: false
+
+        },
+        $combox = null;
+    if ( options.items.length == 0 ) {
+        return null;
+    }
+
+    //实例化
+    $combox = $.kmuibuttoncombobox( transForInserttopic( options ) ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
+    var comboboxWidget = $combox.kmui();
+
+    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
+        me.execCommand('zoom', res.value );
+    } ).on( "beforeshow", function () {
+        if ( $combox.parent().length === 0 ) {
+            $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
+        }
+    } );
+    //状态反射
+    me.on( 'interactchange', function () {
+
+        var state = this.queryCommandState( name ),
+            value = this.queryCommandValue( name );
+        //设置按钮状态
+        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
+        if ( value ) {
+            //设置label
+            comboboxWidget.selectItemByLabel( value + '%' );
+        }
+
+    } );
+    //comboboxWidget.button().kmui().disabled(-1);
+    return comboboxWidget.button().addClass( 'kmui-combobox' );
+
+
+
+    function transForInserttopic( options ) {
+
+        var tempItems = [];
+
+        utils.each( options.items, function ( k, v ) {
+            options.value.push( v );
+            tempItems.push( v + '%' );
+            options.autowidthitem.push( $.wordCountAdaptive( tempItems[ tempItems.length - 1 ] ) );
+        } );
+
+        options.items = tempItems;
+        return options;
+
+    }
+
 } );
 
 /*
