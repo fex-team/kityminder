@@ -3128,19 +3128,19 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		}
 	};
 
-	var showNodeInView = function ( node ) {
-		var padding = 5;
-		var viewport = minder.getPaper().getViewPort();
-		var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
+	// var showNodeInView = function ( node ) {
+	// 	// var padding = 5;
+	// 	// var viewport = minder.getPaper().getViewPort();
+	// 	// var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
 
-		var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
-		var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
+	// 	// var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
+	// 	// var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
 
-		var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
-		var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
+	// 	// var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
+	// 	// var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
 
-		minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
-	};
+	// 	// minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+	// };
 
 	var _style = {
 		getCurrentLayoutStyle: function () {
@@ -3398,9 +3398,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				updateConnectAndshIcon( set[ i ] );
 			}
 
-			if ( focus ) {
-				showNodeInView( node );
-			}
+			// if ( focus ) {
+			// 	showNodeInView( node );
+			// }
 			parent.expand();
 			var shicon = parent.getLayout().shicon;
 			if ( shicon ) shicon.switchState( true );
@@ -4629,8 +4629,8 @@ KityMinder.registerModule( "DropFile", function () {
 		e.stopPropagation();
 		var minder = this;
 
-		if( kity.Browser.ie && Number(kity.Browser.version) < 10 ){
-			alert('文件导入对IE浏览器仅支持10以上版本');
+		if ( kity.Browser.ie && Number( kity.Browser.version ) < 10 ) {
+			alert( '文件导入对IE浏览器仅支持10以上版本' );
 			return;
 		}
 
@@ -4657,9 +4657,9 @@ KityMinder.registerModule( "DropFile", function () {
 		createDraft( this );
 		social.setRemotePath( null, false );
 		this.execCommand( 'camera', this.getRoot() );
-		setTimeout(function() {
+		setTimeout( function () {
 			social.watchChanges( true );
-		}, 10);
+		}, 10 );
 		importing = false;
 	}
 
@@ -4681,7 +4681,7 @@ KityMinder.registerModule( "DropFile", function () {
 	}
 
 	function createDraft( minder ) {
-		draftManager = window.draftManager;
+		draftManager = window.draftManager || ( window.draftManager = new window.DraftManager( minder ) );
 		draftManager.create();
 	}
 
@@ -5605,8 +5605,8 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         }
         return this;
     },
-    getBaseOffset: function (  ) {
-        var rb = this.textShape.getRenderBox( this.km.getRenderContainer() );
+    getBaseOffset: function ( refer ) {
+        var rb = this.textShape.getRenderBox( refer || this.km.getRenderContainer() );
 //        if(!this.pr) {
 //            this.km.getRenderContainer().addShape(this.pr = new kity.Rect().stroke('green'));
 //        }
@@ -5618,9 +5618,18 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this;
     },
     setContainerStyle: function () {
-        var textShapeBox = this.getBaseOffset();
-
+        var textShapeBox = this.getBaseOffset('screen');
+        var me = this;
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        var paperContainer = this.km.getPaper();
+        var width = paperContainer.getWidth();
+        var height = paperContainer.getHeight();
+        var containerWidth = this.container.offsetWidth;
+        if(width < containerWidth + this.container.offsetLeft){
+            this.km.getRenderContainer().fxTranslate(width/-2, 0, 200, "ease", 0, function() {
+                me.setContainerStyle()
+            });
+        }
         return this;
     },
     getTextOffsetData: function () {
@@ -5631,7 +5640,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             try {
                 var box = this.textShape.getExtentOfChar( i );
             } catch ( e ) {
-                debugger
+                console.log(e)
             }
 
             this.textData.push( {
@@ -8963,15 +8972,14 @@ KM.registerToolbarUI( 'hyperlink', function ( name ) {
             label: me.getLang( 'hyperlink.hyperlink' ),
             exec: function (url) {
                 $dialog.kmui().show();
-                this.execCommand( 'hyperlink', url )
             },
             cmdName: 'hyperlink'
         },{
             label: me.getLang( 'hyperlink.unhyperlink' ),
-            exec: function (url) {
+            exec: function () {
                 this.execCommand( 'unhyperlink' )
             },
-            cmdName: 'hyperlink'
+            cmdName: 'unhyperlink'
         }
     ]);
 

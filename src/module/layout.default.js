@@ -430,19 +430,19 @@ KityMinder.registerModule( "LayoutDefault", function () {
 		}
 	};
 
-	var showNodeInView = function ( node ) {
-		var padding = 5;
-		var viewport = minder.getPaper().getViewPort();
-		var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
+	// var showNodeInView = function ( node ) {
+	// 	// var padding = 5;
+	// 	// var viewport = minder.getPaper().getViewPort();
+	// 	// var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
 
-		var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
-		var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
+	// 	// var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
+	// 	// var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
 
-		var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
-		var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
+	// 	// var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
+	// 	// var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
 
-		minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
-	};
+	// 	// minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+	// };
 
 	var _style = {
 		getCurrentLayoutStyle: function () {
@@ -700,9 +700,9 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				updateConnectAndshIcon( set[ i ] );
 			}
 
-			if ( focus ) {
-				showNodeInView( node );
-			}
+			// if ( focus ) {
+			// 	showNodeInView( node );
+			// }
 			parent.expand();
 			var shicon = parent.getLayout().shicon;
 			if ( shicon ) shicon.switchState( true );
