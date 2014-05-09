@@ -19,6 +19,7 @@ KityMinder.registerModule( "TextEditModule", function () {
     };
 
     km.textEditNode = function(node){
+
         var textShape = node.getTextShape();
         this.setStatus('textedit');
         sel.setHide();
@@ -97,7 +98,6 @@ KityMinder.registerModule( "TextEditModule", function () {
                             selectionByClick = false;
                         }
                         km.setStatus('textedit');
-                        lastMousedownTimer = +new Date;
                     }
                 }
             },
@@ -236,45 +236,45 @@ KityMinder.registerModule( "TextEditModule", function () {
                 sel.setHide();
             },
             "execCommand": function( e ) {
-//                var cmds = {
-//                    'appendchildnode' : 1,
-//                    'appendsiblingnode' : 1,
-//                    'editnode' : 1
-//                };
-//                if ( cmds[ e.commandName ] ){
-//
-//                    var node = km.getSelectedNode();
-//                    if( !node ){
-//                        return;
-//                    }
-//
-//                    var textShape = node.getTextShape();
-//
-//                    textShape.setStyle('cursor','default');
-//                    node.getTextShape().setStyle('cursor','text');
-//                    km.setStatus('textedit');
-//                    receiver.setTextEditStatus(true)
-//                        .setSelection(sel)
-//                        .setKityMinder(this)
-//                        .setMinderNode(node)
-//                        .setTextShape(textShape)
-//                        .setBaseOffset()
-//                        .setContainerStyle()
-//                        .setSelectionHeight()
-//                        .getTextOffsetData()
-//                        .setIndex(0)
-//                        .updateSelection()
-//                        .setRange(range);
-//
-//                    sel.setStartOffset(0);
-//                    sel.setEndOffset(textShape.getContent().length);
-//                    sel.setShow();
-//
-//                    receiver.updateSelectionShow(1)
-//                        .updateRange(range);
-//                    return;
-//
-//                }
+                var cmds = {
+                    'appendchildnode' : 1,
+                    'appendsiblingnode' : 1,
+                    'editnode' : 1
+                };
+                if ( cmds[ e.commandName ] ){
+
+                    var node = km.getSelectedNode();
+                    if( !node ){
+                        return;
+                    }
+
+                    var textShape = node.getTextShape();
+
+                    textShape.setStyle('cursor','default');
+                    node.getTextShape().setStyle('cursor','text');
+                    km.setStatus('textedit');
+                    receiver.setTextEditStatus(true)
+                        .setSelection(sel)
+                        .setKityMinder(this)
+                        .setMinderNode(node)
+                        .setTextShape(textShape)
+                        .setBaseOffset()
+                        .setContainerStyle()
+                        .setSelectionHeight()
+                        .getTextOffsetData()
+                        .setIndex(0)
+                        .updateSelection()
+                        .setRange(range);
+
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(textShape.getContent().length);
+                    sel.setShow();
+
+                    receiver.updateSelectionShow(1)
+                        .updateRange(range);
+                    return;
+
+                }
 
                 if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
 

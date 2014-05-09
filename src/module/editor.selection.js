@@ -70,6 +70,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         }else{
             this.setOpacity(0.5);
         }
+        this.bringTop();
         return this;
     },
     setPosition: function ( offset ) {
