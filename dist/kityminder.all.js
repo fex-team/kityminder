@@ -5628,12 +5628,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             if(width < this.container.offsetWidth + this.container.offsetLeft){
                 this.km.getRenderContainer().translate(width/-3, 0);
-                //this.setContainerStyle();
-                console.log(width, this.container.offsetWidth + this.container.offsetLeft);
+                this.setContainerStyle();
+
 
             }else if (height < this.container.offsetTop + this.container.offsetHeight){
                 this.km.getRenderContainer().translate(0, height/-3);
-                //this.setContainerStyle()
+                this.setContainerStyle()
             }
         }
 
@@ -5726,7 +5726,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     me.selection.setEndOffset( i + 1 )
                 } else {
                     if ( dir == 1 ) {
-                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 ? 1 : 0 ) );
+                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 && i < me.textData.length - 1 ? 1 : 0 ) );
                     } else {
                         me.selection.setStartOffset( i );
                     }
@@ -5748,8 +5748,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             return this;
         }
         if ( !endOffset ) {
-            var lastOffset = this.textData[ this.textData.length - 1 ];
-            width = lastOffset.x - startOffset.x + lastOffset.width;
+            try{
+                var lastOffset = this.textData[ this.textData.length - 1 ];
+                width = lastOffset.x - startOffset.x + lastOffset.width;
+            }catch(e){
+                console.log(e)
+            }
+
         } else {
             width = endOffset.x - startOffset.x;
         }
