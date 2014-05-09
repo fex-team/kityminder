@@ -250,12 +250,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             if(width < this.container.offsetWidth + this.container.offsetLeft){
                 this.km.getRenderContainer().translate(width/-3, 0);
-                //this.setContainerStyle();
-                console.log(width, this.container.offsetWidth + this.container.offsetLeft);
+                this.setContainerStyle();
+
 
             }else if (height < this.container.offsetTop + this.container.offsetHeight){
                 this.km.getRenderContainer().translate(0, height/-3);
-                //this.setContainerStyle()
+                this.setContainerStyle()
             }
         }
 
@@ -374,7 +374,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             }catch(e){
-                debugger
+                console.log(e)
             }
 
         } else {
