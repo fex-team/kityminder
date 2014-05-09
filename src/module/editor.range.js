@@ -19,7 +19,7 @@ Minder.Range = kity.createClass('Range',{
         try{
             this.nativeRange.setStart(node,index);
         }catch(e){
-            console.log(e)
+            console.log('e')
         }
 
         return this;

@@ -2915,7 +2915,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 				for ( var i = 0; i < children.length; i++ ) {
 					var childLayout = children[ i ].getLayout();
-					if ( children[ i ].getRenderContainer().getHeight() !== 0 )
+					if ( children[ i ].getRenderContainer().getPaper() && children[ i ].getRenderContainer().getHeight() !== 0 )
 						sum += childLayout.branchheight;
 				}
 				return sum;
@@ -5619,17 +5619,25 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset('screen');
-        var me = this;
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
-        var paperContainer = this.km.getPaper();
-        var width = paperContainer.getWidth();
-        var height = paperContainer.getHeight();
-        var containerWidth = this.container.offsetWidth;
-        if(width < containerWidth + this.container.offsetLeft){
-            this.km.getRenderContainer().fxTranslate(width/-2, 0, 200, "ease", 0, function() {
-                me.setContainerStyle()
-            });
+
+        if(!this.selection.isShow()){
+            var paperContainer = this.km.getPaper();
+            var width = paperContainer.node.parentNode.clientWidth;
+            var height = paperContainer.node.parentNode.clientHeight;
+
+            if(width < this.container.offsetWidth + this.container.offsetLeft){
+                this.km.getRenderContainer().translate(width/-3, 0);
+                this.setContainerStyle();
+
+
+            }else if (height < this.container.offsetTop + this.container.offsetHeight){
+                this.km.getRenderContainer().translate(0, height/-3);
+                this.setContainerStyle()
+            }
         }
+
+
         return this;
     },
     getTextOffsetData: function () {
@@ -5718,7 +5726,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     me.selection.setEndOffset( i + 1 )
                 } else {
                     if ( dir == 1 ) {
-                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 ? 1 : 0 ) );
+                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 && i < me.textData.length - 1 ? 1 : 0 ) );
                     } else {
                         me.selection.setStartOffset( i );
                     }
@@ -5740,8 +5748,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             return this;
         }
         if ( !endOffset ) {
-            var lastOffset = this.textData[ this.textData.length - 1 ];
-            width = lastOffset.x - startOffset.x + lastOffset.width;
+            try{
+                var lastOffset = this.textData[ this.textData.length - 1 ];
+                width = lastOffset.x - startOffset.x + lastOffset.width;
+            }catch(e){
+                console.log(e)
+            }
+
         } else {
             width = endOffset.x - startOffset.x;
         }
@@ -5782,6 +5795,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.startOffset = this.endOffset = 0;
         this.setOpacity(0.5);
         this.setStyle('cursor','text');
+        this._show = false;
     },
     collapse : function(toEnd){
 
@@ -5855,11 +5869,13 @@ Minder.Selection = kity.createClass( 'Selection', {
     setHide: function () {
         clearInterval( this.timer );
         this.setStyle( 'display', 'none' );
+        this._show = false;
         return this;
     },
     setShowHold: function () {
         clearInterval( this.timer );
         this.setStyle( 'display', '' );
+        this._show = true;
         return this;
     },
     setShow: function () {
@@ -5867,7 +5883,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         var me = this,
             state = '';
         me.setStyle( 'display', '' );
-
+        me._show = true;
         if(this.collapsed){
             me.setOpacity(1);
             this.timer = setInterval( function () {
@@ -5877,6 +5893,9 @@ Minder.Selection = kity.createClass( 'Selection', {
         }
 
         return this;
+    },
+    isShow:function(){
+        return this._show;
     },
     setTextShape: function ( text ) {
         if ( !text ) {
