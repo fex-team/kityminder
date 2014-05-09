@@ -1,4 +1,4 @@
-( function (utils) {
+( function ( utils ) {
     //todo 这里先写死成中文
     var content = '<div class="hyperlink-content" style="padding:20px;width:360px;">';
     content += '<style>';
@@ -52,6 +52,12 @@
                 km.execCommand( 'hyperlink', $w.find( '#hyperlink_href' ).val() );
                 $w.kmui().hide();
             } );
+            $w.find( '#hyperlink_href' ).on( 'keydown', function ( e ) {
+                if ( e.keyCode === 13 ) {
+                    km.execCommand( 'hyperlink', $w.find( '#hyperlink_href' ).val() );
+                    $w.kmui().hide();
+                }
+            } );
             var url = km.queryCommandValue( 'hyperlink' );
             var $input = $w.find( '#hyperlink_href' );
             $input.val( url || 'http://' );
@@ -61,4 +67,4 @@
         },
         width: 400
     } );
-} )(KM.Utils);
+} )( KM.Utils );
