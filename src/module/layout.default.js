@@ -217,7 +217,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 				}
 				for ( var i = 0; i < children.length; i++ ) {
 					var childLayout = children[ i ].getLayout();
-					if ( children[ i ].getRenderContainer().getHeight() !== 0 )
+					if ( children[ i ].getRenderContainer().getPaper() && children[ i ].getRenderContainer().getHeight() !== 0 )
 						sum += childLayout.branchheight;
 				}
 				return sum;
