@@ -11,7 +11,12 @@ Minder.Range = kity.createClass('Range',{
             this.nativeRange.setStart(char,1);
             this.nativeRange.collapse(true);
         }
-        this.nativeSel.removeAllRanges();
+        try{
+            this.nativeSel.removeAllRanges();
+        }catch(e){
+
+        }
+
         this.nativeSel.addRange(this.nativeRange);
         return this;
     },
