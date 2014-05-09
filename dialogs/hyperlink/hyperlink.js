@@ -1,4 +1,4 @@
-( function () {
+( function (utils) {
     //todo 这里先写死成中文
     var content = '<div class="hyperlink-content" style="padding:20px;width:360px;">';
     content += '<style>';
@@ -61,4 +61,4 @@
         },
         width: 400
     } );
-} )();
+} )(KM.Utils);

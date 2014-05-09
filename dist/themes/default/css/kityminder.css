@@ -41,6 +41,9 @@ html, body, #kityminder, div.kmui-editor-body {
     /*line-height: 0;*/
     overflow: hidden;
 }
-svg {
-    font-family: Arial, "Microsoft Yahei","Heiti SC",sans-serif;
+svg, body {
+    font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
 }
+#about{position:absolute;bottom:10px;right:10px;height:24px;line-height:24px;color:#888;font-family:Arial;font-size:13px;font-weight:normal;margin:0;text-shadow:0 1px 1px #000}#about a{color:#888}#about a:hover{color:#fff}
+#km-version.new-version{position:relative;padding-right:30px}
+#km-version.new-version:after{content:'NEW';color:#ff0;position:absolute;top:-10px;right:-5px;display:block;background:#f00;padding:0 5px;border-radius:4px;text-shadow:none;box-shadow:-1px 1px 3px rgba(0,0,0,0.3);-webkit-transform:scale(.6);-moz-transform:scale(.6);-ms-transform:scale(.6);transform:scale(.6)}
