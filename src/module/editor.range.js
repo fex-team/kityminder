@@ -3,6 +3,9 @@ Minder.Range = kity.createClass('Range',{
         this.nativeRange = document.createRange();
         this.nativeSel = window.getSelection();
     },
+    hasNativeRange : function(){
+        return this.nativeSel.rangeCount != 0 ;
+    },
     select:function(){
         var start = this.nativeRange.startContainer;
         if(start.nodeType == 1 && start.childNodes.length == 0){
