@@ -1,4 +1,4 @@
-( function (utils) {
+( function ( utils ) {
     KM.registerWidget( 'markers', {
         tpl: "<style>" +
             ".kmui-dialog-<%= container %> .priority .icon{background:url(dialogs/markers/images/iconpriority.png) 0 0}" +
@@ -55,4 +55,4 @@
         width: 200
 
     } )
-} )(KM.Utils);
+} )( KM.Utils );
