@@ -5328,6 +5328,9 @@ Minder.Range = kity.createClass('Range',{
         this.nativeRange = document.createRange();
         this.nativeSel = window.getSelection();
     },
+    hasNativeRange : function(){
+        return this.nativeSel.rangeCount != 0 ;
+    },
     select:function(){
         var start = this.nativeRange.startContainer;
         if(start.nodeType == 1 && start.childNodes.length == 0){
@@ -5466,6 +5469,9 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         var keys = KityMinder.keymap;
 
         function setTextToContainer() {
+            if(!me.range.hasNativeRange()){
+                return;
+            }
             var text = me.container.textContent.replace( /[\u200b\t\r\n]/g, '' );
 
             if ( me.textShape.getOpacity() == 0 ) {
@@ -5559,7 +5565,6 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             break;
 
         case 'beforekeyup':
-
             switch ( keyCode ) {
             case keymap.Enter:
             case keymap.Tab:
