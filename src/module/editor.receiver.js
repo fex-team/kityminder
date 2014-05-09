@@ -340,7 +340,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     if ( offset.x <= v.x + v.width / 2 ) {
                         me.selection.collapse()
                     } else {
-                        me.selection.setEndOffset( i + ( me.selection.endOffset > i || dir == 1 ? 1 : 0 ) )
+                        me.selection.setEndOffset( i + ( ( me.selection.endOffset > i || dir == 1 ) && i != me.textData.length - 1 ? 1 : 0 ) )
                     }
 
                 } else if ( i > me.index ) {
@@ -348,7 +348,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     me.selection.setEndOffset( i + 1 )
                 } else {
                     if ( dir == 1 ) {
-                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 && i < me.textData.length - 1 ? 1 : 0 ) );
+                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 &&  i != me.textData.length - 1 ? 1 : 0 ) );
                     } else {
                         me.selection.setStartOffset( i );
                     }
@@ -374,7 +374,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             }catch(e){
-                console.log(e)
+                console.log('e')
             }
 
         } else {
