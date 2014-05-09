@@ -13,16 +13,15 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'node': '节点操作',
         'saveto': '导出',
         'hand': '允许拖拽',
-        'zoom-in': '放大',
-        'zoom-out': '缩小',
+        'zoom': '放大缩小',
         'markers': '添加标签',
         'switchlayout': '切换主题',
         'help': '帮助',
         'preference': '偏好设置',
-        'hyperlink':'插入链接',
-        'unhyperlink':"删除链接",
-        'expandnode':"展开节点",
-        'collapsenode':"闭合节点"
+        'hyperlink': '插入链接',
+        'unhyperlink': "删除链接",
+        'expandnode': "展开节点",
+        'collapsenode': "收起节点"
     },
     'popupcolor': {
         'clearColor': '清空颜色',
@@ -49,7 +48,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'help': {
 
         },
-        hyperlink:{}
+        hyperlink: {}
     },
     'node': {
         'appendsiblingnode': '插入同级节点',
@@ -60,6 +59,10 @@ KityMinder.LANG[ 'zh-cn' ] = {
     'layout': {
         'default': '左右展开',
         'bottom': '向下展开'
+    },
+    'hyperlink':{
+        'hyperlink':'插入超链接',
+        'unhyperlink':"取消超链接"
     }
 
 };

@@ -703,6 +703,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			if ( focus ) {
 				showNodeInView( node );
 			}
+			parent.expand();
 			var shicon = parent.getLayout().shicon;
 			if ( shicon ) shicon.switchState( true );
 		},

@@ -42,15 +42,14 @@ KM.registerToolbarUI( 'hyperlink', function ( name ) {
             label: me.getLang( 'hyperlink.hyperlink' ),
             exec: function (url) {
                 $dialog.kmui().show();
-                this.execCommand( 'hyperlink', url )
             },
             cmdName: 'hyperlink'
         },{
             label: me.getLang( 'hyperlink.unhyperlink' ),
-            exec: function (url) {
+            exec: function () {
                 this.execCommand( 'unhyperlink' )
             },
-            cmdName: 'hyperlink'
+            cmdName: 'unhyperlink'
         }
     ]);
 

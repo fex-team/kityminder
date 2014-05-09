@@ -227,8 +227,8 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         }
         return this;
     },
-    getBaseOffset: function (  ) {
-        var rb = this.textShape.getRenderBox( this.km.getRenderContainer() );
+    getBaseOffset: function ( refer ) {
+        var rb = this.textShape.getRenderBox( refer || this.km.getRenderContainer() );
 //        if(!this.pr) {
 //            this.km.getRenderContainer().addShape(this.pr = new kity.Rect().stroke('green'));
 //        }
@@ -240,7 +240,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this;
     },
     setContainerStyle: function () {
-        var textShapeBox = this.getBaseOffset();
+        var textShapeBox = this.getBaseOffset('screen');
 
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
         return this;

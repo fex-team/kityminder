@@ -66,6 +66,14 @@ kity.extendClass( Minder, {
             this._hasEnterExecCommand = false;
         } else {
             result = cmd.execute.apply( cmd, [ me ].concat( cmdArgs ) );
+
+            if(!this._hasEnterExecCommand){
+                if ( cmd.isSelectionChanged() ) {
+                    this._firePharse( new MinderEvent( 'selectionchange' ) );
+                }
+
+                this._firePharse( new MinderEvent( 'interactchange' ) );
+            }
         }
 
         return result === undefined ? null : result;

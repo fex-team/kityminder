@@ -27,20 +27,20 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown readonly.beforemousedown readonly.beforetouchstart', function ( e ) {
+        this._minder.on( 'normal.mousedown readonly.mousedown readonly.touchstart', function ( e ) {
             // 点击未选中的根节点临时开启
             if ( e.getTargetNode() == this.getRoot() &&
                 ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
                 lastPosition = e.getPosition();
-                dragger.setEnabled( true );
                 isRootDrag = true;
-                e.originEvent.preventDefault();
-                var me = this;
-                setTimeout( function () {
-                    me.setStatus( 'hand' );
-                }, 1 );
             }
         } )
+
+        .on('normal.mousemove normal.touchmove', function (e) {
+            if (!isRootDrag) return;
+            var offset = kity.Vector.fromPoints( lastPosition, e.getPosition());
+            if (offset.length() > 3) this.setStatus( 'hand' );
+        })
 
         .on( 'hand.beforemousedown hand.beforetouchend', function ( e ) {
             // 已经被用户打开拖放模式
@@ -64,7 +64,7 @@ var ViewDragger = kity.createClass( "ViewDragger", {
             }
         } )
 
-        .on( 'hand.mouseup', function ( e ) {
+        .on( 'mouseup', function ( e ) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
