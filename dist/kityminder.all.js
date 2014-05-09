@@ -291,9 +291,9 @@ var utils = Utils = KityMinder.Utils = {
                     element.onload = element.onreadystatechange = null;
                 }
             };
-            element.onerror = function () {
-                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
-            };
+//            element.onerror = function () {
+//                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
+//            };
             doc.getElementsByTagName("head")[0].appendChild(element);
         }
     }(),
@@ -5336,7 +5336,12 @@ Minder.Range = kity.createClass('Range',{
             this.nativeRange.setStart(char,1);
             this.nativeRange.collapse(true);
         }
-        this.nativeSel.removeAllRanges();
+        try{
+            this.nativeSel.removeAllRanges();
+        }catch(e){
+
+        }
+
         this.nativeSel.addRange(this.nativeRange);
         return this;
     },
@@ -5344,7 +5349,7 @@ Minder.Range = kity.createClass('Range',{
         try{
             this.nativeRange.setStart(node,index);
         }catch(e){
-            console.log(e)
+            console.log('e')
         }
 
         return this;
@@ -5394,12 +5399,18 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this.textEditStatus;
     },
     constructor: function ( km ) {
+        var me = this;
         this.setKityMinder( km );
         this.textEditStatus = false;
         var _div = document.createElement( 'div' );
         _div.setAttribute( 'contenteditable', true );
         _div.className = 'km_receiver';
         this.container = document.body.insertBefore( _div, document.body.firstChild );
+        if(browser.ie && browser.version == 11){
+            utils.listen(this.container,'keydown keypress keyup',function(e){
+                me.keyboardEvents.call(me,new MinderEvent(e.type == 'keyup' ? "beforekeyup": e.type,e))
+            })
+        }
         utils.addCssRule( 'km_receiver_css', ' .km_receiver{position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}' ); //
         this.km.on( 'textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy( this.keyboardEvents, this ) );
         this.timer = null;
@@ -5492,6 +5503,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         switch ( e.type ) {
 
         case 'keydown':
+
             isTypeText = false;
             isKeypress = false;
             switch ( e.originEvent.keyCode ) {
@@ -5540,13 +5552,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
 
         case 'keypress':
+
             if ( isTypeText )
                 setTextToContainer();
             isKeypress = true;
             break;
 
         case 'beforekeyup':
-
 
             switch ( keyCode ) {
             case keymap.Enter:
@@ -5619,18 +5631,15 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset('screen');
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 35 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if(!this.selection.isShow()){
             var paperContainer = this.km.getPaper();
             var width = paperContainer.node.parentNode.clientWidth;
             var height = paperContainer.node.parentNode.clientHeight;
-
             if(width < this.container.offsetWidth + this.container.offsetLeft){
                 this.km.getRenderContainer().translate(width/-3, 0);
                 this.setContainerStyle();
-
-
             }else if (height < this.container.offsetTop + this.container.offsetHeight){
                 this.km.getRenderContainer().translate(0, height/-3);
                 this.setContainerStyle()
@@ -5718,7 +5727,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     if ( offset.x <= v.x + v.width / 2 ) {
                         me.selection.collapse()
                     } else {
-                        me.selection.setEndOffset( i + ( me.selection.endOffset > i || dir == 1 ? 1 : 0 ) )
+                        me.selection.setEndOffset( i + ( ( me.selection.endOffset > i || dir == 1 ) && i != me.textData.length - 1 ? 1 : 0 ) )
                     }
 
                 } else if ( i > me.index ) {
@@ -5726,7 +5735,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                     me.selection.setEndOffset( i + 1 )
                 } else {
                     if ( dir == 1 ) {
-                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 && i < me.textData.length - 1 ? 1 : 0 ) );
+                        me.selection.setStartOffset( i + ( offset.x >= v.x + v.width / 2 &&  i != me.textData.length - 1 ? 1 : 0 ) );
                     } else {
                         me.selection.setStartOffset( i );
                     }
@@ -5752,7 +5761,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             }catch(e){
-                console.log(e)
+                console.log('e')
             }
 
         } else {
