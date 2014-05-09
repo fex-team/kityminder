@@ -21,8 +21,8 @@ KityMinder.registerModule( "DropFile", function () {
 		e.stopPropagation();
 		var minder = this;
 
-		if( kity.Browser.ie && Number(kity.Browser.version) < 10 ){
-			alert('文件导入对IE浏览器仅支持10以上版本');
+		if ( kity.Browser.ie && Number( kity.Browser.version ) < 10 ) {
+			alert( '文件导入对IE浏览器仅支持10以上版本' );
 			return;
 		}
 
@@ -49,9 +49,9 @@ KityMinder.registerModule( "DropFile", function () {
 		createDraft( this );
 		social.setRemotePath( null, false );
 		this.execCommand( 'camera', this.getRoot() );
-		setTimeout(function() {
+		setTimeout( function () {
 			social.watchChanges( true );
-		}, 10);
+		}, 10 );
 		importing = false;
 	}
 
@@ -73,7 +73,7 @@ KityMinder.registerModule( "DropFile", function () {
 	}
 
 	function createDraft( minder ) {
-		draftManager = window.draftManager;
+		draftManager = window.draftManager || ( window.draftManager = new window.DraftManager( minder ) );
 		draftManager.create();
 	}
 
