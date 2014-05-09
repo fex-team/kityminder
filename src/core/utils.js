@@ -246,9 +246,9 @@ var utils = Utils = KityMinder.Utils = {
                     element.onload = element.onreadystatechange = null;
                 }
             };
-            element.onerror = function () {
-                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
-            };
+//            element.onerror = function () {
+//                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
+//            };
             doc.getElementsByTagName("head")[0].appendChild(element);
         }
     }(),
