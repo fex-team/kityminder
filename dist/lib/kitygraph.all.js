@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kitygraph - v1.0.0 - 2014-05-07
+ * kitygraph - v1.0.0 - 2014-05-09
  * https://github.com/kitygraph/kity
  * GitHub: https://github.com/kitygraph/kity.git 
  * Copyright (c) 2014 Baidu UEditor Group; Licensed MIT
@@ -3317,14 +3317,14 @@ define("graphic/paper", [ "core/class", "core/config", "core/utils", "graphic/sv
             return this.container;
         },
         getWidth: function() {
-            return +this.node.getAttribute("width");
+            return this.node.clientWidth;
         },
         setWidth: function(width) {
             this.node.setAttribute("width", width);
             return this;
         },
         getHeight: function() {
-            return +this.node.getAttribute("height");
+            return this.node.clientHeight;
         },
         setHeight: function(height) {
             this.node.setAttribute("height", height);
@@ -3479,7 +3479,7 @@ define("graphic/path", [ "core/utils", "core/class", "core/config", "graphic/sha
             return this.push("L", arguments);
         },
         lineBy: function(dx, dy) {
-            return this.push("k", arguments);
+            return this.push("l", arguments);
         },
         arcTo: function(rx, ry, xr, laf, sf, x, y) {
             return this.push("A", arguments);
@@ -4151,7 +4151,7 @@ define("graphic/shape", [ "graphic/svg", "core/utils", "graphic/eventhandler", "
             return this;
         },
         setMatrix: function(m) {
-            this.transform.matrix = m !== null && slice.call(arguments) || null;
+            this.transform.matrix = m;
             return this._applyTransform();
         },
         setTranslate: function(t) {
@@ -4427,7 +4427,7 @@ define("graphic/shapeevent", [ "graphic/matrix", "core/utils", "graphic/box", "g
                 return null;
             }
             var eventClient = this.originEvent.touches ? this.originEvent.touches[touch_index || 0] : this.originEvent;
-            var clientX = eventClient.clientX, clientY = eventClient.clientY, node = this.targetShape.shapeNode || this.targetShape.node, // 鼠标位置在目标对象上的坐标
+            var clientX = eventClient && eventClient.clientX || 0, clientY = eventClient && eventClient.clientY || 0, node = this.targetShape.shapeNode || this.targetShape.node, // 鼠标位置在目标对象上的坐标
             // 基于屏幕坐标算
             point = Matrix.transformPoint(clientX, clientY, node.getScreenCTM().inverse());
             return Matrix.getCTM(this.targetShape, refer || "view").transformPoint(point);

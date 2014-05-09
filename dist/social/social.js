@@ -766,9 +766,10 @@ $( function () {
     }
 
     function bindDraft() {
+        draftManager = window.draftManager;
         if ( !draftManager ) {
             if ( window.DraftManager ) {
-                draftManager = new window.DraftManager( minder );
+                draftManager = window.draftManager = new window.DraftManager( minder );
             }
         }
 
