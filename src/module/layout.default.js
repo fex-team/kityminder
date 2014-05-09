@@ -465,10 +465,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			case "sub":
 				if ( highlight ) {
 					Layout.highlightshape.fill( nodeStyle.highlight ).setOpacity( 1 );
-					node.getTextShape().fill( 'black' );
+					node.getTextShape().fill( node.getData( 'fontcolor' ) || 'black' );
 				} else {
 					Layout.highlightshape.setOpacity( 0 );
-					node.getTextShape().fill( 'white' );
+					node.getTextShape().fill( node.getData( 'fontcolor' ) || 'white' );
 				}
 				break;
 			default:
