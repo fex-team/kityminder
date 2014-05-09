@@ -3167,10 +3167,10 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			case "sub":
 				if ( highlight ) {
 					Layout.highlightshape.fill( nodeStyle.highlight ).setOpacity( 1 );
-					node.getTextShape().fill( 'black' );
+					node.getTextShape().fill( node.getData( 'fontcolor' ) || 'black' );
 				} else {
 					Layout.highlightshape.setOpacity( 0 );
-					node.getTextShape().fill( 'white' );
+					node.getTextShape().fill( node.getData( 'fontcolor' ) || 'white' );
 				}
 				break;
 			default:
@@ -5640,7 +5640,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset( 'screen' );
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 35 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
             var paperContainer = this.km.getPaper();
