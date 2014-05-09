@@ -4846,7 +4846,8 @@ define("graphic/text", [ "graphic/textcontent", "graphic/shape", "core/class", "
     var svg = require("graphic/svg");
     var offsetHash = {};
     function getTextBoundOffset(text) {
-        var font = window.getComputedStyle(text.node).font;
+        var style = window.getComputedStyle(text.node);
+        var font = [ style.fontFamily, style.fontSize, style.fontStretch, style.fontStyle, style.fontVariant, style.fontWeight ].join("-");
         if (offsetHash[font]) {
             return offsetHash[font];
         }
@@ -4866,9 +4867,6 @@ define("graphic/text", [ "graphic/textcontent", "graphic/shape", "core/class", "
             if (content !== undefined) {
                 this.setContent(content);
             }
-            this.whenPaperReady(function() {
-                this.setVerticalAlign(this.verticalAlign);
-            });
         },
         setX: function(x) {
             this.node.setAttribute("x", x);
@@ -4900,24 +4898,26 @@ define("graphic/text", [ "graphic/textcontent", "graphic/shape", "core/class", "
         },
         // top/bottom/middle/baseline
         setVerticalAlign: function(align) {
-            var dy;
-            switch (align) {
-              case "top":
-                dy = getTextBoundOffset(this).top;
-                break;
+            this.whenPaperReady(function() {
+                var dy;
+                switch (align) {
+                  case "top":
+                    dy = getTextBoundOffset(this).top;
+                    break;
 
-              case "bottom":
-                dy = getTextBoundOffset(this).bottom;
-                break;
+                  case "bottom":
+                    dy = getTextBoundOffset(this).bottom;
+                    break;
 
-              case "middle":
-                dy = getTextBoundOffset(this).middle;
-                break;
+                  case "middle":
+                    dy = getTextBoundOffset(this).middle;
+                    break;
 
-              default:
-                dy = 0;
-            }
-            this.node.setAttribute("dy", dy);
+                  default:
+                    dy = 0;
+                }
+                this.node.setAttribute("dy", dy);
+            });
             this.verticalAlign = align;
             return this;
         },
