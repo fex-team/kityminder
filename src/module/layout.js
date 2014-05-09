@@ -41,8 +41,12 @@ KityMinder.registerModule( "LayoutModule", function () {
 		initStyle: function () {
 			var curStyle = this.getCurrentStyle();
 			this._rc.remove();
+			var transform = this._rc.transform;
 			this._rc = new kity.Group();
 			this._paper.addShape( this._rc );
+
+			this._rc.transform = transform;
+			this._rc._applyTransform();
 
 			var _root = this.getRoot();
 			_root.preTraverse( function ( n ) {
