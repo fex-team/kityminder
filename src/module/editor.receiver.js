@@ -241,8 +241,17 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset('screen');
-
+        var me = this;
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        var paperContainer = this.km.getPaper();
+        var width = paperContainer.getWidth();
+        var height = paperContainer.getHeight();
+        var containerWidth = this.container.offsetWidth;
+        if(width < containerWidth + this.container.offsetLeft){
+            this.km.getRenderContainer().fxTranslate(width/-2, 0, 200, "ease", 0, function() {
+                me.setContainerStyle()
+            });
+        }
         return this;
     },
     getTextOffsetData: function () {
@@ -253,7 +262,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             try {
                 var box = this.textShape.getExtentOfChar( i );
             } catch ( e ) {
-                debugger
+                console.log(e)
             }
 
             this.textData.push( {
