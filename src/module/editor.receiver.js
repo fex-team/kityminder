@@ -374,7 +374,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             }catch(e){
-                debugger
+                console.log(e)
             }
 
         } else {
