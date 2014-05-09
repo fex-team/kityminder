@@ -431,17 +431,21 @@ KityMinder.registerModule( "LayoutDefault", function () {
 	};
 
 	var showNodeInView = function ( node ) {
-		var padding = 5;
-		var viewport = minder.getPaper().getViewPort();
-		var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
+		// var padding = 5;
+		// var viewport = minder.getPaper().getViewPort();
+		// var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
 
-		var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
-		var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
+		// var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
+		// var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
 
-		var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
-		var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
+		// var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
+		// var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
 
-		minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+		// minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
+
+		var nodeX = node.getRenderContainer().getRenderBox( 'view' ).x + node.getRenderContainer().getRenderBox( 'view' ).width;
+		var paperWidth = minder.getPaper().getWidth();
+		console.log( nodeX, paperWidth );
 	};
 
 	var _style = {
