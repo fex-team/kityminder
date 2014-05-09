@@ -245,16 +245,17 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
         if(!this.selection.isShow()){
             var paperContainer = this.km.getPaper();
-            var width = paperContainer.getWidth();
-            var height = paperContainer.getHeight();
+            var width = paperContainer.node.parentNode.clientWidth;
+            var height = paperContainer.node.parentNode.clientHeight;
 
             if(width < this.container.offsetWidth + this.container.offsetLeft){
                 this.km.getRenderContainer().translate(width/-3, 0);
-                this.setContainerStyle();
+                //this.setContainerStyle();
+                console.log(width, this.container.offsetWidth + this.container.offsetLeft);
 
             }else if (height < this.container.offsetTop + this.container.offsetHeight){
                 this.km.getRenderContainer().translate(0, height/-3);
-                this.setContainerStyle()
+                //this.setContainerStyle()
             }
         }
 
