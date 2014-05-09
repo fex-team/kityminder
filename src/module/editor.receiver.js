@@ -167,6 +167,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             }
             isTypeText = true;
 
+            setTextToContainer();
             break;
 
 
@@ -174,7 +175,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         case 'keypress':
 
             if ( isTypeText )
-                setTextToContainer();
+//                setTextToContainer();
             isKeypress = true;
             break;
 
