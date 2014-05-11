@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-05-11
+ * kityminder - v1.1.3 - 2014-05-12
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -4709,16 +4709,20 @@ KityMinder.registerModule( "KeyboardModule", function () {
             p;
         root.traverse( function ( node ) {
             p = node.getRenderContainer().getRenderBox( 'top' );
-            pointIndexes.push( {
-                left: p.x,
-                top: p.y,
-                right: p.x + p.width,
-                bottom: p.y + p.height,
-                width: p.width,
-                height: p.height,
-                node: node,
-                text: node.getText()
-            } );
+
+            // bugfix: 不应导航到收起的节点（判断其尺寸是否存在）
+            if ( p.width && p.height ) {
+                pointIndexes.push( {
+                    left: p.x,
+                    top: p.y,
+                    right: p.x + p.width,
+                    bottom: p.y + p.height,
+                    width: p.width,
+                    height: p.height,
+                    node: node,
+                    text: node.getText()
+                } );
+            }
         } );
         for ( var i = 0; i < pointIndexes.length; i++ ) {
             findClosestPointsFor( pointIndexes, i );
@@ -4754,8 +4758,10 @@ KityMinder.registerModule( "KeyboardModule", function () {
         var current, dist;
 
         for ( var i = 0; i < pointIndexes.length; i++ ) {
+
             if ( i == iFind ) continue;
             current = pointIndexes[ i ];
+
             dist = getCoefedDistance( current, find );
 
             // left check
