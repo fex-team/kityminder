@@ -23,7 +23,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 		},
 		getCurrentStyle: function () {
 			var _root = this.getRoot();
-			return _root.getData( "currentstyle" );
+			return "default"; //_root.getData( "currentstyle" );
 		},
 		setCurrentStyle: function ( name ) {
 			var _root = this.getRoot();
