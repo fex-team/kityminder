@@ -197,37 +197,38 @@ $( function () {
         if ( !match ) return;
 
         var shareId = match[ 1 ];
-        var query = new baidu.frontia.storage.Query();
 
-        query.on( 'shareMinder.id' ).equal( shareId );
-
-        $share_btn.loading( '正在加载分享内容...' );
-
-        baidu.frontia.storage.findData( query, {
-            success: function ( ret ) {
-                if ( ret.count === 0 ) {
-                    $share_btn.loading( false );
-                    return notice( '加载分享内容失败！请确认分享链接正确。' );
+        $.ajax( {
+            url: 'http://naotu.baidu.com/mongo.php',
+            data: {
+                action: 'find',
+                id: shareId
+            },
+            dataType: 'json',
+            success: function ( data ) {
+                if ( data.error ) {
+                    return notice( data.error );
                 }
-
                 if ( draftManager ) {
                     var draft = draftManager.openByPath( 'share/' + shareId );
                     if ( draft ) {
                         draftManager.load();
                     } else {
                         draftManager.create( 'share/' + shareId );
-                        minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                        minder.importData( data.shareMinder.data, 'json' );
                     }
                 } else {
-                    minder.importData( ret.result[ 0 ].obj.shareMinder.data, 'json' );
+                    minder.importData( data.shareMinder.data, 'json' );
                 }
                 setRemotePath( null, false );
                 $share_btn.loading( false );
             },
-            error: function ( e ) {
-                console.log( e );
+            error: function () {
+                notice( '请求分享文件失败，请重试！' );
             }
         } );
+
+        $share_btn.loading( '正在加载分享内容...' );
 
         isShareLink = true;
     }
@@ -676,12 +677,31 @@ $( function () {
 
         $share_btn.loading( '正在分享...' );
 
-        baidu.frontia.storage.insertData( shareData, {
-            success: function () {
-                $share_dialog.show();
-                $share_url.val( shareUrl )[ 0 ].select();
+        $.ajax({
+            url: 'http://naotu.baidu.com/mongo.php',
+            type: 'POST',
+            data: {
+                action: 'insert',
+                record: JSON.stringify( {
+                    shareMinder: {
+                        id: shareId,
+                        data: minder.exportData( 'json' )
+                    }
+                } )
+            },
+            success: function ( result ) {
+                if ( result.error ) {
+                    notice( result.error );
+                } else {
+                    $share_dialog.show();
+                    $share_url.val( shareUrl )[ 0 ].select();   
+                }
+            },
+            error: function() {
+                notice('分享失败，可能是当前的环境不支持该操作。');
             }
         } );
+
         shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();
         shareConfig.bdDesc = shareConfig.bdText = '“' + minder.getMinderTitle() + '” - 我用百度脑图制作的思维导图，快看看吧！（地址：' + shareUrl + '）';
         shareConfig.bdUrl = shareUrl;
