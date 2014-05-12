@@ -797,7 +797,10 @@ $( function () {
     function loadDraft( index ) {
         var draft = draftManager.open( index ),
             isRemote;
-        if ( !draft ) return;
+        if ( !draft ) {
+            minder.initStyle();
+            return;
+        }
 
         isRemote = draft.path.indexOf( '/apps/kityminder' ) === 0;
         if ( isRemote ) {
