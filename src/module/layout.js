@@ -104,7 +104,7 @@ KityMinder.registerModule( "LayoutModule", function () {
 			n.getBgRc().clear();
 		} );
 		km.setCurrentStyle( style );
-		km.initStyle();
+		//km.initStyle();
 		return style;
 	};
 	var SwitchLayoutCommand = kity.createClass( "SwitchLayoutCommand", ( function () {
