@@ -14,6 +14,12 @@
 .kmui-btn-toolbar .kmui-btn .kmui-icon-font, .kmui-btn-toolbar .kmui-btn .kmui-icon-forecolor {
     background-position: -720px 1px;
 }
+.kmui-btn-toolbar .kmui-btn .kmui-icon-image {
+    background: url(../images/picture_add.png) no-repeat 2px 2px;
+}
+.kmui-btn-toolbar .kmui-btn .kmui-icon-removeimage {
+    background: url(../images/picture_delete.png) no-repeat 2px 2px;
+}
 .kmui-btn-toolbar .kmui-btn .kmui-icon-hand {
     background: url(../images/hand.png) no-repeat 2px 2px;
 }
