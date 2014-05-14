@@ -712,6 +712,7 @@ KityMinder.registerModule( "LayoutDefault", function () {
 			this.appendChildNode( parent, node, focus, sibling );
 		},
 		removeNode: function ( nodes ) {
+            nodes = utils.isArray(nodes) ? nodes : [nodes];
 			while ( nodes.length !== 0 ) {
 				var parent = nodes[ 0 ].getParent();
 				if ( !parent ) {

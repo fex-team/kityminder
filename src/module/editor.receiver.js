@@ -95,7 +95,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             if ( browser.gecko && /\s$/.test( text ) ) {
                 text += "\u200b";
             }
-            me.textShape.setContent( text );
+
             me.setContainerStyle();
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
@@ -127,20 +127,16 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             isTypeText = false;
             isKeypress = false;
             switch ( e.originEvent.keyCode ) {
-            case keys.Enter:
-            case keys.Tab:
-                this.selection.setHide();
-                this.clear().setTextEditStatus( false );
-                this.km.fire( 'contentchange' );
-                this.km.setStatus( 'normal' );
-                e.preventDefault();
-                return;
-                break;
-            case keymap.Shift:
-            case keymap.Control:
-            case keymap.Alt:
-            case keymap.Cmd:
-                return;
+                case keys.Enter:
+                case keys.Tab:
+                    this.selection.setHide();
+                    this.clear().setTextEditStatus( false );
+                    this.km.fire( 'contentchange' );
+                    this.km.setStatus( 'normal' );
+                    e.preventDefault();
+                    return;
+                    break;
+
             }
 
             if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
@@ -167,19 +163,21 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             }
             isTypeText = true;
 
-            setTextToContainer();
+            if(!orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
+                setTextToContainer();
+            }
+
             break;
 
 
 
         case 'keypress':
 
-            if ( isTypeText )
-//                setTextToContainer();
             isKeypress = true;
             break;
 
         case 'beforekeyup':
+
             switch ( keyCode ) {
             case keymap.Enter:
             case keymap.Tab:
@@ -195,7 +193,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             }
 
-            if ( !isKeypress ) {
+            if ( !isKeypress && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey ) {
                 setTextToContainer();
             }
             return true;

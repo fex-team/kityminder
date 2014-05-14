@@ -299,8 +299,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
                 return false;
             }
         } );
-        if(textShape === undefined)
-            debugger
+
         return textShape;
     },
     isSelected: function () {
@@ -318,7 +317,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
     setTmpData: function ( a, v ) {
         var me = this;
         if ( utils.isObject( a ) ) {
-            utils.each( a, function ( val, key ) {
+            utils.each( a, function ( key,val) {
                 me.setTmpData( key, val )
             } )
         }
@@ -333,5 +332,12 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
             return this.tmpData;
         }
         return this.tmpData[ a ]
+    },
+    setValue:function(node){
+        this.data = {};
+        this.setData(utils.clonePlainObject(node.getData()));
+        this.tmpData = {};
+        this.setTmpData(utils.clonePlainObject(node.getTmpData()));
+        return this;
     }
 } );

@@ -106,11 +106,15 @@ KityMinder.registerModule( "TextEditModule", function () {
                 var node = this.getSelectedNode();
                 if(node){
                     if ( this.isSingleSelect() && node.isSelected()) {
-                        var keyCode = e.originEvent.keyCode;
-                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount != 0){
+                        var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
+                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount != 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
+
                             var nativeRange = range.nativeSel.getRangeAt(0);
-                            if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer )))
-                                km.setStatus('textedit')
+                            if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer ))){
+                                km.setStatus('textedit');
+                                km.fire('saveScene');
+                            }
+
                         }
                     }
                 }
@@ -120,8 +124,10 @@ KityMinder.registerModule( "TextEditModule", function () {
                 var node = this.getSelectedNode();
                 if(node){
                     if ( this.isSingleSelect() && node.isSelected()) {
-                        var keyCode = e.originEvent.keyCode;
-                        if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit'){
+                        var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
+                        if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit' && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
+
+
                            //准备输入状态
                             var textShape = node.getTextShape();
 
@@ -225,7 +231,30 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
             },
             'restoreScene':function(){
-                sel.setHide();
+                var node = this.getSelectedNode();
+                if(node && this.isSingleSelect()){
+                    var textShape = node.getTextShape();
+                    sel.setHide();
+                    sel.setStartOffset(0);
+                    sel.setEndOffset(textShape.getContent().length);
+
+                    receiver.setTextEditStatus(true)
+                        .setSelection(sel)
+                        .setKityMinder(this)
+                        .setMinderNode(node)
+                        .setTextShape(textShape)
+                        .setRange(range)
+                        .setBaseOffset()
+                        .setContainerStyle()
+                        .setSelectionHeight()
+                        .setContainerTxt(textShape.getContent())
+                        .updateRange(range).setTextEditStatus(true);
+
+                    sel.setData('relatedNode',node);
+                }else {
+                    receiver.clear()
+                }
+
             },
             'stopTextEdit':function(){
                 sel.setHide();
