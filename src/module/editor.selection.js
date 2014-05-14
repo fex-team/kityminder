@@ -66,7 +66,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         }
         this.setPosition(offset).setWidth(width);
         //解决在框选内容时，出现很窄的光标
-        if(width == 0){
+        if(width === 0){
             this.setOpacity(0);
         }else{
             this.setOpacity(0.5);
@@ -80,7 +80,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.y = offset.y;
 
         } catch ( e ) {
-           console.log(e)
+           console.log(e);
         }
         return this.update();
     },
@@ -125,13 +125,13 @@ Minder.Selection = kity.createClass( 'Selection', {
         } else {
             this.text = text;
         }
-        return this
+        return this;
     },
     getTextShape: function () {
-        return this.text
+        return this.text;
     },
     setTxtContent: function ( text ) {
-        this.text.setContent( text )
+        this.text.setContent( text );
     },
     updatePosition: function ( index ) {
 
@@ -140,6 +140,6 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.selectionShowStatus = status;
     },
     getSelectionShowStatus:function(){
-        return this.selectionShowStatus
+        return this.selectionShowStatus;
     }
 } );

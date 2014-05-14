@@ -68,7 +68,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }
                     if(this.getStatus() == 'textedit')
                         this.fire('contentchange');
-                    km.setStatus('normal')
+                    km.setStatus('normal');
                 }
                 if(node){
                     var textShape = node.getTextShape();
@@ -108,7 +108,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                 if(node){
                     if ( this.isSingleSelect() && node.isSelected()) {
                         var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
-                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount != 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
+                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount !== 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
 
                             var nativeRange = range.nativeSel.getRangeAt(0);
                             if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer ))){
@@ -159,13 +159,13 @@ KityMinder.registerModule( "TextEditModule", function () {
                     if(!sel.collapsed ){
 
                         try{
-                            receiver.updateRange(range)
-                        }catch(e){
-                            console.log(e)
+                            receiver.updateRange(range);
+                        }catch(error){
+                            console.log(error);
                         }
 
                     }else
-                       sel.setShow()
+                       sel.setShow();
                 }else{
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
@@ -254,7 +254,7 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     sel.setData('relatedNode',node);
                 }else {
-                    receiver.clear()
+                    receiver.clear();
                 }
 
             },
@@ -315,7 +315,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     if(sel.collapsed){
                         receiver.updateSelection();
                     }else{
-                        receiver.updateSelectionShow(1)
+                        receiver.updateSelectionShow(1);
                     }
                     return;
 
@@ -323,18 +323,18 @@ KityMinder.registerModule( "TextEditModule", function () {
                 }
                 receiver.clear().setTextEditStatus(false);
                 if(this.getStatus() == 'textedit'){
-                    this.setStatus('normal')
+                    this.setStatus('normal');
                 }
             },
             'selectionclear':function(){
                 km.setStatus('normal');
-                receiver.setTextEditStatus(false).clear()
+                receiver.setTextEditStatus(false).clear();
             },
             blur:function(){
-                receiver.clear()
+                receiver.clear();
             },
             'textedit.mousewheel':function(){
-                receiver.setContainerStyle()
+                receiver.setContainerStyle();
             }
         }
     };

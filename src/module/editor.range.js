@@ -4,11 +4,11 @@ Minder.Range = kity.createClass('Range',{
         this.nativeSel = window.getSelection();
     },
     hasNativeRange : function(){
-        return this.nativeSel.rangeCount != 0 ;
+        return this.nativeSel.rangeCount !== 0 ;
     },
     select:function(){
         var start = this.nativeRange.startContainer;
-        if(start.nodeType == 1 && start.childNodes.length == 0){
+        if(start.nodeType == 1 && start.childNodes.length === 0){
             var char = document.createTextNode('\u200b');
             start.appendChild(char);
             this.nativeRange.setStart(char,1);
@@ -26,8 +26,8 @@ Minder.Range = kity.createClass('Range',{
     setStart:function(node,index){
         try{
             this.nativeRange.setStart(node,index);
-        }catch(e){
-            console.log('e')
+        }catch(error){
+            console.log(error);
         }
 
         return this;
@@ -41,7 +41,7 @@ Minder.Range = kity.createClass('Range',{
         return {
             startContainer:range.startContainer,
             startOffset:range.startOffset
-        }
+        };
     },
 
     collapse:function(toStart){
