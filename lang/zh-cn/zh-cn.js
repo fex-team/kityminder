@@ -15,9 +15,11 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'hand': '允许拖拽',
         'zoom': '放大缩小',
         'markers': '添加标签',
+        'resource': '分配资源',
         'switchlayout': '切换主题',
         'help': '帮助',
         'preference': '偏好设置',
+        'image': '插入图片',
         'hyperlink': '插入链接',
         'unhyperlink': "删除链接",
         'expandnode': "展开节点",
@@ -48,7 +50,10 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'help': {
 
         },
-        hyperlink: {}
+        'hyperlink': {},
+        'image': {},
+        'resource': {
+        }
     },
     'node': {
         'appendsiblingnode': '插入同级节点',
@@ -63,6 +68,10 @@ KityMinder.LANG[ 'zh-cn' ] = {
     'hyperlink':{
         'hyperlink':'插入超链接',
         'unhyperlink':"取消超链接"
+    },
+    'image':{
+        'image': '插入图片',
+        'removeimage': '删除图片'
     }
 
 };

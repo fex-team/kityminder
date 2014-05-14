@@ -63,7 +63,7 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink | markers | node | help'
+            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink image removeimage | markers resource | node | help'
         ]
         //只读模式，默认是false
         //readOnly: true
@@ -89,5 +89,10 @@
         // }
         //配置放大缩小的比例
         //,zoom:[50,80,100,120,150,200]
+        //
+        //图片尺寸限制
+        //,maxImageWidth: 200
+        //,maxImageHeight: 200
+        //
     };
 } )();
