@@ -9,14 +9,14 @@ KityMinder.registerModule( "hyperlink", function () {
                     var nodes = km.getSelectedNodes();
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'hyperlink', url );
-                        km.updateLayout( n )
-                    } )
+                        km.updateLayout( n );
+                    } );
 
                 },
                 queryState: function ( km ) {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if ( nodes.length == 0 ) {
+                    if ( nodes.length === 0 ) {
                         return -1;
                     }
                     utils.each( nodes, function ( i, n ) {
@@ -39,13 +39,13 @@ KityMinder.registerModule( "hyperlink", function () {
                     var nodes = km.getSelectedNodes();
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'hyperlink' );
-                        km.updateLayout( n )
-                    } )
+                        km.updateLayout( n );
+                    } );
                 },
                 queryState: function ( km ) {
                     var nodes = km.getSelectedNodes();
 
-                    if ( nodes.length == 0 ) {
+                    if ( nodes.length === 0 ) {
                         return -1;
                     }
                     var link = false;
@@ -56,7 +56,7 @@ KityMinder.registerModule( "hyperlink", function () {
                         }
                     } );
                     if ( link ) {
-                        return 0
+                        return 0;
                     }
                     return -1;
                 }
@@ -65,17 +65,27 @@ KityMinder.registerModule( "hyperlink", function () {
         "events": {
             "RenderNodeRight": function ( e ) {
                 var node = e.node,
-                    url;
-                if ( url = node.getData( 'hyperlink' ) ) {
+                    url = node.getData( 'hyperlink' );
+                if ( url ) {
                     var link = new kity.HyperLink( url );
                     var linkshape = new kity.Path();
+                    var outline = new kity.Rect(24, 22, -2, -6, 4).fill('rgba(255, 255, 255, 0)');
                     var box = node.getContRc().getBoundaryBox();
                     var style = this.getCurrentLayoutStyle()[ node.getType() ];
-                    linkshape.setPathData( linkShapePath ).fill( '#666' ).setTranslate( box.x + box.width + style.spaceLeft, -5 );
+
+                    linkshape.setPathData( linkShapePath ).fill( '#666' );
+                    link.setAttr('xlink:title', url);
+                    link.addShape( outline );
                     link.addShape( linkshape );
                     link.setTarget( '_blank' );
                     link.setStyle( 'cursor', 'pointer' );
-                    node.getContRc().addShape( link );
+                    node.getContRc().addShape( link.setTranslate( box.x + box.width + style.spaceLeft + 5, -5 ) );
+
+                    link.on('mouseover', function() {
+                        outline.fill('rgba(255, 255, 200, .8)');
+                    }).on('mouseout', function() {
+                        outline.fill('rgba(255, 255, 255, 0)');
+                    });
 
                 }
             }
