@@ -15,6 +15,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'hand': '允许拖拽',
         'zoom': '放大缩小',
         'markers': '添加标签',
+        'resource': '分配资源',
         'switchlayout': '切换主题',
         'help': '帮助',
         'preference': '偏好设置',
@@ -50,7 +51,9 @@ KityMinder.LANG[ 'zh-cn' ] = {
 
         },
         'hyperlink': {},
-        'image': {}
+        'image': {},
+        'resource': {
+        }
     },
     'node': {
         'appendsiblingnode': '插入同级节点',

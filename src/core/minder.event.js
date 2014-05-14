@@ -63,7 +63,7 @@ kity.extendClass( Minder, {
             }
             minder._fire( new MinderEvent( 'preinteractchange' ) );
             minder._fire( new MinderEvent( 'interactchange' ) );
-        }, 300 );
+        }, 20 );
     },
     _listen: function ( type, callback ) {
         var callbacks = this._eventCallbacks[ type ] || ( this._eventCallbacks[ type ] = [] );

@@ -2,7 +2,7 @@
     "indent_with_tabs": false,
     "preserve_newlines": true,
     "max_preserve_newlines": 4,
-    "space_in_paren": true,
+    "space_in_paren": false,
     "jslint_happy": true,
     "brace_style": "collapse",
     "keep_array_indentation": false,

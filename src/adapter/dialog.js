@@ -1,4 +1,4 @@
-KM.registerToolbarUI( 'markers help preference', function ( name ) {
+KM.registerToolbarUI( 'markers help preference resource', function ( name ) {
 
     var me = this,
         currentRange, $dialog,
@@ -34,8 +34,6 @@ KM.registerToolbarUI( 'markers help preference', function ( name ) {
             KM.setWidgetBody( name, $dialog, me );
         } ).attachTo( $btn )
     } );
-
-
 
     me.on( 'interactchange', function () {
         var state = this.queryCommandState( name );

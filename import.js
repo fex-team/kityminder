@@ -24,6 +24,7 @@
             ,'module/history.js'
             ,'module/icon.js'
             ,'module/image.js'
+            ,'module/resource.js'
             ,'module/layout.js'
             ,'module/layout.default.js'
             ,'module/layout.bottom.js'
