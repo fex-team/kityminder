@@ -112,11 +112,15 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             me.updateTextData();
 
             me.updateIndex();
-            me.updateSelection();
 
-            me.timer = setTimeout( function () {
-                me.selection.setShow()
-            }, 500 );
+
+            if( me.selection.getSelectionShowStatus()) {
+                me.updateSelection();
+                me.timer = setTimeout(function () {
+                    me.selection.setShow()
+                }, 500)
+            }
+
         }
         var isTypeText = false;
         var isKeypress = false;
@@ -379,7 +383,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             } catch ( e ) {
-                console.log( 'e' )
+                console.log( e )
             }
 
         } else {
@@ -404,4 +408,5 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         this.container.textContent = txt;
         return this;
     }
+
 } );

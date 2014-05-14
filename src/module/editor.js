@@ -77,6 +77,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
+                        sel.setSelectionShowStatus(true);
                         node.getTextShape().setStyle('cursor','text');
                         km.setStatus('textedit');
                         receiver.setTextEditStatus(true)
@@ -112,6 +113,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             var nativeRange = range.nativeSel.getRangeAt(0);
                             if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer ))){
                                 km.setStatus('textedit');
+                                sel.setSelectionShowStatus(true);
                                 km.fire('saveScene');
                             }
 
@@ -127,14 +129,13 @@ KityMinder.registerModule( "TextEditModule", function () {
                         var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
                         if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit' && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
 
-
                            //准备输入状态
                             var textShape = node.getTextShape();
 
                             sel.setHide();
                             sel.setStartOffset(0);
                             sel.setEndOffset(textShape.getContent().length);
-
+                            sel.setSelectionShowStatus(true);
                             receiver.setTextEditStatus(true)
                                 .setSelection(sel)
                                 .setKityMinder(this)
@@ -237,7 +238,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     sel.setHide();
                     sel.setStartOffset(0);
                     sel.setEndOffset(textShape.getContent().length);
-
+                    sel.setSelectionShowStatus(false);
                     receiver.setTextEditStatus(true)
                         .setSelection(sel)
                         .setKityMinder(this)
@@ -249,6 +250,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                         .setSelectionHeight()
                         .setContainerTxt(textShape.getContent())
                         .updateRange(range).setTextEditStatus(true);
+                    km.setStatus('normal');
 
                     sel.setData('relatedNode',node);
                 }else {

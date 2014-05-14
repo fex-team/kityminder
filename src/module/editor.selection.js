@@ -15,6 +15,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.setOpacity(0.5);
         this.setStyle('cursor','text');
         this._show = false;
+        this.selectionShowStatus = true;
     },
     collapse : function(toEnd){
 
@@ -103,6 +104,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         var me = this,
             state = '';
         me.setStyle( 'display', '' );
+        this.setSelectionShowStatus(true);
         me._show = true;
         if(this.collapsed){
             me.setOpacity(1);
@@ -133,5 +135,11 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     updatePosition: function ( index ) {
 
+    },
+    setSelectionShowStatus:function(status){
+        this.selectionShowStatus = status;
+    },
+    getSelectionShowStatus:function(){
+        return this.selectionShowStatus
     }
 } );
