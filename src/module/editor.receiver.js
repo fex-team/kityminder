@@ -126,7 +126,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         switch ( e.type ) {
 
         case 'keydown':
-            this.isTypeText =  keyCode == 229 || keyCode === 0;
+            this.isTypeText =  keyCode == 229 || keyCode === 0 || keyCode == 83;
             switch ( keyCode ) {
                 case keys.Enter:
                 case keys.Tab:
