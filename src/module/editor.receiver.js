@@ -29,7 +29,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.keyboardEvents.call( me, new MinderEvent( e.type == 'keyup' ? "beforekeyup" : e.type, e ) )
             } )
         }
-        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;}' ); //clip:rect(1em 1em 1em 1em);
+        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}' ); //
         this.km.on( 'textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy( this.keyboardEvents, this ) );
         this.timer = null;
         this.index = 0;
@@ -122,13 +122,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             }, 500 );
         }
 
+
         switch ( e.type ) {
 
         case 'keydown':
-            var keyCode = e.originEvent.keyCode;
-            this.isTypeText =  keyCode == 229 && keyCode === 0;
-            switch ( e.originEvent.keyCode ) {
-            case keys.Enter:
+            this.isTypeText =  keyCode == 229 || keyCode === 0;
+            switch ( keyCode ) {
+                case keys.Enter:
                 case keys.Tab:
                     this.selection.setHide();
                     this.clear().setTextEditStatus( false );
@@ -155,13 +155,13 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                         var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
                         me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
                         me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
-                        setTextToContainer()
+                        setTextToContainer();
                     }, 100 );
                 }
                 //剪切
                 if ( keyCode == keymap.x ) {
                     setTimeout( function () {
-                        setTextToContainer()
+                        setTextToContainer();
                     }, 100 );
                 }
                 return;
@@ -169,23 +169,15 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             setTimeout(function(){
                 setTextToContainer();
-            })
-            break;
-
-
-
-        case 'keypress':
-
+            });
             break;
 
         case 'beforekeyup':
-
             switch ( keyCode ) {
                 case keymap.Enter:
                 case keymap.Tab:
                 case keymap.F2:
-
-                    if(keymap.Enter == keyCode ){
+                    if(keymap.Enter == keyCode && this.isTypeText){
 
                         setTextToContainer();
                     }
@@ -200,8 +192,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 case keymap.Backspace:
                 case keymap.Spacebar:
                     setTextToContainer();
+                    return;
             }
 
+            if(this.isTypeText){
+                setTextToContainer();
+            }
             return true;
         }
 
@@ -255,7 +251,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset( 'screen' );
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 35 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y + textShapeBox.height *.1 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
             var paperContainer = this.km.getPaper();
