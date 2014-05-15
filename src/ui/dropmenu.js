@@ -3,7 +3,7 @@ KM.ui.define( 'dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
         '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
-        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<li id="<%= ci.id%>" <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
         '</li><%}}%>' +
         '<%}%>' +
@@ -106,12 +106,13 @@ KM.ui.define( 'dropmenu', {
     },
     appendItem: function ( item ) {
         var itemTpl = '<%if(item.divider){%><li class="kmui-divider"></li><%}else{%>' +
-            '<li <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
+            '<li id="<%= item.id%>" <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
             '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= item.label%></a>' +
             '</li><%}%>';
         var html = $.parseTmpl( itemTpl, item );
         var $item = $( html ).click( item.click );
         this.root().append( $item );
+        return $item;
     },
     addSubmenu: function ( label, menu, index ) {
         index = index || 0;
