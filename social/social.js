@@ -329,7 +329,7 @@ $( function () {
 
     // 加载用户最近使用的文件
     function loadUserFiles() {
-        if ( loadUserFiles.tryCount > 1 ) {
+        if ( loadUserFiles.tryCount ) {
             console.warn( '加载用户最近使用的文件失败：第 ' + loadUserFiles.tryCount + '次' );
         }
 
@@ -472,7 +472,7 @@ $( function () {
 
     // 加载当前 remoteUrl 中制定的文件
     function loadRemote() {
-        if ( loadRemote.tryCount > 1 ) {
+        if ( loadRemote.tryCount ) {
             console.warn( '加载用户文件失败：第 ' + loadUserFiles.tryCount + '次' );
         }
         // 失败重试判断
@@ -643,41 +643,60 @@ $( function () {
     }
 
     function save() {
-        if ( !currentAccount ) return;
+        if ( !currentAccount || save.busy ) return;
+
+        save.busy = true;
 
         var data = minder.exportData( 'json' );
         var sto = baidu.frontia.personalStorage;
 
         function error( reason ) {
-            notice( reason + '\n建议您将脑图以 .km 格式导出到本地！' );
+            notice( '保存到云盘失败，可能是网络问题导致！\n建议您将脑图以 .km 格式导出到本地！' );
             $save_btn.loading( false );
             clearTimeout( timeout );
+            save.busy = false;
         }
 
         var timeout = setTimeout( function () {
             error( '保存到云盘超时，可能是网络不稳定导致。' );
         }, 15000 );
-        sto.uploadTextFile( data, remotePath || generateRemotePath(), {
-            ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
-            success: function ( savedFile ) {
-                if ( savedFile.path ) {
-                    if ( !remotePath ) {
-                        addToRecentMenu( [ savedFile ] );
-                    }
-                    setRemotePath( savedFile.path, true );
-                    if ( draftManager ) {
-                        draftManager.save( remotePath );
-                        draftManager.sync();
-                    }
-                    clearTimeout( timeout );
-                } else {
-                    error( '保存到云盘失败，可能是网络问题导致！' );
-                }
-            },
-            error: function ( e ) {
-                error( '保存到云盘失败' );
+
+        function upload() {
+            if ( upload.tryCount ) {
+                console.warn( '保存文件失败！（第 ' + upload.tryCount + ' 次）' );
             }
-        } );
+            if ( upload.tryCount > 3 ) {
+                error();
+                upload.tryCount = 0;
+                return;
+            }
+            sto.uploadTextFile( data, remotePath || generateRemotePath(), {
+                ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
+                success: function ( savedFile ) {
+                    if ( savedFile.path ) {
+                        if ( !remotePath ) {
+                            addToRecentMenu( [ savedFile ] );
+                        }
+                        setRemotePath( savedFile.path, true );
+                        if ( draftManager ) {
+                            draftManager.save( remotePath );
+                            draftManager.sync();
+                        }
+                        clearTimeout( timeout );
+                        save.busy = false;
+                        upload.tryCount = 0;
+                    } else {
+                        upload();
+                    }
+                },
+                error: upload
+            } );
+            upload.tryCount++;
+        }
+
+        upload.tryCount = 0;
+
+        upload();
 
         $save_btn.loading( '正在保存...' );
     }
