@@ -11,7 +11,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'fontsize': '字号',
         'layoutstyle': '主题',
         'node': '节点操作',
-        'saveto': '导出',
+        'saveto': '另存为',
         'hand': '允许拖拽',
         'zoom': '放大缩小',
         'markers': '添加标签',

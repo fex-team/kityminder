@@ -1,7 +1,8 @@
 var KityMinder = window.KM = window.KityMinder = function () {
-	var instanceMap = {}, instanceId = 0;
+	var instanceMap = {},
+		instanceId = 0;
 	return {
-		version: '1.1.3',
+		version: '1.1.3.1',
 		createMinder: function ( renderTarget, options ) {
 			options = options || {};
 			options.renderTo = Utils.isString( renderTarget ) ? document.getElementById( renderTarget ) : renderTarget;
