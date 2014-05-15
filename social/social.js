@@ -99,7 +99,7 @@ $( function () {
         loadShare();
         bindShortCuts();
         bindDraft();
-        draftManager && watchChanges();
+        if ( draftManager ) watchChanges();
         if ( draftManager && !loadPath() && !isShareLink ) loadDraft( 0 );
     }
 
@@ -181,12 +181,6 @@ $( function () {
                 notice( '登录失败！' );
             }
         } );
-    }
-
-    function initPreferneceSync() {
-        if ( currentAccount ) {
-
-        }
     }
 
     // 检查 URL 是否分享连接，是则加载分享内容
@@ -335,26 +329,40 @@ $( function () {
 
     // 加载用户最近使用的文件
     function loadUserFiles() {
+        if ( loadUserFiles.tryCount > 3 ) {
+            notice( '加载最近脑图失败！' );
+            loadUserFiles.tryCount = 0;
+        }
+
         var sto = baidu.frontia.personalStorage;
-        //$user_btn.loading( '加载最近脑图...' );
+
+        if ( loadUserFiles.tryCount === 0 ) {
+            loadUserFiles.$loadingMenuItem = $user_menu.appendItem( {
+                item: {
+                    label: '正在加载最近脑图...',
+                    disabled: 'disabled'
+                }
+            } );
+        }
 
         sto.listFile( 'apps/kityminder/', {
             by: 'time',
             success: function ( result ) {
                 if ( result.list.length ) {
-                    //$user_btn.loading( false );
+                    loadUserFiles.$loadingMenuItem.remove();
                     addToRecentMenu( result.list.filter( function ( file ) {
                         return getFileFormat( file.path ) in fileLoader;
                     } ) );
                     syncPreference( result.list );
                 }
             },
-            error: function () {
-                notice( '加载最近脑图失败！' );
-                //$user_btn.loading( false );
-            }
+            error: loadUserFiles
         } );
+
+        loadUserFiles.tryCount++;
     }
+
+    loadUserFiles.tryCount = 0;
 
     // 同步用户配置文件
     function syncPreference( fileList ) {
@@ -460,6 +468,12 @@ $( function () {
 
     // 加载当前 remoteUrl 中制定的文件
     function loadRemote() {
+        // 失败重试判断
+        if ( loadRemote.tryCount > 3 ) {
+            notice( '加载脑图失败！' );
+            loadRemote.tryCount = 0;
+        }
+
         var sto = baidu.frontia.personalStorage;
 
         $user_btn.loading( '加载“' + getFileName( remotePath ) + '”...' );
@@ -471,10 +485,15 @@ $( function () {
                 if ( format in fileLoader ) {
                     fileLoader[ format ]( url );
                 }
+                loadRemote.tryCount = 0;
             },
-            error: notice
+            error: loadRemote
         } );
+
+        loadRemote.tryCount++;
     }
+
+    loadRemote.tryCount = 0;
 
     function getFileFormat( fileUrl ) {
         return fileUrl.split( '.' ).pop();
@@ -677,7 +696,7 @@ $( function () {
 
         $share_btn.loading( '正在分享...' );
 
-        $.ajax({
+        $.ajax( {
             url: 'http://naotu.baidu.com/mongo.php',
             type: 'POST',
             data: {
@@ -694,11 +713,11 @@ $( function () {
                     notice( result.error );
                 } else {
                     $share_dialog.show();
-                    $share_url.val( shareUrl )[ 0 ].select();   
+                    $share_url.val( shareUrl )[ 0 ].select();
                 }
             },
-            error: function() {
-                notice('分享失败，可能是当前的环境不支持该操作。');
+            error: function () {
+                notice( '分享失败，可能是当前的环境不支持该操作。' );
             }
         } );
 
