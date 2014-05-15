@@ -177,7 +177,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 case keymap.Enter:
                 case keymap.Tab:
                 case keymap.F2:
-                    if(keymap.Enter == keyCode && this.isTypeText){
+                    if(keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)){
                         setTextToContainer();
                     }
                     if ( this.keydownNode === this.minderNode ) {
@@ -197,9 +197,10 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             if(this.isTypeText){
                 setTextToContainer();
             }
+            if(browser.mac && browser.gecko)
+                setTextToContainer();
             return true;
         }
-
 
     },
 
