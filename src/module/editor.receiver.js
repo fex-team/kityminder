@@ -98,12 +98,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             if ( browser.gecko && /\s$/.test( text ) ) {
                 text += "\u200b";
             }
-            me.textShape.setContent( text );
-            me.setContainerStyle();
+
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
                 me.minderNode.setText( '|' );
             }
+            me.setContainerStyle();
             me.km.updateLayout( me.minderNode );
 
 
