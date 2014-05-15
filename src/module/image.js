@@ -105,6 +105,7 @@ KityMinder.registerModule("image", function () {
                 var node = e.node,
                     url = node.getData('image');
                 var link, img, size, currentBox;
+                var curStyle = this.getCurrentLayoutStyle();
 
                 if (url) {
 
