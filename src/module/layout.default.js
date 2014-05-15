@@ -190,7 +190,8 @@ KityMinder.registerModule("LayoutDefault", function () {
 		default:
 			break;
 		}
-		contRc.setTranslate(nodeStyle.padding[3], nodeStyle.padding[0] + _contRCHeight / 2);
+		var rBox = contRc.getRenderBox();
+		contRc.setTranslate(nodeStyle.padding[3], nodeStyle.padding[0] - rBox.top);
 	};
 	//计算节点在垂直方向的位置
 	var updateLayoutVertical = function (node, parent, action) {
