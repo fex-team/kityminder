@@ -29,7 +29,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.keyboardEvents.call( me, new MinderEvent( e.type == 'keyup' ? "beforekeyup" : e.type, e ) )
             } )
         }
-        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}' ); //
+        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;}' ); //clip:rect(1em 1em 1em 1em);
         this.km.on( 'textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy( this.keyboardEvents, this ) );
         this.timer = null;
         this.index = 0;
@@ -125,8 +125,8 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         switch ( e.type ) {
 
         case 'keydown':
-
-            this.isTypeText = e.originEvent.keyCode == 229;
+            var keyCode = e.originEvent.keyCode;
+            this.isTypeText =  keyCode == 229 && keyCode === 0;
             switch ( e.originEvent.keyCode ) {
             case keys.Enter:
                 case keys.Tab:
@@ -184,7 +184,9 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 case keymap.Enter:
                 case keymap.Tab:
                 case keymap.F2:
-                    if(keymap.Enter == keyCode &&   this.isTypeText){
+
+                    if(keymap.Enter == keyCode ){
+
                         setTextToContainer();
                     }
                     if ( this.keydownNode === this.minderNode ) {
@@ -253,7 +255,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset( 'screen' );
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 35 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
             var paperContainer = this.km.getPaper();
