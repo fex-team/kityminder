@@ -106,6 +106,8 @@ KityMinder.registerModule("image", function () {
                     url = node.getData('image');
                 var link, img, size, currentBox;
                 var curStyle = this.getCurrentLayoutStyle();
+                var nodeType = node.getType();
+                var spaceBottom = curStyle[nodeType].spaceBottom;
 
                 if (url) {
 
@@ -123,7 +125,7 @@ KityMinder.registerModule("image", function () {
                     link.setStyle('cursor', 'pointer');
 
                     currentBox = node.getContRc().getBoundaryBox();
-                    node.getContRc().addShape(link.setTranslate(0, currentBox.y - size.height));
+                    node.getContRc().addShape(link.setTranslate(0, currentBox.y - size.height - spaceBottom));
 
                 }
             }
