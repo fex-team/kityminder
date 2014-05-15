@@ -91,6 +91,11 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             if ( me.textShape.getOpacity() == 0 ) {
                 me.textShape.setOpacity( 1 );
+                if(/^\|/.test(text)){
+                    text = text.replace(/^\|/,'');
+                    me.container.textContent = text;
+
+                }
             }
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if ( browser.gecko && /\s$/.test( text ) ) {
@@ -100,7 +105,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
             me.setContainerStyle();
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
-                me.minderNode.setText( 'a' );
+                me.minderNode.setText( '|' );
             }
             me.km.updateLayout( me.minderNode );
 
