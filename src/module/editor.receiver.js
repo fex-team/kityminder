@@ -6,6 +6,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         this.range && this.range.nativeSel.removeAllRanges();
         this.index = 0;
         this.inputLength = 0;
+        this.isTypeText = false;
         return this;
     },
     setTextEditStatus: function ( status ) {
@@ -118,29 +119,27 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.selection.setShow()
             }, 500 );
         }
-        var isTypeText = false;
-        var isKeypress = false;
+
         switch ( e.type ) {
 
         case 'keydown':
 
-            isTypeText = false;
-            isKeypress = false;
+            this.isTypeText = e.originEvent.keyCode == 229;
             switch ( e.originEvent.keyCode ) {
             case keys.Enter:
-            case keys.Tab:
-                this.selection.setHide();
-                this.clear().setTextEditStatus( false );
-                this.km.fire( 'contentchange' );
-                this.km.setStatus( 'normal' );
-                e.preventDefault();
-                return;
-                break;
-            case keymap.Shift:
-            case keymap.Control:
-            case keymap.Alt:
-            case keymap.Cmd:
-                return;
+                case keys.Tab:
+                    this.selection.setHide();
+                    this.clear().setTextEditStatus( false );
+                    this.km.fire( 'contentchange' );
+                    this.km.setStatus( 'normal' );
+                    e.preventDefault();
+                    return;
+                    break;
+                case keymap.Shift:
+                case keymap.Control:
+                case keymap.Alt:
+                case keymap.Cmd:
+                    return;
             }
 
             if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
@@ -165,39 +164,42 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 }
                 return;
             }
-            isTypeText = true;
 
             setTextToContainer();
             break;
 
 
-
-        case 'keypress':
-
-            if ( isTypeText )
-//                setTextToContainer();
-            isKeypress = true;
-            break;
+//
+//        case 'keypress':
+//            console.log('press' + e.originEvent.keyCode)
+//            if ( isTypeText )
+////                setTextToContainer();
+//            isKeypress = true;
+//            break;
 
         case 'beforekeyup':
+
             switch ( keyCode ) {
-            case keymap.Enter:
-            case keymap.Tab:
-            case keymap.F2:
-                if ( this.keydownNode === this.minderNode ) {
-                    this.rollbackStatus();
-                    this.setTextEditStatus( false );
-                    this.clear();
-                }
-                e.preventDefault();
-                return;
-
-
+                case keymap.Enter:
+                case keymap.Tab:
+                case keymap.F2:
+                    if(keymap.Enter == keyCode &&   this.isTypeText){
+                        setTextToContainer();
+                    }
+                    if ( this.keydownNode === this.minderNode ) {
+                        this.rollbackStatus();
+                        this.setTextEditStatus( false );
+                        this.clear();
+                    }
+                    e.preventDefault();
+                    return;
+                case keymap.Del:
+                case keymap.Backspace:
+                case keymap.Spacebar:
+                    setTextToContainer();
             }
 
-            if ( !isKeypress ) {
-                setTextToContainer();
-            }
+
             return true;
         }
 
