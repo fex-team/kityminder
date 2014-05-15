@@ -191,7 +191,10 @@ KityMinder.registerModule("LayoutDefault", function () {
 			break;
 		}
 		var rBox = contRc.getRenderBox();
-		contRc.setTranslate(nodeStyle.padding[3], nodeStyle.padding[0] - rBox.top);
+		// contRc.setTranslate(nodeStyle.padding[3], nodeStyle.padding[0] - rBox.top);
+		// Todo：很坑的改法，不知为何就对了，需要处理
+		contRc.setTranslate(nodeStyle.padding[3], 0);
+		contRc.translate(0, nodeStyle.padding[0] - rBox.top);
 	};
 	//计算节点在垂直方向的位置
 	var updateLayoutVertical = function (node, parent, action) {
@@ -430,20 +433,6 @@ KityMinder.registerModule("LayoutDefault", function () {
 			Layout.shicon.update();
 		}
 	};
-
-	// var showNodeInView = function ( node ) {
-	// 	// var padding = 5;
-	// 	// var viewport = minder.getPaper().getViewPort();
-	// 	// var offset = node.getRenderContainer().getRenderBox( minder.getRenderContainer() );
-
-	// 	// var tmpX = viewport.center.x * 2 - ( offset.x + offset.width );
-	// 	// var tmpY = viewport.center.y * 2 - ( offset.y + offset.height );
-
-	// 	// var dx = offset.x < 0 ? -offset.x : Math.min( tmpX, 0 );
-	// 	// var dy = offset.y < 0 ? -offset.y : Math.min( tmpY, 0 );
-
-	// 	// minder.getRenderContainer().fxTranslate( dx, dy, 100, "easeOutQuint" );
-	// };
 
 	var _style = {
 		getCurrentLayoutStyle: function () {
