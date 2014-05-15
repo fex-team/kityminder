@@ -329,6 +329,10 @@ $( function () {
 
     // 加载用户最近使用的文件
     function loadUserFiles() {
+        if ( loadUserFiles.tryCount > 1 ) {
+            console.warn( '加载用户最近使用的文件失败：第 ' + loadUserFiles.tryCount + '次' );
+        }
+
         if ( loadUserFiles.tryCount > 3 ) {
             notice( '加载最近脑图失败！' );
             loadUserFiles.tryCount = 0;
@@ -468,6 +472,9 @@ $( function () {
 
     // 加载当前 remoteUrl 中制定的文件
     function loadRemote() {
+        if ( loadRemote.tryCount > 1 ) {
+            console.warn( '加载用户文件失败：第 ' + loadUserFiles.tryCount + '次' );
+        }
         // 失败重试判断
         if ( loadRemote.tryCount > 3 ) {
             notice( '加载脑图失败！' );
