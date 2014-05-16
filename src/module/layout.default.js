@@ -89,7 +89,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 			spaceLeft: 3,
 			spaceRight: 0,
 			spaceTop: 3,
-			spaceBottom: 3
+			spaceBottom: 10
 		},
 		"main": {
 			stroke: new kity.Pen("white", 2).setLineCap("round").setLineJoin("round"),
@@ -103,7 +103,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 			spaceLeft: 5,
 			spaceRight: 0,
 			spaceTop: 2,
-			spaceBottom: 2
+			spaceBottom: 5
 
 		},
 		"sub": {
@@ -116,7 +116,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 			spaceLeft: 4,
 			spaceRight: 0,
 			spaceTop: 2,
-			spaceBottom: 2
+			spaceBottom: 5
 		}
 	};
 	//更新背景

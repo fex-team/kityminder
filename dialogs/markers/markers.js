@@ -1,5 +1,5 @@
-( function ( utils ) {
-    KM.registerWidget( 'markers', {
+(function (utils) {
+    KM.registerWidget('markers', {
         tpl: "<style>" +
             ".kmui-dialog-<%= container %> .priority .icon{background:url(dialogs/markers/images/iconpriority.png) 0 0}" +
             ".kmui-dialog-<%= container %> .progress .icon{background:url(dialogs/markers/images/iconprogress.png) 0 0}" +
@@ -22,37 +22,43 @@
             "<li value='4' type='progress'><span class='icon p4'></span><span><%= progress.threequartersdone %></span></li>" +
             "<li value='5' type='progress'><span class='icon p5'></span><span><%= progress.done %></span></li>" +
             "</ul>",
-        initContent: function ( km, $w ) {
-            var lang = km.getLang( 'dialogs.markers' );
-            if ( lang ) {
-                var html = $.parseTmpl( this.tpl, utils.extend( {
+        initContent: function (km, $w) {
+            var lang = km.getLang('dialogs.markers');
+            if (lang) {
+                var html = $.parseTmpl(this.tpl, utils.extend({
                     'container': 'markers'
-                }, lang ) );
+                }, lang));
             }
-            this.root().html( html );
+            this.root().html(html);
+            var valPri = km.queryCommandValue("priority");
+            var valPro = km.queryCommandValue("progress");
+            $w.find("li[type='priority']").removeClass("active");
+            $w.find("li[type='priority'][value='" + valPri + "']").addClass("active");
+            $w.find("li[type='progress']").removeClass("active");
+            $w.find("li[type='progress'][value='" + valPro + "']").addClass("active");
         },
-        initEvent: function ( km, $w ) {
-            $w.on( "click", "li", function () {
-                var $this = $( this );
-                $this.siblings().removeClass( "active" );
-                $this.toggleClass( "active" );
+        initEvent: function (km, $w) {
+            $w.on("click", "li", function () {
+                var $this = $(this);
+                $this.siblings().removeClass("active");
+                $this.toggleClass("active");
                 var val = $this.val();
-                if ( !$this.hasClass( "active" ) ) {
+                if (!$this.hasClass("active")) {
                     val = null;
                 }
-                var type = $this.attr( "type" );
-                km.execCommand( type, val );
-            } );
-            km.on( 'interactchange', function ( e ) {
-                var valPri = this.queryCommandValue( "priority" );
-                var valPro = this.queryCommandValue( "progress" );
-                $w.find( "li[type='priority']" ).removeClass( "active" );
-                $w.find( "li[type='priority'][value='" + valPri + "']" ).addClass( "active" );
-                $w.find( "li[type='progress']" ).removeClass( "active" );
-                $w.find( "li[type='progress'][value='" + valPro + "']" ).addClass( "active" );
-            } );
+                var type = $this.attr("type");
+                km.execCommand(type, val);
+            });
+            km.on('interactchange', function (e) {
+                var valPri = this.queryCommandValue("priority");
+                var valPro = this.queryCommandValue("progress");
+                $w.find("li[type='priority']").removeClass("active");
+                $w.find("li[type='priority'][value='" + valPri + "']").addClass("active");
+                $w.find("li[type='progress']").removeClass("active");
+                $w.find("li[type='progress'][value='" + valPro + "']").addClass("active");
+            });
         },
         width: 200
 
-    } )
-} )( KM.Utils );
+    })
+})(KM.Utils);
