@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-05-12
+ * kityminder - v1.1.3.1 - 2014-05-15
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -10,9 +10,10 @@
 (function(kity, window) {
 
 var KityMinder = window.KM = window.KityMinder = function () {
-	var instanceMap = {}, instanceId = 0;
+	var instanceMap = {},
+		instanceId = 0;
 	return {
-		version: '1.1.3',
+		version: '1.1.3.1',
 		createMinder: function ( renderTarget, options ) {
 			options = options || {};
 			options.renderTo = Utils.isString( renderTarget ) ? document.getElementById( renderTarget ) : renderTarget;
@@ -5402,6 +5403,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         this.range && this.range.nativeSel.removeAllRanges();
         this.index = 0;
         this.inputLength = 0;
+        this.isTypeText = false;
         return this;
     },
     setTextEditStatus: function ( status ) {
@@ -5486,17 +5488,19 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
             if ( me.textShape.getOpacity() == 0 ) {
                 me.textShape.setOpacity( 1 );
+
             }
+
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if ( browser.gecko && /\s$/.test( text ) ) {
                 text += "\u200b";
             }
-            me.textShape.setContent( text );
-            me.setContainerStyle();
+
             me.minderNode.setText( text );
             if ( text.length == 0 ) {
-                me.minderNode.setText( 'a' );
+                me.minderNode.setText( '|' );
             }
+            me.setContainerStyle();
             me.km.updateLayout( me.minderNode );
 
 
@@ -5514,29 +5518,27 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 me.selection.setShow()
             }, 500 );
         }
-        var isTypeText = false;
-        var isKeypress = false;
+
+
         switch ( e.type ) {
 
         case 'keydown':
-
-            isTypeText = false;
-            isKeypress = false;
-            switch ( e.originEvent.keyCode ) {
-            case keys.Enter:
-            case keys.Tab:
-                this.selection.setHide();
-                this.clear().setTextEditStatus( false );
-                this.km.fire( 'contentchange' );
-                this.km.setStatus( 'normal' );
-                e.preventDefault();
-                return;
-                break;
-            case keymap.Shift:
-            case keymap.Control:
-            case keymap.Alt:
-            case keymap.Cmd:
-                return;
+            this.isTypeText =  keyCode == 229 || keyCode === 0 ;
+            switch ( keyCode ) {
+                case keys.Enter:
+                case keys.Tab:
+                    this.selection.setHide();
+                    this.clear().setTextEditStatus( false );
+                    this.km.fire( 'contentchange' );
+                    this.km.setStatus( 'normal' );
+                    e.preventDefault();
+                    return;
+                    break;
+                case keymap.Shift:
+                case keymap.Control:
+                case keymap.Alt:
+                case keymap.Cmd:
+                    return;
             }
 
             if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
@@ -5550,53 +5552,52 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                         var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
                         me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
                         me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
-                        setTextToContainer()
+                        setTextToContainer();
                     }, 100 );
                 }
                 //剪切
                 if ( keyCode == keymap.x ) {
                     setTimeout( function () {
-                        setTextToContainer()
+                        setTextToContainer();
                     }, 100 );
                 }
                 return;
             }
-            isTypeText = true;
 
-            setTextToContainer();
-            break;
-
-
-
-        case 'keypress':
-
-            if ( isTypeText )
-//                setTextToContainer();
-            isKeypress = true;
+            setTimeout(function(){
+                setTextToContainer();
+            });
             break;
 
         case 'beforekeyup':
             switch ( keyCode ) {
-            case keymap.Enter:
-            case keymap.Tab:
-            case keymap.F2:
-                if ( this.keydownNode === this.minderNode ) {
-                    this.rollbackStatus();
-                    this.setTextEditStatus( false );
-                    this.clear();
-                }
-                e.preventDefault();
-                return;
-
-
+                case keymap.Enter:
+                case keymap.Tab:
+                case keymap.F2:
+                    if(keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)){
+                        setTextToContainer();
+                    }
+                    if ( this.keydownNode === this.minderNode ) {
+                        this.rollbackStatus();
+                        this.setTextEditStatus( false );
+                        this.clear();
+                    }
+                    e.preventDefault();
+                    return;
+                case keymap.Del:
+                case keymap.Backspace:
+                case keymap.Spacebar:
+                    setTextToContainer();
+                    return;
             }
 
-            if ( !isKeypress ) {
+            if(this.isTypeText){
                 setTextToContainer();
             }
+            if(browser.mac && browser.gecko)
+                setTextToContainer();
             return true;
         }
-
 
     },
 
@@ -5647,7 +5648,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset( 'screen' );
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y - 5 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y + textShapeBox.height *.1 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
             var paperContainer = this.km.getPaper();
@@ -6951,7 +6952,7 @@ KM.ui.define( 'dropmenu', {
     tmpl: '<ul class="kmui-dropdown-menu" aria-labelledby="dropdownMenu" >' +
         '<%if(data && data.length){for(var i=0,ci;ci=data[i++];){%>' +
         '<%if(ci.divider){%><li class="kmui-divider"></li><%}else{%>' +
-        '<li <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
+        '<li id="<%= ci.id%>" <%if(ci.active||ci.disabled){%>class="<%= ci.active|| \'\' %> <%=ci.disabled||\'\' %>" <%}%> data-value="<%= ci.value%>" data-label="<%= ci.label%>">' +
         '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= ci.label%></a>' +
         '</li><%}}%>' +
         '<%}%>' +
@@ -7054,12 +7055,13 @@ KM.ui.define( 'dropmenu', {
     },
     appendItem: function ( item ) {
         var itemTpl = '<%if(item.divider){%><li class="kmui-divider"></li><%}else{%>' +
-            '<li <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
+            '<li id="<%= item.id%>" <%if(item.active||item.disabled){%>class="<%= item.active|| \'\' %> <%=item.disabled||\'\' %>" <%}%> data-value="<%= item.value%>" data-label="<%= item.label%>">' +
             '<a href="#" tabindex="-1"><em class="kmui-dropmenu-checkbox"><i class="kmui-icon-ok"></i></em><%= item.label%></a>' +
             '</li><%}%>';
         var html = $.parseTmpl( itemTpl, item );
         var $item = $( html ).click( item.click );
         this.root().append( $item );
+        return $item;
     },
     addSubmenu: function ( label, menu, index ) {
         index = index || 0;
