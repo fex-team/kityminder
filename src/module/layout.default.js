@@ -401,7 +401,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 			var parentLayout = node.getParent().getLayout();
 			var parentStyle = nodeStyles[node.getParent().getType()];
 			var Shape = node.getRenderContainer();
-			var sX, sY = parentLayout.y;
+			var sX, sY = parentBox.bottom - 5;
 			var nodeX, nodeY = Shape.getRenderBox().closurePoints[1].y;
 			if (Layout.appendside === "left") {
 				sX = parentBox.closurePoints[1].x - parentStyle.margin[1];
