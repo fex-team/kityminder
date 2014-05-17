@@ -60,11 +60,7 @@
             $w.on("click", "li", function () {
                 var $this = $(this);
                 $this.siblings().removeClass("active");
-                $this.toggleClass("active");
                 var val = $this.val();
-                if (!$this.hasClass("active")) {
-                    val = null;
-                }
                 var type = $this.attr("type");
                 km.execCommand(type, val);
             });
