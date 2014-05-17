@@ -24,7 +24,7 @@
             "<li value='7' type='priority'><span class='icon p7'></span><span><%= priority %>7</span></li>" +
             "<li value='8' type='priority'><span class='icon p8'></span><span><%= priority %>8</span></li>" +
             "<li value='9' type='priority'><span class='icon p9'></span><span><%= priority %>9</span></li>" +
-            "<li value='0' type='priority'><span class='icon p0'></span><span><%= priority %>0</span></li>" +
+            "<li value='10' type='priority'><span class='icon p0'></span><span><%= priority %>0</span></li>" +
             "</ul>" +
             "<ul class='icon-list progress'>" +
             "<li value='1' type='progress'><span class='icon p1'></span><span><%= progress.notdone %></span></li>" +
