@@ -73,7 +73,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 			padding: [15.5, 25.5, 15.5, 25.5],
 			margin: [0, 0, 20, 0],
 			radius: 0,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 3,
+			spaceRight: 0,
+			spaceTop: 3,
+			spaceBottom: 10
 		},
 		"main": {
 			stroke: new kity.Pen("white", 2).setLineCap("round").setLineJoin("round"),
@@ -83,7 +87,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 			fontSize: 16,
 			margin: [20, 20, 10, 10],
 			radius: 0,
-			highlight: 'rgb(254, 219, 0)'
+			highlight: 'rgb(254, 219, 0)',
+			spaceLeft: 3,
+			spaceRight: 0,
+			spaceTop: 3,
+			spaceBottom: 10
 		},
 		"sub": {
 			stroke: new kity.Pen("white", 2).setLineCap("round").setLineJoin("round"),
@@ -92,7 +100,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 			margin: [10, 10, 10, 30],
 			padding: [5, 10, 5.5, 10],
 			highlight: 'rgb(254, 219, 0)',
-			fill: 'rgb(231, 243, 255)'
+			fill: 'rgb(231, 243, 255)',
+			spaceLeft: 3,
+			spaceRight: 0,
+			spaceTop: 3,
+			spaceBottom: 10
 		}
 	};
 	//更新背景
@@ -154,7 +166,10 @@ KityMinder.registerModule("LayoutBottom", function () {
 		default:
 			break;
 		}
-		contRc.setTranslate(nodeStyle.padding[3], nodeStyle.padding[0] + _contRCHeight / 2);
+		var rBox = contRc.getRenderBox();
+		// Todo：很坑的改法，不知为何就对了，需要处理
+		contRc.setTranslate(nodeStyle.padding[3], 0);
+		contRc.translate(0, nodeStyle.padding[0] - rBox.top);
 	};
 	var updateLayoutMain = function () {
 		var _root = minder.getRoot();
@@ -369,6 +384,9 @@ KityMinder.registerModule("LayoutBottom", function () {
 			this._firePharse(new MinderEvent("RenderNodeTop", {
 				node: node
 			}, false));
+			this._firePharse(new MinderEvent("RenderNode", {
+				node: _root
+			}, false));
 			updateShapeByCont(node);
 			var set = updateLayoutAll(node, node.getParent(), "change");
 			for (var i = 0; i < set.length; i++) {
@@ -394,24 +412,24 @@ KityMinder.registerModule("LayoutBottom", function () {
 			this._firePharse(new MinderEvent("RenderNodeLeft", {
 				node: _root
 			}, false));
-			// this._firePharse(new MinderEvent("RenderNodeCenter", {
-			// 	node: _root
-			// }, false));
-			// this._firePharse(new MinderEvent("RenderNodeRight", {
-			// 	node: _root
-			// }, false));
-			// this._firePharse(new MinderEvent("RenderNodeBottom", {
-			// 	node: _root
-			// }, false));
-			// this._firePharse(new MinderEvent("RenderNodeTop", {
-			// 	node: _root
-			// }, false));
-			// this._firePharse(new MinderEvent("RenderNode", {
-			// 	node: _root
-			// }, false));
-			// updateShapeByCont(_root);
+			this._firePharse(new MinderEvent("RenderNodeCenter", {
+				node: _root
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeRight", {
+				node: _root
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeBottom", {
+				node: _root
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeTop", {
+				node: _root
+			}, false));
+			this._firePharse(new MinderEvent("RenderNode", {
+				node: _root
+			}, false));
+			updateShapeByCont(_root);
 			// updateLayoutAll(_root);
-			// translateNode(_root);
+			translateNode(_root);
 			// var _buffer = [_root];
 			// var _cleanbuffer = [];
 			//打散结构
@@ -453,12 +471,6 @@ KityMinder.registerModule("LayoutBottom", function () {
 			//计算位置等流程
 			updateBg(node);
 			initLayout(node);
-			// this._fire( new MinderEvent( "beforeRenderNode", {
-			// 	node: node
-			// }, false ) );
-			// this._fire( new MinderEvent( "RenderNode", {
-			// 	node: node
-			// }, false ) );
 			node.getRenderContainer().clear();
 			this._firePharse(new MinderEvent("RenderNodeLeft", {
 				node: node
