@@ -49,8 +49,8 @@
                 }, lang));
             }
             this.root().html(html);
-            var valPri = km.queryCommandValue("priority");
-            var valPro = km.queryCommandValue("progress");
+            var valPri = km.queryCommandValue("priority") || 0;
+            var valPro = km.queryCommandValue("progress") || 0;
             $w.find("li[type='priority']").removeClass("active");
             $w.find("li[type='priority'][value='" + valPri + "']").addClass("active");
             $w.find("li[type='progress']").removeClass("active");
