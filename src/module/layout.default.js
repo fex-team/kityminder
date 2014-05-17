@@ -396,12 +396,16 @@ KityMinder.registerModule("LayoutDefault", function () {
 				minder.getRenderContainer().addShape(connect);
 			}
 			connect = Layout.connect;
-			var parentShape = node.getParent().getRenderContainer();
+			var parent = node.getParent();
+			var parentShape = parent.getRenderContainer();
 			var parentBox = parentShape.getRenderBox();
-			var parentLayout = node.getParent().getLayout();
+			var parentLayout = parent.getLayout();
 			var parentStyle = nodeStyles[node.getParent().getType()];
 			var Shape = node.getRenderContainer();
 			var sX, sY = parentBox.bottom - 5;
+			if (parent.getType() === 'main') {
+				sY = (parentBox.top + parentBox.bottom) / 2
+			}
 			var nodeX, nodeY = Shape.getRenderBox().closurePoints[1].y;
 			if (Layout.appendside === "left") {
 				sX = parentBox.closurePoints[1].x - parentStyle.margin[1];
