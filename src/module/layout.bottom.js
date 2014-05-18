@@ -173,11 +173,19 @@ KityMinder.registerModule("LayoutBottom", function () {
 	};
 	var updateLayoutMain = function () {
 		var _root = minder.getRoot();
-		var mainnodes = _root.getChildren();
+		var mainnodes = (function () {
+			var main_added = [];
+			var children = _root.getChildren();
+			for (var i = 0; i < children.length; i++) {
+				if (children[i].getLayout().added) main_added.push(children[i]);
+			}
+			return main_added;
+		})();
 		var countMainWidth = function (node) {
 			var nLayout = node.getLayout();
 			var selfwidth = node.getRenderContainer().getWidth() + nodeStyles.main.margin[1] + nodeStyles.main.margin[3];
-			var childwidth = nLayout.subgroup.getWidth() + nodeStyles.main.margin[1] + nodeStyles.sub.margin[3];
+			var childwidth = 0;
+			if (nLayout.added) childwidth = nLayout.subgroup.getWidth() + nodeStyles.main.margin[1] + nodeStyles.sub.margin[3];
 			var branchwidth = nLayout.branchwidth = (selfwidth > childwidth ? selfwidth : childwidth);
 			return branchwidth;
 		};
@@ -433,7 +441,10 @@ KityMinder.registerModule("LayoutBottom", function () {
 			var _buffer = [_root];
 			var _cleanbuffer = [];
 
-
+			var mains = _root.getChildren();
+			for (var i = 0; i < mains.length; i++) {
+				this.appendChildNode(_root, mains[i]);
+			}
 			//打散结构
 			// while (_buffer.length !== 0) {
 			// 	var children = _buffer[0].getChildren();
@@ -494,11 +505,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 			}, false));
 			updateBg(node);
 			updateShapeByCont(node);
-			// var set = updateLayoutAll(node, parent, "append");
-			// for (var i = 0; i < set.length; i++) {
-			// 	translateNode(set [i]);
-			// 	updateConnectAndshIcon(set [i]);
-			// }
+			var set = updateLayoutAll(node, parent, "append");
+			for (var i = 0; i < set.length; i++) {
+				translateNode(set [i]);
+				updateConnectAndshIcon(set [i]);
+			}
 			// if (node.getType() === "sub") {
 			// 	var set1 = updateLayoutMain();
 			// 	for (var j = 0; j < set1.length; j++) {
