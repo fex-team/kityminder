@@ -393,7 +393,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 				node: node
 			}, false));
 			this._firePharse(new MinderEvent("RenderNode", {
-				node: _root
+				node: node
 			}, false));
 			updateShapeByCont(node);
 			var set = updateLayoutAll(node, node.getParent(), "change");
@@ -469,6 +469,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 			Layout = node.getLayout();
 			Layout.added = true;
 			initLayout(node);
+			var parentLayout = parent.getLayout();
 			//设置分支类型
 			if (parent.getType() === "root") {
 				node.setType("main");
@@ -575,40 +576,41 @@ KityMinder.registerModule("LayoutBottom", function () {
 				isExpand = ico.icon.switchState();
 				node = ico.icon._node;
 			}
-			node.setData("expand", isExpand);
-			var _buffer = node.getChildren();
-			var _cleanbuffer = [];
-
-			while (_buffer.length !== 0) {
-				var Layout = _buffer[0].getLayout();
-				if (isExpand) {
-					var parent = _buffer[0].getParent();
-					Layout.parent = parent;
-					_cleanbuffer.push(_buffer[0]);
-					Layout.connect = null;
-					Layout.shicon = null;
-				} else {
-					try {
+			var _buffer;
+			if (isExpand) {
+				node.expand();
+				//遍历子树展开需要展开的节点
+				_buffer = [node];
+				while (_buffer.length !== 0) {
+					var c = _buffer[0].getChildren();
+					if (_buffer[0].isExpanded() && c.length !== 0) {
+						for (var x = 0; x < c.length; x++) {
+							minder.appendChildNode(_buffer[0], c[x]);
+						}
+						_buffer = _buffer.concat(c);
+					}
+					_buffer.shift();
+				}
+			} else {
+				node.collapse();
+				//遍历子树移除需要移除的节点
+				_buffer = node.getChildren();
+				while (_buffer.length !== 0) {
+					var Layout = _buffer[0].getLayout();
+					if (Layout.added) {
+						Layout.added = false;
 						_buffer[0].getRenderContainer().remove();
 						Layout.connect.remove();
 						if (Layout.shicon) Layout.shicon.remove();
-					} catch (error) {}
+					}
+					_buffer = _buffer.concat(_buffer[0].getChildren());
+					_buffer.shift();
 				}
-				_buffer = _buffer.concat(_buffer[0].getChildren());
-				_buffer.shift();
-			}
-			if (isExpand) {
-				node.clearChildren();
-				for (var j = 0; j < _cleanbuffer.length; j++) {
-					_cleanbuffer[j].clearChildren();
-					minder.appendChildNode(_cleanbuffer[j].getLayout().parent, _cleanbuffer[j]);
+				var set = updateLayoutVertical(node, node.getParent(), "contract");
+				for (var i = 0; i < set.length; i++) {
+					translateNode(set [i]);
+					updateConnectAndshIcon(set [i]);
 				}
-			}
-			var set = [];
-			if (!isExpand) set = updateLayoutAll(node, node.getParent(), "contract");
-			for (var i = 0; i < set.length; i++) {
-				translateNode(set [i]);
-				updateConnectAndshIcon(set [i]);
 			}
 		}
 	};
