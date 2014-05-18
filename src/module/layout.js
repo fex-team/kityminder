@@ -55,13 +55,13 @@ KityMinder.registerModule("LayoutModule", function () {
 			this.getLayoutStyle(curStyle).initStyle.call(this);
 			this.fire('afterinitstyle');
 		},
-		appendChildNode: function (parent, node, focus, index) {
+		appendChildNode: function (parent, node, index) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle(curStyle).appendChildNode.call(this, parent, node, focus, index);
+			this.getLayoutStyle(curStyle).appendChildNode.call(this, parent, node, index);
 		},
-		appendSiblingNode: function (sibling, node, focus) {
+		appendSiblingNode: function (sibling, node) {
 			var curStyle = this.getCurrentStyle();
-			this.getLayoutStyle(curStyle).appendSiblingNode.call(this, sibling, node, focus);
+			this.getLayoutStyle(curStyle).appendSiblingNode.call(this, sibling, node);
 		},
 		removeNode: function (nodes) {
 			var curStyle = this.getCurrentStyle();
@@ -119,7 +119,7 @@ KityMinder.registerModule("LayoutModule", function () {
 	var AppendChildNodeCommand = kity.createClass("AppendChildNodeCommand", (function () {
 		return {
 			base: Command,
-			execute: function (km, node, focus, silbling) {
+			execute: function (km, node, silbling) {
 				var parent = km.getSelectedNode();
 
 				if (!parent) {
@@ -129,7 +129,7 @@ KityMinder.registerModule("LayoutModule", function () {
 					km.expandNode(parent);
 				}
 				parent.expand();
-				km.appendChildNode(parent, node, focus, silbling);
+				km.appendChildNode(parent, node, silbling);
 				km.select(node, true);
 				return node;
 			},
@@ -146,7 +146,7 @@ KityMinder.registerModule("LayoutModule", function () {
 	var AppendSiblingNodeCommand = kity.createClass("AppendSiblingNodeCommand", (function () {
 		return {
 			base: Command,
-			execute: function (km, node, focus) {
+			execute: function (km, node) {
 				var selectedNode = km.getSelectedNode();
 				if (!selectedNode) {
 					return null;
@@ -154,9 +154,9 @@ KityMinder.registerModule("LayoutModule", function () {
 
 				if (selectedNode.isRoot()) {
 					node.setType("main");
-					km.appendChildNode(selectedNode, node, focus);
+					km.appendChildNode(selectedNode, node);
 				} else {
-					km.appendSiblingNode(selectedNode, node, focus);
+					km.appendSiblingNode(selectedNode, node);
 				}
 				km.select(node, true);
 				return node;

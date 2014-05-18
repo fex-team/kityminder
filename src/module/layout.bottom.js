@@ -428,10 +428,12 @@ KityMinder.registerModule("LayoutBottom", function () {
 				node: _root
 			}, false));
 			updateShapeByCont(_root);
-			// updateLayoutAll(_root);
+			updateLayoutAll(_root);
 			translateNode(_root);
-			// var _buffer = [_root];
-			// var _cleanbuffer = [];
+			var _buffer = [_root];
+			var _cleanbuffer = [];
+
+
 			//打散结构
 			// while (_buffer.length !== 0) {
 			// 	var children = _buffer[0].getChildren();
@@ -448,15 +450,18 @@ KityMinder.registerModule("LayoutBottom", function () {
 			// 	this.appendChildNode(_cleanbuffer[j].getLayout().parent, _cleanbuffer[j]);
 			// }
 		},
-		appendChildNode: function (parent, node, focus, sibling) {
+		appendChildNode: function (parent, node, sibling) {
+			minder.handelNodeInsert(node);
 			node.clearLayout();
-			var parentLayout = parent.getLayout();
-			var expand = parent.getData("expand");
+			node.getContRc().clear();
+			var Layout = node.getLayout();
+			Layout = node.getLayout();
+			Layout.added = true;
+			initLayout(node);
 			//设置分支类型
 			if (parent.getType() === "root") {
 				node.setType("main");
 				node.setData("expand", true);
-				minder.handelNodeInsert(node);
 			} else {
 				node.setType("sub");
 				//将节点加入到main分支的subgroup中
@@ -469,9 +474,6 @@ KityMinder.registerModule("LayoutBottom", function () {
 				parent.appendChild(node);
 			}
 			//计算位置等流程
-			updateBg(node);
-			initLayout(node);
-			node.getRenderContainer().clear();
 			this._firePharse(new MinderEvent("RenderNodeLeft", {
 				node: node
 			}, false));
@@ -487,19 +489,23 @@ KityMinder.registerModule("LayoutBottom", function () {
 			this._firePharse(new MinderEvent("RenderNodeTop", {
 				node: node
 			}, false));
+			this._firePharse(new MinderEvent("RenderNode", {
+				node: node
+			}, false));
+			updateBg(node);
 			updateShapeByCont(node);
-			var set = updateLayoutAll(node, parent, "append");
-			for (var i = 0; i < set.length; i++) {
-				translateNode(set [i]);
-				updateConnectAndshIcon(set [i]);
-			}
-			if (node.getType() === "sub") {
-				var set1 = updateLayoutMain();
-				for (var j = 0; j < set1.length; j++) {
-					translateNode(set1[j]);
-					updateConnectAndshIcon(set1[j]);
-				}
-			}
+			// var set = updateLayoutAll(node, parent, "append");
+			// for (var i = 0; i < set.length; i++) {
+			// 	translateNode(set [i]);
+			// 	updateConnectAndshIcon(set [i]);
+			// }
+			// if (node.getType() === "sub") {
+			// 	var set1 = updateLayoutMain();
+			// 	for (var j = 0; j < set1.length; j++) {
+			// 		translateNode(set1[j]);
+			// 		updateConnectAndshIcon(set1[j]);
+			// 	}
+			// }
 		},
 		appendSiblingNode: function (sibling, node) {
 			var parent = sibling.getParent();

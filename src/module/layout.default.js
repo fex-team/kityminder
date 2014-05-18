@@ -591,11 +591,11 @@ KityMinder.registerModule("LayoutDefault", function () {
 				}
 			}
 		},
-		appendChildNode: function (parent, node, focus, sibling) {
+		appendChildNode: function (parent, node, sibling) {
 			minder.handelNodeInsert(node);
-			var Layout = node.getLayout();
 			node.clearLayout();
 			node.getContRc().clear();
+			var Layout = node.getLayout();
 			Layout = node.getLayout();
 			Layout.added = true;
 			var parentLayout = parent.getLayout();
@@ -694,16 +694,13 @@ KityMinder.registerModule("LayoutDefault", function () {
 				updateConnectAndshIcon(set [i]);
 			}
 
-			// if ( focus ) {
-			// 	showNodeInView( node );
-			// }
 			parent.expand();
 			var shicon = parent.getLayout().shicon;
 			if (shicon) shicon.switchState(true);
 		},
-		appendSiblingNode: function (sibling, node, focus) {
+		appendSiblingNode: function (sibling, node) {
 			var parent = sibling.getParent();
-			this.appendChildNode(parent, node, focus, sibling);
+			this.appendChildNode(parent, node, sibling);
 		},
 		removeNode: function (nodes) {
 			nodes = utils.isArray(nodes) ? nodes : [nodes];
