@@ -1,4 +1,4 @@
-KityMinder.LANG[ 'zh-cn' ] = {
+KityMinder.LANG['zh-cn'] = {
     'maintopic': '中心主题',
     'topic': '分支主题',
     'tooltips': {
@@ -39,11 +39,17 @@ KityMinder.LANG[ 'zh-cn' ] = {
                 'lang_input_target': '是否在新窗口打开：'
             },
             'priority': '优先级',
+            'none': '无',
             'progress': {
+                'title': '进度',
                 'notdone': "未完成",
-                'quarterdone': '完成1/4',
-                'halfdone': '完成1/2',
-                'threequartersdone': '完成3/4',
+                'done1': '完成1/8',
+                'done2': '完成1/4',
+                'done3': '完成3/8',
+                'done4': '完成1/2',
+                'done5': '完成5/8',
+                'done6': '完成3/4',
+                'done7': '完成7/8',
                 'done': '已完成'
             }
         },
@@ -52,8 +58,7 @@ KityMinder.LANG[ 'zh-cn' ] = {
         },
         'hyperlink': {},
         'image': {},
-        'resource': {
-        }
+        'resource': {}
     },
     'node': {
         'appendsiblingnode': '插入同级节点',
@@ -65,11 +70,11 @@ KityMinder.LANG[ 'zh-cn' ] = {
         'default': '左右展开',
         'bottom': '向下展开'
     },
-    'hyperlink':{
-        'hyperlink':'插入超链接',
-        'unhyperlink':"取消超链接"
+    'hyperlink': {
+        'hyperlink': '插入超链接',
+        'unhyperlink': "取消超链接"
     },
-    'image':{
+    'image': {
         'image': '插入图片',
         'removeimage': '删除图片'
     }

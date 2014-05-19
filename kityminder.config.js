@@ -1,69 +1,69 @@
-( function () {
-    function getKMBasePath( docUrl, confUrl ) {
+(function () {
+    function getKMBasePath(docUrl, confUrl) {
 
-        return getBasePath( docUrl || self.document.URL || self.location.href, confUrl || getConfigFilePath() );
+        return getBasePath(docUrl || self.document.URL || self.location.href, confUrl || getConfigFilePath());
 
     }
 
     function getConfigFilePath() {
 
-        var configPath = document.getElementsByTagName( 'script' );
+        var configPath = document.getElementsByTagName('script');
 
-        return configPath[ configPath.length - 1 ].src;
+        return configPath[configPath.length - 1].src;
 
     }
 
-    function getBasePath( docUrl, confUrl ) {
+    function getBasePath(docUrl, confUrl) {
 
         var basePath = confUrl;
 
 
-        if ( /^(\/|\\\\)/.test( confUrl ) ) {
+        if (/^(\/|\\\\)/.test(confUrl)) {
 
-            basePath = /^.+?\w(\/|\\\\)/.exec( docUrl )[ 0 ] + confUrl.replace( /^(\/|\\\\)/, '' );
+            basePath = /^.+?\w(\/|\\\\)/.exec(docUrl)[0] + confUrl.replace(/^(\/|\\\\)/, '');
 
-        } else if ( !/^[a-z]+:/i.test( confUrl ) ) {
+        } else if (!/^[a-z]+:/i.test(confUrl)) {
 
-            docUrl = docUrl.split( "#" )[ 0 ].split( "?" )[ 0 ].replace( /[^\\\/]+$/, '' );
+            docUrl = docUrl.split("#")[0].split("?")[0].replace(/[^\\\/]+$/, '');
 
             basePath = docUrl + "" + confUrl;
 
         }
 
-        return optimizationPath( basePath );
+        return optimizationPath(basePath);
 
     }
 
-    function optimizationPath( path ) {
+    function optimizationPath(path) {
 
-        var protocol = /^[a-z]+:\/\//.exec( path )[ 0 ],
+        var protocol = /^[a-z]+:\/\//.exec(path)[0],
             tmp = null,
             res = [];
 
-        path = path.replace( protocol, "" ).split( "?" )[ 0 ].split( "#" )[ 0 ];
+        path = path.replace(protocol, "").split("?")[0].split("#")[0];
 
-        path = path.replace( /\\/g, '/' ).split( /\// );
+        path = path.replace(/\\/g, '/').split(/\//);
 
-        path[ path.length - 1 ] = "";
+        path[path.length - 1] = "";
 
-        while ( path.length ) {
+        while (path.length) {
 
-            if ( ( tmp = path.shift() ) === ".." ) {
+            if ((tmp = path.shift()) === "..") {
                 res.pop();
-            } else if ( tmp !== "." ) {
-                res.push( tmp );
+            } else if (tmp !== ".") {
+                res.push(tmp);
             }
 
         }
 
-        return protocol + res.join( "/" );
+        return protocol + res.join("/");
 
     }
     window.KITYMINDER_CONFIG = {
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink image removeimage | markers resource | node | help'
+            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | switchlayout | hyperlink unhyperlink image removeimage | markers resource | node | help'
         ]
         //只读模式，默认是false
         //readOnly: true
@@ -95,4 +95,4 @@
         //,maxImageHeight: 200
         //
     };
-} )();
+})();
