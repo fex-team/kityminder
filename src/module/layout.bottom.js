@@ -221,6 +221,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 				childLayout.y = Layout.y + node.getRenderContainer().getHeight() + nodeStyles.root.margin[2] + nodeStyles.main.margin[0];
 			}
 			effectSet = [_root];
+			var mains = _root.getChildren();
+			for (var x = 0; x < mains.length; x++) {
+				if (mains[x].getLayout().added)
+					effectSet.push(mains[x]);
+			}
 		} else if (nodeType === "main") {
 			Layout.align = "left";
 			if (action === "append" || action === "contract") {
