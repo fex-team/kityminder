@@ -1,20 +1,20 @@
-describe( "protocal/plain", function () {
+describe("protocal/plain", function () {
 	var json, local, protocal;
-	beforeEach( function () {
-		protocal = KM.findProtocal( 'plain' );
-	} );
+	beforeEach(function () {
+		protocal = KM.findProtocal('plain');
+	});
 
-	it( '协议存在', function () {
-		expect( protocal ).toBeDefined();
-	} );
+	it('协议存在', function () {
+		expect(protocal).toBeDefined();
+	});
 
-	it( '正确 encode', function () {
+	it('正确 encode', function () {
 		json = {
 			data: {
 				text: 'root',
 				anyway: 'omg'
 			},
-			children: [ {
+			children: [{
 				data: {
 					text: 'l1c1'
 				}
@@ -22,7 +22,7 @@ describe( "protocal/plain", function () {
 				data: {
 					text: 'l1c2'
 				},
-				children: [ {
+				children: [{
 					data: {
 						text: 'l2c1'
 					}
@@ -30,15 +30,15 @@ describe( "protocal/plain", function () {
 					data: {
 						text: 'l2c2'
 					}
-				} ]
+				}]
 			}, {
 				data: {
 					text: 'l1c3'
 				}
-			} ]
+			}]
 		};
-		local = protocal.encode( json );
-		expect( local ).toBe(
+		local = protocal.encode(json);
+		expect(local).toBe(
 			'root\n' +
 			'\tl1c1\n' +
 			'\tl1c2\n' +
@@ -46,5 +46,5 @@ describe( "protocal/plain", function () {
 			'\t\tl2c2\n' +
 			'\tl1c3\n'
 		);
-	} );
-} );
+	});
+});

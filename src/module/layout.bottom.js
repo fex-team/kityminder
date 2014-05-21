@@ -36,9 +36,11 @@ KityMinder.registerModule("LayoutBottom", function () {
 				}
 				iconShape.addShapes([rect, plus, dec]);
 				this.update();
-				this.switchState();
+				//this.switchState();
 			},
-			switchState: function () {
+			switchState: function (val) {
+				if (val === true || val === false)
+					this._show = !val;
 				if (!this._show) {
 					this._plus.setOpacity(0);
 					this._dec.setOpacity(1);
@@ -135,8 +137,6 @@ KityMinder.registerModule("LayoutBottom", function () {
 		var Layout = node.getLayout();
 		var nodeType = node.getType();
 		var nodeStyle = nodeStyles[nodeType];
-		// var txtShape = node.getTextShape();
-		// txtShape.fill( nodeStyle.color ).setSize( nodeStyle.fontSize ).setY( -3 );
 		if (nodeType === "main") {
 			var subgroup = Layout.subgroup = new kity.Group();
 			minder.getRenderContainer().addShape(subgroup);
@@ -185,7 +185,9 @@ KityMinder.registerModule("LayoutBottom", function () {
 			var nLayout = node.getLayout();
 			var selfwidth = node.getRenderContainer().getWidth() + nodeStyles.main.margin[1] + nodeStyles.main.margin[3];
 			var childwidth = 0;
-			if (nLayout.added) childwidth = nLayout.subgroup.getWidth() + nodeStyles.main.margin[1] + nodeStyles.sub.margin[3];
+			if (nLayout.added) {
+				childwidth = nLayout.subgroup.getWidth() + nodeStyles.main.margin[1] + nodeStyles.sub.margin[3];
+			}
 			var branchwidth = nLayout.branchwidth = (selfwidth > childwidth ? selfwidth : childwidth);
 			return branchwidth;
 		};
@@ -218,7 +220,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 				var childLayout = children[i].getLayout();
 				childLayout.y = Layout.y + node.getRenderContainer().getHeight() + nodeStyles.root.margin[2] + nodeStyles.main.margin[0];
 			}
-			effectSet = effectSet.concat(children);
+			effectSet = [_root];
 		} else if (nodeType === "main") {
 			Layout.align = "left";
 			if (action === "append" || action === "contract") {
@@ -248,7 +250,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 				var prtLayout = prt.getLayout();
 				var branchHeight = prt.getRenderContainer().getHeight() + nodeStyles.sub.margin[0] + nodeStyles.sub.margin[2];
 				for (var i1 = 0; i1 < c.length; i1++) {
-					branchHeight += c[i1].getLayout().branchheight;
+					if (c[i1].getLayout().added) branchHeight += c[i1].getLayout().branchheight;
 				}
 				prtLayout.branchheight = branchHeight;
 				prt = prt.getParent();
@@ -257,6 +259,16 @@ KityMinder.registerModule("LayoutBottom", function () {
 			var _buffer = [prt];
 			while (_buffer.length !== 0) {
 				var childrenC = _buffer[0].getChildren();
+				childrenC = (function () {
+					var result = [];
+					for (var len = 0; len < childrenC.length; len++) {
+						var l = childrenC[len].getLayout();
+						if (l.added) {
+							result.push(childrenC[len]);
+						}
+					}
+					return result;
+				})();
 				_buffer = _buffer.concat(childrenC);
 				var _buffer0Layout = _buffer[0].getLayout();
 				var _buffer0Style = nodeStyles[_buffer[0].getType()];
@@ -269,7 +281,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 					childLayoutC.y = sY + childStyleC.margin[0];
 					sY += childLayoutC.branchheight;
 				}
-				effectSet.push(_buffer[0]);
+				if (_buffer[0] !== _root && _buffer[0].getLayout().added) effectSet.push(_buffer[0]);
 				_buffer.shift();
 			}
 		}
@@ -326,7 +338,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 			var parentLayout = parent.getLayout();
 			if (!Layout.connect) {
 				connect = Layout.connect = new kity.Path();
-				Layout.subgroup.addShape(connect);
+				parentLayout.subgroup.addShape(connect);
 			}
 			connect = Layout.connect;
 			var ssX, ssY;
@@ -438,52 +450,39 @@ KityMinder.registerModule("LayoutBottom", function () {
 			updateShapeByCont(_root);
 			updateLayoutAll(_root);
 			translateNode(_root);
-			var _buffer = [_root];
-			var _cleanbuffer = [];
 
 			var mains = _root.getChildren();
 			for (var i = 0; i < mains.length; i++) {
 				this.appendChildNode(_root, mains[i]);
+				if (mains[i].isExpanded() && (mains[i].getChildren().length > 0)) {
+					minder.expandNode(mains[i]);
+				}
 			}
-			//打散结构
-			// while (_buffer.length !== 0) {
-			// 	var children = _buffer[0].getChildren();
-			// 	_buffer = _buffer.concat(children);
-			// 	for (var i = 0; i < children.length; i++) {
-			// 		children[i].getLayout().parent = _buffer[0];
-			// 	}
-			// 	_buffer[0].clearChildren();
-			// 	if (_buffer[0] !== _root) _cleanbuffer.push(_buffer[0]);
-			// 	_buffer.shift();
-			// }
-			// //重组结构
-			// for (var j = 0; j < _cleanbuffer.length; j++) {
-			// 	this.appendChildNode(_cleanbuffer[j].getLayout().parent, _cleanbuffer[j]);
-			// }
 		},
 		appendChildNode: function (parent, node, sibling) {
-			minder.handelNodeInsert(node);
 			node.clearLayout();
 			node.getContRc().clear();
 			var Layout = node.getLayout();
 			Layout = node.getLayout();
+			if (!Layout.added) minder.handelNodeInsert(node);
 			Layout.added = true;
-			initLayout(node);
 			var parentLayout = parent.getLayout();
+			var children = parent.getChildren();
+			var exist = (children.indexOf(node) !== -1);
 			//设置分支类型
 			if (parent.getType() === "root") {
 				node.setType("main");
-				node.setData("expand", true);
 			} else {
 				node.setType("sub");
 				//将节点加入到main分支的subgroup中
 				parentLayout.subgroup.addShape(node.getRenderContainer());
 				node.getLayout().subgroup = parentLayout.subgroup;
 			}
+			initLayout(node);
 			if (sibling) {
-				parent.insertChild(node, sibling.getIndex() + 1);
+				if (!exist) parent.insertChild(node, sibling.getIndex() + 1);
 			} else {
-				parent.appendChild(node);
+				if (!exist) parent.appendChild(node);
 			}
 			//计算位置等流程
 			this._firePharse(new MinderEvent("RenderNodeLeft", {
@@ -511,13 +510,17 @@ KityMinder.registerModule("LayoutBottom", function () {
 				translateNode(set [i]);
 				updateConnectAndshIcon(set [i]);
 			}
-			// if (node.getType() === "sub") {
-			// 	var set1 = updateLayoutMain();
-			// 	for (var j = 0; j < set1.length; j++) {
-			// 		translateNode(set1[j]);
-			// 		updateConnectAndshIcon(set1[j]);
-			// 	}
-			// }
+			if (node.getType() === "sub") {
+				var set1 = updateLayoutMain();
+				for (var j = 0; j < set1.length; j++) {
+					translateNode(set1[j]);
+					updateConnectAndshIcon(set1[j]);
+				}
+			}
+
+			parent.expand();
+			var shicon = parent.getLayout().shicon;
+			if (shicon) shicon.switchState(true);
 		},
 		appendSiblingNode: function (sibling, node) {
 			var parent = sibling.getParent();
@@ -606,7 +609,7 @@ KityMinder.registerModule("LayoutBottom", function () {
 					_buffer = _buffer.concat(_buffer[0].getChildren());
 					_buffer.shift();
 				}
-				var set = updateLayoutVertical(node, node.getParent(), "contract");
+				var set = updateLayoutAll(node, node.getParent(), "contract");
 				for (var i = 0; i < set.length; i++) {
 					translateNode(set [i]);
 					updateConnectAndshIcon(set [i]);
