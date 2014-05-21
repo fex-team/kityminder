@@ -93,7 +93,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setRange(range);
                         sel.setData('relatedNode',node);
                         mouseDownStatus = true;
-                        lastEvtPosition = e.getPosition();
+                        lastEvtPosition = e.getPosition(this.getRenderContainer());
                         if(selectionByClick){
                             sel.setShow();
                             selectionByClick = false;
@@ -214,7 +214,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                     receiver.updateSelectionByMousePosition(offset,dir)
                         .updateSelectionShow(dir);
 
-                    lastEvtPosition = e.getPosition();
+                    lastEvtPosition = e.getPosition(this.getRenderContainer());
 
                 }
             },
@@ -332,6 +332,10 @@ KityMinder.registerModule( "TextEditModule", function () {
             },
             blur:function(){
                 receiver.clear();
+            },
+            'import':function(){
+                km.setStatus('normal');
+                receiver.setTextEditStatus(false).clear();
             },
             'textedit.mousewheel':function(){
                 receiver.setContainerStyle();
