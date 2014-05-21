@@ -119,7 +119,7 @@ KityMinder.registerModule("LayoutModule", function () {
 	var AppendChildNodeCommand = kity.createClass("AppendChildNodeCommand", (function () {
 		return {
 			base: Command,
-			execute: function (km, node, silbling) {
+			execute: function (km, node) {
 				var parent = km.getSelectedNode();
 
 				if (!parent) {
@@ -129,7 +129,7 @@ KityMinder.registerModule("LayoutModule", function () {
 					km.expandNode(parent);
 				}
 				parent.expand();
-				km.appendChildNode(parent, node, silbling);
+				km.appendChildNode(parent, node);
 				km.select(node, true);
 				return node;
 			},

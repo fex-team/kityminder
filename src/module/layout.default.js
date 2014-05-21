@@ -262,7 +262,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 			while (_buffer.length > 0) {
 				var _buffer0Layout = _buffer[0].getLayout();
 				var children = _buffer0Layout[appendside + "List"] || _buffer[0].getChildren();
-				var children = (function () {
+				children = (function () {
 					var result = [];
 					for (var len = 0; len < children.length; len++) {
 						var l = children[len].getLayout();
