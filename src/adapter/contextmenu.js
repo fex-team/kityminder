@@ -31,7 +31,7 @@ KM.registerUI( 'contextmenu', function () {
         var node = e.getTargetNode();
         if(node){
             this.removeAllSelectedNodes();
-            this.select(node)
+            this.select(node);
         }
 
 
