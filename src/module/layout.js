@@ -283,21 +283,21 @@ KityMinder.registerModule("LayoutModule", function () {
 				cmdName: 'removenode'
 			}, {
 				divider: 1
-			},{
-                label: this.getLang('layout.default'),
-                exec: function () {
-                    this.execCommand('switchlayout','default');
-                    this.initStyle();
-                },
-                cmdName: 'switchlayout'
-            },{
-                label: this.getLang('layout.bottom'),
-                exec: function () {
-                    this.execCommand('switchlayout', 'bottom');
-                    this.initStyle();
-                },
-                cmdName: 'switchlayout'
-            }
+			}, {
+				label: this.getLang('layout.default'),
+				exec: function () {
+					this.execCommand('switchlayout', 'default');
+					this.initStyle();
+				},
+				cmdName: 'switchlayout'
+			}, {
+				label: this.getLang('layout.bottom'),
+				exec: function () {
+					this.execCommand('switchlayout', 'bottom');
+					this.initStyle();
+				},
+				cmdName: 'switchlayout'
+			}
 
 		],
 		"defaultOptions": {

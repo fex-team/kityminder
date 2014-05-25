@@ -266,7 +266,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 					var result = [];
 					for (var len = 0; len < children.length; len++) {
 						var l = children[len].getLayout();
-						if (l.added) {
+						if (l && l.added) {
 							result.push(children[len]);
 						}
 					}
@@ -442,65 +442,6 @@ KityMinder.registerModule("LayoutDefault", function () {
 		getCurrentLayoutStyle: function () {
 			return nodeStyles;
 		},
-		highlightNode: function (node) {
-			var highlight = node.isHighlight();
-			var nodeType = node.getType();
-			var nodeStyle = nodeStyles[nodeType];
-			var Layout = node.getLayout();
-			switch (nodeType) {
-			case "root":
-			case "main":
-				if (highlight) {
-					Layout.bgRect.fill(nodeStyle.highlight);
-				} else {
-					Layout.bgRect.fill(nodeStyle.fill);
-				}
-				break;
-			case "sub":
-				if (highlight) {
-					Layout.highlightshape.fill(nodeStyle.highlight).setOpacity(1);
-					node.getTextShape().fill(node.getData('fontcolor') || 'black');
-				} else {
-					Layout.highlightshape.setOpacity(0);
-					node.getTextShape().fill(node.getData('fontcolor') || 'white');
-				}
-				break;
-			default:
-				break;
-			}
-		},
-		updateLayout: function (node) {
-			node.getContRc().clear();
-			this._firePharse(new MinderEvent("RenderNodeLeft", {
-				node: node
-			}, false));
-			this._firePharse(new MinderEvent("RenderNodeCenter", {
-				node: node
-			}, false));
-			this._firePharse(new MinderEvent("RenderNodeRight", {
-				node: node
-			}, false));
-			this._firePharse(new MinderEvent("RenderNodeBottom", {
-				node: node
-			}, false));
-			this._firePharse(new MinderEvent("RenderNodeTop", {
-				node: node
-			}, false));
-			this._firePharse(new MinderEvent("RenderNode", {
-				node: node
-			}, false));
-			updateShapeByCont(node);
-			var set1 = updateLayoutHorizon(node);
-			var set2 = updateLayoutVertical(node, node.getParent(), "change");
-			var set = uSet(set1, set2);
-			for (var i = 0; i < set.length; i++) {
-				translateNode(set [i]);
-				updateConnectAndshIcon(set [i]);
-			}
-			if (this.isNodeSelected(node)) {
-				this.highlightNode(node)
-			}
-		},
 		initStyle: function () {
 			//渲染根节点
 			var _root = minder.getRoot();
@@ -544,6 +485,38 @@ KityMinder.registerModule("LayoutDefault", function () {
 				}
 			}
 			_root.setPoint(_root.getLayout().x, _root.getLayout().y);
+		},
+		updateLayout: function (node) {
+			node.getContRc().clear();
+			this._firePharse(new MinderEvent("RenderNodeLeft", {
+				node: node
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeCenter", {
+				node: node
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeRight", {
+				node: node
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeBottom", {
+				node: node
+			}, false));
+			this._firePharse(new MinderEvent("RenderNodeTop", {
+				node: node
+			}, false));
+			this._firePharse(new MinderEvent("RenderNode", {
+				node: node
+			}, false));
+			updateShapeByCont(node);
+			var set1 = updateLayoutHorizon(node);
+			var set2 = updateLayoutVertical(node, node.getParent(), "change");
+			var set = uSet(set1, set2);
+			for (var i = 0; i < set.length; i++) {
+				translateNode(set [i]);
+				updateConnectAndshIcon(set [i]);
+			}
+			if (this.isNodeSelected(node)) {
+				this.highlightNode(node)
+			}
 		},
 		expandNode: function (ico) {
 			var isExpand, node;
@@ -745,6 +718,33 @@ KityMinder.registerModule("LayoutDefault", function () {
 					}
 					_buffer.shift();
 				}
+			}
+		},
+		highlightNode: function (node) {
+			var highlight = node.isHighlight();
+			var nodeType = node.getType();
+			var nodeStyle = nodeStyles[nodeType];
+			var Layout = node.getLayout();
+			switch (nodeType) {
+			case "root":
+			case "main":
+				if (highlight) {
+					Layout.bgRect.fill(nodeStyle.highlight);
+				} else {
+					Layout.bgRect.fill(nodeStyle.fill);
+				}
+				break;
+			case "sub":
+				if (highlight) {
+					Layout.highlightshape.fill(nodeStyle.highlight).setOpacity(1);
+					node.getTextShape().fill(node.getData('fontcolor') || 'black');
+				} else {
+					Layout.highlightshape.setOpacity(0);
+					node.getTextShape().fill(node.getData('fontcolor') || 'white');
+				}
+				break;
+			default:
+				break;
 			}
 		}
 	};
