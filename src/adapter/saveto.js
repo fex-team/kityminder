@@ -35,6 +35,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         var a = document.createElement( 'a' );
         a.setAttribute( 'download', filename );
         a.setAttribute( 'href', url );
+        document.body.appendChild(a);
         var evt;
         try {
             evt = new MouseEvent( 'click' );
@@ -43,6 +44,7 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
             evt.initEvent( 'click', true, true );
         }
         a.dispatchEvent( evt );
+        document.body.removeChild(a);
     }
 
     var ie_ver = function () {
@@ -63,14 +65,14 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         iframe.contentDocument.writeln( d );
         iframe.contentDocument.execCommand( 'saveas', '', filename );
     };
+
     comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
         var data = me.exportData( res.value );
         var p = KityMinder.findProtocal( res.value );
         var filename = me.getMinderTitle() + p.fileExtension;
         if ( typeof ( data ) == 'string' ) {
-            var url = 'data:text/plain; utf-8,' + encodeURIComponent( data );
+            var url = 'data:' + (p.mineType || 'text/plain') + '; utf-8,' + encodeURIComponent( data );
             if ( ie_ver() > 0 ) {
-                //console.log( p.fileExtension );
                 if ( p.fileExtension === '.km' ) {
                     doSave( 'application/x-javascript', data, me.getMinderTitle() );
                 } else if ( p.fileExtension === '.svg' ) {

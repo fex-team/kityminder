@@ -8,6 +8,7 @@ KityMinder.registerProtocal( 'json', function () {
 	return {
 		fileDescription: 'KityMinder',
 		fileExtension: '.km',
+        mineType: 'application/json',
 		encode: function ( json ) {
 			return JSON.stringify( json, filter );
 		},
