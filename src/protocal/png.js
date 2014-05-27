@@ -72,7 +72,7 @@ KityMinder.registerProtocal( "png", function () {
 
 			function generateDataUrl( canvas ) {
 				var url = canvas.toDataURL( 'png' );
-				return url.replace( 'image/png', 'image/octet-stream' );
+				return url;
 			}
 			loadImage( url, function () {
 				var svgImage = this;
