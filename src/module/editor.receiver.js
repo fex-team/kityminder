@@ -26,7 +26,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         var _div = document.createElement( 'div' );
         _div.setAttribute( 'contenteditable', true );
         _div.className = 'km_receiver';
-        this.container = document.body.insertBefore( _div, document.body.firstChild );
+        this.container = _div;
         if ( browser.ie && browser.version == 11 ) {
             utils.listen( this.container, 'keydown keypress keyup', function ( e ) {
                 me.keyboardEvents.call( me, new MinderEvent( e.type == 'keyup' ? "beforekeyup" : e.type, e ) );

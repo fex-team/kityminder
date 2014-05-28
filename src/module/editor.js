@@ -48,6 +48,9 @@ KityMinder.registerModule( "TextEditModule", function () {
     var dragmoveTimer;
     return {
         "events": {
+            'ready':function(){
+                this._renderTarget.appendChild(receiver.container);
+            },
             //插入光标
             "afterinitstyle":function(){
                 this.getRenderContainer().addShape(sel);
