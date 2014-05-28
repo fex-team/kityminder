@@ -731,7 +731,7 @@ KityMinder.registerModule("LayoutDefault", function () {
 				if (highlight) {
 					Layout.bgRect.fill(nodeStyle.highlight);
 				} else {
-					Layout.bgRect.fill(nodeStyle.fill);
+					Layout.bgRect.fill(node.getData('backgroundcolor') || nodeStyle.fill);
 				}
 				break;
 			case "sub":

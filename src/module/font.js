@@ -54,6 +54,33 @@ KityMinder.registerModule( "fontmodule", function () {
                 },
                 queryState:function(km){
                     return km.getSelectedNodes().length == 0 ? -1 : 0
+                },
+                queryValue: function(km) {
+                    if (km.getSelectedNodes().length == 1) {
+                        return km.getSelectedNodes()[0].getData('fontcolor');
+                    }
+                    return 'mixed';
+                }
+
+            } ),
+            "backgroundcolor": kity.createClass( "backgroudcolorCommand", {
+                base: Command,
+
+                execute: function ( km, color ) {
+                    var nodes = km.getSelectedNodes();
+                    utils.each( nodes, function ( i, n ) {
+                        n.setData( 'backgroundcolor', color );
+                        n.getLayout().bgRect.fill( color );
+                    } );
+                },
+                queryState:function(km){
+                    return km.getSelectedNodes().length == 0 ? -1 : 0
+                },
+                queryValue: function (km) {
+                    if (km.getSelectedNodes().length == 1) {
+                        return km.getSelectedNodes()[0].getData('backgroundcolor');
+                    }
+                    return 'mixed';
                 }
 
             } ),
@@ -97,6 +124,9 @@ KityMinder.registerModule( "fontmodule", function () {
                 }
                 if ( val = e.node.getData( 'fontcolor' ) ) {
                     e.node.getTextShape().fill( val );
+                }
+                if ( val = e.node.getData( 'backgroundcolor' ) ) {
+                    e.node.getLayout().bgRect.fill( val );
                 }
                 if ( val = e.node.getData( 'fontsize' ) ) {
                     e.node.getTextShape().setSize( val );
