@@ -254,7 +254,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         return this;
     },
     setContainerStyle: function () {
-        var textShapeBox = this.getBaseOffset( 'screen' );
+        var textShapeBox = this.getBaseOffset( 'paper' );
         this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y + textShapeBox.height * 0.1 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
