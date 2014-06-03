@@ -12,20 +12,20 @@ KityMinder.registerModule( "basestylemodule", function () {
                         utils.each( nodes, function ( i, n ) {
                             n.setData( 'bold' );
                             n.getTextShape().setAttr( 'font-weight' );
-                            km.updateLayout( n )
-                        } )
+                            km.updateLayout( n );
+                        } );
                     } else {
                         utils.each( nodes, function ( i, n ) {
                             n.setData( 'bold', true );
                             n.getTextShape().setAttr( 'font-weight', 'bold' );
-                            km.updateLayout( n )
-                        } )
+                            km.updateLayout( n );
+                        } );
                     }
                 },
                 queryState: function () {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if ( nodes.length == 0 ) {
+                    if ( nodes.length === 0 ) {
                         return -1;
                     }
                     utils.each( nodes, function ( i, n ) {
@@ -47,20 +47,20 @@ KityMinder.registerModule( "basestylemodule", function () {
                         utils.each( nodes, function ( i, n ) {
                             n.setData( 'italic' );
                             n.getTextShape().setAttr( 'font-style' );
-                            km.updateLayout( n )
-                        } )
+                            km.updateLayout( n );
+                        } );
                     } else {
                         utils.each( nodes, function ( i, n ) {
                             n.setData( 'italic', true );
                             n.getTextShape().setAttr( 'font-style', 'italic' );
-                            km.updateLayout( n )
-                        } )
+                            km.updateLayout( n );
+                        } );
                     }
                 },
                 queryState: function () {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if ( nodes.length == 0 ) {
+                    if ( nodes.length === 0 ) {
                         return -1;
                     }
                     utils.each( nodes, function ( i, n ) {

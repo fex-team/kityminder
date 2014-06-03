@@ -8,7 +8,7 @@ kity.extendClass( Minder, {
         this._query = {};
         this._modules = {};
 
-        var i, name, module, moduleDeals, dealCommands, dealEvents;
+        var i, name, type, module, moduleDeals, dealCommands, dealEvents;
 
         var me = this;
         for ( i = 0; i < modulesToLoad.length; i++ ) {
@@ -26,14 +26,14 @@ kity.extendClass( Minder, {
 
             //command加入命令池子
             dealCommands = moduleDeals.commands;
-            for ( var name in dealCommands ) {
-                this._commands[ name.toLowerCase() ] = new dealCommands[ name ];
+            for ( name in dealCommands ) {
+                this._commands[ name.toLowerCase() ] = new dealCommands[ name ]();
             }
 
             //绑定事件
             dealEvents = moduleDeals.events;
             if ( dealEvents ) {
-                for ( var type in dealEvents ) {
+                for ( type in dealEvents ) {
                     me.on( type, dealEvents[ type ] );
                 }
             }
@@ -43,12 +43,12 @@ kity.extendClass( Minder, {
             }
             //添加模块的快捷键
             if ( moduleDeals.addShortcutKeys ) {
-                this.addShortcutKeys( moduleDeals.addShortcutKeys )
+                this.addShortcutKeys( moduleDeals.addShortcutKeys );
             }
 
             //添加邮件菜单
             if(moduleDeals.contextmenu){
-                this.addContextmenu(moduleDeals.contextmenu)
+                this.addContextmenu(moduleDeals.contextmenu);
             }
         }
     },

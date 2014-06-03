@@ -8,17 +8,17 @@ utils.extend( KityMinder, function () {
         registerUI: function ( uiname, fn ) {
             utils.each( uiname.split( /\s+/ ), function ( i, name ) {
                 _kityminderUI[ name ] = fn;
-            } )
+            } );
         },
         registerToolbarUI: function ( uiname, fn ) {
             utils.each( uiname.split( /\s+/ ), function ( i, name ) {
                 _kityminderToolbarUI[ name ] = fn;
-            } )
+            } );
         },
         loadUI: function ( km ) {
             utils.each( _kityminderUI, function ( i, fn ) {
-                fn.call( km )
-            } )
+                fn.call( km );
+            } );
         },
         _createUI: function ( id ) {
             var $cont = $( '<div class="kmui-container"></div>' ),
@@ -43,21 +43,21 @@ utils.extend( KityMinder, function () {
                 $.each( toolbars, function ( i, uiNames ) {
                     $.each( uiNames.split( /\s+/ ), function ( index, name ) {
                         if ( name == '|' ) {
-                            $.kmuiseparator && btns.push( $.kmuiseparator() );
+                            if ($.kmuiseparator) btns.push( $.kmuiseparator() );
                         } else {
                             if ( _kityminderToolbarUI[ name ] ) {
                                 var ui = _kityminderToolbarUI[ name ].call( km, name );
-                                ui && btns.push( ui );
+                                if (ui) btns.push( ui );
                             }
 
                         }
 
                     } );
-                    btns.length && $toolbar.kmui().appendToBtnmenu( btns );
+                    if (btns.length) $toolbar.kmui().appendToBtnmenu( btns );
                 } );
                 $toolbar.append( $( '<div class="kmui-dialog-container"></div>' ) );
             }else{
-                $toolbar.hide()
+                $toolbar.hide();
             }
 
         },
@@ -91,7 +91,7 @@ utils.extend( KityMinder, function () {
             }
         },
         getWidgetData: function ( name ) {
-            return _widgetData[ name ]
+            return _widgetData[ name ];
         },
         setWidgetBody: function ( name, $widget, km ) {
             if ( !km._widgetData ) {
@@ -104,10 +104,10 @@ utils.extend( KityMinder, function () {
                     getWidgetCallback: function ( widgetName ) {
                         var me = this;
                         return function () {
-                            return _widgetCallBack[ widgetName ].apply( me, [ me, $widget ].concat( utils.argsToArray( arguments, 0 ) ) )
-                        }
+                            return _widgetCallBack[ widgetName ].apply( me, [ me, $widget ].concat( utils.argsToArray( arguments, 0 ) ) );
+                        };
                     }
-                } )
+                } );
 
             }
             var pro = _widgetData[ name ];
@@ -125,18 +125,19 @@ utils.extend( KityMinder, function () {
             //清除光标
             km.fire('selectionclear');
             pro.initContent( km, $widget );
+            
             //在dialog上阻止键盘冒泡，导致跟编辑输入冲突的问题
             $widget.on('keydown keyup keypress',function(e){
-                e.stopPropagation()
+                e.stopPropagation();
             });
             if ( !pro._preventDefault ) {
                 pro.initEvent( km, $widget );
             }
 
-            pro.width && $widget.width( pro.width );
+            if (pro.width) $widget.width( pro.width );
         },
         setActiveWidget: function ( $widget ) {
             _activeWidget = $widget;
         }
-    }
+    };
 }() );
