@@ -1,0 +1,103 @@
+/**
+ * FEX Style Guide (Javascript)
+ *
+ * TODO:
+ *
+ * 1. 找不到选项：每行只允许一个语句
+ * 2. 找不到选项：块状代码需要用大括号括起来
+ */
+{
+    // 缩进「MUST」使用 4 个空格
+    "validateIndentation": 4,
+
+    // 大括号（块状代码）前「MUST」使用空格
+    "requireSpaceBeforeBlockStatements": true,
+
+    // 下列关键字「MUST」使用空格
+    "requireSpaceAfterKeywords": ["if", "else", "for", "while",
+        "do", "try", "catch", "finally"
+    ],
+
+    // `,` 和 `;` 前面不允许「MUST NOT」使用空格。
+    "requireLeftStickedOperators": [",", ";"],
+
+    // 二元运算符前后「MUST」使用空格
+    "requireSpaceBeforeBinaryOperators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        "|",
+        "||",
+        "&",
+        "&&"
+    ],
+    "requireSpaceAfterBinaryOperators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        "|",
+        "||",
+        "&",
+        "&&",
+        ":"
+    ],
+
+    // 一元运算符与操作对象间「MUST NOT」使用空格
+    "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"],
+
+    // 函数参数小括号前「MUST NOT」使用空格
+    "disallowSpacesInFunctionExpression": {
+        "beforeOpeningRoundBrace": true
+    },
+
+    // 小括号里面「MUST NOT」使用空格
+    "disallowSpacesInsideParentheses": true,
+
+    // 行尾「MUST NOT」使用空格
+    "disallowTrailingWhitespace": true,
+
+    // 每行「MUST NOT」超过 120 个字符
+    "maximumLineLength": 120,
+
+    // 一下操作符「MUST NOT」放在一行的最前面，需要放在上一行的后面
+    "requireOperatorBeforeLineBreak": [
+        "?",
+        "+",
+        "-",
+        "/",
+        "*",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        ">",
+        ">=",
+        "<",
+        "<=",
+        ",",
+        ";",
+        "&&",
+        "&",
+        "||",
+        "|"
+    ],
+
+    // 字符串统一「MUST」使用单引号
+    "validateQuoteMarks": "'",
+
+    // 「MUST NOT」使用多行字符串
+    "disallowMultipleLineStrings": true
+}

@@ -9,61 +9,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         } else {
             this.setData( options );
         }
-        this._createShapeDom();
         this.setData( "layout", {} );
-    },
-    _createShapeDom: function () {
-        this.rc = new kity.Group();
-        this.rc.addClass( 'km-minderNode' );
-        this.rc.minderNode = this;
-        this._createBgGroup();
-        this._createContGroup();
-    },
-    _createGroup: function ( type ) {
-        var g = new kity.Group();
-        g.setData( 'rctype', type );
-        this.rc.appendShape( g );
-    },
-    _createBgGroup: function () {
-        this._createGroup( 'bgrc' );
-    },
-    _createContGroup: function () {
-        this._createGroup( 'contrc' );
-    },
-    getContRc: function () {
-        var groups = this.rc.getShapesByType( 'group' ),
-            result;
-        Utils.each( groups, function ( i, p ) {
-            if ( p.getData( 'rctype' ) == 'contrc' ) {
-                result = p;
-                return false;
-            }
-        } );
-        return result;
-    },
-    getBgRc: function () {
-        var groups = this.rc.getShapesByType( 'group' ),
-            result;
-        Utils.each( groups, function ( i, p ) {
-            if ( p.getData( 'rctype' ) == 'bgrc' ) {
-                result = p;
-                return false;
-            }
-        } );
-        return result;
-    },
-    setPoint: function ( x, y ) {
-        if ( arguments.length < 2 ) {
-            this.setData( "point", x );
-        } else {
-            this.setData( 'point', {
-                x: x,
-                y: y
-            } );
-        }
-    },
-    getPoint: function () {
-        return this.getData( 'point' );
     },
     setType: function ( type ) {
         this.setData( 'type', type );
@@ -186,26 +132,21 @@ var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
         if ( index >= 0 ) {
             removed = this.children.splice( index, 1 )[ 0 ];
             removed.parent = null;
-            //            this.handelRemove( removed );
         }
     },
-
-    //    handelRemove: function ( node ) {
-    //        var root = this.getRoot();
-    //        if ( root.tnh ) {
-    //            root.tnh.handelNodeRemove.call( root.tnh, node );
-    //        }
-    //    },
 
     getChild: function ( index ) {
         return this.children[ index ];
     },
+
     getFirstChild: function () {
         return this.children[ 0 ];
     },
+
     getLastChild: function () {
         return this.children[ this.children.length - 1 ];
     },
+    
     getData: function ( name ) {
         if ( name === undefined ) {
             return this.data;

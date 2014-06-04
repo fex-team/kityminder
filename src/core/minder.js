@@ -22,14 +22,14 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             return  val === null || val === undefined ? this._options[ key ] : val;
         }else{
             val = this.getPreferences();
-            if(val){
-                return utils.extend(val,this._options,true)
-            }else{
+            if (val) {
+                return utils.extend(val, this._options, true);
+            } else {
                 return this._options;
             }
         }
     },
-    setDefaultOptions: function ( key, val,cover) {
+    setDefaultOptions: function ( key, val, cover) {
         var obj = {};
         if ( Utils.isString( key ) ) {
             obj[ key ] = val;
@@ -40,7 +40,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
     },
     setOptions: function ( key, val ) {
-        this.setPreferences(key,val)
+        this.setPreferences(key,val);
     },
     _initMinder: function () {
 
@@ -89,7 +89,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
     addShortcutKeys: function ( cmd, keys ) {
         var obj = {}, km = this;
         if ( keys ) {
-            obj[ cmd ] = keys
+            obj[ cmd ] = keys;
         } else {
             obj = cmd;
         }
@@ -99,7 +99,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
 
     },
     getShortcutKey: function ( cmdName ) {
-        return this._shortcutkeys[ cmdName ]
+        return this._shortcutkeys[ cmdName ];
     },
     _bindshortcutKeys: function () {
         var me = this,
@@ -115,7 +115,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
                 break;
             case 'alt':
                 if ( e.altKey ) {
-                    return true
+                    return true;
                 }
                 break;
             case 'shift':
@@ -127,7 +127,7 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
             if ( keyCode == keymap[ key ] ) {
                 return true;
             }
-            return false
+            return false;
         }
         me.on( 'keydown', function ( e ) {
 
@@ -227,11 +227,3 @@ var Minder = KityMinder.Minder = kity.createClass( "KityMinder", {
         me.fire( 'interactchange' );
     }
 } );
-
-/**
- * @include <minder.data.js>
- * @include <minder.event.js>
- * @include <minder.module.js>
- * @include <minder.node.js>
- * @include <minder.select.js>
- */
