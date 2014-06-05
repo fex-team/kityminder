@@ -24,6 +24,15 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    applyLayoutResult: function (parentX, parentY) {
+        var myX = parentX + this.layoutX,
+            myY = parentY + this.layoutY;
+        this.getRenderContainer().fxTranslate(myX, myY);
+        this.getChildren().forEach(function(node) {
+            node.applyLayoutResult(myX, myY);
+        });
+    },
+
     layout: function(name) {
         if (name) {
             this.setData('layout', name);
@@ -31,6 +40,7 @@ kity.extendClass(MinderNode, {
         var LayoutClass = KityMinder._layout[this.getLayout()];
         var layout = new LayoutClass();
         layout.doLayout(this);
+        this.applyLayoutResult(0, 0);
         return this;
     },
 

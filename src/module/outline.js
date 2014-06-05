@@ -17,17 +17,20 @@ KityMinder.registerModule('OutlineModule', function() {
                         paddingRight = node.getStyle('padding-right'),
                         paddingTop = node.getStyle('padding-top'),
                         paddingBottom = node.getStyle('padding-bottom');
+                    var outlineBox = {
+                        x: contentBox.x - paddingLeft,
+                        y: contentBox.y - paddingTop,
+                        width: contentBox.width + paddingLeft + paddingRight,
+                        height: contentBox.height + paddingTop + paddingBottom
+                    };
                     this.outline
-                        .setPosition(
-                            contentBox.x - paddingLeft,
-                            contentBox.y - paddingTop)
-                        .setSize(
-                            contentBox.width + paddingLeft + paddingRight,
-                            contentBox.height + paddingTop + paddingBottom)
+                        .setPosition(outlineBox.x, outlineBox.y)
+                        .setSize(outlineBox.width, outlineBox.height)
                         .setRadius(node.getStyle('radius'))
                         .fill(node.isSelected() ?
                             node.getStyle('selected-background') :
                             node.getStyle('background'));
+                    return outlineBox;
                 }
             })
         }
