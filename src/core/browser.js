@@ -67,7 +67,9 @@ var browser = KityMinder.browser = function(){
          * }
          * ```
          */
-        quirks : ( document.compatMode == 'BackCompat' )
+        quirks : ( document.compatMode == 'BackCompat' ),
+
+        ipad :  ( agent.indexOf( 'ipad' ) > -1 )
     };
 
     /**

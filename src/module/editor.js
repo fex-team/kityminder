@@ -45,7 +45,7 @@ KityMinder.registerModule( "TextEditModule", function () {
     };
     var selectionByClick = false;
 
-    var dragmoveTimer;
+
     return {
         "events": {
             'ready':function(){
@@ -94,6 +94,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setCurrentIndex(e.getPosition(this.getRenderContainer()))
                             .updateSelection()
                             .setRange(range);
+
                         sel.setData('relatedNode',node);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition(this.getRenderContainer());
@@ -169,6 +170,12 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                     }else
                        sel.setShow();
+
+                    if(browser.ipad){
+                        receiver.container.focus();
+                    }
+
+
                 }else{
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
@@ -204,7 +211,8 @@ KityMinder.registerModule( "TextEditModule", function () {
                 oneTime = 0;
             },
             'textedit.beforemousemove':function(e){
-                if(mouseDownStatus){
+                //ipad下不做框选
+                if(mouseDownStatus && !browser.ipad){
                     e.stopPropagationImmediately();
 
                     var offset = e.getPosition(this.getRenderContainer());

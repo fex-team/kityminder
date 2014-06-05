@@ -27,12 +27,12 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         _div.setAttribute( 'contenteditable', true );
         _div.className = 'km_receiver';
         this.container = _div;
-        if ( browser.ie && browser.version == 11 ) {
-            utils.listen( this.container, 'keydown keypress keyup', function ( e ) {
+        if ( browser.ie && browser.version == 11 || browser.ipad) {
+            utils.listen( this.container, 'keydown keypress keyup input', function ( e ) {
                 me.keyboardEvents.call( me, new MinderEvent( e.type == 'keyup' ? "beforekeyup" : e.type, e ) );
             } );
         }
-        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}' ); //
+        utils.addCssRule( 'km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);' ); //
         this.km.on( 'textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy( this.keyboardEvents, this ) );
         this.timer = null;
         this.index = 0;
@@ -48,7 +48,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
         setTimeout( function () {
             me.container.focus();
             range.select();
-        } );
+        });
         return this;
     },
     setTextShape: function ( textShape ) {
@@ -130,80 +130,88 @@ Minder.Receiver = kity.createClass( 'Receiver', {
 
         switch ( e.type ) {
 
-        case 'keydown':
-            this.isTypeText =  keyCode == 229 || keyCode === 0 ;
-            switch ( keyCode ) {
-                case keys.Enter:
-                case keys.Tab:
-                    this.selection.setHide();
-                    this.clear().setTextEditStatus( false );
-                    this.km.fire( 'contentchange' );
-                    this.km.setStatus( 'normal' );
-                    e.preventDefault();
-                    return;
-                case keymap.Shift:
-                case keymap.Control:
-                case keymap.Alt:
-                case keymap.Cmd:
-                    return;
-            }
-
-            if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
-
-                //粘贴
-                if ( keyCode == keymap.v ) {
-
-                    setTimeout( function () {
-                        me.range.updateNativeRange().insertNode( $( '<span>$$_kityminder_bookmark_$$</span>' )[ 0 ] );
-                        me.container.innerHTML = utils.unhtml( me.container.textContent.replace( /[\u200b\t\r\n]/g, '' ) );
-                        var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
-                        me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
-                        me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
+            case 'input':
+                if(browser.ipad){
+                    setTimeout(function(){
                         setTextToContainer();
-                    }, 100 );
+                    });
                 }
-                //剪切
-                if ( keyCode == keymap.x ) {
-                    setTimeout( function () {
-                        setTextToContainer();
-                    }, 100 );
+                break;
+
+            case 'keydown':
+                this.isTypeText =  keyCode == 229 || keyCode === 0 ;
+                switch ( keyCode ) {
+                    case keys.Enter:
+                    case keys.Tab:
+                        this.selection.setHide();
+                        this.clear().setTextEditStatus( false );
+                        this.km.fire( 'contentchange' );
+                        this.km.setStatus( 'normal' );
+                        e.preventDefault();
+                        return;
+                    case keymap.Shift:
+                    case keymap.Control:
+                    case keymap.Alt:
+                    case keymap.Cmd:
+                        return;
                 }
-                return;
-            }
 
-            setTimeout(function(){
-                setTextToContainer();
-            });
-            break;
+                if ( e.originEvent.ctrlKey || e.originEvent.metaKey ) {
 
-        case 'beforekeyup':
-            switch ( keyCode ) {
-                case keymap.Enter:
-                case keymap.Tab:
-                case keymap.F2:
-                    if(keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)){
-                        setTextToContainer();
+                    //粘贴
+                    if ( keyCode == keymap.v ) {
+
+                        setTimeout( function () {
+                            me.range.updateNativeRange().insertNode( $( '<span>$$_kityminder_bookmark_$$</span>' )[ 0 ] );
+                            me.container.innerHTML = utils.unhtml( me.container.textContent.replace( /[\u200b\t\r\n]/g, '' ) );
+                            var index = me.container.textContent.indexOf( '$$_kityminder_bookmark_$$' );
+                            me.container.textContent = me.container.textContent.replace( '$$_kityminder_bookmark_$$', '' );
+                            me.range.setStart( me.container.firstChild, index ).collapse( true ).select();
+                            setTextToContainer();
+                        }, 100 );
                     }
-                    if ( this.keydownNode === this.minderNode ) {
-                        this.rollbackStatus();
-                        this.setTextEditStatus( false );
-                        this.clear();
+                    //剪切
+                    if ( keyCode == keymap.x ) {
+                        setTimeout( function () {
+                            setTextToContainer();
+                        }, 100 );
                     }
-                    e.preventDefault();
                     return;
-                case keymap.Del:
-                case keymap.Backspace:
-                case keymap.Spacebar:
+                }
+
+                setTimeout(function(){
                     setTextToContainer();
-                    return;
-            }
+                });
+                break;
 
-            if(this.isTypeText){
-                setTextToContainer();
-            }
-            if(browser.mac && browser.gecko)
-                setTextToContainer();
-            return true;
+            case 'beforekeyup':
+                switch ( keyCode ) {
+                    case keymap.Enter:
+                    case keymap.Tab:
+                    case keymap.F2:
+                        if(keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)){
+                            setTextToContainer();
+                        }
+                        if ( this.keydownNode === this.minderNode ) {
+                            this.rollbackStatus();
+                            this.setTextEditStatus( false );
+                            this.clear();
+                        }
+                        e.preventDefault();
+                        return;
+                    case keymap.Del:
+                    case keymap.Backspace:
+                    case keymap.Spacebar:
+                        setTextToContainer();
+                        return;
+                }
+
+                if(this.isTypeText){
+                    setTextToContainer();
+                }
+                if(browser.mac && browser.gecko)
+                    setTextToContainer();
+                return true;
         }
 
     },
@@ -255,7 +263,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
     },
     setContainerStyle: function () {
         var textShapeBox = this.getBaseOffset( 'paper' );
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + ( textShapeBox.y + textShapeBox.height * 0.1 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        this.container.style.cssText = ";left:" + (browser.ipad ? '-' : '') + textShapeBox.x + 'px;top:' + ( textShapeBox.y + textShapeBox.height * 0.1 ) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if ( !this.selection.isShow() ) {
             var paperContainer = this.km.getPaper();
@@ -386,7 +394,7 @@ Minder.Receiver = kity.createClass( 'Receiver', {
                 var lastOffset = this.textData[ this.textData.length - 1 ];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             } catch ( e ) {
-                console.log( 'e' );
+                console.log( e );
             }
 
         } else {
