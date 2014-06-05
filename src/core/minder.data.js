@@ -1,30 +1,30 @@
-Utils.extend( KityMinder, {
+Utils.extend(KityMinder, {
     _protocals: {},
-    registerProtocal: function ( name, protocalDeal ) {
-        KityMinder._protocals[ name ] = protocalDeal();
+    registerProtocal: function(name, protocalDeal) {
+        KityMinder._protocals[name] = protocalDeal();
     },
-    findProtocal: function ( name ) {
-        return KityMinder._protocals[ name ] || null;
+    findProtocal: function(name) {
+        return KityMinder._protocals[name] || null;
     },
-    getSupportedProtocals: function () {
-        return Utils.keys( KityMinder._protocals ).sort( function ( a, b ) {
-            return KityMinder._protocals[ b ].recognizePriority - KityMinder._protocals[ a ].recognizePriority;
-        } );
+    getSupportedProtocals: function() {
+        return Utils.keys(KityMinder._protocals).sort(function(a, b) {
+            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
+        });
     },
-    getAllRegisteredProtocals: function () {
+    getAllRegisteredProtocals: function() {
         return KityMinder._protocals;
     }
-} );
+});
 
 // 这里的 Json 是一个对象
-function exportNode( node ) {
+function exportNode(node) {
     var exported = {};
     exported.data = node.getData();
     var childNodes = node.getChildren();
-    if ( childNodes.length ) {
+    if (childNodes.length) {
         exported.children = [];
-        for ( var i = 0; i < childNodes.length; i++ ) {
-            exported.children.push( exportNode( childNodes[ i ] ) );
+        for (var i = 0; i < childNodes.length; i++) {
+            exported.children.push(exportNode(childNodes[i]));
         }
     }
     return exported;
@@ -36,61 +36,62 @@ var DEFAULT_TEXT = {
     'sub': 'topic'
 };
 
-function importNode( node, json, km ) {
+function importNode(node, json, km) {
     var data = json.data;
-    for ( var field in data ) {
-        node.setData( field, data[ field ] );
+    for (var field in data) {
+        node.setData(field, data[field]);
     }
-    node.setData( 'text', data.text || km.getLang( DEFAULT_TEXT[ node.getType() ] ) );
 
+    node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
+    node.render();
     var childrenTreeData = json.children;
-    if ( !childrenTreeData ) return;
-    for ( var i = 0; i < childrenTreeData.length; i++ ) {
-        var childNode = new MinderNode();
-        node.appendChild( childNode );
-        importNode( childNode, childrenTreeData[ i ], km );
+    if (!childrenTreeData) return;
+    for (var i = 0; i < childrenTreeData.length; i++) {
+        var childNode = km.createNode();
+        node.appendChild(childNode);
+        importNode(childNode, childrenTreeData[i], km);
     }
     return node;
 }
 
 // 导入导出
-kity.extendClass( Minder, {
-    exportData: function ( protocalName ) {
+kity.extendClass(Minder, {
+    exportData: function(protocalName) {
         var json, protocal;
 
-        json = exportNode( this.getRoot() );
-        protocal = KityMinder.findProtocal( protocalName );
+        json = exportNode(this.getRoot());
+        protocal = KityMinder.findProtocal(protocalName);
 
-        if ( this._fire( new MinderEvent( 'beforeexport', {
+        if (this._fire(new MinderEvent('beforeexport', {
             json: json,
             protocalName: protocalName,
             protocal: protocal
-        }, true ) ) === true ) return;
+        }, true)) === true) return;
 
-        if ( protocal ) {
-            return protocal.encode( json, this );
+        if (protocal) {
+            return protocal.encode(json, this);
         } else {
             return json;
         }
     },
 
-    importData: function ( local, protocalName ) {
+    importData: function(local, protocalName) {
         var json, protocal;
 
-        if ( protocalName ) {
-            protocal = KityMinder.findProtocal( protocalName );
+        if (protocalName) {
+            protocal = KityMinder.findProtocal(protocalName);
         } else {
-            KityMinder.getSupportedProtocals().every( function ( name ) {
-                var test = KityMinder.findProtocal( name );
-                if ( test.recognize && test.recognize( local ) ) {
+            KityMinder.getSupportedProtocals().every(function(name) {
+                var test = KityMinder.findProtocal(name);
+                if (test.recognize && test.recognize(local)) {
                     protocal = test;
                 }
                 return !protocal;
-            } );
+            });
         }
 
-        if ( !protocal ) {
-            throw new Error( "Unsupported protocal: " + protocalName );
+        if (!protocal) {
+            throw new Error('Unsupported protocal: ' + protocalName);
         }
 
         var params = {
@@ -100,73 +101,42 @@ kity.extendClass( Minder, {
         };
 
         // 是否需要阻止导入
-        var stoped = this._fire( new MinderEvent( 'beforeimport', params, true ) );
-        if ( stoped ) return this;
+        var stoped = this._fire(new MinderEvent('beforeimport', params, true));
+        if (stoped) return this;
 
+        json = params.json || (params.json = protocal.decode(local));
 
-        //*******************
-        function ts( d, str, last ) {
-            var h = d.getHours(),
-                m = d.getMinutes(),
-                s = d.getSeconds(),
-                ms = d.getMilliseconds();
-
-            if ( last ) {
-                console.log( '--- ' + str + ': ' + ( d - last ) + ' ---' );
-            } else {
-                console.log( '--- ' + str + ' ---' );
-            }
-
-            return d;
-        }
-
-        //var t1 = ts( new Date(), '开始解析' );
-        //*******************
-
-        json = params.json || ( params.json = protocal.decode( local ) );
-
-        if ( typeof json === 'object' && 'then' in json ) {
+        if (typeof json === 'object' && 'then' in json) {
             var self = this;
-            json.then( local, function ( data ) {
-                //*******************
-                //var t2 = ts( new Date(), '解压解析耗时', t1 );
-                //*******************
-                self._afterImportData( data, params );
-                //*******************
-                //ts( new Date(), '渲染耗时', t2 );
-                //*******************
-            } );
+            json.then(local, function(data) {
+                self._doImport(data, params);
+            });
         } else {
-            //*******************
-            //var t2 = ts( new Date(), '解压解析耗时', t1 );
-            //*******************
-            this._afterImportData( json, params );
-            //*******************
-            //ts( new Date(), '渲染耗时', t2 );
-            //*******************
+            this._doImport(json, params);
         }
         return this;
     },
 
-    _afterImportData: function ( json, params ) {
-        this._fire( new MinderEvent( 'preimport', params, false ) );
+    _doImport: function(json, params) {
+        this._fire(new MinderEvent('preimport', params, false));
 
         // 删除当前所有节点
-        while ( this._root.getChildren().length ) {
-            this._root.removeChild( 0 );
+        while (this._root.getChildren().length) {
+            this.removeNode(this._root.getChildren()[0]);
         }
-        var curLayout = this._root.getData( "currentstyle" );
-        this._root.setData();
-        this._root.setData( "currentstyle", curLayout );
-        importNode( this._root, json, this );
-        this.fire( 'beforeimport' );
-        this._fire( new MinderEvent( 'import', params, false ) );
-        this._firePharse( {
+
+        importNode(this._root, json, this);
+        this._root.layout();
+
+        this.fire('beforeimport', params);
+        this.fire('import', params);
+
+        this._firePharse({
             type: 'contentchange'
-        } );
-        this._firePharse( {
+        });
+        this._firePharse({
             type: 'interactchange'
-        } );
+        });
     }
 
-} );
+});

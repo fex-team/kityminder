@@ -1,4 +1,6 @@
-KityMinder.registerModule( "TextEditModule", function () {
+/* global Renderer: true */
+
+KityMinder.registerModule('TextEditModule', function() {
     var km = this;
     var sel = new Minder.Selection();
     var receiver = new Minder.Receiver(this);
@@ -10,15 +12,13 @@ KityMinder.registerModule( "TextEditModule", function () {
 
     var oneTime = 0;
 
-    var lastEvtPosition,dir = 1;
+    var lastEvtPosition, dir = 1;
 
-
-
-    km.isTextEditStatus = function(){
+    km.isTextEditStatus = function() {
         return km.receiver.isTextEditStatus();
     };
 
-    km.textEditNode = function(node){
+    km.textEditNode = function(node) {
 
         var textShape = node.getTextShape();
         this.setStatus('textedit');
@@ -41,47 +41,45 @@ KityMinder.registerModule( "TextEditModule", function () {
             .updateRange(range).setTextEditStatus(true);
 
 
-        sel.setData('relatedNode',node);
+        sel.setData('relatedNode', node);
     };
     var selectionByClick = false;
 
     var dragmoveTimer;
     return {
-        "events": {
-            'ready':function(){
+        'events': {
+            'ready': function() {
                 this._renderTarget.appendChild(receiver.container);
-            },
-            //插入光标
-            "afterinitstyle":function(){
                 this.getRenderContainer().addShape(sel);
             },
-            'normal.beforemousedown textedit.beforemousedown':function(e){
-                if(e.isRightMB()){
+
+            'normal.beforemousedown textedit.beforemousedown': function(e) {
+                if (e.isRightMB()) {
                     e.stopPropagationImmediately();
                     return;
                 }
                 sel.setHide();
                 var node = e.getTargetNode();
-                if(!node){
+                if (!node) {
                     var selectionShape = e.kityEvent.targetShape;
-                    if(selectionShape && selectionShape.getType() == 'Selection'){
+                    if (selectionShape && selectionShape.getType() == 'Selection') {
                         selectionByClick = true;
                         node = selectionShape.getData('relatedNode');
                         e.stopPropagationImmediately();
                     }
-                    if(this.getStatus() == 'textedit')
+                    if (this.getStatus() == 'textedit')
                         this.fire('contentchange');
                     km.setStatus('normal');
                 }
-                if(node){
+                if (node) {
                     var textShape = node.getTextShape();
-                    textShape.setStyle('cursor','default');
+                    textShape.setStyle('cursor', 'default');
 
-                    if ( this.isSingleSelect() && node.isSelected()) {// && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
+                    if (this.isSingleSelect() && node.isSelected()) { // && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
                         sel.setSelectionShowStatus(true);
-                        node.getTextShape().setStyle('cursor','text');
+                        node.getTextShape().setStyle('cursor', 'text');
                         km.setStatus('textedit');
                         receiver.setTextEditStatus(true)
                             .setSelection(sel)
@@ -94,10 +92,10 @@ KityMinder.registerModule( "TextEditModule", function () {
                             .setCurrentIndex(e.getPosition(this.getRenderContainer()))
                             .updateSelection()
                             .setRange(range);
-                        sel.setData('relatedNode',node);
+                        sel.setData('relatedNode', node);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition(this.getRenderContainer());
-                        if(selectionByClick){
+                        if (selectionByClick) {
                             sel.setShow();
                             selectionByClick = false;
                         }
@@ -105,16 +103,18 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }
                 }
             },
+
             //当输入键值是内容时，进入textedit状态
-            'normal.beforekeydown':function(e){
+            'normal.beforekeydown': function(e) {
                 var node = this.getSelectedNode();
-                if(node){
-                    if ( this.isSingleSelect() && node.isSelected()) {
-                        var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
-                        if(!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount !== 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
+                if (node) {
+                    if (this.isSingleSelect() && node.isSelected()) {
+                        var orgEvt = e.originEvent,
+                            keyCode = orgEvt.keyCode;
+                        if (!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount !== 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
 
                             var nativeRange = range.nativeSel.getRangeAt(0);
-                            if(nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer ))){
+                            if (nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer))) {
                                 km.setStatus('textedit');
                                 sel.setSelectionShowStatus(true);
                                 km.fire('saveScene');
@@ -124,15 +124,17 @@ KityMinder.registerModule( "TextEditModule", function () {
                     }
                 }
             },
-            //当节点选区通过键盘发生变化时，输入状态要准备好
-            'normal.keyup':function(e){
-                var node = this.getSelectedNode();
-                if(node){
-                    if ( this.isSingleSelect() && node.isSelected()) {
-                        var orgEvt = e.originEvent,keyCode = orgEvt.keyCode;
-                        if(keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit' && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey){
 
-                           //准备输入状态
+            //当节点选区通过键盘发生变化时，输入状态要准备好
+            'normal.keyup': function(e) {
+                var node = this.getSelectedNode();
+                if (node) {
+                    if (this.isSingleSelect() && node.isSelected()) {
+                        var orgEvt = e.originEvent,
+                            keyCode = orgEvt.keyCode;
+                        if (keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit' && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+
+                            //准备输入状态
                             var textShape = node.getTextShape();
 
                             sel.setHide();
@@ -151,29 +153,29 @@ KityMinder.registerModule( "TextEditModule", function () {
                                 .setContainerTxt(textShape.getContent())
                                 .updateRange(range).setTextEditStatus(true);
 
-                            sel.setData('relatedNode',node);
+                            sel.setData('relatedNode', node);
                         }
                     }
                 }
             },
-            'normal.mouseup textedit.mouseup':function(e){
+            'normal.mouseup textedit.mouseup': function(e) {
 
-                if(mouseDownStatus){
-                    if(!sel.collapsed ){
+                if (mouseDownStatus) {
+                    if (!sel.collapsed) {
 
-                        try{
+                        try {
                             receiver.updateRange(range);
-                        }catch(error){
+                        } catch (error) {
                             console.log(error);
                         }
 
-                    }else
-                       sel.setShow();
-                }else{
+                    } else
+                        sel.setShow();
+                } else {
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
-                    if(node){
-                        if ( this.isSingleSelect() && node.isSelected()) {
+                    if (node) {
+                        if (this.isSingleSelect() && node.isSelected()) {
                             //准备输入状态
                             var textShape = node.getTextShape();
 
@@ -193,7 +195,7 @@ KityMinder.registerModule( "TextEditModule", function () {
                                 .setContainerTxt(textShape.getContent())
                                 .updateRange(range).setTextEditStatus(true);
 
-                            sel.setData('relatedNode',node);
+                            sel.setData('relatedNode', node);
 
                         }
                     }
@@ -203,28 +205,28 @@ KityMinder.registerModule( "TextEditModule", function () {
                 mouseDownStatus = false;
                 oneTime = 0;
             },
-            'textedit.beforemousemove':function(e){
-                if(mouseDownStatus){
+            'textedit.beforemousemove': function(e) {
+                if (mouseDownStatus) {
                     e.stopPropagationImmediately();
 
                     var offset = e.getPosition(this.getRenderContainer());
-                    if(Math.abs(offset.y - lastEvtPosition.y) >= 2 && Math.abs(lastEvtPosition.x - offset.x) <= 2 ){
+                    if (Math.abs(offset.y - lastEvtPosition.y) >= 2 && Math.abs(lastEvtPosition.x - offset.x) <= 2) {
                         sel.setHide();
                         mouseDownStatus = false;
                         return;
                     }
-                    dir = offset.x > lastEvtPosition.x  ? 1 : (offset.x  < lastEvtPosition.x ? -1 : dir);
-                    receiver.updateSelectionByMousePosition(offset,dir)
+                    dir = offset.x > lastEvtPosition.x ? 1 : (offset.x < lastEvtPosition.x ? -1 : dir);
+                    receiver.updateSelectionByMousePosition(offset, dir)
                         .updateSelectionShow(dir);
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
 
                 }
             },
-            'normal.dblclick textedit.dblclick':function(e){
+            'normal.dblclick textedit.dblclick': function(e) {
 
-                var text =  e.kityEvent.targetShape;
-                if ( text.getType().toLowerCase()== 'text') {
+                var text = e.kityEvent.targetShape;
+                if (text.getType().toLowerCase() == 'text') {
 
                     sel.setStartOffset(0);
                     sel.setEndOffset(text.getContent().length);
@@ -234,9 +236,9 @@ KityMinder.registerModule( "TextEditModule", function () {
                     km.setStatus('textedit');
                 }
             },
-            'restoreScene':function(){
+            'restoreScene': function() {
                 var node = this.getSelectedNode();
-                if(node && this.isSingleSelect()){
+                if (node && this.isSingleSelect()) {
                     var textShape = node.getTextShape();
                     sel.setHide();
                     sel.setStartOffset(0);
@@ -255,37 +257,37 @@ KityMinder.registerModule( "TextEditModule", function () {
                         .updateRange(range).setTextEditStatus(true);
                     km.setStatus('normal');
 
-                    sel.setData('relatedNode',node);
-                }else {
+                    sel.setData('relatedNode', node);
+                } else {
                     receiver.clear();
                 }
 
             },
-            'stopTextEdit':function(){
+            'stopTextEdit': function() {
                 sel.setHide();
                 receiver.clear().setTextEditStatus(false);
                 km.setStatus('normal');
             },
-            "resize": function ( e ) {
+            "resize": function(e) {
                 sel.setHide();
             },
-            "execCommand": function( e ) {
+            "execCommand": function(e) {
                 var cmds = {
-                    'appendchildnode' : 1,
-                    'appendsiblingnode' : 1,
-                    'editnode' : 1
+                    'appendchildnode': 1,
+                    'appendsiblingnode': 1,
+                    'editnode': 1
                 };
-                if ( cmds[ e.commandName ] ){
+                if (cmds[e.commandName]) {
 
                     var node = km.getSelectedNode();
-                    if( !node ){
+                    if (!node) {
                         return;
                     }
 
                     var textShape = node.getTextShape();
 
-                    textShape.setStyle('cursor','default');
-                    node.getTextShape().setStyle('cursor','text');
+                    textShape.setStyle('cursor', 'default');
+                    node.getTextShape().setStyle('cursor', 'text');
                     km.setStatus('textedit');
                     receiver.setTextEditStatus(true)
                         .setSelection(sel)
@@ -310,14 +312,14 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
 
-                if((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit' ){
+                if ((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit') {
 
                     receiver.setBaseOffset()
                         .getTextOffsetData();
 
-                    if(sel.collapsed){
+                    if (sel.collapsed) {
                         receiver.updateSelection();
-                    }else{
+                    } else {
                         receiver.updateSelectionShow(1);
                     }
                     return;
@@ -325,24 +327,50 @@ KityMinder.registerModule( "TextEditModule", function () {
 
                 }
                 receiver.clear().setTextEditStatus(false);
-                if(this.getStatus() == 'textedit'){
+                if (this.getStatus() == 'textedit') {
                     this.setStatus('normal');
                 }
             },
-            'selectionclear':function(){
+            'selectionclear': function() {
                 km.setStatus('normal');
                 receiver.setTextEditStatus(false).clear();
             },
-            blur:function(){
+            'blur': function() {
                 receiver.clear();
             },
-            'import':function(){
+            'import': function() {
                 km.setStatus('normal');
                 receiver.setTextEditStatus(false).clear();
             },
-            'textedit.mousewheel':function(){
+            'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
+        },
+
+        'renderers': {
+            center: kity.createClass('TextRenderer', {
+                base: Renderer,
+                create: function(node) {
+                    var textShape = new kity.Text()
+                        .setVerticalAlign('middle')
+                        .setId(KityMinder.uuid('node_text'));
+                    node.getRenderContainer().addShape(textShape);
+                    node.getTextShape = function() {
+                        return textShape;
+                    };
+                },
+                update: function(node) {
+                    return node.getTextShape()
+                        .setContent(node.getText())
+                        .setFont({
+                            family: node.getStyle('font-family'),
+                            size: node.getStyle('font-size')
+                        })
+                        .fill(node.getData('color') || node.getStyle('color'))
+                        .getBoundaryBox();
+
+                }
+            })
         }
     };
-} );
+});

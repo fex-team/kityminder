@@ -1,4 +1,4 @@
-KityMinder.registerModule("KeyboardModule", function () {
+KityMinder.registerModule("KeyboardModule", function() {
     var min = Math.min,
         max = Math.max,
         abs = Math.abs,
@@ -8,7 +8,7 @@ KityMinder.registerModule("KeyboardModule", function () {
     function buildPositionNetwork(root) {
         var pointIndexes = [],
             p;
-        root.traverse(function (node) {
+        root.traverse(function(node) {
             p = node.getRenderContainer().getRenderBox('top');
 
             // bugfix: 不应导航到收起的节点（判断其尺寸是否存在）
@@ -129,51 +129,52 @@ KityMinder.registerModule("KeyboardModule", function () {
     }
     return {
 
-        "events": {
-            contentchange: function () {
+        'events': {
+            'contentchange': function() {
                 buildPositionNetwork(this.getRoot());
             },
-            "normal.keydown": function (e) {
+            'normal.keydown': function(e) {
 
                 var keys = KityMinder.keymap;
-
                 var node = e.getTargetNode();
-                this.receiver.keydownNode = node;
-                switch (e.originEvent.keyCode) {
-                case keys.Enter:
-                    this.execCommand('appendSiblingNode', new MinderNode(this.getLang().topic));
-                    e.preventDefault();
-                    break;
-                case keys.Tab:
-                    this.execCommand('appendChildNode', new MinderNode(this.getLang().topic));
-                    e.preventDefault();
-                    break;
-                case keys.Backspace:
-                case keys.Del:
-                    e.preventDefault();
-                    this.execCommand('removenode');
-                    break;
-                case keys.F2:
-                    e.preventDefault();
-                    this.execCommand('editnode');
-                    break;
 
-                case keys.Left:
-                    navigateTo(this, 'left');
-                    e.preventDefault();
-                    break;
-                case keys.Up:
-                    navigateTo(this, 'top');
-                    e.preventDefault();
-                    break;
-                case keys.Right:
-                    navigateTo(this, 'right');
-                    e.preventDefault();
-                    break;
-                case keys.Down:
-                    navigateTo(this, 'down');
-                    e.preventDefault();
-                    break;
+                this.receiver.keydownNode = node;
+
+                switch (e.originEvent.keyCode) {
+                    case keys.Enter:
+                        this.execCommand('appendSiblingNode', new MinderNode(this, this.getLang().topic));
+                        e.preventDefault();
+                        break;
+                    case keys.Tab:
+                        this.execCommand('appendChildNode', new MinderNode(this, this.getLang().topic));
+                        e.preventDefault();
+                        break;
+                    case keys.Backspace:
+                    case keys.Del:
+                        e.preventDefault();
+                        this.execCommand('removenode');
+                        break;
+                    case keys.F2:
+                        e.preventDefault();
+                        this.execCommand('editnode');
+                        break;
+
+                    case keys.Left:
+                        navigateTo(this, 'left');
+                        e.preventDefault();
+                        break;
+                    case keys.Up:
+                        navigateTo(this, 'top');
+                        e.preventDefault();
+                        break;
+                    case keys.Right:
+                        navigateTo(this, 'right');
+                        e.preventDefault();
+                        break;
+                    case keys.Down:
+                        navigateTo(this, 'down');
+                        e.preventDefault();
+                        break;
                 }
 
             }

@@ -46,7 +46,7 @@ kity.extendClass(Minder, {
      * @param  {String} name 要使用的主题的名称
      */
     useTheme: function(name) {
-        if (!KityMinder._theme[name]) {
+        if (!KityMinder._themes[name]) {
             return false;
         }
 
@@ -72,7 +72,7 @@ kity.extendClass(Minder, {
      * @param  {String} item 样式名称
      */
     getStyle: function(item) {
-        var theme = KityMinder._theme[this.getTheme()];
+        var theme = KityMinder._themes[this.getTheme()];
         var segment, dir, selector, value, matcher;
 
         if (item in theme) return theme[item];
@@ -81,7 +81,7 @@ kity.extendClass(Minder, {
         // 比如 item 为 'pading-left'
         // theme 里有 {'padding': [10, 20]} 的定义，则可以返回 20
         segment = item.split('-');
-        if (segment.length < 2) return;
+        if (segment.length < 2) return null;
 
         dir = segment.pop();
         item = segment.join('-');
@@ -95,24 +95,20 @@ kity.extendClass(Minder, {
         }
 
         return null;
-    }
-
-});
-
-kity.extendClass(Node, {
+    },
 
     /**
-     * 获得节点的样式
-     * @param  {String} name 样式名称
+     * 获取指定节点的样式
+     * @param  {String} name 样式名称，可以不加节点类型的前缀
      */
+    getNodeStyle: function(node, name) {
+        var value = this.getStyle(name);
+        return value !== null ? value : this.getStyle(node.getType() + '-' + name);
+    }
+});
+
+kity.extendClass(MinderNode, {
     getStyle: function(name) {
-        var minder = this.minder,
-            value;
-
-        if (!this.minder) return null;
-
-        value = minder.getStyle(name);
-
-        return value !== null ? value : minder.getStyle(this.getType() + '-' + name);
+        return this.getMinder().getNodeStyle(this, name);
     }
 });
