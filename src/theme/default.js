@@ -4,7 +4,7 @@ KityMinder.registerTheme('default', {
     'root-stroke': 'none',
     'root-font-size': 24,
     'root-padding': [15, 25],
-    'root-margin': 0,
+    'root-margin': 30,
     'root-radius': 30,
     'root-space': 10,
 
@@ -13,7 +13,7 @@ KityMinder.registerTheme('default', {
     'main-stroke': 'none',
     'main-font-size': 16,
     'main-padding': [6, 20],
-    'main-margin': [0, 10, 30, 50],
+    'main-margin': [15, 10],
     'main-radius': 10,
     'main-space': 5,
 
@@ -22,8 +22,8 @@ KityMinder.registerTheme('default', {
     'sub-stroke': 'white',
     'sub-font-size': 12,
     'sub-padding': [5, 10],
-    'sub-margin': [0, 10, 20, 6],
-    'sub-radius': 0,
+    'sub-margin': [5, 10],
+    'sub-radius': 5,
     'sub-space': 5,
 
     'selected-background': 'rgb(254, 219, 0)'

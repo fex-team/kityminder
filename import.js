@@ -25,6 +25,8 @@
             'core/theme.js',
             'layout/default.js',
             'theme/default.js',
+            'module/node.js',
+            'module/text.js',
             'module/outline.js',
             'module/geometry.js',
             'module/history.js',

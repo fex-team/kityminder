@@ -345,32 +345,6 @@ KityMinder.registerModule('TextEditModule', function() {
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
-        },
-
-        'renderers': {
-            center: kity.createClass('TextRenderer', {
-                base: Renderer,
-                create: function(node) {
-                    var textShape = new kity.Text()
-                        .setVerticalAlign('middle')
-                        .setId(KityMinder.uuid('node_text'));
-                    node.getRenderContainer().addShape(textShape);
-                    node.getTextShape = function() {
-                        return textShape;
-                    };
-                },
-                update: function(node) {
-                    return node.getTextShape()
-                        .setContent(node.getText())
-                        .setFont({
-                            family: node.getStyle('font-family'),
-                            size: node.getStyle('font-size')
-                        })
-                        .fill(node.getData('color') || node.getStyle('color'))
-                        .getBoundaryBox();
-
-                }
-            })
         }
     };
 });

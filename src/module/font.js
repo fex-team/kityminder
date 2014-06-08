@@ -1,8 +1,8 @@
-KityMinder.registerModule( "fontmodule", function () {
+KityMinder.registerModule("fontmodule", function() {
 
     return {
         defaultOptions: {
-            'fontfamily': [ {
+            'fontfamily': [{
                 name: 'songti',
                 val: '宋体,SimSun'
             }, {
@@ -38,100 +38,82 @@ KityMinder.registerModule( "fontmodule", function () {
             }, {
                 name: 'sans-serif',
                 val: 'sans-serif'
-            } ],
-            'fontsize': [ 10, 12, 16, 18, 24, 32, 48 ]
+            }],
+            'fontsize': [10, 12, 16, 18, 24, 32, 48]
         },
         "commands": {
-            "forecolor": kity.createClass( "fontcolorCommand", {
+            "forecolor": kity.createClass("fontcolorCommand", {
                 base: Command,
 
-                execute: function ( km, color ) {
+                execute: function(km, color) {
                     var nodes = km.getSelectedNodes();
-                    utils.each( nodes, function ( i, n ) {
-                        n.setData( 'fontcolor', color );
-                        n.getTextShape().fill( color )
-                    } )
+                    utils.each(nodes, function(i, n) {
+                        n.setData('color', color);
+                        n.render();
+                    });
                 },
-                queryState:function(km){
+                queryState: function(km) {
                     return km.getSelectedNodes().length == 0 ? -1 : 0
                 },
                 queryValue: function(km) {
                     if (km.getSelectedNodes().length == 1) {
-                        return km.getSelectedNodes()[0].getData('fontcolor');
+                        return km.getSelectedNodes()[0].getData('color');
                     }
                     return 'mixed';
                 }
 
-            } ),
-            "backgroundcolor": kity.createClass( "backgroudcolorCommand", {
+            }),
+            "backgroundcolor": kity.createClass("backgroudcolorCommand", {
                 base: Command,
 
-                execute: function ( km, color ) {
+                execute: function(km, color) {
                     var nodes = km.getSelectedNodes();
-                    utils.each( nodes, function ( i, n ) {
-                        n.setData( 'backgroundcolor', color );
-                        n.getLayout().bgRect.fill( color );
-                    } );
+                    utils.each(nodes, function(i, n) {
+                        n.setData('background', color);
+                        n.render();
+                    });
                 },
-                queryState:function(km){
+                queryState: function(km) {
                     return km.getSelectedNodes().length == 0 ? -1 : 0
                 },
-                queryValue: function (km) {
+                queryValue: function(km) {
                     if (km.getSelectedNodes().length == 1) {
-                        return km.getSelectedNodes()[0].getData('backgroundcolor');
+                        return km.getSelectedNodes()[0].getData('background');
                     }
                     return 'mixed';
                 }
 
-            } ),
-            "fontfamily": kity.createClass( "fontfamilyCommand", {
+            }),
+            "fontfamily": kity.createClass("fontfamilyCommand", {
                 base: Command,
 
-                execute: function ( km, family ) {
+                execute: function(km, family) {
                     var nodes = km.getSelectedNodes();
-                    utils.each( nodes, function ( i, n ) {
-                        n.setData( 'fontfamily', family );
-                        n.getTextShape().setAttr( 'font-family', family );
-                        km.updateLayout( n )
-                    } )
+                    utils.each(nodes, function(i, n) {
+                        n.setData('font-family', family);
+                        n.render();
+                        km.layout();
+                    });
                 },
-                queryState:function(km){
+                queryState: function(km) {
                     return km.getSelectedNodes().length == 0 ? -1 : 0
                 }
-            } ),
-            "fontsize": kity.createClass( "fontsizeCommand", {
+            }),
+            "fontsize": kity.createClass("fontsizeCommand", {
                 base: Command,
 
-                execute: function ( km, size ) {
+                execute: function(km, size) {
                     var nodes = km.getSelectedNodes();
-                    utils.each( nodes, function ( i, n ) {
-                        n.setData( 'fontsize', size );
-                        n.getTextShape().setSize( size );
-                        km.updateLayout( n )
-                    } )
+                    utils.each(nodes, function(i, n) {
+                        n.setData('font-size', size);
+                        n.render();
+                        km.layout(300);
+                    });
                 },
-                queryState:function(km){
+                queryState: function(km) {
                     return km.getSelectedNodes().length == 0 ? -1 : 0
                 }
-            } )
-        },
-
-        "events": {
-            "afterrendernodecenter": function ( e ) {
-                var val;
-                if ( val = e.node.getData( 'fontfamily' ) ) {
-                    e.node.getTextShape().setAttr( 'font-family', val );
-                }
-                if ( val = e.node.getData( 'fontcolor' ) ) {
-                    e.node.getTextShape().fill( val );
-                }
-                if ( val = e.node.getData( 'backgroundcolor' ) ) {
-                    e.node.getLayout().bgRect.fill( val );
-                }
-                if ( val = e.node.getData( 'fontsize' ) ) {
-                    e.node.getTextShape().setSize( val );
-                }
-            }
+            })
         }
     };
-} );
+});

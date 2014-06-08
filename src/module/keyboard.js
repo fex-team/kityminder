@@ -127,6 +127,7 @@ KityMinder.registerModule("KeyboardModule", function() {
             km.select(nextNode, true);
         }
     }
+
     return {
 
         'events': {
@@ -137,26 +138,27 @@ KityMinder.registerModule("KeyboardModule", function() {
 
                 var keys = KityMinder.keymap;
                 var node = e.getTargetNode();
+                var lang = this.getLang();
 
                 this.receiver.keydownNode = node;
 
                 switch (e.originEvent.keyCode) {
                     case keys.Enter:
-                        this.execCommand('appendSiblingNode', new MinderNode(this, this.getLang().topic));
+                        this.execCommand('AppendSiblingNode', lang.topic);
                         e.preventDefault();
                         break;
                     case keys.Tab:
-                        this.execCommand('appendChildNode', new MinderNode(this, this.getLang().topic));
+                        this.execCommand('AppendChildNode', lang.topic);
                         e.preventDefault();
                         break;
                     case keys.Backspace:
                     case keys.Del:
                         e.preventDefault();
-                        this.execCommand('removenode');
+                        this.execCommand('RemoveNode');
                         break;
                     case keys.F2:
                         e.preventDefault();
-                        this.execCommand('editnode');
+                        this.execCommand('EditNode');
                         break;
 
                     case keys.Left:

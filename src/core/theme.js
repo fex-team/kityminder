@@ -88,10 +88,10 @@ kity.extendClass(Minder, {
 
         if (item in theme) {
             value = theme[item];
-            if (!isNaN(value)) return value;
             if (Utils.isArray(value) && (matcher = cssLikeValueMatcher[dir])) {
                 return matcher(value);
             }
+            if (!isNaN(value)) return value;
         }
 
         return null;

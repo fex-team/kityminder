@@ -26,7 +26,12 @@ kity.extendClass(Minder, {
             if (!modulesPool[name]) continue;
 
             // 执行模块初始化，抛出后续处理对象
-            moduleDeals = modulesPool[name].call(me);
+
+            if (typeof(modulesPool[name]) == 'function') {
+                moduleDeals = modulesPool[name].call(me);
+            } else {
+                moduleDeals = modulesPool[name];
+            }
             this._modules[name] = moduleDeals;
 
             if (moduleDeals.init) {

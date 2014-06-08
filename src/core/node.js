@@ -93,7 +93,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * @param {String} text 文本数据
      */
     setText: function(text) {
-        this.setData('text', text);
+        return this.setData('text', text);
     },
 
     /**
@@ -207,6 +207,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
                 this.data[name] = value;
             }
         }
+        return this;
     },
 
     getRenderContainer: function() {

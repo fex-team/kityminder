@@ -32,8 +32,8 @@ kity.extendClass(Minder, {
         this.renderChangedSelection(nodes);
         return this;
     },
-    select: function(nodes, isToggleSelect) {
-        if (isToggleSelect) {
+    select: function(nodes, isSingleSelect) {
+        if (isSingleSelect) {
             this.removeAllSelectedNodes();
         }
         var me = this;
