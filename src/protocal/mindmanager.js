@@ -75,7 +75,7 @@ KityMinder.registerProtocal( 'mindmanager', function () {
     }
 
     function onerror(){
-        alert('xmind文件过程解压出错，请检查该文件是否损坏');
+        alert('文件过程解压出错，请检查该文件是否损坏');
     }
 
     function getEntries( file, onend ) {
