@@ -80,6 +80,10 @@ KityMinder.registerProtocal( 'xmind', function () {
         return result;
     }
 
+    function onerror(){
+        alert('xmind文件过程解压出错，请检查该文件是否损坏');
+    }
+
     function getEntries(file, onend) {
         zip.createReader(new zip.BlobReader(file), function(zipReader) {
             zipReader.getEntries(onend);
