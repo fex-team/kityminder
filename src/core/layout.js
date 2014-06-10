@@ -75,6 +75,15 @@ kity.extendClass(MinderNode, {
         return this._layoutTransform || new kity.Matrix();
     },
 
+    setLayoutVector: function(vector) {
+        this._layoutVector = vector;
+        return this;
+    },
+
+    getLayoutVector: function(vector) {
+        return this._layoutVector || new kity.Vector();
+    },
+
     getLayoutBox: function() {
         var matrix = this._lastLayoutTransform || new kity.Matrix();
         return matrix.transformBox(this.getContentBox());

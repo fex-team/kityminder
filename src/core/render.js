@@ -1,4 +1,4 @@
-var Renderer = kity.createClass('Renderer', {
+var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
     constructor: function(node) {
         this.node = node;
     },
@@ -54,7 +54,7 @@ kity.extendClass(Minder, {
         }
 
         for (i = 0; i < node._renderers.length; i++) {
-            latestBox = node._renderers[i].update(node, latestBox);
+            latestBox = node._renderers[i].update(node, contentBox);
             if (latestBox) {
                 node._contentBox = contentBox = g.mergeBox(contentBox, latestBox);
             }

@@ -77,9 +77,13 @@ KityMinder.registerLayout('default', kity.createClass({
             if (side == 'right') {
                 x = nodeContentBox.right - childContentBox.left;
                 x += parent.getStyle('margin-right') + child.getStyle('margin-left');
+
+                child.setLayoutVector(new kity.Vector(childContentBox.left, childContentBox.cy));
             } else {
                 x = nodeContentBox.left - childContentBox.right;
                 x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
+
+                child.setLayoutVector(new kity.Vector(childContentBox.right, childContentBox.cy));
             }
 
             // 竖直方向上的布局
