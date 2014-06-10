@@ -27,12 +27,12 @@ Minder.Receiver = kity.createClass('Receiver', {
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
         this.container = _div;
-        if (browser.ie && browser.version == 11) {
-            utils.listen(this.container, 'keydown keypress keyup', function(e) {
-                me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? "beforekeyup" : e.type, e));
+        if (browser.ie && browser.version == 11 || browser.ipad) {
+            utils.listen(this.container, 'keydown keypress keyup input', function(e) {
+                me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);}'); //
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
         this.km.on('textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -97,7 +97,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if (browser.gecko && /\s$/.test(text)) {
-                text += "\u200b";
+                text += '\u200b';
             }
 
             me.minderNode.setText(text);
@@ -128,6 +128,14 @@ Minder.Receiver = kity.createClass('Receiver', {
 
 
         switch (e.type) {
+
+            case 'input':
+                if (browser.ipad) {
+                    setTimeout(function() {
+                        setTextToContainer();
+                    });
+                }
+                break;
 
             case 'keydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
@@ -169,7 +177,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     return;
                 }
-
                 setTimeout(function() {
                     setTextToContainer();
                 });
@@ -253,8 +260,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     setContainerStyle: function() {
-        var textShapeBox = this.getBaseOffset('screen');
-        this.container.style.cssText = ";left:" + textShapeBox.x + 'px;top:' + (textShapeBox.y + textShapeBox.height * 0.1) + 'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
+        var textShapeBox = this.getBaseOffset('paper');
+        this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + textShapeBox.height * 0.1) +
+            'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         if (!this.selection.isShow()) {
             var paperContainer = this.km.getPaper();
@@ -351,7 +360,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     if (offset.x <= v.x + v.width / 2) {
                         me.selection.collapse();
                     } else {
-                        me.selection.setEndOffset(i + ((me.selection.endOffset > i || dir == 1) && i != me.textData.length - 1 ? 1 : 0));
+                        me.selection.setEndOffset(i + ((me.selection.endOffset > i ||
+                            dir == 1) && i != me.textData.length - 1 ? 1 : 0));
                     }
 
                 } else if (i > me.index) {
@@ -359,7 +369,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     me.selection.setEndOffset(i + 1);
                 } else {
                     if (dir == 1) {
-                        me.selection.setStartOffset(i + (offset.x >= v.x + v.width / 2 && i != me.textData.length - 1 ? 1 : 0));
+                        me.selection.setStartOffset(i + (offset.x >= v.x + v.width / 2 &&
+                            i != me.textData.length - 1 ? 1 : 0));
                     } else {
                         me.selection.setStartOffset(i);
                     }
@@ -385,7 +396,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 var lastOffset = this.textData[this.textData.length - 1];
                 width = lastOffset.x - startOffset.x + lastOffset.width;
             } catch (e) {
-                console.log('e');
+                console.log(e);
             }
 
         } else {

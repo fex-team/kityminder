@@ -45,7 +45,7 @@ KityMinder.registerModule('TextEditModule', function() {
     };
     var selectionByClick = false;
 
-    var dragmoveTimer;
+
     return {
         'events': {
             'ready': function() {
@@ -132,7 +132,12 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (this.isSingleSelect() && node.isSelected()) {
                         var orgEvt = e.originEvent,
                             keyCode = orgEvt.keyCode;
-                        if (keymap.isSelectedNodeKey[keyCode] && km.getStatus() != 'textedit' && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+                        if (keymap.isSelectedNodeKey[keyCode] &&
+                            km.getStatus() != 'textedit' &&
+                            !orgEvt.ctrlKey &&
+                            !orgEvt.metaKey &&
+                            !orgEvt.shiftKey &&
+                            !orgEvt.altKey) {
 
                             //准备输入状态
                             var textShape = node.getTextShape();
@@ -162,16 +167,18 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 if (mouseDownStatus) {
                     if (!sel.collapsed) {
-
                         try {
                             receiver.updateRange(range);
                         } catch (error) {
                             console.log(error);
                         }
-
-                    } else
+                    } else {
                         sel.setShow();
-                } else {
+                    }
+
+                    if (browser.ipad) {
+                        receiver.container.focus();
+                    }
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
                     if (node) {
@@ -206,7 +213,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 oneTime = 0;
             },
             'textedit.beforemousemove': function(e) {
-                if (mouseDownStatus) {
+                //ipad下不做框选
+                if (mouseDownStatus && !browser.ipad) {
                     e.stopPropagationImmediately();
 
                     var offset = e.getPosition(this.getRenderContainer());
@@ -268,10 +276,10 @@ KityMinder.registerModule('TextEditModule', function() {
                 receiver.clear().setTextEditStatus(false);
                 km.setStatus('normal');
             },
-            "resize": function(e) {
+            'resize': function(e) {
                 sel.setHide();
             },
-            "execCommand": function(e) {
+            'execCommand': function(e) {
                 var cmds = {
                     'appendchildnode': 1,
                     'appendsiblingnode': 1,

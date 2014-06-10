@@ -18,12 +18,8 @@ KityMinder.registerLayout('default', kity.createClass({
             node = node.parent;
         }
         var mainIndex = node.getIndex();
-        return {
-            0: 'right',
-            1: 'right',
-            2: 'left',
-            3: 'left'
-        }[mainIndex] || (mainIndex % 2 ? 'right' : 'left');
+        var length = node.parent.children.length;
+        return mainIndex < length / 2 ? 'right' : 'left';
     },
 
     doLayoutRoot: function(root) {
