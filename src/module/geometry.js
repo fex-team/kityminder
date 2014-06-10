@@ -18,6 +18,8 @@ KityMinder.Geometry = (function() {
         box.height = box.bottom - box.top;
         box.x = box.left;
         box.y = box.top;
+        box.cx = box.x + box.width / 2;
+        box.cy = box.y + box.height / 2;
         return box;
     }
 

@@ -9,9 +9,14 @@ kity.extendClass(Minder, {
         root.minder = this;
     },
 
-    createNode: function(unknown) {
+    createNode: function(unknown, parent, index) {
         var node = new MinderNode(unknown);
+
+        if (parent) parent.insertChild(node, index);
         this.handelNodeCreate(node);
+        this.fire('nodecreate', {
+            node: node
+        });
         return node;
     },
 
@@ -19,6 +24,9 @@ kity.extendClass(Minder, {
         if (node.parent) {
             node.parent.removeChild(node);
             this.handelNodeRemove(node);
+            this.fire('noderemove', {
+                node: node
+            });
         }
     },
 

@@ -13,7 +13,8 @@ kity.extendClass(Minder, {
             right: [],
             top: [],
             bottom: [],
-            outline: []
+            outline: [],
+            outside: []
         };
 
         var i, name, type, module, moduleDeals,

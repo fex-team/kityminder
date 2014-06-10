@@ -68,9 +68,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * 获得节点的类型（root|main|sub）
      */
     getType: function(type) {
-        if (this.type) {
-            return this.type;
-        }
         this.type = ['root', 'main', 'sub'][Math.min(this.getLevel(), 2)];
         return this.type;
     },

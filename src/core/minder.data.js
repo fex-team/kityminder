@@ -43,12 +43,10 @@ function importNode(node, json, km) {
     }
 
     node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
-    node.render();
-    var childrenTreeData = json.children;
-    if (!childrenTreeData) return;
+
+    var childrenTreeData = json.children || [];
     for (var i = 0; i < childrenTreeData.length; i++) {
-        var childNode = km.createNode();
-        node.appendChild(childNode);
+        var childNode = km.createNode(null, node);
         importNode(childNode, childrenTreeData[i], km);
     }
     return node;
@@ -126,6 +124,9 @@ kity.extendClass(Minder, {
         }
 
         importNode(this._root, json, this);
+        this._root.preTraverse(function(node) {
+            node.render();
+        });
         this._root.layout();
 
         this.fire('beforeimport', params);

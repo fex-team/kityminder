@@ -1,7 +1,7 @@
 var GM = KityMinder.Geometry;
 
 // 矩形的变形动画定义
-var AreaAnimator = kity.createClass("AreaAnimator", {
+var AreaAnimator = kity.createClass('AreaAnimator', {
     base: kity.Animator,
     constructor: function(startArea, endArea) {
         startArea.opacity = 0;
@@ -18,26 +18,22 @@ var MoveToParentCommand = kity.createClass('MoveToParentCommand', {
     base: Command,
     execute: function(minder, nodes, parent) {
         var node;
-        if ((!parent.isExpanded()) && (parent.getChildren().length > 0) && (parent.getType() !== 'root')) {
-            minder.expandNode(parent);
-        }
         for (var i = nodes.length - 1; i >= 0; i--) {
             node = nodes[i];
-            if (node.getParent()) {
-                minder.removeNode([node]);
-                minder.appendChildNode(parent, node);
-                if (node.isExpanded() && node.getChildren().length !== 0) {
-                    minder.expandNode(node);
-                }
+            if (node.parent) {
+                node.parent.removeChild(node);
+                parent.appendChild(node);
+                node.render();
             }
         }
+        parent.expand();
         minder.select(nodes, true);
     }
 });
 
 
 function boxMapper(node) {
-    return node.getRenderContainer().getRenderBox('top');
+    return node.getLayoutBox();
 }
 
 // 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：
@@ -138,7 +134,7 @@ var DragBox = kity.createClass('DragBox', {
     _drawForDragMode: function() {
         this._text.setContent(this._dragSources.length + ' items');
         this._text.setPosition(this._startPosition.x, this._startPosition.y + 5);
-        this._minder.getPaper().addShape(this);
+        this._minder.getRenderContainer().addShape(this);
     },
     _shrink: function() {
         // 合并所有拖放源图形的矩形即可
@@ -238,6 +234,11 @@ var DragBox = kity.createClass('DragBox', {
         }
 
         var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
+        // var minder = this._minder;
+        // this._dragSources.forEach(function(source) {
+        //     source.setLayoutOffset(movement);
+        //     minder.layout();
+        // });
 
         this.setTranslate(movement);
 
@@ -258,7 +259,7 @@ var DragBox = kity.createClass('DragBox', {
 
 });
 
-KityMinder.registerModule("DragTree", function() {
+KityMinder.registerModule('DragTree', function() {
     var dragStartPosition, dragBox, dragTargets, dropTargets, dragTargetBoxes, dropTarget;
 
     return {
@@ -269,11 +270,11 @@ KityMinder.registerModule("DragTree", function() {
             mousedown: function(e) {
                 // 单选中根节点也不触发拖拽
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
-                    this._dragBox.dragStart(e.getPosition());
+                    this._dragBox.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
             'mousemove': function(e) {
-                this._dragBox.dragMove(e.getPosition());
+                this._dragBox.dragMove(e.getPosition(this.getRenderContainer()));
             },
             'mouseup': function(e) {
                 this._dragBox.dragEnd();

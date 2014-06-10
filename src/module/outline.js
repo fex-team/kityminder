@@ -1,6 +1,6 @@
 /* global Renderer: true */
 
-var wireframe = true;
+var wireframe = /wire/.test(window.location.href);
 
 KityMinder.registerModule('OutlineModule', function() {
     return {
@@ -9,12 +9,27 @@ KityMinder.registerModule('OutlineModule', function() {
                 base: Renderer,
 
                 create: function(node) {
-                    var outline = this.outline = new kity.Rect().setId(KityMinder.uuid('node_outline'));
-                    node.getRenderContainer().prependShape(outline);
+
+                    var outline = this.outline = new kity.Rect()
+                        .setId(KityMinder.uuid('node_outline'));
+
+                    var bg = this.bg = new kity.Rect()
+                        .setId(KityMinder.uuid('node_shadow'))
+                        .fill('black')
+                        .setOpacity(0.2);
+
+                    node.getRenderContainer()
+                        .prependShape(outline)
+                        .prependShape(bg);
 
                     if (wireframe) {
-                        var oxy = this.oxy = new kity.Path().stroke('white').setPathData('M0,-50L0,50M-50,0L50,0').setOpacity(0.5);
-                        var box = this.wireframe = new kity.Rect().stroke('lightgreen');
+                        var oxy = this.oxy = new kity.Path()
+                            .stroke('#f6f')
+                            .setPathData('M0,-50L0,50M-50,0L50,0');
+
+                        var box = this.wireframe = new kity.Rect()
+                            .stroke('lightgreen');
+
                         node.getRenderContainer().addShapes([oxy, box]);
                     }
                 },
@@ -39,8 +54,20 @@ KityMinder.registerModule('OutlineModule', function() {
                             node.getStyle('selected-background') :
                             node.getStyle('background'));
 
+                    if (node.getLevel() < 2) {
+                        this.bg
+                            .setVisible(true)
+                            .setPosition(outlineBox.x + 3, outlineBox.y + 4)
+                            .setSize(outlineBox.width, outlineBox.height)
+                            .setRadius(node.getStyle('radius'));
+                    } else {
+                        this.bg.setVisible(false);
+                    }
+
                     if (wireframe) {
-                        this.wireframe.setPosition(outlineBox.x, outlineBox.y).setSize(outlineBox.width, outlineBox.height);
+                        this.wireframe
+                            .setPosition(outlineBox.x, outlineBox.y)
+                            .setSize(outlineBox.width, outlineBox.height);
                     }
                     return outlineBox;
                 }

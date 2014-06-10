@@ -1,7 +1,17 @@
 /* global Layout:true */
-
+window.layoutSwitch = true;
 KityMinder.registerLayout('default', kity.createClass({
     base: Layout,
+
+    doLayout: function(node) {
+        var layout = this;
+
+        if (node.isLayoutRoot()) {
+            this.doLayoutRoot(node);
+        } else {
+            this.arrange(node, node.children, layout.getSide(node));
+        }
+    },
 
     getSide: function(node) {
         while (!node.parent.isLayoutRoot()) {
@@ -16,76 +26,85 @@ KityMinder.registerLayout('default', kity.createClass({
         }[mainIndex] || (mainIndex % 2 ? 'right' : 'left');
     },
 
-    doLayout: function(node) {
-        var layout = this;
+    doLayoutRoot: function(root) {
+        var mains = root.getChildren();
+        var group = {
+            left: [],
+            right: []
+        };
+        var _this = this;
 
-        function arrange(node, children, side) {
-            //if (!children.length) return;
+        mains.forEach(function(main) {
+            group[_this.getSide(main)].push(main);
+        });
 
-            var height = 0;
+        this.arrange(root, group.left, 'left');
+        this.arrange(root, group.right, 'right');
+    },
 
-            var childBoxes = children.map(function(node, index, children) {
-                var box = layout.getTreeBox([node]);
-                height += box.height;
-                if (index > 0) {
-                    height += children[index - 1].getStyle('margin-bottom');
-                    height += node.getStyle('margin-top');
-                }
-                return box;
-            });
+    arrange: function(parent, children, side) {
+        if (!children.length) return;
+        var _this = this;
 
-            var contentBox = node.getContentBox();
-            var x, y = -height / 2;
+        // children 所占的总树高
+        var totalTreeHeight = 0;
 
-            for (var i = 0; i < children.length; i++) {
+        // 计算每个 child 的树所占的矩形区域
+        var childTreeBoxes = children.map(function(node, index, children) {
+            var box = _this.getTreeBox([node]);
 
-                if (side == 'right') {
-                    x = contentBox.x + contentBox.width - children[i].getContentBox().x;
-                    x += node.getStyle('margin-right') + node.children[i].getStyle('margin-left');
-                } else {
-                    x = contentBox.x - children[i].getContentBox().width - children[i].getContentBox().x;
-                    x -= node.getStyle('margin-left') + node.children[i].getStyle('margin-right');
-                }
+            // 计算总树高，需要把竖直方向上的 margin 加入计算
+            totalTreeHeight += box.height;
 
-                y += childBoxes[i].height / 2;
-
-                if (i > 0) {
-                    y += children[i].getStyle('margin-top');
-                }
-
-                children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
-
-                y += childBoxes[i].height / 2 + children[i].getStyle('margin-bottom');
+            if (index > 0) {
+                totalTreeHeight += children[index - 1].getStyle('margin-bottom');
+                totalTreeHeight += node.getStyle('margin-top');
             }
 
-            var branchBox = layout.getBranchBox(children);
-            var dy = (branchBox.y + branchBox.height / 2) - (contentBox.y + contentBox.height / 2);
+            return box;
+        });
 
-            for (i = 0; i < children.length; i++) {
-                children[i].getLayoutTransform().translate(0, -dy);
+        var nodeContentBox = parent.getContentBox();
+        var i, x, y, child, childTreeBox, childContentBox;
+        var transform = new kity.Matrix();
+
+        y = -totalTreeHeight / 2;
+
+        for (i = 0; i < children.length; i++) {
+            child = children[i];
+            childTreeBox = childTreeBoxes[i];
+            childContentBox = child.getContentBox();
+
+            if (!childContentBox.height) continue;
+
+            // 水平方向上的布局
+            if (side == 'right') {
+                x = nodeContentBox.right - childContentBox.left;
+                x += parent.getStyle('margin-right') + child.getStyle('margin-left');
+            } else {
+                x = nodeContentBox.left - childContentBox.right;
+                x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
             }
 
+            // 竖直方向上的布局
+            y += childTreeBox.height / 2;
+
+            if (i > 0) {
+                y += children[i].getStyle('margin-top');
+            }
+
+            children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
+
+            y += childTreeBox.height / 2 + children[i].getStyle('margin-bottom');
         }
 
-        function layoutRoot(node) {
-            var mains = node.getChildren();
-            var group = {
-                left: [],
-                right: []
-            };
+        if (parent.isRoot()) {
+            var branchBox = this.getBranchBox(children);
+            var dy = branchBox.cy - nodeContentBox.cy;
 
-            mains.forEach(function(main) {
-                group[layout.getSide(main)].push(main);
+            children.forEach(function(child) {
+                child.getLayoutTransform().translate(0, -dy);
             });
-
-            arrange(node, group.left, 'left');
-            arrange(node, group.right, 'right');
-        }
-
-        if (node.isLayoutRoot()) {
-            layoutRoot(node);
-        } else {
-            arrange(node, node.children, layout.getSide(node));
         }
     }
 }));

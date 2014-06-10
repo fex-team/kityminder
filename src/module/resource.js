@@ -1,9 +1,9 @@
-KityMinder.registerModule('Resource', function () {
+KityMinder.registerModule('Resource', function() {
 
     /**
      * 自动使用的颜色序列
      */
-    var RESOURCE_COLOR_SERIES = [200, 51, 303, 75, 157, 0, 26, 254].map(function (h) {
+    var RESOURCE_COLOR_SERIES = [200, 51, 303, 75, 157, 0, 26, 254].map(function(h) {
         return kity.Color.createHSL(h, 100, 85);
     });
 
@@ -24,7 +24,7 @@ KityMinder.registerModule('Resource', function () {
          * @param {String} resource 资源名称
          * @return {Color}
          */
-        getResourceColor: function (resource) {
+        getResourceColor: function(resource) {
             var colorMapping = this._getResourceColorIndexMapping();
             var nextIndex;
 
@@ -43,7 +43,7 @@ KityMinder.registerModule('Resource', function () {
          *
          * @return {Array}
          */
-        getUsedResource: function () {
+        getUsedResource: function() {
             var mapping = this._getResourceColorIndexMapping();
             var used = [],
                 resource;
@@ -62,7 +62,7 @@ KityMinder.registerModule('Resource', function () {
          *
          * @return {int}
          */
-        _getNextResourceColorIndex: function () {
+        _getNextResourceColorIndex: function() {
             // 获取现有颜色映射
             //     resource => color_index
             var colorMapping = this._getResourceColorIndexMapping();
@@ -89,7 +89,7 @@ KityMinder.registerModule('Resource', function () {
 
         // 获取现有颜色映射
         //     resource => color_index
-        _getResourceColorIndexMapping: function () {
+        _getResourceColorIndexMapping: function() {
             return this._resourceColorMapping || (this._resourceColorMapping = {});
         }
 
@@ -116,29 +116,30 @@ KityMinder.registerModule('Resource', function () {
 
         base: Command,
 
-        execute: function (minder, resource) {
+        execute: function(minder, resource) {
             var nodes = minder.getSelectedNodes();
 
-            if (typeof (resource) == 'string') {
+            if (typeof(resource) == 'string') {
                 resource = [resource];
             }
 
-            nodes.forEach(function (node) {
-                node.setData('resource', resource);
-                minder.updateLayout(node);
+            nodes.forEach(function(node) {
+                node.setData('resource', resource).render();
             });
+
+            minder.layout(200);
         },
 
-        queryValue: function (minder) {
+        queryValue: function(minder) {
             var nodes = minder.getSelectedNodes();
             var resource = [];
 
-            nodes.forEach(function (node) {
+            nodes.forEach(function(node) {
                 var nodeResource = node.getData('resource');
 
                 if (!nodeResource) return;
 
-                nodeResource.forEach(function (name) {
+                nodeResource.forEach(function(name) {
                     if (!~resource.indexOf(name)) {
                         resource.push(name);
                     }
@@ -148,7 +149,7 @@ KityMinder.registerModule('Resource', function () {
             return resource;
         },
 
-        queryState: function () {
+        queryState: function() {
             return 0;
         }
     });
@@ -161,7 +162,7 @@ KityMinder.registerModule('Resource', function () {
     var ResourceOverlay = kity.createClass('ResourceOverlay', {
         base: kity.Group,
 
-        constructor: function (container, resourceName, color) {
+        constructor: function(container, resourceName, color) {
             this.callBase();
 
             var paddingX = 8,
@@ -203,7 +204,7 @@ KityMinder.registerModule('Resource', function () {
         },
 
         events: {
-            'RenderNodeRight': function (e) {
+            'RenderNodeRight': function(e) {
                 var node = e.node;
                 var resource = node.getData('resource');
                 var content = node.getContRc();
@@ -211,7 +212,7 @@ KityMinder.registerModule('Resource', function () {
                 var minder = this;
 
                 if (resource && resource.length) {
-                    resource.forEach(function (name) {
+                    resource.forEach(function(name) {
                         var overlay = new ResourceOverlay(content, name, minder.getResourceColor(name));
                         var box = content.getBoundaryBox();
                         overlay.setTranslate(box.width + margin, 0);

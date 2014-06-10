@@ -75,6 +75,29 @@ kity.extendClass(MinderNode, {
         return this._layoutTransform || new kity.Matrix();
     },
 
+    getLayoutBox: function() {
+        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        return matrix.transformBox(this.getContentBox());
+    },
+
+    getLayoutPoint: function() {
+        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        return matrix.transformPoint(new kity.Point());
+    },
+
+    getLayoutOffset: function() {
+        var data = this.getData('layoutOffset');
+        if (data) return new kity.Point(data.x, data.y);
+        return new kity.Point();
+    },
+
+    setLayoutOffset: function(p) {
+        this.setData('layoutOffset', {
+            x: p.x,
+            y: p.y
+        });
+    },
+
     getLayoutRoot: function() {
         if (this.isLayoutRoot()) {
             return this;
@@ -129,12 +152,13 @@ kity.extendClass(Minder, {
 
     applyLayoutResult: function(duration) {
         var root = this.getRoot();
+        var me = this;
 
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);
             var lastMatrix = node._lastLayoutTransform || new kity.Matrix();
 
-            if (!matrix.equals(lastMatrix)) {
+            if (!matrix.equals(lastMatrix) || true) {
 
                 // 如果当前有动画，停止动画
                 if (node._layoutTimeline) {
@@ -144,15 +168,23 @@ kity.extendClass(Minder, {
 
                 // 如果要求以动画形式来更新，创建动画
                 if (duration > 0) {
-                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, function(rc, value) {
-                        rc.setMatrix(node._lastLayoutTransform = value);
-                    }).start(node.getRenderContainer(), duration, 'ease');
+                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, function(node, value) {
+                        node.getRenderContainer().setMatrix(node._lastLayoutTransform = value);
+                        me.fire('layoutapply', {
+                            node: node,
+                            matrix: value
+                        });
+                    }).start(node, duration, 'ease');
                 }
 
                 // 否则直接更新
                 else {
                     node.getRenderContainer().setMatrix(matrix);
                     node._lastLayoutTransform = matrix;
+                    me.fire('layoutapply', {
+                        node: node,
+                        matrix: matrix
+                    });
                 }
             }
 
@@ -162,6 +194,7 @@ kity.extendClass(Minder, {
         }
 
         apply(root, new kity.Matrix());
+        this.fire('layout');
         return this;
     },
 });

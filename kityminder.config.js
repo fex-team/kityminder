@@ -1,4 +1,4 @@
-(function () {
+(function() {
     function getKMBasePath(docUrl, confUrl) {
 
         return getBasePath(docUrl || self.document.URL || self.location.href, confUrl || getConfigFilePath());
@@ -63,7 +63,7 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | switchlayout | hyperlink unhyperlink image removeimage | markers resource | node | help'
+            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink image removeimage | markers resource | node | help'
         ]
         //只读模式，默认是false
         //readOnly: true
