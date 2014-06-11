@@ -56,7 +56,6 @@
             'module/nodetext.js',
             'module/hyperlink.js',
             'module/expand.js',
-            'module/connect.js',
             'ui/jquery-ui-1.10.4.custom.min.js',
             'ui/widget.js',
             'ui/button.js',
