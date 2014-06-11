@@ -89,6 +89,7 @@ kity.extendClass(Minder, {
         }
 
         if (!protocal) {
+            this.fire('unknownprotocal');
             throw new Error('Unsupported protocal: ' + protocalName);
         }
 
@@ -104,7 +105,7 @@ kity.extendClass(Minder, {
 
         json = params.json || (params.json = protocal.decode(local));
 
-        if (typeof json === 'object' && 'then' in json) {
+        if (typeof json === 'object' && 'then' in json){
             var self = this;
             json.then(local, function(data) {
                 self._doImport(data, params);
@@ -116,28 +117,32 @@ kity.extendClass(Minder, {
     },
 
     _doImport: function(json, params) {
-        this._fire(new MinderEvent('preimport', params, false));
+        try{
+            this._fire(new MinderEvent('preimport', params, false));
 
-        // 删除当前所有节点
-        while (this._root.getChildren().length) {
-            this.removeNode(this._root.getChildren()[0]);
+            // 删除当前所有节点
+            while (this._root.getChildren().length) {
+                this.removeNode(this._root.getChildren()[0]);
+            }
+
+            importNode(this._root, json, this);
+            this._root.preTraverse(function(node) {
+                node.render();
+            });
+            this._root.layout();
+
+            this.fire('beforeimport', params);
+            this.fire('import', params);
+
+            this._firePharse({
+                type: 'contentchange'
+            });
+            this._firePharse({
+                type: 'interactchange'
+            });
+        }catch(e){
+            this.fire('rendererror');
         }
-
-        importNode(this._root, json, this);
-        this._root.preTraverse(function(node) {
-            node.render();
-        });
-        this._root.layout();
-
-        this.fire('beforeimport', params);
-        this.fire('import', params);
-
-        this._firePharse({
-            type: 'contentchange'
-        });
-        this._firePharse({
-            type: 'interactchange'
-        });
     }
 
 });
