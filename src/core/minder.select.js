@@ -3,8 +3,19 @@ kity.extendClass(Minder, {
     _initSelection: function() {
         this._selectedNodes = [];
     },
-    renderChangedSelection: function(changed) {
+    renderChangedSelection: function(last) {
+        var current = this.getSelectedNodes();
+        var changed = [];
         var i = 0;
+
+        current.forEach(function(node) {
+            if (last.indexOf(node) == -1) changed.push(node);
+        });
+
+        last.forEach(function(node) {
+            if (current.indexOf(node) == -1) changed.push(node);
+        });
+
         while (i < changed.length) changed[i++].render();
     },
     getSelectedNodes: function() {
@@ -16,25 +27,27 @@ kity.extendClass(Minder, {
     },
     removeAllSelectedNodes: function() {
         var me = this;
-        var changed = this._selectedNodes;
+        var last = this._selectedNodes.splice(0);
         this._selectedNodes = [];
-        this.renderChangedSelection(changed);
+        this.renderChangedSelection(last);
         return this.fire('selectionclear');
     },
     removeSelectedNodes: function(nodes) {
         var me = this;
+        var last = this._selectedNodes.slice(0);
         nodes = Utils.isArray(nodes) ? nodes : [nodes];
         Utils.each(nodes, function(i, n) {
             var index;
             if ((index = me._selectedNodes.indexOf(n)) === -1) return;
             me._selectedNodes.splice(index, 1);
         });
-        this.renderChangedSelection(nodes);
+        this.renderChangedSelection(last);
         return this;
     },
     select: function(nodes, isSingleSelect) {
+        var lastSelect = this.getSelectedNodes().slice(0);
         if (isSingleSelect) {
-            this.removeAllSelectedNodes();
+            this._selectedNodes = [];
         }
         var me = this;
         nodes = Utils.isArray(nodes) ? nodes : [nodes];
@@ -42,7 +55,7 @@ kity.extendClass(Minder, {
             if (me._selectedNodes.indexOf(n) !== -1) return;
             me._selectedNodes.push(n);
         });
-        this.renderChangedSelection(nodes);
+        this.renderChangedSelection(lastSelect);
         return this;
     },
 

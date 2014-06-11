@@ -3,7 +3,7 @@ KityMinder.registerModule('Resource', function() {
     /**
      * 自动使用的颜色序列
      */
-    var RESOURCE_COLOR_SERIES = [200, 51, 303, 75, 157, 0, 26, 254].map(function(h) {
+    var RESOURCE_COLOR_SERIES = [51, 303, 75, 200, 157, 0, 26, 254].map(function(h) {
         return kity.Color.createHSL(h, 100, 85);
     });
 
@@ -167,7 +167,7 @@ KityMinder.registerModule('Resource', function() {
 
             var text, rect;
 
-            rect = this.rect = new kity.Rect();
+            rect = this.rect = new kity.Rect().setRadius(4);
 
             text = this.text = new kity.Text()
                 .setFontSize(12)
@@ -182,27 +182,30 @@ KityMinder.registerModule('Resource', function() {
                 borderRadius = 4;
             var text, box, rect;
 
-            text = this.text
-                .setX(paddingX)
-                .setContent(resourceName)
-                .fill(color.dec('l', 70));
+            text = this.text;
 
-            box = text.getBoundaryBox();
+            if (resourceName == this.lastResourceName) {
 
+                box = this.lastBox;
+
+            } else {
+
+                text.setContent(resourceName);
+
+                box = text.getBoundaryBox();
+                this.lastResourceName = resourceName;
+                this.lastBox = box;
+
+            }
+
+            text.setX(paddingX).fill(color.dec('l', 70));
+
+            rect = this.rect;
             rect.setPosition(0, box.y - paddingY);
-            rect.setSize(box.width + paddingX * 2, box.height + paddingY * 2);
-
-            rect = new kity.Rect(
-                box.width + paddingX * 2,
-                box.height + paddingY * 2,
-                box.x - paddingX,
-                box.y - paddingY,
-                borderRadius);
-
+            rect.setSize(
+                this.width = box.width + paddingX * 2,
+                this.height = box.height + paddingY * 2);
             rect.fill(color);
-
-            this.addShape(rect);
-            rect.bringRear();
         }
     });
 
@@ -213,36 +216,55 @@ KityMinder.registerModule('Resource', function() {
         base: KityMinder.Renderer,
 
         create: function(node) {
-            this.container = new kity.Group();
             this.overlays = [];
+            return new kity.Group();
         },
 
-        update: function(node) {
+        shouldRender: function(node) {
+            return node.getData('resource') && node.getData('resource').length;
+        },
 
+        update: function(container, node, box) {
+            var spaceRight = node.getStyle('space-right');
+
+            var overlays = this.overlays;
+            var resource = node.getData('resource');
+            var minder = node.getMinder();
+            var i, overlay, x;
+
+            x = 0;
+            for (i = 0; i < resource.length; i++) {
+                x += spaceRight;
+
+                overlay = overlays[i];
+                if (!overlay) {
+                    overlay = new ResourceOverlay();
+                    overlays.push(overlay);
+                    container.addShape(overlay);
+                }
+                overlay.setVisible(true);
+                overlay.setValue(resource[i], minder.getResourceColor(resource[i]));
+                overlay.setTranslate(x, 0);
+
+                x += overlay.width;
+            }
+
+            while ((overlay = overlays[i++])) overlay.setVisible(false);
+
+            container.setTranslate(box.right, 0);
+
+            return {
+                x: box.right,
+                y: -overlays[0].height / 2,
+                width: x,
+                height: overlays[0].height
+            };
         }
     });
 
     return {
         commands: {
             'resource': ResourceCommand
-        },
-
-        events: {
-            'RenderNodeRight': function(e) {
-                var node = e.node;
-                var resource = node.getData('resource');
-                var content = node.getContRc();
-                var margin = 5;
-                var minder = this;
-
-                if (resource && resource.length) {
-                    resource.forEach(function(name) {
-                        var overlay = new ResourceOverlay(content, name, minder.getResourceColor(name));
-                        var box = content.getBoundaryBox();
-                        overlay.setTranslate(box.width + margin, 0);
-                    });
-                }
-            }
         },
 
         renderers: {

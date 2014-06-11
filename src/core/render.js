@@ -36,7 +36,7 @@ kity.extendClass(Minder, {
         var registered = this._renderers;
         var renderers = [];
 
-        ['center', 'left', 'top', 'bottom', 'outline', 'outside'].forEach(function(section) {
+        ['center', 'left', 'right', 'top', 'bottom', 'outline', 'outside'].forEach(function(section) {
             if (registered['before' + section]) {
                 renderers = renderers.concat(registered['before' + section]);
             }
