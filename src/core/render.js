@@ -80,7 +80,7 @@ kity.extendClass(Minder, {
                     if (renderer.bringToBack) {
                         node.getRenderContainer().prependShape(renderer.getRenderShape());
                     } else {
-                        node.getRenderContainer().prependShape(renderer.getRenderShape());
+                        node.getRenderContainer().appendShape(renderer.getRenderShape());
                     }
                 }
 
