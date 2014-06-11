@@ -100,14 +100,18 @@ KityMinder.registerProtocal( 'xmind', function () {
                 then : function(local, callback){
 
                     getEntries( local, function( entries ) {
+                        var hasMainDoc = false;
                         entries.forEach(function( entry ) {
                             if(entry.filename == 'content.xml'){
+                                hasMainDoc = true;
                                 entry.getData(new zip.TextWriter(), function(text) {
                                     var km = xml2km($.parseXML(text));
                                     callback && callback( km );
                                 });
                             }
                         });
+
+                        !hasMainDoc && alert('找不到文件主文档，请检查文件是否是合法xmind格式文件');
                     });
                 }
             };

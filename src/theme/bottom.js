@@ -4,7 +4,7 @@ KityMinder.registerTheme('bottom', {
     'root-stroke': 'none',
     'root-font-size': 24,
     'root-padding': [15, 25],
-    'root-margin': 100,
+    'root-margin': 0,
     'root-radius': 30,
     'root-space': 10,
 
