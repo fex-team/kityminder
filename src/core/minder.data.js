@@ -109,11 +109,9 @@ kity.extendClass(Minder, {
             var self = this;
             json.then(local, function(data) {
                 self._doImport(data, params);
-                clearTimeout( this.parseMonitor );
             });
         } else {
             this._doImport(json, params);
-            clearTimeout( this.parseMonitor );
         }
         return this;
     },
