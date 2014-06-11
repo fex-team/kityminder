@@ -67,7 +67,7 @@ KityMinder.registerModule( "hyperlink", function () {
             right: kity.createClass('hyperlinkrender', {
                 base: KityMinder.Renderer,
 
-                create: function(node) {
+                create: function() {
 
                     var link = new kity.HyperLink();
                     var linkshape = new kity.Path();
