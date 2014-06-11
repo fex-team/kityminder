@@ -1,39 +1,37 @@
 /* global Renderer: true */
 
-kity.extendClass(MinderNode, {
-    getTextShape: function() {
-        return this._textShape;
+var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
+    base: Renderer,
+
+    create: function() {
+        return new kity.Text()
+            .setId(KityMinder.uuid('node_text'))
+            .setVerticalAlign('middle');
+    },
+
+    update: function(text, node) {
+        this.setTextStyle(node, text.setContent(node.getText()));
+        return text.getBoundaryBox();
+    },
+
+    setTextStyle: function(node, text) {
+        var hooks = TextRenderer._styleHooks;
+        hooks.forEach(function(hook) {
+            hook(node, text);
+        });
+    }
+});
+
+utils.extend(TextRenderer, {
+    _styleHooks: [],
+
+    registerStyleHook: function(fn) {
+        TextRenderer._styleHooks.push(fn);
     }
 });
 
 KityMinder.registerModule('text', {
     'renderers': {
-        center: kity.createClass('TextRenderer', {
-            base: Renderer,
-            create: function(node) {
-                var textShape = new kity.Text().setId(KityMinder.uuid('node_text'));
-
-                node.getRenderContainer().addShape(textShape);
-
-                node._textShape = textShape;
-            },
-            update: function(node) {
-                function dataOrStyle(name) {
-                    return node.getData(name) || node.getStyle(name);
-                }
-                return node.getTextShape()
-                    .setContent(node.getText())
-                    .setFont({
-                        family: dataOrStyle('font-family'),
-                        size: dataOrStyle('font-size'),
-                        weight: dataOrStyle('font-weight'),
-                        style: dataOrStyle('font-style')
-                    })
-                    .setVerticalAlign('middle')
-                    .fill(node.getData('color') || node.getStyle('color'))
-                    .getBoundaryBox();
-
-            }
-        })
+        center: TextRenderer
     }
 });

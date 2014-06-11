@@ -77,23 +77,19 @@ KityMinder.registerModule('ProgressModule', function() {
                 base: KityMinder.Renderer,
 
                 create: function(node) {
-                    this.progress = new ProgressIcon();
-                    node.getRenderContainer().addShape(this.progress);
+                    return new ProgressIcon();
                 },
 
-                update: function(node) {
+                shouldRender: function(node) {
+                    return node.getData(PROGRESS_DATA);
+                },
+
+                update: function(icon, node, box) {
                     var data = node.getData(PROGRESS_DATA);
                     var spaceLeft = node.getStyle('space-left');
-                    var icon = this.progress;
-                    var box = node.getContentBox();
                     var x, y;
 
-                    if (!data) {
-                        icon.setVisible(false);
-                        return null;
-                    }
-
-                    icon.setVisible(true).setValue(data);
+                    icon.setValue(data);
 
                     x = box.left - icon.width - spaceLeft;
                     y = -icon.height / 2;

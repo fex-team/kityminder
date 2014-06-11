@@ -107,7 +107,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.setContainerStyle();
             me.minderNode.render().layout();
 
-            me.textShape = me.minderNode.getTextShape();
+            me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
             if (text.length === 0) {
                 me.textShape.setOpacity(0);
             }

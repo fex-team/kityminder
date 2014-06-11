@@ -20,7 +20,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
     km.textEditNode = function(node) {
 
-        var textShape = node.getTextShape();
+        var textShape = node.getRenderer('TextRenderer').getRenderShape();
         this.setStatus('textedit');
         sel.setHide();
         sel.setStartOffset(0);
@@ -72,14 +72,14 @@ KityMinder.registerModule('TextEditModule', function() {
                     km.setStatus('normal');
                 }
                 if (node) {
-                    var textShape = node.getTextShape();
+                    var textShape = node.getRenderer('TextRenderer').getRenderShape();
                     textShape.setStyle('cursor', 'default');
 
                     if (this.isSingleSelect() && node.isSelected()) { // && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
                         sel.setSelectionShowStatus(true);
-                        node.getTextShape().setStyle('cursor', 'text');
+                        node.getRenderer('TextRenderer').getRenderShape().setStyle('cursor', 'text');
                         km.setStatus('textedit');
                         receiver.setTextEditStatus(true)
                             .setSelection(sel)
@@ -140,7 +140,7 @@ KityMinder.registerModule('TextEditModule', function() {
                             !orgEvt.altKey) {
 
                             //准备输入状态
-                            var textShape = node.getTextShape();
+                            var textShape = node.getRenderer('TextRenderer').getRenderShape();
 
                             sel.setHide();
                             sel.setStartOffset(0);
@@ -184,7 +184,7 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (node) {
                         if (this.isSingleSelect() && node.isSelected()) {
                             //准备输入状态
-                            var textShape = node.getTextShape();
+                            var textShape = node.getRenderer('TextRenderer').getRenderShape();
 
                             sel.setHide();
                             sel.setStartOffset(0);
@@ -247,7 +247,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'restoreScene': function() {
                 var node = this.getSelectedNode();
                 if (node && this.isSingleSelect()) {
-                    var textShape = node.getTextShape();
+                    var textShape = node.getRenderer('TextRenderer').getRenderShape();
                     sel.setHide();
                     sel.setStartOffset(0);
                     sel.setEndOffset(textShape.getContent().length);
@@ -292,10 +292,10 @@ KityMinder.registerModule('TextEditModule', function() {
                         return;
                     }
 
-                    var textShape = node.getTextShape();
+                    var textShape = node.getRenderer('TextRenderer').getRenderShape();
 
                     textShape.setStyle('cursor', 'default');
-                    node.getTextShape().setStyle('cursor', 'text');
+                    node.getRenderer('TextRenderer').getRenderShape().setStyle('cursor', 'text');
                     km.setStatus('textedit');
                     receiver.setTextEditStatus(true)
                         .setSelection(sel)

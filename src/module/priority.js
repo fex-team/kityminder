@@ -84,23 +84,19 @@ KityMinder.registerModule('PriorityModule', function() {
                 base: KityMinder.Renderer,
 
                 create: function(node) {
-                    this.priority = new PriorityIcon();
-                    node.getRenderContainer().addShape(this.priority);
+                    return new PriorityIcon();
                 },
 
-                update: function(node, box) {
+                shouldRender: function(node) {
+                    return node.getData(PRIORITY_DATA);
+                },
+
+                update: function(icon, node, box) {
                     var data = node.getData(PRIORITY_DATA);
-                    var spaceLeft = node.getStyle('space-left');
-                    var icon = this.priority;
-                    var x, y;
+                    var spaceLeft = node.getStyle('space-left'),
+                        x, y;
 
-                    if (!data) {
-                        icon.setVisible(false);
-                        return null;
-                    }
-
-                    icon.setVisible(true).setValue(data);
-
+                    icon.setValue(data);
                     x = box.left - icon.width - spaceLeft;
                     y = -icon.height / 2;
 

@@ -1,5 +1,16 @@
 KityMinder.registerModule('basestylemodule', function() {
     var km = this;
+
+    function getNodeDataOrStyle(node, name) {
+        return node.getData(name) || node.getStyle(name);
+    }
+
+    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
+        text.setFont({
+            weight: getNodeDataOrStyle(node, 'font-weight'),
+            style: getNodeDataOrStyle(node, 'font-style')
+        });
+    });
     return {
         'commands': {
             'bold': kity.createClass('boldCommand', {

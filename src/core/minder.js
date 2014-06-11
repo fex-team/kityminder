@@ -2,6 +2,7 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
     constructor: function(options) {
         this._options = Utils.extend(window.KITYMINDER_CONFIG || {}, options);
         this.setDefaultOptions(KM.defaultOptions);
+
         this._initEvents();
         this._initMinder();
         this._initSelection();

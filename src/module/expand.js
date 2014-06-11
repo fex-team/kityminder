@@ -177,7 +177,7 @@ KityMinder.registerModule('Expand', function() {
         }
     });
 
-    var ExpanderRenderer = kity.createClass('Expander', {
+    var ExpanderRenderer = kity.createClass('ExpanderRenderer', {
         base: Renderer,
 
         create: function(node) {
@@ -186,15 +186,20 @@ KityMinder.registerModule('Expand', function() {
             node.getRenderContainer().addShape(this.expander);
             node.expanderRenderer = this;
             this.node = node;
+            return this.expander;
         },
 
-        update: function(node) {
+        shouldRender: function(node) {
+            return !node.isRoot();
+        },
+
+        update: function(expander, node, box) {
             if (!node.parent) return;
 
             var visible = node.parent.isExpanded();
             node.getRenderContainer().setVisible(visible);
 
-            this.expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
+            expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
             var x, y;
 
@@ -222,8 +227,8 @@ KityMinder.registerModule('Expand', function() {
         },
         events: {
             'layoutapply': function(e) {
-                var r = e.node.getRenderer(ExpanderRenderer);
-                r.update(e.node);
+                var r = e.node.getRenderer('ExpanderRenderer');
+                r.update(r.getRenderShape(), e.node);
             }
         },
         renderers: {

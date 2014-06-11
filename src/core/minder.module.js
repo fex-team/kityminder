@@ -7,15 +7,7 @@ kity.extendClass(Minder, {
         this._commands = {};
         this._query = {};
         this._modules = {};
-        this._renderers = {
-            center: [],
-            left: [],
-            right: [],
-            top: [],
-            bottom: [],
-            outline: [],
-            outside: []
-        };
+        this._renderers = {};
 
         var i, name, type, module, moduleDeals,
             dealCommands, dealEvents, dealRenderers;
@@ -59,8 +51,7 @@ kity.extendClass(Minder, {
             if (dealRenderers) {
 
                 for (type in dealRenderers) {
-
-                    if (!(type in this._renderers)) continue;
+                    this._renderers[type] = this._renderers[type] || [];
 
                     if (Utils.isArray(dealRenderers[type])) {
                         this._renderers[type] = this._renderers[type].concat(dealRenderers[type]);

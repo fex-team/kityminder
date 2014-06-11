@@ -9,18 +9,17 @@ KityMinder.registerModule('OutlineModule', function() {
                 base: Renderer,
 
                 create: function(node) {
+                    var group = new kity.Group();
 
                     var outline = this.outline = new kity.Rect()
                         .setId(KityMinder.uuid('node_outline'));
 
-                    var bg = this.bg = new kity.Rect()
+                    var shadow = this.shadow = new kity.Rect()
                         .setId(KityMinder.uuid('node_shadow'))
                         .fill('black')
                         .setOpacity(0.2);
 
-                    node.getRenderContainer()
-                        .prependShape(outline)
-                        .prependShape(bg);
+                    group.addShapes([shadow, outline]);
 
                     if (wireframe) {
                         var oxy = this.oxy = new kity.Path()
@@ -30,22 +29,28 @@ KityMinder.registerModule('OutlineModule', function() {
                         var box = this.wireframe = new kity.Rect()
                             .stroke('lightgreen');
 
-                        node.getRenderContainer().addShapes([oxy, box]);
+                        group.addShapes([oxy, box]);
                     }
+
+                    this.bringToBack = true;
+                    return group;
                 },
 
-                update: function(node) {
+                update: function(created, node) {
                     var contentBox = node.getContentBox();
+
                     var paddingLeft = node.getStyle('padding-left'),
                         paddingRight = node.getStyle('padding-right'),
                         paddingTop = node.getStyle('padding-top'),
                         paddingBottom = node.getStyle('padding-bottom');
+
                     var outlineBox = {
                         x: contentBox.x - paddingLeft,
                         y: contentBox.y - paddingTop,
                         width: contentBox.width + paddingLeft + paddingRight,
                         height: contentBox.height + paddingTop + paddingBottom
                     };
+
                     this.outline
                         .setPosition(outlineBox.x, outlineBox.y)
                         .setSize(outlineBox.width, outlineBox.height)
@@ -55,13 +60,13 @@ KityMinder.registerModule('OutlineModule', function() {
                             node.getStyle('background'));
 
                     if (node.getLevel() < 2) {
-                        this.bg
+                        this.shadow
                             .setVisible(true)
                             .setPosition(outlineBox.x + 3, outlineBox.y + 4)
                             .setSize(outlineBox.width, outlineBox.height)
                             .setRadius(node.getStyle('radius'));
                     } else {
-                        this.bg.setVisible(false);
+                        this.shadow.setVisible(false);
                     }
 
                     if (wireframe) {

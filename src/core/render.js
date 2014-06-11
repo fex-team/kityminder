@@ -7,8 +7,20 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
         throw new Error('Not implement: Renderer.create()');
     },
 
+    shouldRender: function() {
+        return true;
+    },
+
     update: function() {
         throw new Error('Not implement: Renderer.update()');
+    },
+
+    getRenderShape: function() {
+        return this._renderShape || null;
+    },
+
+    setRenderShape: function(shape) {
+        this._renderShape = shape;
     }
 });
 
@@ -23,42 +35,73 @@ kity.extendClass(Minder, {
     _createRendererForNode: function(node) {
         var registered = this._renderers;
         var renderers = [];
-        renderers = renderers.concat(registered.center);
-        renderers = renderers.concat(registered.left);
-        renderers = renderers.concat(registered.right);
-        renderers = renderers.concat(registered.top);
-        renderers = renderers.concat(registered.bottom);
-        renderers = renderers.concat(registered.outline);
-        renderers = renderers.concat(registered.outside);
+
+        ['center', 'left', 'top', 'bottom', 'outline', 'outside'].forEach(function(section) {
+            if (registered['before' + section]) {
+                renderers = renderers.concat(registered['before' + section]);
+            }
+            if (registered[section]) {
+                renderers = renderers.concat(registered[section]);
+            }
+            if (registered['after' + section]) {
+                renderers = renderers.concat(registered['after' + section]);
+            }
+        });
 
         node._renderers = renderers.map(function(Renderer) {
-            var renderer = new Renderer(node);
-            renderer.create(node);
-            return renderer;
+            return new Renderer(node);
         });
     },
 
     renderNode: function(node) {
-        var rendererClasses = this._renderers,
-            g = KityMinder.Geometry,
-            contentBox = node._contentBox = g.wrapBox({
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0
-            });
-        var i, latestBox;
+        var rendererClasses = this._renderers;
+        var g = KityMinder.Geometry;
+        var i, latestBox, renderer;
 
         if (!node._renderers) {
             this._createRendererForNode(node);
         }
 
-        for (i = 0; i < node._renderers.length; i++) {
-            latestBox = node._renderers[i].update(node, contentBox);
-            if (latestBox) {
-                node._contentBox = contentBox = g.mergeBox(contentBox, latestBox);
+        node._contentBox = g.wrapBox({
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        });
+
+        node._renderers.forEach(function(renderer) {
+
+            // 判断当前上下文是否应该渲染
+            if (renderer.shouldRender(node)) {
+
+                // 应该渲染，但是渲染图形没创建过，需要创建
+                if (!renderer.getRenderShape()) {
+                    renderer.setRenderShape(renderer.create(node));
+                    if (renderer.bringToBack) {
+                        node.getRenderContainer().prependShape(renderer.getRenderShape());
+                    } else {
+                        node.getRenderContainer().prependShape(renderer.getRenderShape());
+                    }
+                }
+
+                // 强制让渲染图形显示
+                renderer.getRenderShape().setVisible(true);
+
+                // 更新渲染图形
+                latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+
+                // 合并渲染区域
+                if (latestBox) {
+                    node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                }
             }
-        }
+
+            // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+            else if (renderer.getRenderShape()) {
+                renderer.getRenderShape().setVisible(false);
+            }
+
+        });
 
         this.fire('noderender', {
             node: node
@@ -74,7 +117,7 @@ kity.extendClass(MinderNode, {
     getRenderer: function(type) {
         var rs = this._renderers;
         for (var i = 0; i < rs.length; i++) {
-            if (rs[i] instanceof type) return rs[i];
+            if (rs[i].getType() == type) return rs[i];
         }
         return null;
     },

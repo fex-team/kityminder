@@ -1,4 +1,15 @@
 KityMinder.registerModule("fontmodule", function() {
+    function getNodeDataOrStyle(node, name) {
+        return node.getData(name) || node.getStyle(name);
+    }
+
+    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
+        text.fill(getNodeDataOrStyle(node, 'color'));
+        text.setFont({
+            family: getNodeDataOrStyle(node, 'font-family'),
+            size: getNodeDataOrStyle(node, 'font-size')
+        });
+    });
 
     return {
         defaultOptions: {
