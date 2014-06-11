@@ -34,7 +34,7 @@ KityMinder.registerModule('Resource', function() {
                 colorMapping[resource] = nextIndex;
             }
 
-            // 资源过多，找不到可用索引颜色，统一返回白色åå
+            // 资源过多，找不到可用索引颜色，统一返回白色
             return RESOURCE_COLOR_SERIES[colorMapping[resource]] || RESOURCE_COLOR_OVERFLOW;
         },
 
@@ -162,26 +162,35 @@ KityMinder.registerModule('Resource', function() {
     var ResourceOverlay = kity.createClass('ResourceOverlay', {
         base: kity.Group,
 
-        constructor: function(container, resourceName, color) {
+        constructor: function() {
             this.callBase();
 
+            var text, rect;
+
+            rect = this.rect = new kity.Rect();
+
+            text = this.text = new kity.Text()
+                .setFontSize(12)
+                .setVerticalAlign('middle');
+
+            this.addShapes([rect, text]);
+        },
+
+        setValue: function(resourceName, color) {
             var paddingX = 8,
                 paddingY = 4,
                 borderRadius = 4;
             var text, box, rect;
 
-            container.addShape(this);
-
-            text = new kity.Text()
-                .setContent(resourceName)
-                .setFontSize(12)
-                .setVerticalAlign('middle')
+            text = this.text
                 .setX(paddingX)
+                .setContent(resourceName)
                 .fill(color.dec('l', 70));
 
-            this.addShape(text);
-
             box = text.getBoundaryBox();
+
+            rect.setPosition(0, box.y - paddingY);
+            rect.setSize(box.width + paddingX * 2, box.height + paddingY * 2);
 
             rect = new kity.Rect(
                 box.width + paddingX * 2,
@@ -194,6 +203,21 @@ KityMinder.registerModule('Resource', function() {
 
             this.addShape(rect);
             rect.bringRear();
+        }
+    });
+
+    /**
+     * @class 资源渲染器
+     */
+    var ResourceRenderer = kity.createClass('ResourceRenderer', {
+        base: KityMinder.Renderer,
+
+        create: function(node) {
+            this.container = new kity.Group();
+            this.overlays = [];
+        },
+
+        update: function(node) {
 
         }
     });
@@ -219,6 +243,10 @@ KityMinder.registerModule('Resource', function() {
                     });
                 }
             }
+        },
+
+        renderers: {
+            right: ResourceRenderer
         }
     };
 });
