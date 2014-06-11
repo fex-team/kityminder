@@ -44,13 +44,26 @@ KityMinder.registerLayout('bottom', kity.createClass({
                 if (!childContentBox.width) continue;
                 //水平方向上的布局
                 x += childTreeBox.width / 2;
-                if (i > 1) {
+                if (i > 0) {
                     x += children[i].getStyle('margin-left');
                 }
                 y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
                 children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
                 x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
+                child.setLayoutVector(new kity.Vector(childContentBox.cx, childContentBox.bottom));
             }
         }
     }
 }));
+
+KityMinder.registerConnectProvider('bottom', function(node, parent) {
+    var box = node.getLayoutBox(),
+        pBox = parent.getLayoutBox();
+    var abs = Math.abs;
+    var pathData = [];
+    pathData.push('M', new kity.Point(pBox.cx, pBox.bottom));
+    pathData.push('L', new kity.Point(pBox.cx, pBox.bottom + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(box.cx, pBox.bottom + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(box.cx, box.top));
+    return pathData;
+});
