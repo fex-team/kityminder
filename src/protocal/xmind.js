@@ -29,6 +29,13 @@ KityMinder.registerProtocal( 'xmind', function () {
         ,'task-7oct'    : null
     };
 
+    function getAttachedNode( arr ){
+        for (var i = 0; i < arr.length; i++) {
+            if( arr[ i ].type == "attached" )
+                return arr[ i ]
+        }
+    }
+
     function processTopic(topic, obj){
 
         //处理文本
@@ -54,8 +61,9 @@ KityMinder.registerProtocal( 'xmind', function () {
         }
 
         //处理子节点
-        if( topic.children && topic.children.topics && topic.children.topics.topic ){
-            var tmp = topic.children.topics.topic;
+        var topics;
+        if( topic.children && (topics=topic.children.topics) && ( topics.topic || (utils.isArray( topics ) && topics.length>0) ) ){
+            var tmp = topics.topic || (getAttachedNode( topics )).topic;
             if( tmp.length && tmp.length > 0 ){ //多个子节点
                 obj.children = [];
 
@@ -81,7 +89,7 @@ KityMinder.registerProtocal( 'xmind', function () {
     }
 
     function onerror(){
-        alert('文件过程解压出错，请检查该文件是否损坏');
+        km.fire('unziperror');
     }
 
     function getEntries(file, onend) {
@@ -105,13 +113,17 @@ KityMinder.registerProtocal( 'xmind', function () {
                             if(entry.filename == 'content.xml'){
                                 hasMainDoc = true;
                                 entry.getData(new zip.TextWriter(), function(text) {
-                                    var km = xml2km($.parseXML(text));
-                                    callback && callback( km );
+                                    try{
+                                        var km = xml2km($.parseXML(text));
+                                        callback && callback( km );
+                                    }catch(e){
+                                        km.fire('parseerror');
+                                    }                                    
                                 });
                             }
                         });
 
-                        !hasMainDoc && alert('找不到文件主文档，请检查文件是否是合法xmind格式文件');
+                        !hasMainDoc && km.fire('parseerror');
                     });
                 }
             };

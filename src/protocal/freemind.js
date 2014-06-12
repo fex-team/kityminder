@@ -73,15 +73,18 @@ KityMinder.registerProtocal( 'freemind', function () {
     }
 
     return {
-        fileDescription: 'xmind格式文件',
-        fileExtension: '.xmind',
+        fileDescription: 'freemind格式文件',
+        fileExtension: '.mm',
 
         decode: function ( local ) {
-            var json = xml2km( local );
-
-            return json;
+            try{
+                return xml2km( local );
+            }catch(e){
+                km.fire('parseerror');
+                return undefined;
+            }
         },
-        // recognize: recognize,
+        // recognize: null,
         recognizePriority: -1
     };
     

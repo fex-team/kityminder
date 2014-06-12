@@ -9,9 +9,9 @@ KityMinder.registerModule( "hyperlink", function () {
                     var nodes = km.getSelectedNodes();
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'hyperlink', url );
-                        km.updateLayout( n );
+                        n.render();
                     } );
-
+                    km.layout();
                 },
                 queryState: function ( km ) {
                     var nodes = km.getSelectedNodes(),
@@ -39,8 +39,9 @@ KityMinder.registerModule( "hyperlink", function () {
                     var nodes = km.getSelectedNodes();
                     utils.each( nodes, function ( i, n ) {
                         n.setData( 'hyperlink' );
-                        km.updateLayout( n );
+                        n.render();
                     } );
+                    km.layout();
                 },
                 queryState: function ( km ) {
                     var nodes = km.getSelectedNodes();
@@ -62,33 +63,54 @@ KityMinder.registerModule( "hyperlink", function () {
                 }
             } )
         },
-        "events": {
-            "RenderNodeRight": function ( e ) {
-                var node = e.node,
-                    url = node.getData( 'hyperlink' );
-                if ( url ) {
-                    var link = new kity.HyperLink( url );
+        'renderers': {
+            right: kity.createClass('hyperlinkrender', {
+                base: KityMinder.Renderer,
+
+                create: function() {
+
+                    var link = new kity.HyperLink();
                     var linkshape = new kity.Path();
                     var outline = new kity.Rect(24, 22, -2, -6, 4).fill('rgba(255, 255, 255, 0)');
-                    var box = node.getContRc().getBoundaryBox();
-                    var style = this.getCurrentLayoutStyle()[ node.getType() ];
+
 
                     linkshape.setPathData( linkShapePath ).fill( '#666' );
-                    link.setAttr('xlink:title', url);
                     link.addShape( outline );
                     link.addShape( linkshape );
                     link.setTarget( '_blank' );
                     link.setStyle( 'cursor', 'pointer' );
-                    node.getContRc().addShape( link.setTranslate( box.x + box.width + style.spaceLeft + 5, -5 ) );
+
 
                     link.on('mouseover', function() {
                         outline.fill('rgba(255, 255, 200, .8)');
                     }).on('mouseout', function() {
                         outline.fill('rgba(255, 255, 255, 0)');
                     });
+                    return link;
+                },
 
+                shouldRender: function(node) {
+
+                    return  node.getData( 'hyperlink' );
+                },
+
+                update: function(link, node, box) {
+
+                    var href = node.getData('hyperlink');
+                    link.setHref(href);
+                    link.setAttr('xlink:title', href);
+                    var spaceRight = node.getStyle('space-right');
+
+                    link.setTranslate(box.right + spaceRight + 2, -5);
+                    return {
+                        x: box.right + spaceRight,
+                        y: -11,
+                        width: 24,
+                        height: 22
+                    };
                 }
-            }
+            })
         }
+
     };
 } );
