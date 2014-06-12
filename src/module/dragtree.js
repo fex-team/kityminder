@@ -234,11 +234,11 @@ var DragBox = kity.createClass('DragBox', {
         }
 
         var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
-        // var minder = this._minder;
-        // this._dragSources.forEach(function(source) {
-        //     source.setLayoutOffset(movement);
-        //     minder.layout();
-        // });
+        var minder = this._minder;
+        this._dragSources.forEach(function(source) {
+            source.setLayoutOffset(movement);
+            minder.layout();
+        });
 
         this.setTranslate(movement);
 

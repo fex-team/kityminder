@@ -158,7 +158,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection)
                 end = new kity.Point(box.left - node.getStyle('margin-left'), box.bottom);
             }
 
-            end.y += 1;
+            end.y += 3;
 
             var isTop = parent.children.length > 1 && node.getIndex() === 0;
 

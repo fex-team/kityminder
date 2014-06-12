@@ -105,6 +105,7 @@ kity.extendClass(MinderNode, {
             x: p.x,
             y: p.y
         });
+        return this;
     },
 
     getLayoutRoot: function() {
@@ -130,6 +131,10 @@ kity.extendClass(MinderNode, {
         this.getMinder().layout(duration);
 
         return this;
+    },
+
+    getPositionContext: function(node, position) {
+
     }
 });
 
@@ -166,6 +171,9 @@ kity.extendClass(Minder, {
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);
             var lastMatrix = node._lastLayoutTransform || new kity.Matrix();
+
+            var offset = node.getLayoutOffset();
+            matrix.translate(offset.x, offset.y);
 
             if (!matrix.equals(lastMatrix) || true) {
 
