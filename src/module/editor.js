@@ -60,6 +60,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
                 sel.setHide();
                 var node = e.getTargetNode();
+
                 if (!node) {
                     var selectionShape = e.kityEvent.targetShape;
                     if (selectionShape && selectionShape.getType() == 'Selection') {
@@ -74,7 +75,6 @@ KityMinder.registerModule('TextEditModule', function() {
                 if (node) {
                     var textShape = node.getRenderer('TextRenderer').getRenderShape();
                     textShape.setStyle('cursor', 'default');
-
                     if (this.isSingleSelect() && node.isSelected()) { // && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
 
                         sel.collapse();
@@ -179,6 +179,7 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (browser.ipad) {
                         receiver.container.focus();
                     }
+                }else{
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
                     if (node) {
@@ -287,6 +288,9 @@ KityMinder.registerModule('TextEditModule', function() {
                 };
                 if (cmds[e.commandName]) {
 
+
+
+
                     var node = km.getSelectedNode();
                     if (!node) {
                         return;
@@ -312,31 +316,51 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setStartOffset(0);
                     sel.setEndOffset(textShape.getContent().length);
-                    sel.setShow();
 
-                    receiver.updateSelectionShow(1)
+
+                    receiver//.updateSelectionShow(1)
                         .updateRange(range);
+
+                    sel.setHide();
                     return;
 
                 }
 
-                if ((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit') {
-
-                    receiver.setBaseOffset()
+//                if ((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit') {
+//
+//                    sel.setHide();
+//                    receiver.setBaseOffset()
+//                        .getTextOffsetData();
+////
+////                    if (sel.collapsed) {
+////                        receiver.updateSelection();
+////                    } else {
+////                        receiver.updateSelectionShow(1);
+////                    }
+//
+//                    return;
+//
+//
+//                }
+                receiver.clear().setTextEditStatus(false);
+                if (this.getStatus() == 'textedit') {
+                    this.setStatus('normal');
+                }
+            },
+            'layoutfinish':function(e){
+                if(e.node === receiver.minderNode && this.getStatus() == 'textedit'){
+                    receiver
+                        .setBaseOffset()
+                        .setContainerStyle()
                         .getTextOffsetData();
+
 
                     if (sel.collapsed) {
                         receiver.updateSelection();
                     } else {
                         receiver.updateSelectionShow(1);
                     }
-                    return;
-
-
-                }
-                receiver.clear().setTextEditStatus(false);
-                if (this.getStatus() == 'textedit') {
-                    this.setStatus('normal');
+                    sel.setShow();
                 }
             },
             'selectionclear': function() {
