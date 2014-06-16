@@ -66,6 +66,25 @@ var DragBox = kity.createClass('DragBox', {
         this.addShapes([this._rect, this._text]);
     },
 
+    // 进入拖放模式：
+    //    1. 计算拖放源和允许的拖放目标
+    //    2. 渲染拖放盒子
+    //    3. 启动收缩动画
+    //    4. 标记已启动
+    _enterDragMode: function() {
+        this._calcDragSources();
+        if (!this._dragSources.length) {
+            this._startPosition = null;
+            return false;
+        }
+        this._calcDropTargets();
+        if (this._dragSources.length > 1) {
+            this._shrink();
+            this._drawForDragMode();
+        }
+        this._dragMode = true;
+        return true;
+    },
 
     // 从选中的节点计算拖放源
     //    并不是所有选中的节点都作为拖放源，如果选中节点中存在 A 和 B，
@@ -108,34 +127,6 @@ var DragBox = kity.createClass('DragBox', {
         this._dropTargetBoxes = this._dropTargets.map(boxMapper);
     },
 
-    // 进入拖放模式：
-    //    1. 计算拖放源和允许的拖放目标
-    //    2. 渲染拖放盒子
-    //    3. 启动收缩动画
-    //    4. 标记已启动
-    _enterDragMode: function() {
-        this._calcDragSources();
-        if (!this._dragSources.length) {
-            this._startPosition = null;
-            return false;
-        }
-        this._calcDropTargets();
-        this._drawForDragMode();
-        this._shrink();
-        this._dragMode = true;
-        return true;
-    },
-    _leaveDragMode: function() {
-        this.remove();
-        this._dragMode = false;
-        this._dropSucceedTarget = null;
-        this._removeDropHint();
-    },
-    _drawForDragMode: function() {
-        this._text.setContent(this._dragSources.length + ' items');
-        this._text.setPosition(this._startPosition.x, this._startPosition.y + 5);
-        this._minder.getRenderContainer().addShape(this);
-    },
     _shrink: function() {
         // 合并所有拖放源图形的矩形即可
         function calcSourceArea(boxArray) {
@@ -167,6 +158,20 @@ var DragBox = kity.createClass('DragBox', {
         var animator = new AreaAnimator(sourceArea, focusArea);
         animator.start(this._rect, 400, 'easeOutQuint');
     },
+
+    _leaveDragMode: function() {
+        this.remove();
+        this._dragMode = false;
+        this._dropSucceedTarget = null;
+        this._removeDropHint();
+    },
+
+    _drawForDragMode: function() {
+        this._text.setContent(this._dragSources.length + ' items');
+        this._text.setPosition(this._startPosition.x, this._startPosition.y + 5);
+        this._minder.getRenderContainer().addShape(this);
+    },
+
     // 此处可用线段树优化，但考虑到节点不多，必要性不到，就用暴力测试
     _dropTest: function() {
         var dragBox = this.getRenderBox(),
@@ -235,10 +240,11 @@ var DragBox = kity.createClass('DragBox', {
 
         var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
         var minder = this._minder;
+
         this._dragSources.forEach(function(source) {
             source.setLayoutOffset(movement);
-            minder.layout();
         });
+        minder.layout();
 
         this.setTranslate(movement);
 

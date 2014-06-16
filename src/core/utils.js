@@ -174,13 +174,13 @@ var utils = Utils = KityMinder.Utils = {
     },
     getNodeCommonAncestor: function(nodeA, nodeB) {
         if (nodeA === nodeB) {
-            return nodeA.parent
+            return nodeA.parent;
         }
         if (nodeA.contains(nodeB)) {
-            return this
+            return nodeB;
         }
         if (nodeB.contains(nodeA)) {
-            return nodeB
+            return nodeB;
         }
         var parent = nodeA.parent;
         while (!parent.contains(nodeB)) {
