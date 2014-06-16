@@ -30,30 +30,48 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    /**
+     * 设置当前节点相对于父节点的布局变换
+     */
     setLayoutTransform: function(matrix) {
         this._layoutTransform = matrix;
     },
 
+    /**
+     * 获取当前节点相对于父节点的布局变换
+     */
     getLayoutTransform: function() {
         return this._layoutTransform || new kity.Matrix();
     },
 
+    /**
+     * 设置当前节点相对于父节点的布局变换
+     */
     setLayoutVector: function(vector) {
         this._layoutVector = vector;
         return this;
     },
 
+    /**
+     * [getLayoutVector description]
+     * @param  {[type]} vector [description]
+     * @return {[type]}        [description]
+     */
     getLayoutVector: function(vector) {
         return this._layoutVector || new kity.Vector();
     },
 
+    getGlobalLayoutTransform: function() {
+        return this._lastLayoutTransform || new kity.Matrix();
+    },
+
     getLayoutBox: function() {
-        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        var matrix = this.getGlobalLayoutTransform();
         return matrix.transformBox(this.getContentBox());
     },
 
     getLayoutPoint: function() {
-        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        var matrix = this.getGlobalLayoutTransform();
         return matrix.transformPoint(new kity.Point());
     },
 
