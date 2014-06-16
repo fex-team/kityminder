@@ -32,13 +32,18 @@ kity.extendClass(Minder, {
 
         node._connection = connection;
 
-        this.getRenderContainer().prependShape(connection);
+        if (!this._connectContainer) {
+            this._connectContainer = new kity.Group().setId(KityMinder.uuid('minder_connect_group'));
+            this.getRenderContainer().prependShape(this._connectContainer);
+        }
+
+        this._connectContainer.addShape(connection);
     },
 
     removeConnect: function(node) {
         var me = this;
         node.traverse(function(node) {
-            me.getRenderContainer().removeShape(node._connection);
+            me._connectContainer.removeShape(node._connection);
         });
     },
 
