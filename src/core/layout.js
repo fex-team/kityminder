@@ -172,7 +172,12 @@ kity.extendClass(Minder, {
                             node: node,
                             matrix: value
                         });
-                    }).start(node, duration, 'ease');
+                    }).start(node, duration, 'ease').on('finish', function() {
+                        me.fire('layoutfinish', {
+                            node: node,
+                            matrix: matrix
+                        });
+                    });
                 }
 
                 // 否则直接更新
@@ -180,6 +185,10 @@ kity.extendClass(Minder, {
                     node.getRenderContainer().setMatrix(matrix);
                     node._lastLayoutTransform = matrix;
                     me.fire('layoutapply', {
+                        node: node,
+                        matrix: matrix
+                    });
+                    me.fire('layoutfinish', {
                         node: node,
                         matrix: matrix
                     });
