@@ -1,52 +1,6 @@
-var Layout = kity.createClass('Layout', {
-    doLayout: function(node) {
-        throw new Error('Not Implement: Layout.doLayout()');
-    },
-
-    getBranchBox: function(nodes) {
-        var box = {
-            x: 0,
-            y: 0,
-            height: 0,
-            width: 0
-        };
-        var g = KityMinder.Geometry;
-        var i, node, matrix, contentBox;
-        for (i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            matrix = node.getLayoutTransform();
-            contentBox = node.getContentBox();
-            box = g.mergeBox(box, matrix.transformBox(contentBox));
-        }
-
-        return box;
-    },
-
-    getTreeBox: function(nodes) {
-        var box = {
-            x: 0,
-            y: 0,
-            height: 0,
-            width: 0
-        };
-        var g = KityMinder.Geometry;
-        var i, node, matrix, treeBox;
-        for (i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            matrix = node.getLayoutTransform();
-
-            treeBox = node.getContentBox();
-
-            if (node.children.length) {
-                treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
-            }
-
-            box = g.mergeBox(box, matrix.transformBox(treeBox));
-        }
-        return box;
-    }
-});
-
+/**
+ * 布局支持池子管理
+ */
 Utils.extend(KityMinder, {
     _layout: {},
 
@@ -58,7 +12,16 @@ Utils.extend(KityMinder, {
     }
 });
 
+/**
+ * MinderNode 上的布局支持
+ */
 kity.extendClass(MinderNode, {
+
+    /**
+     * 获得当前节点的布局名称
+     *
+     * @return {String}
+     */
     getLayout: function() {
         var layout = this.getData('layout');
 
@@ -67,30 +30,48 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    /**
+     * 设置当前节点相对于父节点的布局变换
+     */
     setLayoutTransform: function(matrix) {
         this._layoutTransform = matrix;
     },
 
+    /**
+     * 获取当前节点相对于父节点的布局变换
+     */
     getLayoutTransform: function() {
         return this._layoutTransform || new kity.Matrix();
     },
 
+    /**
+     * 设置当前节点相对于父节点的布局变换
+     */
     setLayoutVector: function(vector) {
         this._layoutVector = vector;
         return this;
     },
 
+    /**
+     * [getLayoutVector description]
+     * @param  {[type]} vector [description]
+     * @return {[type]}        [description]
+     */
     getLayoutVector: function(vector) {
         return this._layoutVector || new kity.Vector();
     },
 
+    getGlobalLayoutTransform: function() {
+        return this._lastLayoutTransform || new kity.Matrix();
+    },
+
     getLayoutBox: function() {
-        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        var matrix = this.getGlobalLayoutTransform();
         return matrix.transformBox(this.getContentBox());
     },
 
     getLayoutPoint: function() {
-        var matrix = this._lastLayoutTransform || new kity.Matrix();
+        var matrix = this.getGlobalLayoutTransform();
         return matrix.transformPoint(new kity.Point());
     },
 
@@ -133,8 +114,8 @@ kity.extendClass(MinderNode, {
         return this;
     },
 
-    getPositionContext: function(node, position) {
-
+    getInsertBoxes: function(node, position) {
+        
     }
 });
 
@@ -214,4 +195,87 @@ kity.extendClass(Minder, {
         this.fire('layout');
         return this;
     },
+});
+
+
+/**
+ * @class Layout 布局基类，具体布局需要从该类派生
+ */
+var Layout = kity.createClass('Layout', {
+
+    /**
+     * @abstract
+     *
+     * 子类需要实现的布局算法，该算法输入一个节点，排布该节点的子节点（相对父节点的变换）
+     *
+     * @param  {MinderNode} node 需要布局的节点
+     *
+     * @example
+     *
+     * doLayout: function(node) {
+     *     var children = node.getChildren();
+     *     // layout calculation
+     *     children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
+     * }
+     */
+    doLayout: function(node) {
+        throw new Error('Not Implement: Layout.doLayout()');
+    },
+
+    /**
+     * 工具方法：获取给点的节点所占的布局区域
+     *
+     * @param  {MinderNode[]} nodes 需要计算的节点
+     *
+     * @return {Box} 计算结果
+     */
+    getBranchBox: function(nodes) {
+        var box = {
+            x: 0,
+            y: 0,
+            height: 0,
+            width: 0
+        };
+        var g = KityMinder.Geometry;
+        var i, node, matrix, contentBox;
+        for (i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            matrix = node.getLayoutTransform();
+            contentBox = node.getContentBox();
+            box = g.mergeBox(box, matrix.transformBox(contentBox));
+        }
+
+        return box;
+    },
+
+    /**
+     * 工具方法：计算给点节点的子树所占的布局区域
+     *
+     * @param  {MinderNode} nodes 需要计算的节点
+     *
+     * @return {Box} 计算的结果
+     */
+    getTreeBox: function(nodes) {
+        var box = {
+            x: 0,
+            y: 0,
+            height: 0,
+            width: 0
+        };
+        var g = KityMinder.Geometry;
+        var i, node, matrix, treeBox;
+        for (i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            matrix = node.getLayoutTransform();
+
+            treeBox = node.getContentBox();
+
+            if (node.children.length) {
+                treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
+            }
+
+            box = g.mergeBox(box, matrix.transformBox(treeBox));
+        }
+        return box;
+    }
 });
