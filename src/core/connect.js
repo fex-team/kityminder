@@ -56,9 +56,8 @@ kity.extendClass(Minder, {
         connection.setVisible(true);
 
         var provider = KityMinder.getConnectProvider(node.getLayout());
-        var pathData = provider(node, parent);
 
-        connection.setPathData(pathData);
+        provider(node, parent, connection);
     }
 });
 

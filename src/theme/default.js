@@ -13,7 +13,7 @@ KityMinder.registerTheme('default', {
     'main-stroke': 'none',
     'main-font-size': 16,
     'main-padding': [6, 20],
-    'main-margin': [30, 6],
+    'main-margin': [30, 10],
     'main-radius': 10,
     'main-space': 5,
 
@@ -22,7 +22,8 @@ KityMinder.registerTheme('default', {
     'sub-stroke': 'white',
     'sub-font-size': 12,
     'sub-padding': [5, 10],
-    'sub-margin': [5, 15],
+    'sub-margin': 10,
+    'sub-tree-margin': 30,
     'sub-radius': 5,
     'sub-space': 5,
 

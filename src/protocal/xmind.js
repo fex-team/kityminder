@@ -29,6 +29,13 @@ KityMinder.registerProtocal( 'xmind', function () {
         ,'task-7oct'    : null
     };
 
+    function getAttachedNode( arr ){
+        for (var i = 0; i < arr.length; i++) {
+            if( arr[ i ].type == "attached" )
+                return arr[ i ]
+        }
+    }
+
     function processTopic(topic, obj){
 
         //处理文本
@@ -54,8 +61,9 @@ KityMinder.registerProtocal( 'xmind', function () {
         }
 
         //处理子节点
-        if( topic.children && topic.children.topics && topic.children.topics.topic ){
-            var tmp = topic.children.topics.topic;
+        var topics;
+        if( topic.children && (topics=topic.children.topics) && ( topics.topic || (utils.isArray( topics ) && topics.length>0) ) ){
+            var tmp = topics.topic || (getAttachedNode( topics )).topic;
             if( tmp.length && tmp.length > 0 ){ //多个子节点
                 obj.children = [];
 

@@ -79,12 +79,12 @@ KityMinder.registerLayout('default', kity.createClass({
                 x = nodeContentBox.right - childContentBox.left;
                 x += parent.getStyle('margin-right') + child.getStyle('margin-left');
 
-                child.setLayoutVector(new kity.Vector(childContentBox.left, childContentBox.cy));
+                child.setLayoutVector(new kity.Vector(childContentBox.right, childContentBox.cy));
             } else {
                 x = nodeContentBox.left - childContentBox.right;
                 x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
 
-                child.setLayoutVector(new kity.Vector(childContentBox.right, childContentBox.cy));
+                child.setLayoutVector(new kity.Vector(childContentBox.left, childContentBox.cy));
             }
 
             // 竖直方向上的布局
@@ -110,7 +110,14 @@ KityMinder.registerLayout('default', kity.createClass({
     }
 }));
 
-KityMinder.registerConnectProvider('default', function(node, parent) {
+var connectMarker = new kity.Marker().pipe(function() {
+    var r = 4;
+    var dot = new kity.Circle(r).fill('white');
+    this.addShape(dot);
+    this.setRef(r, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
+});
+
+KityMinder.registerConnectProvider('default', function(node, parent, connection) {
 
     var box = node.getLayoutBox(),
         pBox = parent.getLayoutBox();
@@ -120,17 +127,23 @@ KityMinder.registerConnectProvider('default', function(node, parent) {
     var pathData = [];
     var side = box.cx > pBox.cx ? 'right' : 'left';
 
+    node.getMinder().getPaper().addResource(connectMarker);
+
     switch (node.getType()) {
 
         case 'main':
 
             start = new kity.Point(pBox.cx, pBox.cy);
             end = side == 'left' ?
-                new kity.Point(box.right, box.cy) :
-                new kity.Point(box.left, box.cy);
+                new kity.Point(box.right + 2, box.cy) :
+                new kity.Point(box.left - 2, box.cy);
+
             vector = kity.Vector.fromPoints(start, end);
             pathData.push('M', start);
             pathData.push('A', abs(vector.x), abs(vector.y), 0, 0, (vector.x * vector.y > 0 ? 0 : 1), end);
+
+            connection.setMarker(connectMarker);
+
             break;
 
         case 'sub':
@@ -139,13 +152,13 @@ KityMinder.registerConnectProvider('default', function(node, parent) {
 
             if (side == 'right') {
                 start = new kity.Point(box.left - node.getStyle('margin-left') / 2, pBox.cy);
-                end = new kity.Point(box.right + node.getStyle('margin-right') / 2, box.bottom);
+                end = new kity.Point(box.right + node.getStyle('margin-right'), box.bottom);
             } else {
                 start = new kity.Point(box.right + node.getStyle('margin-right') / 2, pBox.cy);
-                end = new kity.Point(box.left - node.getStyle('margin-left') / 2, box.bottom);
+                end = new kity.Point(box.left - node.getStyle('margin-left'), box.bottom);
             }
 
-            end.y += 1;
+            end.y += 3;
 
             var isTop = parent.children.length > 1 && node.getIndex() === 0;
 
@@ -157,7 +170,11 @@ KityMinder.registerConnectProvider('default', function(node, parent) {
 
             pathData.push('A', radius, radius, 0, 0, sf, ex, end.y);
             pathData.push('L', end);
+
+            connection.setMarker(null);
+
+            break;
     }
 
-    return pathData;
+    connection.setPathData(pathData);
 });

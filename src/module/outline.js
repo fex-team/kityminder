@@ -17,7 +17,7 @@ KityMinder.registerModule('OutlineModule', function() {
                     var shadow = this.shadow = new kity.Rect()
                         .setId(KityMinder.uuid('node_shadow'))
                         .fill('black')
-                        .setOpacity(0.2);
+                        .setOpacity(0.25);
 
                     group.addShapes([shadow, outline]);
 
@@ -62,7 +62,7 @@ KityMinder.registerModule('OutlineModule', function() {
                     if (node.getLevel() < 2) {
                         this.shadow
                             .setVisible(true)
-                            .setPosition(outlineBox.x + 3, outlineBox.y + 4)
+                            .setPosition(outlineBox.x + 4, outlineBox.y + 5)
                             .setSize(outlineBox.width, outlineBox.height)
                             .setRadius(node.getStyle('radius'));
                     } else {

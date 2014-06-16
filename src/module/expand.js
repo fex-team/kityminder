@@ -203,17 +203,13 @@ KityMinder.registerModule('Expand', function() {
 
             var x, y;
 
-            var right = node.getLayoutPoint().x > node.parent.getLayoutPoint().x;
+            var pos = node.getLayoutVector();
 
-            x = right ?
-                node.getContentBox().right + node.getStyle('margin-right') :
-                node.getContentBox().left - node.getStyle('margin-left');
+            pos = new kity.Vector(pos.x, pos.y);
 
-            y = node.getType() == 'main' ?
-                node.getContentBox().cy :
-                node.getContentBox().bottom;
+            pos = pos.normalize(pos.length() + expander.radius + 1);
 
-            this.expander.setTranslate(x, y);
+            this.expander.setTranslate(pos);
         }
     });
     return {
