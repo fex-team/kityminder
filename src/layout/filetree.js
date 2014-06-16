@@ -1,6 +1,6 @@
 /* global Layout:true */
 window.layoutSwitch = true;
-KityMinder.registerLayout('bottom', kity.createClass({
+KityMinder.registerLayout('filetree', kity.createClass({
     base: Layout,
 
     doLayout: function(node) {
@@ -25,45 +25,38 @@ KityMinder.registerLayout('bottom', kity.createClass({
             // 计算每个 child 的树所占的矩形区域
             var childTreeBoxes = children.map(function(node, index, children) {
                 var box = _this.getTreeBox([node]);
-                totalTreeWidth += box.width;
-                if (index > 0) {
-                    totalTreeWidth += children[index - 1].getStyle('margin-left');
-                    totalTreeWidth += node.getStyle('margin-right');
-                }
                 return box;
             });
             var nodeContentBox = node.getContentBox();
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
-            x = -totalTreeWidth / 2;
+            y = nodeContentBox.bottom + node.getStyle('margin-bottom');
 
             for (var i = 0; i < children.length; i++) {
                 child = children[i];
                 childTreeBox = childTreeBoxes[i];
                 childContentBox = child.getContentBox();
                 if (!childContentBox.width) continue;
-                //水平方向上的布局
-                x += childTreeBox.width / 2;
-                if (i > 0) {
-                    x += children[i].getStyle('margin-left');
-                }
-                y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
-                children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
-                x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
-                child.setLayoutVector(new kity.Vector(childContentBox.cx, childContentBox.bottom));
+                x = 10;
+                y += child.getStyle('margin-top');
+                child.setLayoutTransform(new kity.Matrix().translate(x, y));
+                y += childTreeBox.height + children[i].getStyle('margin-bottom');
+                child.setLayoutVector(new kity.Vector(childContentBox.left + 5, childContentBox.cy));
             }
         }
     }
 }));
 
-KityMinder.registerConnectProvider('bottom', function(node, parent) {
+KityMinder.registerConnectProvider('filetree', function(node, parent) {
+
     var box = node.getLayoutBox(),
         pBox = parent.getLayoutBox();
     var abs = Math.abs;
     var pathData = [];
-    pathData.push('M', new kity.Point(pBox.cx, pBox.bottom));
-    pathData.push('L', new kity.Point(pBox.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, box.top));
+    var side = box.cx > pBox.cx ? 'right' : 'left';
+    var left = pBox.left + 5;
+    pathData.push('M', new kity.Point(left, pBox.bottom));
+    pathData.push('L', new kity.Point(left, box.cy));
+    pathData.push('L', new kity.Point(box.left, box.cy));
     return pathData;
 });
