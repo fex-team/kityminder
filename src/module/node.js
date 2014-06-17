@@ -42,7 +42,7 @@ var RemoveNodeCommand = kity.createClass('RemoverNodeCommand', {
     base: Command,
     execute: function(km, text) {
         var nodes = km.getSelectedNodes();
-        var ancestor = km.getSelectedAncestors()[0];
+        var ancestor = MinderNode.getCommonAncestor.apply(null, nodes);
 
         nodes.forEach(function(node) {
             km.removeNode(node);

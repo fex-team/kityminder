@@ -291,3 +291,28 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
         return this;
     }
 });
+
+MinderNode.getCommonAncestor = function(nodeA, nodeB) {
+    switch (arguments.length) {
+        case 1:
+            return nodeA;
+
+        case 2:
+            if (nodeA.contains(nodeB)) {
+                return nodeA;
+            }
+            if (nodeB.contains(nodeA)) {
+                return nodeB;
+            }
+            var ancestor = nodeA.parent;
+            while (ancestor && !ancestor.contains(nodeB)) {
+                ancestor = ancestor.parent;
+            }
+            return ancestor;
+
+        default:
+            return Array.prototype.reduce.call(arguments, function(prev, current) {
+                return MinderNode.getCommonAncestor(prev, current);
+            }, nodeA);
+    }
+};
