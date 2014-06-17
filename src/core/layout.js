@@ -30,6 +30,12 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    getLayoutInstance: function() {
+        var LayoutClass = KityMinder._layout[this.getLayout()];
+        var layout = new LayoutClass();
+        return layout;
+    },
+
     /**
      * 设置当前节点相对于父节点的布局变换
      */
@@ -45,7 +51,7 @@ kity.extendClass(MinderNode, {
     },
 
     /**
-     * 设置当前节点相对于父节点的布局变换
+     * 设置当前节点相对于父节点的布局向量
      */
     setLayoutVector: function(vector) {
         this._layoutVector = vector;
@@ -53,14 +59,15 @@ kity.extendClass(MinderNode, {
     },
 
     /**
-     * [getLayoutVector description]
-     * @param  {[type]} vector [description]
-     * @return {[type]}        [description]
+     * 获取当前节点相对于父节点的布局向量
      */
     getLayoutVector: function(vector) {
         return this._layoutVector || new kity.Vector();
     },
 
+    /**
+     * 获取节点相对于全局的布局变换
+     */
     getGlobalLayoutTransform: function() {
         return this._lastLayoutTransform || new kity.Matrix();
     },
@@ -76,13 +83,13 @@ kity.extendClass(MinderNode, {
     },
 
     getLayoutOffset: function() {
-        var data = this.getData('layoutOffset');
+        var data = this.getData('layout_' + this.getLayout() + '_offset');
         if (data) return new kity.Point(data.x, data.y);
         return new kity.Point();
     },
 
     setLayoutOffset: function(p) {
-        this.setData('layoutOffset', {
+        this.setData('layout_' + this.getLayout() + '_offset', {
             x: p.x,
             y: p.y
         });
@@ -114,8 +121,8 @@ kity.extendClass(MinderNode, {
         return this;
     },
 
-    getInsertBoxes: function(node, position) {
-        
+    getLayoutContextPoints: function() {
+        return this.getLayoutInstance().getLayoutContextPoints(this);
     }
 });
 
@@ -134,9 +141,7 @@ kity.extendClass(Minder, {
                 layoutNode(child);
             });
 
-            var LayoutClass = KityMinder._layout[node.getLayout()];
-            var layout = new LayoutClass();
-
+            var layout = node.getLayoutInstance();
             layout.doLayout(node);
         }
 

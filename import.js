@@ -26,6 +26,7 @@
             'core/render.js',
             'core/theme.js',
             'layout/default.js',
+            'layout/default.connect.js',
             'layout/bottom.js',
             'layout/filetree.js',
             'theme/default.js',

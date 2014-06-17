@@ -38,39 +38,65 @@ function boxMapper(node) {
 
 // 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：
 //    1. 从节点列表计算出拖动部分
-//    2. 产生替代矩形包围拖动部分
-//    3. 动画收缩替代矩形到固定大小，成为替代盒子
-//    4. 控制替代盒子的移动
-//    5. 计算可以 drop 的节点，产生 drop 交互提示
-var DragBox = kity.createClass('DragBox', {
-    base: kity.Group,
-
+//    2. 计算可以 drop 的节点，产生 drop 交互提示
+var TreeDragger = kity.createClass('TreeDragger', {
 
     constructor: function(minder) {
-        this.callBase();
         this._minder = minder;
-        this._draw();
     },
 
-    // 绘制显示拖放范围的矩形和显示拖放信息的文本
-    _draw: function() {
-        this._rect = new kity.Rect()
-            .setRadius(5)
-            .fill('white')
-            .stroke('#3399ff', 1);
-        this._text = new kity.Text()
-            .setSize(14)
-            .setTextAnchor('middle')
-            .fill('black')
-            .setStyle('cursor', 'default');
-        this.addShapes([this._rect, this._text]);
+    dragStart: function(position) {
+        // 只记录开始位置，不马上开启拖放模式
+        // 这个位置同时是拖放范围收缩时的焦点位置（中心）
+        this._startPosition = position;
+    },
+
+    dragMove: function(position) {
+        // 启动拖放模式需要最小的移动距离
+        var DRAG_MOVE_THRESHOLD = 10;
+
+        if (!this._startPosition) return;
+
+        this._dragPosition = position;
+
+        if (!this._dragMode) {
+            // 判断拖放模式是否该启动
+            if (GM.getDistance(this._dragPosition, this._startPosition) < DRAG_MOVE_THRESHOLD) {
+                return;
+            }
+            if (!this._enterDragMode()) {
+                return;
+            }
+        }
+
+        var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
+        var minder = this._minder;
+
+        for (var i = 0; i < this._dragSources.length; i++) {
+            this._dragSources[i].setLayoutOffset(this._dragSourceOffsets[i].offset(movement));
+        }
+
+        minder.layout();
+
+        this._orderTest();
+        //this._dropTest();
+        //this._updateDropHint();
+    },
+
+    dragEnd: function() {
+        this._startPosition = null;
+        if (!this._dragMode) {
+            return;
+        }
+        if (this._dropSucceedTarget) {
+            this._minder.execCommand('movetoparent', this._dragSources, this._dropSucceedTarget);
+        }
+        this._leaveDragMode();
     },
 
     // 进入拖放模式：
     //    1. 计算拖放源和允许的拖放目标
-    //    2. 渲染拖放盒子
-    //    3. 启动收缩动画
-    //    4. 标记已启动
+    //    2. 标记已启动
     _enterDragMode: function() {
         this._calcDragSources();
         if (!this._dragSources.length) {
@@ -78,10 +104,6 @@ var DragBox = kity.createClass('DragBox', {
             return false;
         }
         this._calcDropTargets();
-        if (this._dragSources.length > 1) {
-            this._shrink();
-            this._drawForDragMode();
-        }
         this._dragMode = true;
         return true;
     },
@@ -96,6 +118,9 @@ var DragBox = kity.createClass('DragBox', {
     //          则排除枚举目标作为拖放源，否则加入拖放源
     _calcDragSources: function() {
         this._dragSources = this._minder.getSelectedAncestors();
+        this._dragSourceOffsets = this._dragSources.map(function(src) {
+            return src.getLayoutOffset();
+        });
     },
 
 
@@ -160,10 +185,10 @@ var DragBox = kity.createClass('DragBox', {
     },
 
     _leaveDragMode: function() {
-        this.remove();
+        // this.remove();
         this._dragMode = false;
         this._dropSucceedTarget = null;
-        this._removeDropHint();
+        // this._removeDropHint();
     },
 
     _drawForDragMode: function() {
@@ -214,76 +239,44 @@ var DragBox = kity.createClass('DragBox', {
         node.getRenderContainer().fxScale(1.25, 1.25, 150, 'ease').fxScale(0.8, 0.8, 150, 'ease');
     },
 
-    dragStart: function(position) {
-        // 只记录开始位置，不马上开启拖放模式
-        // 这个位置同时是拖放范围收缩时的焦点位置（中心）
-        this._startPosition = position;
-    },
 
-    dragMove: function(position) {
-        // 启动拖放模式需要最小的移动距离
-        var DRAG_MOVE_THRESHOLD = 10;
+    _orderTest: function() {
+        if (this._dragSources.length > 1) return false;
+        var source = this._dragSources[0];
+        var sourceBox = source.getLayoutBox();
+        var contextPoints = source.getLayoutContextPoints();
+        var contextPoint;
 
-        if (!this._startPosition) return;
-
-        this._dragPosition = position;
-
-        if (!this._dragMode) {
-            // 判断拖放模式是否该启动
-            if (GM.getDistance(this._dragPosition, this._startPosition) < DRAG_MOVE_THRESHOLD) {
-                return;
-            }
-            if (!this._enterDragMode()) {
-                return;
+        for (var i = 0; i < contextPoints.length; i++) {
+            contextPoint = contextPoints[i];
+            if (contextPoint.type != 'order') continue;
+            if (GM.isBoxIntersect(contextPoint.area, sourceBox)) {
+                console.log(contextPoint);
             }
         }
 
-        var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
-        var minder = this._minder;
-
-        this._dragSources.forEach(function(source) {
-            source.setLayoutOffset(movement);
-        });
-        minder.layout();
-
-        this.setTranslate(movement);
-
-        this._dropTest();
-        this._updateDropHint();
-    },
-
-    dragEnd: function() {
-        this._startPosition = null;
-        if (!this._dragMode) {
-            return;
-        }
-        if (this._dropSucceedTarget) {
-            this._minder.execCommand('movetoparent', this._dragSources, this._dropSucceedTarget);
-        }
-        this._leaveDragMode();
     }
-
 });
 
 KityMinder.registerModule('DragTree', function() {
-    var dragStartPosition, dragBox, dragTargets, dropTargets, dragTargetBoxes, dropTarget;
+    var dragger;
 
     return {
         init: function() {
-            this._dragBox = new DragBox(this);
+            dragger = new TreeDragger(this);
         },
         events: {
             mousedown: function(e) {
                 // 单选中根节点也不触发拖拽
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
-                    this._dragBox.dragStart(e.getPosition(this.getRenderContainer()));
+                    dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
             'mousemove': function(e) {
-                this._dragBox.dragMove(e.getPosition(this.getRenderContainer()));
+                dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
             'mouseup': function(e) {
-                this._dragBox.dragEnd();
+                dragger.dragEnd(e.getPosition(this.getRenderContainer()));
             }
         },
         commands: {

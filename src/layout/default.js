@@ -1,5 +1,4 @@
 /* global Layout:true */
-window.layoutSwitch = true;
 
 KityMinder.registerLayout('default', kity.createClass({
     base: Layout,
@@ -63,7 +62,7 @@ KityMinder.registerLayout('default', kity.createClass({
 
         var nodeContentBox = parent.getContentBox();
         var i, x, y, child, childTreeBox, childContentBox;
-        var transform = new kity.Matrix();
+        var transform, offset;
 
         y = -totalTreeHeight / 2;
 
@@ -94,9 +93,11 @@ KityMinder.registerLayout('default', kity.createClass({
                 y += children[i].getStyle('margin-top');
             }
 
-            children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
+            transform = new kity.Matrix().translate(x, y);
 
-            y += childTreeBox.height / 2 + children[i].getStyle('margin-bottom');
+            child.setLayoutTransform(transform);
+
+            y += childTreeBox.height / 2 + child.getStyle('margin-bottom');
         }
 
         if (parent.isRoot()) {
@@ -107,74 +108,34 @@ KityMinder.registerLayout('default', kity.createClass({
                 child.getLayoutTransform().translate(0, -dy);
             });
         }
+    },
+
+    getLayoutContextPoints: function(node) {
+        var points = [];
+        var siblings = node.parent && node.parent.children;
+        var g = KityMinder.Geometry;
+
+        if (!siblings) return points;
+
+        siblings.forEach(function(sibling) {
+            if (sibling == node) return;
+            var index = sibling.getIndex();
+            var box = node.getLayoutBox();
+
+            // top order hint
+            points.push({
+                type: 'order',
+                index: index,
+                area: {
+                    x: box.x,
+                    y: box.top - 2,
+                    width: box.width,
+                    height: node.getStyle('margin-top')
+                },
+                hint: ['M', ]
+            });
+        });
+
+        return points;
     }
 }));
-
-var connectMarker = new kity.Marker().pipe(function() {
-    var r = 4;
-    var dot = new kity.Circle(r).fill('white');
-    this.addShape(dot);
-    this.setRef(r, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
-});
-
-KityMinder.registerConnectProvider('default', function(node, parent, connection) {
-
-    var box = node.getLayoutBox(),
-        pBox = parent.getLayoutBox();
-
-    var start, end, vector;
-    var abs = Math.abs;
-    var pathData = [];
-    var side = box.cx > pBox.cx ? 'right' : 'left';
-
-    node.getMinder().getPaper().addResource(connectMarker);
-
-    switch (node.getType()) {
-
-        case 'main':
-
-            start = new kity.Point(pBox.cx, pBox.cy);
-            end = side == 'left' ?
-                new kity.Point(box.right + 2, box.cy) :
-                new kity.Point(box.left - 2, box.cy);
-
-            vector = kity.Vector.fromPoints(start, end);
-            pathData.push('M', start);
-            pathData.push('A', abs(vector.x), abs(vector.y), 0, 0, (vector.x * vector.y > 0 ? 0 : 1), end);
-
-            connection.setMarker(connectMarker);
-
-            break;
-
-        case 'sub':
-
-            var radius = node.getStyle('connect-radius');
-
-            if (side == 'right') {
-                start = new kity.Point(box.left - node.getStyle('margin-left') / 2, pBox.cy);
-                end = new kity.Point(box.right + node.getStyle('margin-right'), box.bottom);
-            } else {
-                start = new kity.Point(box.right + node.getStyle('margin-right') / 2, pBox.cy);
-                end = new kity.Point(box.left - node.getStyle('margin-left'), box.bottom);
-            }
-
-            end.y += 3;
-
-            var isTop = parent.children.length > 1 && node.getIndex() === 0;
-
-            pathData.push('M', start);
-            pathData.push('L', start.x, isTop ? (end.y + radius) : (end.y - radius));
-
-            var sf = +(side == 'right' && isTop || side == 'left' && !isTop);
-            var ex = side == 'right' ? (start.x + radius) : (start.x - radius);
-
-            pathData.push('A', radius, radius, 0, 0, sf, ex, end.y);
-            pathData.push('L', end);
-
-            connection.setMarker(null);
-
-            break;
-    }
-
-    connection.setPathData(pathData);
-});
