@@ -63,7 +63,7 @@ kity.extendClass(Minder, {
      * 获取脑图实例上的当前主题
      * @return {[type]} [description]
      */
-    getTheme: function() {
+    getTheme: function(node) {
         return this._theme || KityMinder._defaultTheme;
     },
 
@@ -71,8 +71,8 @@ kity.extendClass(Minder, {
      * 获得脑图实例上的样式
      * @param  {String} item 样式名称
      */
-    getStyle: function(item) {
-        var theme = KityMinder._themes[this.getTheme()];
+    getStyle: function(item, node) {
+        var theme = KityMinder._themes[this.getTheme(node)];
         var segment, dir, selector, value, matcher;
 
         if (item in theme) return theme[item];
@@ -102,8 +102,8 @@ kity.extendClass(Minder, {
      * @param  {String} name 样式名称，可以不加节点类型的前缀
      */
     getNodeStyle: function(node, name) {
-        var value = this.getStyle(name);
-        return value !== null ? value : this.getStyle(node.getType() + '-' + name);
+        var value = this.getStyle(name, node);
+        return value !== null ? value : this.getStyle(node.getType() + '-' + name, node);
     }
 });
 
