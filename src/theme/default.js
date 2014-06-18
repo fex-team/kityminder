@@ -32,6 +32,7 @@ KityMinder.registerTheme('default', {
     'connect-radius': 5,
 
     'selected-background': 'rgb(254, 219, 0)',
+    'selected-color': 'black',
 
     'drop-hint-color': 'yellow',
     'sub-drop-hint-width': 2,

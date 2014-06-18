@@ -24,12 +24,6 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
     }
 });
 
-kity.extendClass(MinderNode, {
-    getContentBox: function() {
-        return this._contentBox;
-    }
-});
-
 kity.extendClass(Minder, {
 
     _createRendererForNode: function(node) {
@@ -122,17 +116,7 @@ kity.extendClass(MinderNode, {
         return null;
     },
     getContentBox: function() {
-        return this.parent && this.parent.isCollapsed() ? {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0,
-            left: 0,
-            top: 0,
-            bottom: 0,
-            right: 0,
-            cx: 0,
-            cy: 0
-        } : this._contentBox;
+        //if (!this._contentBox) this.render();
+        return this.parent && this.parent.isCollapsed() ? new kity.Box() : this._contentBox;
     }
 });

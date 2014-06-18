@@ -179,7 +179,7 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (browser.ipad) {
                         receiver.container.focus();
                     }
-                }else{
+                } else {
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
                     if (node) {
