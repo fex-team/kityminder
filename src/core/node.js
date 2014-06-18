@@ -293,19 +293,22 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
 });
 
 MinderNode.getCommonAncestor = function(nodeA, nodeB) {
+    if (nodeA instanceof Array) {
+        return MinderNode.getCommonAncestor.apply(this, nodeA);
+    }
     switch (arguments.length) {
         case 1:
-            return nodeA;
+            return nodeA.parent;
 
         case 2:
-            if (nodeA.contains(nodeB)) {
+            if (nodeA.isAncestorOf(nodeB)) {
                 return nodeA;
             }
-            if (nodeB.contains(nodeA)) {
+            if (nodeB.isAncestorOf(nodeA)) {
                 return nodeB;
             }
             var ancestor = nodeA.parent;
-            while (ancestor && !ancestor.contains(nodeB)) {
+            while (ancestor && !ancestor.isAncestorOf(nodeB)) {
                 ancestor = ancestor.parent;
             }
             return ancestor;

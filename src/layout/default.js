@@ -78,11 +78,13 @@ KityMinder.registerLayout('default', kity.createClass({
                 x = nodeContentBox.right - childContentBox.left;
                 x += parent.getStyle('margin-right') + child.getStyle('margin-left');
 
+                // 设置布局矢量
                 child.setLayoutVector(new kity.Vector(childContentBox.right, childContentBox.cy));
             } else {
                 x = nodeContentBox.left - childContentBox.right;
                 x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
 
+                // 设置布局矢量
                 child.setLayoutVector(new kity.Vector(childContentBox.left, childContentBox.cy));
             }
 
@@ -93,6 +95,7 @@ KityMinder.registerLayout('default', kity.createClass({
                 y += children[i].getStyle('margin-top');
             }
 
+            // 设置布局结果
             transform = new kity.Matrix().translate(x, y);
 
             child.setLayoutTransform(transform);
@@ -110,32 +113,34 @@ KityMinder.registerLayout('default', kity.createClass({
         }
     },
 
-    getLayoutContextPoints: function(node) {
-        var points = [];
-        var siblings = node.parent && node.parent.children;
-        var g = KityMinder.Geometry;
+    getOrderHint: function(node) {
+        var hint = [];
+        var box = node.getLayoutBox();
+        var offset = node.getLevel() > 1 ? 3 : 5;
 
-        if (!siblings) return points;
-
-        siblings.forEach(function(sibling) {
-            if (sibling == node) return;
-            var index = sibling.getIndex();
-            var box = node.getLayoutBox();
-
-            // top order hint
-            points.push({
-                type: 'order',
-                index: index,
-                area: {
-                    x: box.x,
-                    y: box.top - 2,
-                    width: box.width,
-                    height: node.getStyle('margin-top')
-                },
-                hint: ['M', ]
-            });
+        hint.push({
+            type: 'up',
+            node: node,
+            area: {
+                x: box.x,
+                y: box.top - node.getStyle('margin-top') - offset,
+                width: box.width,
+                height: node.getStyle('margin-top')
+            },
+            path: ['M', box.x, box.top - offset, 'L', box.right, box.top - offset]
         });
 
-        return points;
+        hint.push({
+            type: 'down',
+            node: node,
+            area: {
+                x: box.x,
+                y: box.bottom + offset,
+                width: box.width,
+                height: node.getStyle('margin-bottom')
+            },
+            path: ['M', box.x, box.bottom + offset, 'L', box.right, box.bottom + offset]
+        });
+        return hint;
     }
 }));

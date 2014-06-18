@@ -30,6 +30,18 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    getOrder: function() {
+        return this.getData('order') || this.getIndex();
+    },
+
+    setOrder: function(order) {
+        return this.setData('order', order);
+    },
+
+    getOrderHint: function(refer) {
+        return this.getLayoutInstance().getOrderHint(this);
+    },
+
     getLayoutInstance: function() {
         var LayoutClass = KityMinder._layout[this.getLayout()];
         var layout = new LayoutClass();
@@ -89,10 +101,10 @@ kity.extendClass(MinderNode, {
     },
 
     setLayoutOffset: function(p) {
-        this.setData('layout_' + this.getLayout() + '_offset', {
+        this.setData('layout_' + this.getLayout() + '_offset', p ? {
             x: p.x,
             y: p.y
-        });
+        } : null);
         return this;
     },
 
@@ -291,5 +303,9 @@ var Layout = kity.createClass('Layout', {
             box = g.mergeBox(box, matrix.transformBox(treeBox));
         }
         return box;
+    },
+
+    getOrderHint: function(node) {
+        return [];
     }
 });

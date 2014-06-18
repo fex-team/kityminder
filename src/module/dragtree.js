@@ -1,18 +1,6 @@
 var GM = KityMinder.Geometry;
 
 // 矩形的变形动画定义
-var AreaAnimator = kity.createClass('AreaAnimator', {
-    base: kity.Animator,
-    constructor: function(startArea, endArea) {
-        startArea.opacity = 0;
-        endArea.opacity = 0.8;
-        this.callBase(startArea, endArea, function(target, value) {
-            target.setPosition(value.x, value.y);
-            target.setSize(value.width, value.height);
-            target.setOpacity(value.opacity);
-        });
-    }
-});
 
 var MoveToParentCommand = kity.createClass('MoveToParentCommand', {
     base: Command,
@@ -31,10 +19,51 @@ var MoveToParentCommand = kity.createClass('MoveToParentCommand', {
     }
 });
 
+var DropHinter = kity.createClass('DropHinter', {
+    base: kity.Group,
 
-function boxMapper(node) {
-    return node.getLayoutBox();
-}
+    constructor: function() {
+        this.callBase();
+        this.rect = new kity.Rect();
+        this.addShape(this.rect);
+    },
+
+    render: function(target) {
+        this.setVisible(!!target);
+        if (target) {
+            this.rect
+                .setBox(target.getLayoutBox())
+                .setRadius(target.getStyle('radius') || 0)
+                .stroke(
+                    target.getStyle('drop-hint-color') || 'yellow',
+                    target.getStyle('drop-hint-width') || 2
+            );
+        }
+    }
+});
+
+var OrderHinter = kity.createClass('OrderHinter', {
+    base: kity.Group,
+
+    constructor: function() {
+        this.callBase();
+        this.area = new kity.Rect();
+        this.path = new kity.Path();
+        this.addShapes([this.area, this.path]);
+    },
+
+    render: function(hint) {
+        this.setVisible(!!hint);
+        if (hint) {
+            this.area.setBox(hint.area);
+            this.area.fill(hint.node.getStyle('order-hint-area-color') || 'rgba(0, 255, 0, .5)');
+            this.path.setPathData(hint.path);
+            this.path.stroke(
+                hint.node.getStyle('order-hint-path-color') || '#0f0',
+                hint.node.getStyle('order-hint-path-width') || 1);
+        }
+    }
+});
 
 // 对拖动对象的一个替代盒子，控制整个拖放的逻辑，包括：
 //    1. 从节点列表计算出拖动部分
@@ -43,6 +72,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
     constructor: function(minder) {
         this._minder = minder;
+        this._dropHinter = new DropHinter();
+        this._orderHinter = new OrderHinter();
+        minder.getRenderContainer().addShapes([this._dropHinter, this._orderHinter]);
     },
 
     dragStart: function(position) {
@@ -78,18 +110,48 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
         minder.layout();
 
-        this._orderTest();
-        //this._dropTest();
-        //this._updateDropHint();
+        if (!this._dropTest()) {
+            this._orderTest();
+        } else {
+            this._renderOrderHint(this._orderSucceedHint = null);
+        }
     },
 
     dragEnd: function() {
         this._startPosition = null;
+
         if (!this._dragMode) {
             return;
         }
         if (this._dropSucceedTarget) {
+
+            this._dragSources.forEach(function(source) {
+                source.setLayoutOffset(null);
+            });
+
             this._minder.execCommand('movetoparent', this._dragSources, this._dropSucceedTarget);
+
+        } else if (this._orderSucceedHint) {
+
+            var hint = this._orderSucceedHint;
+            var index = hint.node.getIndex();
+
+            var sourceIndexes = this._dragSources.map(function(source) {
+                // 顺便干掉布局偏移
+                source.setLayoutOffset(null);
+                return source.getIndex();
+            });
+
+            var maxIndex = Math.max.apply(Math, sourceIndexes);
+            var minIndex = Math.min.apply(Math, sourceIndexes);
+
+            if (index < minIndex && hint.type == 'down') index++;
+            if (index > maxIndex && hint.type == 'up') index--;
+
+            hint.node.setLayoutOffset(null);
+
+            this._minder.execCommand('arrange', this._dragSources, index);
+            this._renderOrderHint(null);
         }
         this._leaveDragMode();
     },
@@ -103,7 +165,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
             this._startPosition = null;
             return false;
         }
+        this._fadeDragSources(0.5);
         this._calcDropTargets();
+        this._calcOrderHints();
         this._dragMode = true;
         return true;
     },
@@ -120,6 +184,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._dragSources = this._minder.getSelectedAncestors();
         this._dragSourceOffsets = this._dragSources.map(function(src) {
             return src.getLayoutOffset();
+        });
+    },
+
+    _fadeDragSources: function(opacity) {
+        this._dragSources.forEach(function(source) {
+            source.getRenderContainer().fxOpacity(opacity, 200);
         });
     },
 
@@ -149,46 +219,39 @@ var TreeDragger = kity.createClass('TreeDragger', {
         }
 
         this._dropTargets = findAvailableParents(this._dragSources, this._minder.getRoot());
-        this._dropTargetBoxes = this._dropTargets.map(boxMapper);
+        this._dropTargetBoxes = this._dropTargets.map(function(source) {
+            return source.getLayoutBox();
+        });
     },
 
-    _shrink: function() {
-        // 合并所有拖放源图形的矩形即可
-        function calcSourceArea(boxArray) {
-            var area = boxArray.pop();
-            while (boxArray.length) {
-                area = GM.mergeBox(area, boxArray.pop());
-            }
-            return {
-                x: area.left,
-                y: area.top,
-                width: area.width,
-                height: area.height
-            };
-        }
-        // 从焦点发散出一个固定的矩形即可
-        function calcFocusArea(focusPoint) {
-            var width = 80,
-                height = 30;
-            return {
-                x: focusPoint.x - width / 2,
-                y: focusPoint.y - height / 2,
-                width: width,
-                height: height
-            };
+    _calcOrderHints: function() {
+        var sources = this._dragSources;
+        var ancestor = MinderNode.getCommonAncestor(sources);
+
+        if (ancestor == sources[0]) ancestor = sources[0].parent;
+
+        if (sources.length === 0 || ancestor != sources[0].parent) {
+            this._orderHints = [];
+            return;
         }
 
-        var sourceArea = calcSourceArea(this._dragSources.map(boxMapper));
-        var focusArea = calcFocusArea(this._startPosition);
-        var animator = new AreaAnimator(sourceArea, focusArea);
-        animator.start(this._rect, 400, 'easeOutQuint');
+        var siblings = ancestor.children;
+
+        this._orderHints = siblings.reduce(function(hint, sibling) {
+            if (sources.indexOf(sibling) == -1) {
+                hint = hint.concat(sibling.getOrderHint());
+            }
+            return hint;
+        }, []);
     },
 
     _leaveDragMode: function() {
-        // this.remove();
+        this._fadeDragSources(1);
         this._dragMode = false;
         this._dropSucceedTarget = null;
-        // this._removeDropHint();
+        this._orderSucceedHint = null;
+        this._renderDropHint(null);
+        this._renderOrderHint(null);
     },
 
     _drawForDragMode: function() {
@@ -197,64 +260,62 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._minder.getRenderContainer().addShape(this);
     },
 
-    // 此处可用线段树优化，但考虑到节点不多，必要性不到，就用暴力测试
-    _dropTest: function() {
-        var dragBox = this.getRenderBox(),
-            test;
+    _boxTest: function(targets, targetBoxMapper, judge) {
+        var sourceBoxes = this._dragSources.map(function(source) {
+            return source.getLayoutBox();
+        });
 
-        this._dropSucceedTarget = null;
-        for (var i = 0; i < this._dropTargetBoxes.length; i++) {
-            test = this._dropTargetBoxes[i];
-            if (GM.isBoxIntersect(dragBox, test)) {
-                this._dropSucceedTarget = this._dropTargets[i];
-                return;
+        var i, j, target, sourceBox, targetBox;
+
+        judge = judge || function(intersectBox, sourceBox, targetBox) {
+            return intersectBox;
+        };
+
+        for (i = 0; i < targets.length; i++) {
+
+            target = targets[i];
+            targetBox = targetBoxMapper.call(this, target, i);
+
+            for (j = 0; j < sourceBoxes.length; j++) {
+                sourceBox = sourceBoxes[j];
+
+                var intersectBox = GM.getIntersectBox(sourceBox, targetBox);
+                if (judge(intersectBox, sourceBox, targetBox)) {
+                    return target;
+                }
             }
         }
-    },
-    _updateDropHint: function() {
-        var target = this._dropSucceedTarget,
-            lastTarget = this._lastSucceedTarget;
-        if (target && target == lastTarget) return;
-        if (lastTarget) {
-            this._removeDropStyle(lastTarget);
-        }
-        if (target) {
-            this._addDropStyle(target);
-        }
-        this._lastSucceedTarget = target;
+
+        return null;
     },
 
-    _removeDropHint: function() {
-        var lastTarget = this._lastSucceedTarget;
-        if (lastTarget) {
-            this._removeDropStyle(lastTarget);
-        }
+    _dropTest: function() {
+        this._dropSucceedTarget = this._boxTest(this._dropTargets, function(target, i) {
+            return this._dropTargetBoxes[i];
+        }, function(intersectBox, sourceBox, targetBox) {
+            function area(box) {
+                return box.width * box.height;
+            }
+            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox));
+        });
+        this._renderDropHint(this._dropSucceedTarget);
+        return !!this._dropSucceedTarget;
     },
-
-    _removeDropStyle: function(node) {
-        this._rect.stroke('#3399ff', 1);
-    },
-
-    _addDropStyle: function(node) {
-        node.getRenderContainer().fxScale(1.25, 1.25, 150, 'ease').fxScale(0.8, 0.8, 150, 'ease');
-    },
-
 
     _orderTest: function() {
-        if (this._dragSources.length > 1) return false;
-        var source = this._dragSources[0];
-        var sourceBox = source.getLayoutBox();
-        var contextPoints = source.getLayoutContextPoints();
-        var contextPoint;
+        this._orderSucceedHint = this._boxTest(this._orderHints, function(hint) {
+            return hint.area;
+        });
+        this._renderOrderHint(this._orderSucceedHint);
+        return !!this._orderSucceedHint;
+    },
 
-        for (var i = 0; i < contextPoints.length; i++) {
-            contextPoint = contextPoints[i];
-            if (contextPoint.type != 'order') continue;
-            if (GM.isBoxIntersect(contextPoint.area, sourceBox)) {
-                console.log(contextPoint);
-            }
-        }
+    _renderDropHint: function(target) {
+        this._dropHinter.render(target);
+    },
 
+    _renderOrderHint: function(hint) {
+        this._orderHinter.render(hint);
     }
 });
 
@@ -277,6 +338,8 @@ KityMinder.registerModule('DragTree', function() {
             },
             'mouseup': function(e) {
                 dragger.dragEnd(e.getPosition(this.getRenderContainer()));
+                e.stopPropagation();
+                this.fire('contentchange');
             }
         },
         commands: {

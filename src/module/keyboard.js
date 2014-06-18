@@ -9,7 +9,7 @@ KityMinder.registerModule("KeyboardModule", function() {
         var pointIndexes = [],
             p;
         root.traverse(function(node) {
-            p = node.getRenderContainer().getRenderBox('top');
+            p = node.getLayoutBox();
 
             // bugfix: 不应导航到收起的节点（判断其尺寸是否存在）
             if (p.width && p.height) {
@@ -127,11 +127,10 @@ KityMinder.registerModule("KeyboardModule", function() {
             km.select(nextNode, true);
         }
     }
-
     return {
 
         'events': {
-            'contentchange': function() {
+            'contentchange layoutfinish': function() {
                 buildPositionNetwork(this.getRoot());
             },
             'normal.keydown': function(e) {
@@ -142,7 +141,11 @@ KityMinder.registerModule("KeyboardModule", function() {
 
                 this.receiver.keydownNode = node;
 
-                switch (e.originEvent.keyCode) {
+                var keyEvent = e.originEvent;
+
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+
+                switch (keyEvent.keyCode) {
                     case keys.Enter:
                         this.execCommand('AppendSiblingNode', lang.topic);
                         e.preventDefault();
