@@ -1,4 +1,13 @@
-var keymap = KityMinder.keymap = {
+var keymap = KityMinder.keymap = (function(origin) {
+    var ret = {};
+    for (var key in origin) {
+        if (origin.hasOwnProperty(key)) {
+            ret[key] = origin[key];
+            ret[key.toLowerCase()] = origin[key];
+        }
+    }
+    return ret;
+})({
     'Backspace': 8,
     'Tab': 9,
     'Enter': 13,
@@ -37,7 +46,7 @@ var keymap = KityMinder.keymap = {
     '=': 187,
     '-': 189,
 
-    "b": 66,
+    'b': 66,
     'i': 73,
     //回退
     'z': 90,
@@ -68,7 +77,7 @@ var keymap = KityMinder.keymap = {
         38: 1,
         39: 1,
         40: 1,
-        113:1
+        113: 1
     },
     'isSelectedNodeKey': {
         //上下左右
@@ -79,4 +88,4 @@ var keymap = KityMinder.keymap = {
         13: 1,
         9: 1
     }
-};
+});

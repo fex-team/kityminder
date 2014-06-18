@@ -1,4 +1,4 @@
-KityMinder.registerModule("Select", function() {
+KityMinder.registerModule('Select', function() {
     var minder = this;
     var g = KityMinder.Geometry;
 
@@ -67,8 +67,8 @@ KityMinder.registerModule("Select", function() {
 
                 // 计算选中范围
                 minder.getRoot().traverse(function(node) {
-                    var renderBox = node.getRenderContainer().getRenderBox("top");
-                    if (g.isBoxIntersect(renderBox, marquee)) {
+                    var renderBox = node.getRenderContainer().getRenderBox('top');
+                    if (g.getIntersectBox(renderBox, marquee)) {
                         selectedNodes.push(node);
                     }
                 });
@@ -90,7 +90,7 @@ KityMinder.registerModule("Select", function() {
         };
     })();
 
-    var lastDownNode = null;
+    var lastDownNode = null, lastDownPosition = null;
     return {
         'events': {
             'normal.mousedown textedit.mousedown': function(e) {
@@ -122,6 +122,7 @@ KityMinder.registerModule("Select", function() {
                 //     不能马上变为单选，因为可能是需要拖动选中的多个节点
                 else if (!this.isSingleSelect()) {
                     lastDownNode = downNode;
+                    lastDownPosition = e.getPosition(this.getRenderContainer());
                 }
             },
             'normal.mousemove textedit.mousemove': marqueeActivator.selectMove,
@@ -130,7 +131,9 @@ KityMinder.registerModule("Select", function() {
 
                 // 如果 mouseup 发生在 lastDownNode 外，是无需理会的
                 if (upNode && upNode == lastDownNode) {
-                    this.select(lastDownNode, true);
+                    var upPosition = e.getPosition(this.getRenderContainer());
+                    var movement = kity.Vector.fromPoints(lastDownPosition, upPosition);
+                    if (movement.length() < 1) this.select(lastDownNode, true);
                     lastDownNode = null;
                 }
 

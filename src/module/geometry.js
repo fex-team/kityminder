@@ -84,16 +84,24 @@ KityMinder.Geometry = (function() {
     };
 
     g.isPointInsideBox = function(p, b) {
+        uniformBox(b);
         var ranges = g.getBoxRange(b);
         return g.isNumberInRange(p.x, ranges.x) && g.isNumberInRange(p.y, ranges.y);
     };
 
-    g.isBoxIntersect = function(b1, b2) {
+    g.getIntersectBox = function(b1, b2) {
+        uniformBox(b1);
+        uniformBox(b2);
         var minx = max(b1.left, b2.left),
             miny = max(b1.top, b2.top),
             maxx = min(b1.right, b2.right),
             maxy = min(b1.bottom, b2.bottom);
-        return minx < maxx && miny < maxy;
+        return minx < maxx && miny < maxy ? wrapBox({
+            left: minx,
+            right: maxx,
+            top: miny,
+            bottom: maxy
+        }) : null;
     };
 
     g.snapToSharp = function(unknown) {

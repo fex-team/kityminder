@@ -4,7 +4,10 @@ KityMinder.registerModule("fontmodule", function() {
     }
 
     KityMinder.TextRenderer.registerStyleHook(function(node, text) {
-        text.fill(getNodeDataOrStyle(node, 'color'));
+        var dataColor = node.getData('color');
+        var selectedColor = node.getStyle('selected-color');
+        var styleColor = node.getStyle('color');
+        text.fill(dataColor || (node.isSelected() ? selectedColor : styleColor));
         text.setFont({
             family: getNodeDataOrStyle(node, 'font-family'),
             size: getNodeDataOrStyle(node, 'font-size')

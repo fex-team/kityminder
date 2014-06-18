@@ -30,6 +30,18 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
+    getOrder: function() {
+        return this.getData('order') || this.getIndex();
+    },
+
+    setOrder: function(order) {
+        return this.setData('order', order);
+    },
+
+    getOrderHint: function(refer) {
+        return this.getLayoutInstance().getOrderHint(this);
+    },
+
     getLayoutInstance: function() {
         var LayoutClass = KityMinder._layout[this.getLayout()];
         var layout = new LayoutClass();
@@ -89,10 +101,10 @@ kity.extendClass(MinderNode, {
     },
 
     setLayoutOffset: function(p) {
-        this.setData('layout_' + this.getLayout() + '_offset', {
+        this.setData('layout_' + this.getLayout() + '_offset', p ? {
             x: p.x,
             y: p.y
-        });
+        } : null);
         return this;
     },
 
@@ -147,11 +159,13 @@ kity.extendClass(Minder, {
 
         layoutNode(this.getRoot());
 
-        return this.applyLayoutResult(duration);
+        this.applyLayoutResult(this.getRoot(), duration);
+
+        return this.fire('layout');
     },
 
-    applyLayoutResult: function(duration) {
-        var root = this.getRoot();
+    applyLayoutResult: function(root, duration) {
+        root = root || this.getRoot();
         var me = this;
 
         function apply(node, pMatrix) {
@@ -205,8 +219,7 @@ kity.extendClass(Minder, {
             }
         }
 
-        apply(root, new kity.Matrix());
-        this.fire('layout');
+        apply(root, root.parent ? root.parent.getGlobalLayoutTransform() : new kity.Matrix());
         return this;
     },
 });
@@ -291,5 +304,9 @@ var Layout = kity.createClass('Layout', {
             box = g.mergeBox(box, matrix.transformBox(treeBox));
         }
         return box;
+    },
+
+    getOrderHint: function(node) {
+        return [];
     }
 });

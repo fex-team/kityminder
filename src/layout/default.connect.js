@@ -13,7 +13,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection)
     var start, end, vector;
     var abs = Math.abs;
     var pathData = [];
-    var side = box.cx > pBox.cx ? 'right' : 'left';
+    var side = node.getLayoutVector().x > 0 ? 'right' : 'left';
 
     node.getMinder().getPaper().addResource(connectMarker);
 
@@ -38,30 +38,24 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection)
 
             var radius = node.getStyle('connect-radius');
             var underY = box.bottom + 2;
-            var p1, p2, p3, p4, v12;
-            var isTop = parent.children.length > 1 && node.getIndex() === 0;
+            var startY = parent.getType() == 'sub' ? pBox.bottom + 2 : pBox.cy;
+            var p1, p2, p3, mx;
 
             if (side == 'right') {
-                p1 = new kity.Point(pBox.right + parent.getStyle('margin-right'), pBox.cy);
-                p3 = new kity.Point(box.left, underY);
-                p4 = new kity.Point(box.right, underY);
-                p2 = p3.offset(-radius, isTop ? radius : -radius);
+                p1 = new kity.Point(pBox.right + 10, startY);
+                p2 = new kity.Point(box.left, underY);
+                p3 = new kity.Point(box.right + 10.5, underY);
             } else {
-                p1 = new kity.Point(pBox.left - parent.getStyle('margin-left'), pBox.cy);
-                p3 = new kity.Point(box.right, underY);
-                p4 = new kity.Point(box.left, underY);
-                p2 = p3.offset(radius, isTop ? radius : -radius);
+                p1 = new kity.Point(pBox.left - 10, startY);
+                p2 = new kity.Point(box.right, underY);
+                p3 = new kity.Point(box.left - 10.5, underY);
             }
 
-            v12 = kity.Vector.fromPoints(p1, p2);
+            mx = (p1.x + p2.x) / 2;
 
             pathData.push('M', p1);
-            //pathData.push('L', p2);
-            // rx, ry, xr, laf, sf, p
-            var sf = +(side == 'right' && isTop || side == 'left' && !isTop);
+            pathData.push('C', mx, p1.y, mx, p2.y, p2);
             pathData.push('L', p3);
-            pathData.push('L', p4);
-            //var ex = side == 'right' ? (start.x + radius) : (start.x - radius);
 
             connection.setMarker(null);
 
