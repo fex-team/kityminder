@@ -3,11 +3,11 @@
 utils.extend(KityMinder, {
     _connectProviders: {},
 
-    _defaultConnectProvider: function(node, parent) {
-        return [
+    _defaultConnectProvider: function(node, parent, connection) {
+        connection.setPathData([
             'M', parent.getLayoutPoint(),
             'L', node.getLayoutPoint()
-        ];
+        ]);
     },
 
     registerConnectProvider: function(layout, provider) {
@@ -60,7 +60,7 @@ kity.extendClass(Minder, {
         }
         connection.setVisible(true);
 
-        var provider = KityMinder.getConnectProvider(node.getLayout());
+        var provider = KityMinder.getConnectProvider(parent.getLayout());
 
         provider(node, parent, connection);
     }
