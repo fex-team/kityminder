@@ -5,7 +5,7 @@ KityMinder.registerTheme('bottom', {
     'root-font-size': 24,
     'root-padding': [15, 25],
     'root-margin': 0,
-    'root-radius': 30,
+    'root-radius': 0,
     'root-space': 10,
 
     'main-color': '#333',

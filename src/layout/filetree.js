@@ -41,22 +41,19 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 y += child.getStyle('margin-top');
                 child.setLayoutTransform(new kity.Matrix().translate(x, y));
                 y += childTreeBox.height + children[i].getStyle('margin-bottom');
-                child.setLayoutVector(new kity.Vector(childContentBox.left + 5, childContentBox.cy));
+                child.setLayoutVector(new kity.Vector(childContentBox.left + 10, childContentBox.bottom));
             }
         }
     }
 }));
 
-KityMinder.registerConnectProvider('filetree', function(node, parent) {
-
+KityMinder.registerConnectProvider('filetree', function(node, parent, connection) {
     var box = node.getLayoutBox(),
         pBox = parent.getLayoutBox();
-    var abs = Math.abs;
     var pathData = [];
-    var side = box.cx > pBox.cx ? 'right' : 'left';
     var left = pBox.left + 5;
     pathData.push('M', new kity.Point(left, pBox.bottom));
     pathData.push('L', new kity.Point(left, box.cy));
     pathData.push('L', new kity.Point(box.left, box.cy));
-    return pathData;
+    connection.setPathData(pathData);
 });
