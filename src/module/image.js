@@ -38,12 +38,15 @@ KityMinder.registerModule('image', function() {
             loadImageSize(url, function(width, height) {
                 if (!width) return;
                 utils.each(nodes, function(i, n) {
+                    var size = fitImageSize(
+                        width, height,
+                        km.getOptions('maxImageWidth'),
+                        km.getOptions('maxImageHeight'));
                     n.setData('image', url);
-                    n.setData('imageWidth', width);
-                    n.setData('imageHeight', height);
+                    n.setData('imageSize', size);
                     n.render();
                 });
-                km.layout();
+                km.layout(300);
             });
 
         },
@@ -73,9 +76,9 @@ KityMinder.registerModule('image', function() {
         execute: function(km) {
             var nodes = km.getSelectedNodes();
             utils.each(nodes, function(i, n) {
-                n.setData('image');
-                km.updateLayout(n);
+                n.setData('image').render();
             });
+            km.layout(300);
         },
         queryState: function(km) {
             var nodes = km.getSelectedNodes();
@@ -97,6 +100,35 @@ KityMinder.registerModule('image', function() {
         }
     });
 
+    var ImageRenderer = kity.createClass('ImageRenderer', {
+        base: KityMinder.Renderer,
+
+        create: function(node) {
+            return new kity.Image();
+        },
+
+        shouldRender: function(node) {
+            return node.getData('image');
+        },
+
+        update: function(image, node, box) {
+            var url = node.getData('image');
+            var size = node.getData('imageSize');
+            var spaceTop = node.getStyle('space-top');
+
+            if (!size) return;
+
+            image
+                .setUrl(url)
+                .setX(box.cx - size.width / 2)
+                .setY(box.y - size.height - spaceTop)
+                .setWidth(size.width)
+                .setHeight(size.height);
+
+            return new kity.Box(image.getX(), image.getY(), size.width, size.height);
+        }
+    });
+
     return {
         'defaultOptions': {
             'maxImageWidth': 200,
@@ -106,32 +138,8 @@ KityMinder.registerModule('image', function() {
             'image': ImageCommand,
             'removeimage': RemoveImageCommand
         },
-        'events': {
-            'RenderNodeTop': function(e) {
-                var node = e.node,
-                    url = node.getData('image');
-                var link, img, size, currentBox;
-
-                if (url) {
-
-                    size = fitImageSize(
-                        node.getData('imageWidth'),
-                        node.getData('imageHeight'),
-                        this.getOptions('maxImageWidth'),
-                        this.getOptions('maxImageHeight'));
-
-                    img = new kity.Image(url, size.width, size.height);
-
-                    link = new kity.HyperLink(url);
-                    link.addShape(img);
-                    link.setTarget('_blank');
-                    link.setStyle('cursor', 'pointer');
-
-                    currentBox = node.getContRc().getBoundaryBox();
-                    node.getContRc().addShape(link.setTranslate(0, currentBox.y - size.height));
-
-                }
-            }
+        'renderers': {
+            'top': ImageRenderer
         }
     };
 });

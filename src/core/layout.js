@@ -159,11 +159,13 @@ kity.extendClass(Minder, {
 
         layoutNode(this.getRoot());
 
-        return this.applyLayoutResult(duration);
+        this.applyLayoutResult(this.getRoot(), duration);
+
+        return this.fire('layout');
     },
 
-    applyLayoutResult: function(duration) {
-        var root = this.getRoot();
+    applyLayoutResult: function(root, duration) {
+        root = root || this.getRoot();
         var me = this;
 
         function apply(node, pMatrix) {
@@ -217,8 +219,7 @@ kity.extendClass(Minder, {
             }
         }
 
-        apply(root, new kity.Matrix());
-        this.fire('layout');
+        apply(root, root.parent ? root.parent.getGlobalLayoutTransform() : new kity.Matrix());
         return this;
     },
 });

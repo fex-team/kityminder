@@ -106,9 +106,8 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
         for (var i = 0; i < this._dragSources.length; i++) {
             this._dragSources[i].setLayoutOffset(this._dragSourceOffsets[i].offset(movement));
+            minder.applyLayoutResult(this._dragSources[i]);
         }
-
-        minder.layout();
 
         if (!this._dropTest()) {
             this._orderTest();
