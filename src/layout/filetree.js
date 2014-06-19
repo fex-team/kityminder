@@ -44,6 +44,36 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 child.setLayoutVector(new kity.Vector(childContentBox.left + 10, childContentBox.bottom));
             }
         }
+    },
+    getOrderHint: function(node) {
+        var hint = [];
+        var box = node.getLayoutBox();
+        var offset = node.getLevel() > 1 ? 3 : 5;
+
+        hint.push({
+            type: 'up',
+            node: node,
+            area: {
+                x: box.x,
+                y: box.top - node.getStyle('margin-top') - offset,
+                width: box.width,
+                height: node.getStyle('margin-top')
+            },
+            path: ['M', box.x, box.top - offset, 'L', box.right, box.top - offset]
+        });
+
+        hint.push({
+            type: 'down',
+            node: node,
+            area: {
+                x: box.x,
+                y: box.bottom + offset,
+                width: box.width,
+                height: node.getStyle('margin-bottom')
+            },
+            path: ['M', box.x, box.bottom + offset, 'L', box.right, box.bottom + offset]
+        });
+        return hint;
     }
 }));
 
