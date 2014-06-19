@@ -75,7 +75,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 if (node) {
                     var textShape = node.getRenderer('TextRenderer').getRenderShape();
                     textShape.setStyle('cursor', 'default');
-                    if (this.isSingleSelect() && node.isSelected()) { // && e.kityEvent.targetShape.getType().toLowerCase()== 'text'
+                    if (this.isSingleSelect() && node.isSelected()) {
 
                         sel.collapse();
                         sel.setSelectionShowStatus(true);
@@ -111,10 +111,14 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (this.isSingleSelect() && node.isSelected()) {
                         var orgEvt = e.originEvent,
                             keyCode = orgEvt.keyCode;
-                        if (!keymap.notContentInput[keyCode] && range.nativeSel.rangeCount !== 0 && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+                        if (!keymap.notContentInput[keyCode] &&
+                            range.nativeSel.rangeCount !== 0 &&
+                            !orgEvt.ctrlKey && !orgEvt.metaKey &&
+                            !orgEvt.shiftKey && !orgEvt.altKey) {
 
                             var nativeRange = range.nativeSel.getRangeAt(0);
-                            if (nativeRange && (nativeRange.startContainer === receiver.container || receiver.container.contains(nativeRange.startContainer))) {
+                            if (nativeRange && (nativeRange.startContainer === receiver.container ||
+                                receiver.container.contains(nativeRange.startContainer))) {
                                 km.setStatus('textedit');
                                 sel.setSelectionShowStatus(true);
                                 km.fire('saveScene');
@@ -326,29 +330,13 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-//                if ((e.commandName == 'priority' || e.commandName == 'progress') && this.getStatus() == 'textedit') {
-//
-//                    sel.setHide();
-//                    receiver.setBaseOffset()
-//                        .getTextOffsetData();
-////
-////                    if (sel.collapsed) {
-////                        receiver.updateSelection();
-////                    } else {
-////                        receiver.updateSelectionShow(1);
-////                    }
-//
-//                    return;
-//
-//
-//                }
                 receiver.clear().setTextEditStatus(false);
                 if (this.getStatus() == 'textedit') {
                     this.setStatus('normal');
                 }
             },
-            'layoutfinish':function(e){
-                if(e.node === receiver.minderNode && this.getStatus() == 'textedit'){
+            'layoutfinish':function(e) {
+                if (e.node === receiver.minderNode && this.getStatus() == 'textedit') {
                     receiver
                         .setBaseOffset()
                         .setContainerStyle()

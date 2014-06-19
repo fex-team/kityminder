@@ -149,9 +149,12 @@ kity.extendClass(Minder, {
         function layoutNode(node) {
 
             // layout all children first
-            node.children.forEach(function(child) {
-                layoutNode(child);
-            });
+            // 剪枝：收起的节点无需计算
+            if (node.isExpanded()) {
+                node.children.forEach(function(child) {
+                    layoutNode(child);
+                });
+            }
 
             var layout = node.getLayoutInstance();
             layout.doLayout(node);

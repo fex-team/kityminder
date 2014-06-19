@@ -7,7 +7,7 @@ KityMinder.registerModule("fontmodule", function() {
         var dataColor = node.getData('color');
         var selectedColor = node.getStyle('selected-color');
         var styleColor = node.getStyle('color');
-        text.fill(dataColor || (node.isSelected() ? selectedColor : styleColor));
+        text.fill(dataColor || (node.isSelected() && selectedColor ? selectedColor : styleColor));
         text.setFont({
             family: getNodeDataOrStyle(node, 'font-family'),
             size: getNodeDataOrStyle(node, 'font-size')

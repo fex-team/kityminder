@@ -149,10 +149,11 @@ KityMinder.registerModule('Expand', function() {
             this.addShapes([this.outline, this.sign]);
             this.initEvent(node);
             this.setId(KityMinder.uuid('node_expander'));
+            this.setStyle('cursor', 'pointer');
         },
 
         initEvent: function(node) {
-            this.on('click', function(e) {
+            this.on('mousedown', function(e) {
                 if (node.isExpanded()) {
                     node.collapse();
                 } else {
@@ -225,6 +226,9 @@ KityMinder.registerModule('Expand', function() {
             'layoutapply': function(e) {
                 var r = e.node.getRenderer('ExpanderRenderer');
                 r.update(r.getRenderShape(), e.node);
+            },
+            'preimport': function(e) {
+                var json = e.json;
             }
         },
         renderers: {

@@ -38,6 +38,7 @@ var DEFAULT_TEXT = {
 
 function importNode(node, json, km) {
     var data = json.data;
+    node.data = {};
     for (var field in data) {
         node.setData(field, data[field]);
     }
@@ -105,9 +106,10 @@ kity.extendClass(Minder, {
 
         json = params.json || (params.json = protocal.decode(local));
 
-        if (typeof json === 'object' && 'then' in json){
+        if (typeof json === 'object' && 'then' in json) {
             var self = this;
             json.then(local, function(data) {
+                params.json = data;
                 self._doImport(data, params);
             });
         } else {
@@ -117,32 +119,27 @@ kity.extendClass(Minder, {
     },
 
     _doImport: function(json, params) {
-        try{
-            this._fire(new MinderEvent('preimport', params, false));
+        this._fire(new MinderEvent('preimport', params, false));
 
-            // 删除当前所有节点
-            while (this._root.getChildren().length) {
-                this.removeNode(this._root.getChildren()[0]);
-            }
-
-            importNode(this._root, json, this);
-            this._root.preTraverse(function(node) {
-                node.render();
-            });
-            this._root.layout();
-
-            this.fire('beforeimport', params);
-            this.fire('import', params);
-
-            this._firePharse({
-                type: 'contentchange'
-            });
-            this._firePharse({
-                type: 'interactchange'
-            });
-        }catch(e){
-            this.fire('rendererror');
+        // 删除当前所有节点
+        while (this._root.getChildren().length) {
+            this.removeNode(this._root.getChildren()[0]);
         }
-    }
 
+        importNode(this._root, json, this);
+
+        this._root.preTraverse(function(node) {
+            node.render();
+        });
+        this._root.layout();
+
+        this.fire('import', params);
+
+        this._firePharse({
+            type: 'contentchange'
+        });
+        this._firePharse({
+            type: 'interactchange'
+        });
+    }
 });
