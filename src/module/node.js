@@ -24,7 +24,7 @@ var AppendSiblingCommand = kity.createClass('AppendSiblingCommand', {
         var sibling = km.getSelectedNode();
         var parent = sibling.parent;
         if (!parent) {
-            return null;
+            return km.execCommand('AppendChildNode', text);
         }
         var node = km.createNode(text, parent, sibling.getIndex() + 1);
         km.select(node, true);
@@ -45,10 +45,10 @@ var RemoveNodeCommand = kity.createClass('RemoverNodeCommand', {
         var ancestor = MinderNode.getCommonAncestor.apply(null, nodes);
 
         nodes.forEach(function(node) {
-            km.removeNode(node);
+            if (!node.isRoot()) km.removeNode(node);
         });
 
-        km.select(ancestor, true);
+        km.select(ancestor || km.getRoot(), true);
         km.layout(300);
     },
     queryState: function(km) {
