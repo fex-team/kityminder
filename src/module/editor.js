@@ -45,6 +45,9 @@ KityMinder.registerModule('TextEditModule', function() {
     };
     var selectionByClick = false;
 
+    var hasCursor = false;
+
+    var isSelected = false;
 
     return {
         'events': {
@@ -58,6 +61,7 @@ KityMinder.registerModule('TextEditModule', function() {
                     e.stopPropagationImmediately();
                     return;
                 }
+                hasCursor = sel.isShow();
                 sel.setHide();
                 var node = e.getTargetNode();
 
@@ -75,12 +79,12 @@ KityMinder.registerModule('TextEditModule', function() {
                 if (node) {
                     var textShape = node.getRenderer('TextRenderer').getRenderShape();
                     textShape.setStyle('cursor', 'default');
-                    if (this.isSingleSelect() && node.isSelected()) {
+                    if (this.isSingleSelect() && node.isSelected() && hasCursor) {
 
                         sel.collapse();
                         sel.setSelectionShowStatus(true);
                         node.getRenderer('TextRenderer').getRenderShape().setStyle('cursor', 'text');
-                        km.setStatus('textedit');
+
                         receiver.setTextEditStatus(true)
                             .setSelection(sel)
                             .setKityMinder(this)
@@ -90,17 +94,23 @@ KityMinder.registerModule('TextEditModule', function() {
                             .setContainerStyle()
                             .setSelectionHeight()
                             .setCurrentIndex(e.getPosition(this.getRenderContainer()))
-                            .updateSelection()
+
                             .setRange(range);
                         sel.setData('relatedNode', node);
                         mouseDownStatus = true;
                         lastEvtPosition = e.getPosition(this.getRenderContainer());
                         if (selectionByClick) {
+                            receiver.updateSelection();
                             sel.setShow();
                             selectionByClick = false;
+                            km.setStatus('textedit');
                         }
-                        km.setStatus('textedit');
+
+
+
                     }
+
+                    isSelected = node.isSelected();
                 }
             },
 
@@ -168,6 +178,41 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
             },
             'normal.mouseup textedit.mouseup': function(e) {
+                var node = e.getTargetNode();
+
+
+                if (node) {
+                    var textShape = node.getRenderer('TextRenderer').getRenderShape();
+
+                    if (isSelected && !hasCursor) {
+                        console.log('sd')
+                        sel.collapse();
+                        sel.setSelectionShowStatus(true);
+                        node.getRenderer('TextRenderer').getRenderShape().setStyle('cursor', 'text');
+
+                        receiver.setTextEditStatus(true)
+                            .setSelection(sel)
+                            .setKityMinder(this)
+                            .setMinderNode(node)
+                            .setTextShape(textShape)
+                            .setBaseOffset()
+                            .setContainerStyle()
+                            .setSelectionHeight()
+                            .setCurrentIndex(e.getPosition(this.getRenderContainer()))
+                            .updateSelection()
+                            .setRange(range);
+                        sel.setData('relatedNode', node);
+
+                        lastEvtPosition = e.getPosition(this.getRenderContainer());
+                        if (selectionByClick) {
+                            sel.setShow();
+                            selectionByClick = false;
+                        }
+                        km.setStatus('textedit');
+
+                        return;
+                    }
+                }
 
                 if (mouseDownStatus) {
                     if (!sel.collapsed) {
@@ -177,12 +222,16 @@ KityMinder.registerModule('TextEditModule', function() {
                             console.log(error);
                         }
                     } else {
-                        sel.setShow();
+                        receiver.updateSelection();
                     }
 
                     if (browser.ipad) {
                         receiver.container.focus();
                     }
+                    hasCursor = true;
+                    km.setStatus('textedit');
+
+
                 } else {
                     //当选中节点后，输入状态准备
                     var node = e.getTargetNode();
@@ -208,9 +257,11 @@ KityMinder.registerModule('TextEditModule', function() {
                                 .updateRange(range).setTextEditStatus(true);
 
                             sel.setData('relatedNode', node);
+                            km.setStatus('textedit');
 
                         }
                     }
+
                 }
 
 
@@ -219,7 +270,7 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'textedit.beforemousemove': function(e) {
                 //ipad下不做框选
-                if (mouseDownStatus && !browser.ipad) {
+                if (mouseDownStatus && (sel.isShow() || hasCursor) && !browser.ipad) {
                     e.stopPropagationImmediately();
 
                     var offset = e.getPosition(this.getRenderContainer());
@@ -240,7 +291,6 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 var text = e.kityEvent.targetShape;
                 if (text.getType().toLowerCase() == 'text') {
-
                     sel.setStartOffset(0);
                     sel.setEndOffset(text.getContent().length);
                     sel.setShow();
@@ -336,7 +386,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
             },
             'layoutfinish':function(e) {
-                if (e.node === receiver.minderNode && this.getStatus() == 'textedit') {
+                if (e.node === receiver.minderNode && this.getStatus() == 'textedit' && hasCursor) {
                     receiver
                         .setBaseOffset()
                         .setContainerStyle()
@@ -364,6 +414,9 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
+            },
+            'treedragend':function(){
+                isSelected = false;
             }
         }
     };

@@ -153,6 +153,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
             this._renderOrderHint(null);
         }
         this._leaveDragMode();
+        this._minder.fire('treedragend');
     },
 
     // 进入拖放模式：
@@ -326,7 +327,7 @@ KityMinder.registerModule('DragTree', function() {
             dragger = new TreeDragger(this);
         },
         events: {
-            mousedown: function(e) {
+            'mousedown': function(e) {
                 // 单选中根节点也不触发拖拽
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
