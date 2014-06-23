@@ -57,6 +57,10 @@ kity.extendClass(Minder, {
         });
 
         this.getRoot().layout();
+
+        this.getPaper().getContainer().style.background = this.getStyle('background');
+
+        return true;
     },
 
     /**
@@ -102,13 +106,29 @@ kity.extendClass(Minder, {
      * @param  {String} name 样式名称，可以不加节点类型的前缀
      */
     getNodeStyle: function(node, name) {
-        var value = this.getStyle(name, node);
-        return value !== null ? value : this.getStyle(node.getType() + '-' + name, node);
+        var value = this.getStyle(node.getType() + '-' + name, node);
+        return value !== null ? value : this.getStyle(name, node);
     }
 });
 
 kity.extendClass(MinderNode, {
     getStyle: function(name) {
         return this.getMinder().getNodeStyle(this, name);
+    }
+});
+
+KityMinder.registerModule('Theme', {
+    commands: {
+        'theme': kity.createClass('ThemeCommand', {
+            base: Command,
+
+            execute: function(km, name) {
+                return km.useTheme(name);
+            },
+
+            queryValue: function(km) {
+                return km.getTheme();
+            }
+        })
     }
 });

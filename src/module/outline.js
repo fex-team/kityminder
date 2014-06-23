@@ -12,9 +12,7 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
             .setId(KityMinder.uuid('node_outline'));
 
         var shadow = this.shadow = new kity.Rect()
-            .setId(KityMinder.uuid('node_shadow'))
-            .fill('black')
-            .setOpacity(0.25);
+            .setId(KityMinder.uuid('node_shadow'));
 
         group.addShapes([shadow, outline]);
 
@@ -51,16 +49,20 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
         this.outline
             .setPosition(outlineBox.x, outlineBox.y)
             .setSize(outlineBox.width, outlineBox.height)
-            .setRadius(node.getStyle('radius'))
-            .fill(node.isSelected() ?
-                node.getStyle('selected-background') :
-                node.getStyle('background'));
+            .setRadius(node.getStyle('radius'));
 
-        if (node.getLevel() < 2) {
+        var prefix = node.isSelected() ? 'selected-' : '';
+
+        this.outline.fill(node.getStyle(prefix + 'background'));
+        this.outline.stroke(node.getStyle(prefix + 'stroke'),
+            node.getStyle(prefix + 'stroke-width'));
+
+        if (node.getStyle('shadow')) {
             this.shadow
                 .setVisible(true)
                 .setPosition(outlineBox.x + 4, outlineBox.y + 5)
                 .setSize(outlineBox.width, outlineBox.height)
+                .fill(node.getStyle('shadow'))
                 .setRadius(node.getStyle('radius'));
         } else {
             this.shadow.setVisible(false);

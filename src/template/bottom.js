@@ -9,6 +9,6 @@ KityMinder.registerTemplate('bottom', {
     },
 
     getTheme: function(node) {
-        return node.isRoot() ? 'bottom' : 'filetree';
+        return node ? (node.isRoot() ? 'bottom' : 'filetree') : 'default';
     }
 });

@@ -18,7 +18,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
         this._enabled = value;
     },
     move: function(offset) {
-        this._minder.getRenderContainer().translate(offset.x, offset.y);
+        this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
     },
 
     _bind: function() {

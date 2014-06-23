@@ -33,6 +33,7 @@
             'theme/default.js',
             'theme/bottom.js',
             'theme/filetree.js',
+            'theme/fresh.js',
             'template/bottom.js',
             'module/node.js',
             'module/text.js',

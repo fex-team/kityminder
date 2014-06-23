@@ -24,11 +24,7 @@ kity.extendClass(Minder, {
     createConnect: function(node) {
         if (node.isRoot()) return;
 
-        var strokeColor = node.getStyle('connect-color') || 'white',
-            strokeWidth = node.getStyle('connect-width') || 2;
-
-        var connection = new kity.Path()
-            .stroke(strokeColor, strokeWidth);
+        var connection = new kity.Path();
 
         node._connection = connection;
 
@@ -62,7 +58,12 @@ kity.extendClass(Minder, {
 
         var provider = KityMinder.getConnectProvider(parent.getLayout());
 
-        provider(node, parent, connection);
+        var strokeColor = node.getStyle('connect-color') || 'white',
+            strokeWidth = node.getStyle('connect-width') || 2;
+
+        connection.stroke(strokeColor, strokeWidth);
+
+        provider(node, parent, connection, strokeWidth, strokeColor);
     }
 });
 

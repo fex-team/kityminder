@@ -9,7 +9,7 @@ KityMinder.registerModule('Select', function() {
         var startPosition = null;
 
         // 选区的图形
-        var marqueeShape = new kity.Path().fill('rgba(255,255,255,.3)').stroke('white');
+        var marqueeShape = new kity.Path();
 
         // 标记是否已经启动框选状态
         //    并不是 mousedown 发生之后就启动框选状态，而是检测到移动了一定的距离（MARQUEE_MODE_THRESHOLD）之后
@@ -46,7 +46,9 @@ KityMinder.registerModule('Select', function() {
                     // 已经达到阈值，记录下来并且重置选区形状
                     marqueeMode = true;
                     minder.getPaper().addShape(marqueeShape);
-                    marqueeShape.setOpacity(0.8).getDrawer().clear();
+                    marqueeShape
+                        .fill(minder.getStyle('marquee-background'))
+                        .stroke(minder.getStyle('marquee-stroke')).setOpacity(0.8).getDrawer().clear();
                 }
 
                 var marquee = g.getBox(p1, p2),

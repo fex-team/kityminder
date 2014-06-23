@@ -1,11 +1,12 @@
 var connectMarker = new kity.Marker().pipe(function() {
     var r = 4;
-    var dot = new kity.Circle(r).fill('white');
+    var dot = new kity.Circle(r);
     this.addShape(dot);
     this.setRef(r, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
+    this.dot = dot;
 });
 
-KityMinder.registerConnectProvider('default', function(node, parent, connection) {
+KityMinder.registerConnectProvider('default', function(node, parent, connection, width, color) {
 
     var box = node.getLayoutBox(),
         pBox = parent.getLayoutBox();
@@ -31,6 +32,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection)
             pathData.push('A', abs(vector.x), abs(vector.y), 0, 0, (vector.x * vector.y > 0 ? 0 : 1), end);
 
             connection.setMarker(connectMarker);
+            connectMarker.dot.fill(color);
 
             break;
 
