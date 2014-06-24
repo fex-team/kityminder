@@ -198,7 +198,6 @@ KityMinder.registerModule('Expand', function() {
             if (!node.parent) return;
 
             var visible = node.parent.isExpanded();
-            node.getRenderContainer().setVisible(visible);
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
@@ -229,6 +228,11 @@ KityMinder.registerModule('Expand', function() {
             },
             'preimport': function(e) {
                 var json = e.json;
+            },
+            'beforerender': function(e) {
+                var node = e.node;
+                var visible = !node.parent || node.parent.isExpanded();
+                node.getRenderContainer().setVisible(visible);
             }
         },
         renderers: {

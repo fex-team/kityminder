@@ -65,6 +65,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
     },
 
     /**
+     * 获得节点的复杂度
+     * @return {[type]} [description]
+     */
+    getComplex: function() {
+
+    },
+
+    /**
      * 获得节点的类型（root|main|sub）
      */
     getType: function(type) {

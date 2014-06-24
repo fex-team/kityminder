@@ -30,7 +30,7 @@ var AppendSiblingCommand = kity.createClass('AppendSiblingCommand', {
         km.select(node, true);
         node.render();
         node._lastLayoutTransform = sibling._lastLayoutTransform;
-        km.layout(300);
+        km.layout(3000);
     },
     queryState: function(km) {
         var selectedNode = km.getSelectedNode();

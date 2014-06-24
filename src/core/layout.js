@@ -128,7 +128,7 @@ kity.extendClass(MinderNode, {
             }
         }
 
-        this.getMinder().layout(duration);
+        this.getMinder().layout(this, duration);
 
         return this;
     },
@@ -140,9 +140,11 @@ kity.extendClass(MinderNode, {
 
 kity.extendClass(Minder, {
 
-    layout: function(duration) {
+    layout: function(root, duration) {
 
-        this.getRoot().traverse(function(node) {
+        root = root || this.getRoot();
+
+        root.traverse(function(node) {
             node.setLayoutTransform(null);
         });
 
@@ -160,9 +162,9 @@ kity.extendClass(Minder, {
             layout.doLayout(node);
         }
 
-        layoutNode(this.getRoot());
+        layoutNode(root);
 
-        this.applyLayoutResult(this.getRoot(), duration);
+        this.applyLayoutResult(root, duration);
 
         return this.fire('layout');
     },

@@ -52,6 +52,10 @@ kity.extendClass(Minder, {
         var g = KityMinder.Geometry;
         var i, latestBox, renderer;
 
+        this.fire('beforerender', {
+            node: node
+        });
+
         if (!node._renderers) {
             this._createRendererForNode(node);
         }
