@@ -113,11 +113,11 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * 先序遍历当前节点树
      * @param  {Function} fn 遍历函数
      */
-    preTraverse: function(fn) {
+    preTraverse: function(fn, excludeThis) {
         var children = this.getChildren();
-        var value = fn(this);
+        if (!excludeThis) fn(this);
         for (var i = 0; i < children.length; i++) {
-            value = children[i].preTraverse(fn, value);
+            children[i].preTraverse(fn);
         }
     },
 
@@ -125,17 +125,16 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * 后序遍历当前节点树
      * @param  {Function} fn 遍历函数
      */
-    postTraverse: function(fn) {
+    postTraverse: function(fn, excludeThis) {
         var children = this.getChildren();
-        var value;
         for (var i = 0; i < children.length; i++) {
-            value = children[i].postTraverse(fn, value);
+            children[i].postTraverse(fn);
         }
-        fn(this, value);
+        if (!excludeThis) fn(this);
     },
 
-    traverse: function(fn) {
-        return this.postTraverse(fn);
+    traverse: function(fn, excludeThis) {
+        return this.postTraverse(fn, excludeThis);
     },
 
     getChildren: function() {

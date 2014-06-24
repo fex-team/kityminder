@@ -144,9 +144,10 @@ kity.extendClass(Minder, {
 
         root = root || this.getRoot();
 
+        // traverse without root
         root.traverse(function(node) {
             node.setLayoutTransform(null);
-        });
+        }, true);
 
         function layoutNode(node) {
 
