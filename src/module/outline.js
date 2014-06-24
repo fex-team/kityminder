@@ -77,6 +77,10 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
     }
 });
 
+var ShadowRenderer = kity.createClass('ShadowRenderer', {
+    
+});
+
 KityMinder.registerModule('OutlineModule', function() {
     return {
         renderers: {

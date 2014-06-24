@@ -141,6 +141,10 @@ kity.extendClass(MinderNode, {
 kity.extendClass(Minder, {
 
     layout: function(root, duration) {
+        if (+root === root) {
+            duration = root;
+            root = null;
+        }
 
         root = root || this.getRoot();
 
