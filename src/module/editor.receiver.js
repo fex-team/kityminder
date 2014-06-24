@@ -33,7 +33,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             });
         }
         utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
-        this.km.on('textedit.beforekeyup textedit.keydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        this.km.on('textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
     },
@@ -105,7 +105,12 @@ Minder.Receiver = kity.createClass('Receiver', {
                 me.minderNode.setText('a');
             }
             me.setContainerStyle();
-            me.minderNode.render().layout();
+            me.minderNode.getRenderContainer().bringTop();
+            me.minderNode.render();
+            clearTimeout(me.inputTextTimer);
+            me.inputTextTimer = setTimeout(function(){
+                me.km.layout(300);
+            },250);
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
             if (text.length === 0) {
@@ -116,13 +121,10 @@ Minder.Receiver = kity.createClass('Receiver', {
 
             me.updateIndex();
 
-
-            if (me.selection.getSelectionShowStatus()) {
-                me.updateSelection();
-                me.timer = setTimeout(function() {
-                    me.selection.setShow();
-                }, 500);
-            }
+            me.updateSelection();
+            me.timer = setTimeout(function() {
+                me.selection.setShow();
+            }, 300);
 
         }
 
@@ -137,16 +139,18 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 break;
 
-            case 'keydown':
+            case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
                 switch (keyCode) {
-                    case keys.Enter:
-                    case keys.Tab:
-                        this.selection.setHide();
-                        this.clear().setTextEditStatus(false);
-                        this.km.fire('contentchange');
-                        this.km.setStatus('normal');
-                        e.preventDefault();
+                    case keymap.Enter:
+                    case keymap.Tab:
+                        if(this.selection.isShow()){
+                            this.clear().setTextEditStatus(false);
+                            e.preventDefault();
+                        }else{
+                            this.km.setStatus('normal');
+                            this.km.fire('contentchange');
+                        }
                         return;
                     case keymap.Shift:
                     case keymap.Control:
@@ -189,6 +193,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.F2:
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
                             setTextToContainer();
+
                         }
                         if (this.keydownNode === this.minderNode) {
                             this.rollbackStatus();
@@ -203,7 +208,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                         setTextToContainer();
                         return;
                 }
-
                 if (this.isTypeText) {
                     setTextToContainer();
                 }
@@ -248,12 +252,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     getBaseOffset: function(refer) {
-        var rb = this.textShape.getRenderBox(refer || this.km.getRenderContainer());
-        //        if(!this.pr) {
-        //            this.km.getRenderContainer().addShape(this.pr = new kity.Rect().stroke('green'));
-        //        }
-        //        this.pr.setSize(rb.width, rb.height).setPosition(rb.x, rb.y);
-        return rb;
+        return this.textShape.getRenderBox(refer || this.km.getRenderContainer());
     },
     setBaseOffset: function() {
         this.offset = this.textShape.getRenderBox(this.km.getRenderContainer());
