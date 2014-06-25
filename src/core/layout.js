@@ -128,7 +128,7 @@ kity.extendClass(MinderNode, {
             }
         }
 
-        this.getMinder().layout(this, duration);
+        this.getMinder().layout(duration);
 
         return this;
     },
@@ -140,18 +140,11 @@ kity.extendClass(MinderNode, {
 
 kity.extendClass(Minder, {
 
-    layout: function(root, duration) {
-        if (+root === root) {
-            duration = root;
-            root = null;
-        }
+    layout: function(duration) {
 
-        root = root || this.getRoot();
-
-        // traverse without root
-        root.traverse(function(node) {
+        this.getRoot().traverse(function(node) {
             node.setLayoutTransform(null);
-        }, true);
+        });
 
         function layoutNode(node) {
 
@@ -167,9 +160,9 @@ kity.extendClass(Minder, {
             layout.doLayout(node);
         }
 
-        layoutNode(root);
+        layoutNode(this.getRoot());
 
-        this.applyLayoutResult(root, duration);
+        this.applyLayoutResult(this.getRoot(), duration);
 
         return this.fire('layout');
     },

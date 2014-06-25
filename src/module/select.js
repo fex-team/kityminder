@@ -26,7 +26,7 @@ KityMinder.registerModule('Select', function() {
                     return this.selectEnd();
                 }
 
-                startPosition = g.snapToSharp(e.getPosition());
+                startPosition = g.snapToSharp(e.getPosition('paper'));
             },
             selectMove: function(e) {
                 if (minder.isTextEditStatus()) {
@@ -35,7 +35,9 @@ KityMinder.registerModule('Select', function() {
                 if (!startPosition) return;
 
                 var p1 = startPosition,
-                    p2 = e.getPosition();
+                    p2 = e.getPosition('paper');
+
+                console.log(e.kityEvent.targetShape);
 
                 // 检测是否要进入选区模式
                 if (!marqueeMode) {

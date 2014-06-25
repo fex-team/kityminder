@@ -75,7 +75,7 @@ KityMinder.registerModule('Expand', function() {
         node.traverse(function(node) {
             node.render();
         });
-        node.getMinder().layout(null, 200);
+        node.getMinder().layout(200);
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
