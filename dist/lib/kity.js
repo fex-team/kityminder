@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kity - v2.0.0 - 2014-05-28
+ * kity - v2.0.0 - 2014-06-23
  * https://github.com/fex-team/kity
  * GitHub: https://github.com/fex-team/kity.git 
  * Copyright (c) 2014 Baidu FEX; Licensed BSD
@@ -169,6 +169,9 @@ define("animate/animator", [ "animate/timeline", "graphic/eventhandler", "animat
                 setTimeout(timeline.play.bind(timeline), delay);
             }
             return this;
+        },
+        timeline: function() {
+            return this._KityAnimateQueue[0].t;
         },
         stop: function() {
             var queue = this._KityAnimateQueue;
@@ -462,6 +465,37 @@ define("animate/frame", [], function(require, exports) {
     exports.requestFrame = requestFrame;
     exports.releaseFrame = releaseFrame;
 });
+define("animate/motionanimator", [ "animate/animator", "animate/timeline", "animate/easing", "core/class", "graphic/shape", "graphic/geometry", "core/utils", "graphic/point", "graphic/vector", "graphic/matrix", "graphic/path", "graphic/svg" ], function(require) {
+    var Animator = require("animate/animator");
+    var g = require("graphic/geometry");
+    var Path = require("graphic/path");
+    var MotionAnimator = require("core/class").createClass("MotionAnimator", {
+        base: Animator,
+        constructor: function(path) {
+            var me = this;
+            this.callBase({
+                beginValue: 0,
+                finishValue: 1,
+                setter: function(target, value) {
+                    var path = me.motionPath instanceof Path ? me.motionPath.getPathData() : me.motionPath;
+                    var point = g.pointAtPath(path, value);
+                    target.setTranslate(point.x, point.y);
+                    target.setRotate(point.tan.getAngle());
+                }
+            });
+            this.updatePath(path);
+        },
+        updatePath: function(path) {
+            this.motionPath = path;
+        }
+    });
+    require("core/class").extendClass(Path, {
+        motion: function(path, duration, easing, delay, callback) {
+            return this.animate(new MotionAnimator(path), duration, easing, delay, callback);
+        }
+    });
+    return MotionAnimator;
+});
 define("animate/opacityanimator", [ "animate/animator", "animate/timeline", "animate/easing", "core/class", "graphic/shape", "graphic/svg", "core/utils", "graphic/eventhandler", "graphic/styled", "graphic/data", "graphic/matrix", "graphic/pen", "graphic/box" ], function(require) {
     var Animator = require("animate/animator");
     var OpacityAnimator = require("core/class").createClass("OpacityAnimator", {
@@ -657,6 +691,7 @@ define("animate/timeline", [ "graphic/eventhandler", "core/utils", "graphic/shap
                     this.finishValue = this.finishValue.call(this.target, this.target);
                 }
                 this.time = 0;
+                this.setValue(this.beginValue);
                 this.frame = frame.requestFrame(this.nextFrame.bind(this));
                 break;
 
@@ -1070,11 +1105,7 @@ define("core/utils", [], function() {
          * @return {Number|Object|Array}
          */
         paralle: function(v1, v2, op) {
-            var Class, field, index, value;
-            // 是否数字
-            if (false === isNaN(parseFloat(v1))) {
-                return op(v1, v2);
-            }
+            var Class, field, index, name, value;
             // 数组
             if (v1 instanceof Array) {
                 value = [];
@@ -1085,23 +1116,26 @@ define("core/utils", [], function() {
             }
             // 对象
             if (v1 instanceof Object) {
-                value = {};
                 // 如果值是一个支持原始表示的实例，获取其原始表示
                 Class = v1.getClass && v1.getClass();
                 if (Class && Class.parse) {
                     v1 = v1.valueOf();
                     v2 = v2.valueOf();
-                }
-                for (field in v1) {
-                    if (v1.hasOwnProperty(field) && v2.hasOwnProperty(field)) {
-                        value[field] = utils.paralle(v1[field], v2[field], op);
+                    value = utils.paralle(v1, v2, op);
+                    value = Class.parse(value);
+                } else {
+                    value = {};
+                    for (name in v1) {
+                        if (v1.hasOwnProperty(name) && v2.hasOwnProperty(name)) {
+                            value[name] = utils.paralle(v1[name], v2[name], op);
+                        }
                     }
                 }
-                // 如果值是一个支持原始表示的实例，用其原始表示的结果重新封箱
-                if (Class && Class.parse) {
-                    value = Class.parse(value);
-                }
                 return value;
+            }
+            // 是否数字
+            if (false === isNaN(parseFloat(v1))) {
+                return op(v1, v2);
             }
             return value;
         },
@@ -1613,31 +1647,25 @@ define("graphic/box", [ "core/class" ], function(require, exports, module) {
             if (height < 0) {
                 y -= height = -height;
             }
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        },
-        getLeft: function() {
-            return this.x;
-        },
-        getRight: function() {
-            return this.x + this.width;
-        },
-        getTop: function() {
-            return this.y;
-        },
-        getBottom: function() {
-            return this.y + this.height;
+            this.x = x || 0;
+            this.y = y || 0;
+            this.width = width || 0;
+            this.height = height || 0;
+            this.left = x;
+            this.right = this.x + this.width;
+            this.top = this.y;
+            this.bottom = this.y + this.height;
+            this.cx = x + this.width / 2;
+            this.cy = y + this.height / 2;
         },
         getRangeX: function() {
-            return [ this.x, this.x + this.width ];
+            return [ this.left, this.right ];
         },
         getRangeY: function() {
-            return [ this.y, this.y + this.height ];
+            return [ this.left, this.right ];
         },
         merge: function(another) {
-            var xMin = Math.min(this.x, another.x), xMax = Math.max(this.x + this.width, another.x + another.width), yMin = Math.min(this.y, another.y), yMax = Math.max(this.y + this.height, another.y + another.height);
+            var xMin = Math.min(this.x, another.x), xMax = Math.max(this.right, another.right), yMin = Math.min(this.y, another.y), yMax = Math.max(this.bottom, another.bottom);
             return new Box(xMin, yMin, xMax - xMin, yMax - yMin);
         },
         valueOf: function() {
@@ -3105,8 +3133,12 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
      */
     g.pointAtBezier = function(bezierArray, t) {
         var b2t = cutBezier(bezierArray, t)[0];
-        var p = Point.parse(b2t.slice(6)), c = Point.parse(b2t.slice(4, 2));
-        p.tan = Vector.fromPoints(c, p).normalize();
+        var p = Point.parse(b2t.slice(6)), c = Point.parse(b2t.slice(4, 2)), v = Vector.fromPoints(c, p);
+        if (t === 0) {
+            p.tan = g.pointAtBezier(bezierArray, .01).tan;
+        } else {
+            p.tan = v.normalize();
+        }
         return p;
     };
     /**
@@ -3122,7 +3154,7 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
      */
     g.bezierLength = cacher(function bezierLength(bezierArray, tolerate) {
         // 切割成多少段来计算
-        tolerate = Math.max(tolerate || .1, 1e-9);
+        tolerate = Math.max(tolerate || .001, 1e-9);
         function len(p, q) {
             var dx = p[0] - q[0], dy = p[1] - q[1];
             return Math.sqrt(dx * dx + dy * dy);
@@ -3138,7 +3170,7 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
         return bezierLength(cutted[0], tolerate / 2) + bezierLength(cutted[1], tolerate / 3);
     });
     // 计算一个 pathSegment 中每一段的在整体中所占的长度范围，以及总长度
-    // 改方法要求每一段都是贝塞尔曲线
+    // 方法要求每一段都是贝塞尔曲线
     var getBezierPathSegmentRanges = cacher(function(pathSegment) {
         var i, ii, segment, position, bezierLength, segmentRanges, totalLength;
         segmentRanges = [];
@@ -3424,8 +3456,8 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
      *     补间的结果
      */
     g.pathTween = function(path1, path2, t) {
-        //if (t === 0) return path1;
-        //if (t === 1) return path2;
+        if (t === 0) return path1;
+        if (t === 1) return path2;
         var aligned = alignCurve(path1, path2);
         var result = [], seg, i, j;
         path1 = aligned[0];
@@ -3725,14 +3757,14 @@ define("graphic/marker", [ "graphic/point", "core/class", "graphic/resource", "g
     });
     var Path = require("graphic/path");
     require("core/class").extendClass(Path, {
-        setMarkerStart: function(marker) {
-            this.node.setAttribute("marker-start", marker.toString());
-        },
-        setMarkerMid: function(marker) {
-            this.node.setAttribute("marker-mid", marker.toString());
-        },
-        setMarkerEnd: function(marker) {
-            this.node.setAttribute("marker-end", marker.toString());
+        setMarker: function(marker, pos) {
+            pos = pos || "end";
+            if (!marker) {
+                this.node.removeAttribute("marker-" + pos);
+            } else {
+                this.node.setAttribute("marker-" + pos, marker.toString());
+            }
+            return this;
         }
     });
     return Marker;
@@ -3896,6 +3928,10 @@ define("graphic/matrix", [ "core/utils", "graphic/box", "core/class", "graphic/p
             var m = this.m;
             return [ m.a, m.b, m.c, m.d, m.e, m.f ];
         },
+        equals: function(matrix) {
+            var m1 = this.m, m2 = matrix.m;
+            return m1.a == m2.a && m1.b == m2.b && m1.c == m2.c && m1.d == m2.d && m1.e == m2.e && m1.f == m2.f;
+        },
         transformPoint: function() {
             return Matrix.transformPoint.apply(null, [].slice.call(arguments).concat([ this.m ]));
         },
@@ -3906,6 +3942,16 @@ define("graphic/matrix", [ "core/utils", "graphic/box", "core/class", "graphic/p
     Matrix.parse = function(str) {
         var match;
         var f = parseFloat;
+        if (str instanceof Array) {
+            return new Matrix({
+                a: str[0],
+                b: str[1],
+                c: str[2],
+                d: str[3],
+                e: str[4],
+                f: str[5]
+            });
+        }
         if (match = mPattern.exec(str)) {
             var values = match[1].split(",");
             if (values.length != 6) {
@@ -3949,11 +3995,7 @@ define("graphic/matrix", [ "core/utils", "graphic/box", "core/class", "graphic/p
             height: yMax - yMin
         });
         utils.extend(box, {
-            closurePoints: rps,
-            left: xMin,
-            right: xMax,
-            top: yMin,
-            bottom: yMax
+            closurePoints: rps
         });
         return box;
     };
@@ -4002,7 +4044,7 @@ define("graphic/matrix", [ "core/utils", "graphic/box", "core/class", "graphic/p
                 ctm = target.node.getTransformToElement(refer.shapeNode || refer.node);
             }
         }
-        return new Matrix(ctm.a, ctm.b, ctm.c, ctm.d, ctm.e, ctm.f);
+        return ctm ? new Matrix(ctm.a, ctm.b, ctm.c, ctm.d, ctm.e, ctm.f) : new Matrix();
     };
     return Matrix;
 });
@@ -4369,9 +4411,7 @@ define("graphic/path", [ "core/utils", "core/class", "graphic/shape", "graphic/s
             this.node.setAttribute("stroke", svg.defaults.stroke);
         },
         setPathData: function(data) {
-            if (!data) {
-                return;
-            }
+            data = data || "M0,0";
             this.pathdata = g.pathToString(data);
             this.node.setAttribute("d", this.pathdata);
             this.trigger("shapeupdate", {
@@ -4542,6 +4582,9 @@ define("graphic/point", [ "core/class" ], function(require, exports, module) {
         },
         toString: function() {
             return this.valueOf().join(" ");
+        },
+        spof: function() {
+            return new Point((this.x | 0) + .5, (this.y | 0) + .5);
         }
     });
     Point.fromPolar = function(radius, angle, unit) {
@@ -4705,8 +4748,8 @@ define("graphic/radialgradientbrush", [ "graphic/gradientbrush", "graphic/svg", 
         }
     });
 });
-define("graphic/rect", [ "core/utils", "graphic/point", "core/class", "graphic/path", "graphic/shape", "graphic/svg", "graphic/geometry" ], function(require, exports, module) {
-    var RectUtils = {}, Utils = require("core/utils"), Point = require("graphic/point");
+define("graphic/rect", [ "core/utils", "graphic/point", "core/class", "graphic/box", "graphic/path", "graphic/shape", "graphic/svg", "graphic/geometry" ], function(require, exports, module) {
+    var RectUtils = {}, Utils = require("core/utils"), Point = require("graphic/point"), Box = require("graphic/box");
     Utils.extend(RectUtils, {
         //根据传递进来的width、height和radius属性，
         //获取最适合的radius值
@@ -4766,6 +4809,16 @@ define("graphic/rect", [ "core/utils", "graphic/point", "core/class", "graphic/p
             this.width = width;
             this.height = height;
             return this.update();
+        },
+        setBox: function(box) {
+            this.x = box.x;
+            this.y = box.y;
+            this.width = box.width;
+            this.height = box.height;
+            return this.update();
+        },
+        getBox: function() {
+            return new Box(this.x, this.y, this.width, this.height);
         },
         getRadius: function() {
             return this.radius;
@@ -5058,18 +5111,25 @@ define("graphic/shape", [ "graphic/svg", "core/utils", "graphic/eventhandler", "
         stroke: function(pen, width) {
             if (pen && pen.stroke) {
                 pen.stroke(this);
-            } else {
+            } else if (pen) {
                 // 字符串或重写了 toString 的对象
                 this.node.setAttribute("stroke", pen.toString());
                 if (width) {
                     this.node.setAttribute("stroke-width", width);
                 }
+            } else if (pen === null) {
+                this.node.removeAttribute("stroe");
             }
             return this;
         },
         fill: function(brush) {
             // 字符串或重写了 toString 的对象
-            this.node.setAttribute("fill", brush.toString());
+            if (brush) {
+                this.node.setAttribute("fill", brush.toString());
+            }
+            if (brush === null) {
+                this.node.removeAttribute("fill");
+            }
             return this;
         },
         setAttr: function(a, v) {
@@ -5685,6 +5745,11 @@ define("graphic/sweep", [ "graphic/point", "core/class", "graphic/path", "core/u
         },
         drawSection: function(from, to) {
             var angleLength = this.angle && (this.angle % 360 ? this.angle % 360 : 360), angleStart = this.angleOffset, angleHalf = angleStart + angleLength / 2, angleEnd = angleStart + angleLength, drawer = this.getDrawer();
+            drawer.redraw();
+            if (angleLength === 0) {
+                drawer.done();
+                return;
+            }
             drawer.moveTo(Point.fromPolar(from, angleStart));
             drawer.lineTo(Point.fromPolar(to, angleStart));
             if (to) {
@@ -5697,6 +5762,7 @@ define("graphic/sweep", [ "graphic/point", "core/class", "graphic/path", "core/u
                 drawer.carcTo(from, 0, 1, Point.fromPolar(from, angleStart));
             }
             drawer.close();
+            drawer.done();
         }
     });
 });
@@ -5711,8 +5777,11 @@ define("graphic/text", [ "graphic/textcontent", "graphic/shape", "core/class", "
         if (offsetHash[font]) {
             return offsetHash[font];
         }
+        var textContent = text.getContent();
+        text.setContent("test");
         var bbox = text.getBoundaryBox(), y = text.getY() + +text.node.getAttribute("dy");
         var topOffset = y - bbox.y, bottomOffset = topOffset - bbox.height;
+        text.setContent(textContent);
         return offsetHash[font] = {
             top: topOffset,
             bottom: bottomOffset,
@@ -5805,7 +5874,7 @@ define("graphic/text", [ "graphic/textcontent", "graphic/shape", "core/class", "
                 this.node.appendChild(textpath);
             }
             textpath.setAttributeNS(svg.xlink, "xlink:href", "#" + path.node.id);
-            this.setAnchor(this.getAnchor());
+            this.setTextAnchor(this.getTextAnchor());
             return this;
         }
     });
@@ -5860,18 +5929,14 @@ define("graphic/textcontent", [ "graphic/shape", "graphic/svg", "core/utils", "g
             });
         },
         setFont: function(font) {
-            if (font.family) {
-                this.node.setAttribute("font-family", font.family);
-            }
-            if (font.size) {
-                this.node.setAttribute("font-size", font.size);
-            }
-            if (font.weight) {
-                this.node.setAttribute("font-weight", font.weight);
-            }
-            if (font.style) {
-                this.node.setAttribute("font-style", font.style);
-            }
+            var node = this.node;
+            [ "family", "size", "weight", "style" ].forEach(function(section) {
+                if (font[section] === null) {
+                    node.removeAttribute("font-" + section);
+                } else if (font[section]) {
+                    node.setAttribute("font-" + section, font[section]);
+                }
+            });
             return this;
         },
         getExtentOfChar: function(index) {
@@ -5979,7 +6044,13 @@ define("graphic/vector", [ "graphic/point", "core/class", "graphic/matrix", "cor
         reverse: function() {
             return this.multipy(-1);
         },
-        getAngle: function() {}
+        getAngle: function() {
+            var length = this.length();
+            if (length === 0) return 0;
+            var rad = Math.acos(this.x / length);
+            var sign = this.y > 0 ? 1 : -1;
+            return sign * 180 * rad / Math.PI;
+        }
     });
     Vector.fromPoints = function(p1, p2) {
         return new Vector(p2.x - p1.x, p2.y - p1.y);
@@ -6033,7 +6104,7 @@ define("graphic/viewbox", [ "core/class" ], function(require, exports, module) {
         }
     });
 });
-define("kity", [ "core/utils", "core/class", "core/browser", "graphic/bezier", "graphic/pointcontainer", "graphic/path", "graphic/bezierpoint", "graphic/shapepoint", "graphic/vector", "graphic/circle", "graphic/ellipse", "graphic/clip", "graphic/shape", "graphic/shapecontainer", "graphic/color", "graphic/standardcolor", "graphic/container", "graphic/curve", "graphic/point", "graphic/gradientbrush", "graphic/svg", "graphic/defbrush", "graphic/group", "graphic/hyperlink", "graphic/image", "graphic/line", "graphic/lineargradientbrush", "graphic/mask", "graphic/matrix", "graphic/box", "graphic/marker", "graphic/resource", "graphic/viewbox", "graphic/palette", "graphic/paper", "graphic/eventhandler", "graphic/styled", "graphic/geometry", "graphic/patternbrush", "graphic/pen", "graphic/polygon", "graphic/poly", "graphic/polyline", "graphic/pie", "graphic/sweep", "graphic/radialgradientbrush", "graphic/rect", "graphic/regularpolygon", "graphic/ring", "graphic/data", "graphic/star", "graphic/text", "graphic/textcontent", "graphic/textspan", "graphic/use", "animate/animator", "animate/timeline", "animate/easing", "animate/opacityanimator", "animate/rotateanimator", "animate/scaleanimator", "animate/frame", "animate/translateanimator", "filter/filter", "filter/effectcontainer", "filter/gaussianblurfilter", "filter/effect/gaussianblureffect", "filter/projectionfilter", "filter/effect/effect", "filter/effect/colormatrixeffect", "filter/effect/compositeeffect", "filter/effect/offseteffect", "filter/effect/convolvematrixeffect" ], function(require, exports, module) {
+define("kity", [ "core/utils", "core/class", "core/browser", "graphic/box", "graphic/bezier", "graphic/pointcontainer", "graphic/path", "graphic/bezierpoint", "graphic/shapepoint", "graphic/vector", "graphic/circle", "graphic/ellipse", "graphic/clip", "graphic/shape", "graphic/shapecontainer", "graphic/color", "graphic/standardcolor", "graphic/container", "graphic/curve", "graphic/point", "graphic/gradientbrush", "graphic/svg", "graphic/defbrush", "graphic/group", "graphic/hyperlink", "graphic/image", "graphic/line", "graphic/lineargradientbrush", "graphic/mask", "graphic/matrix", "graphic/marker", "graphic/resource", "graphic/viewbox", "graphic/palette", "graphic/paper", "graphic/eventhandler", "graphic/styled", "graphic/geometry", "graphic/patternbrush", "graphic/pen", "graphic/polygon", "graphic/poly", "graphic/polyline", "graphic/pie", "graphic/sweep", "graphic/radialgradientbrush", "graphic/rect", "graphic/regularpolygon", "graphic/ring", "graphic/data", "graphic/star", "graphic/text", "graphic/textcontent", "graphic/textspan", "graphic/use", "animate/animator", "animate/timeline", "animate/easing", "animate/opacityanimator", "animate/rotateanimator", "animate/scaleanimator", "animate/frame", "animate/translateanimator", "animate/pathanimator", "animate/motionanimator", "filter/filter", "filter/effectcontainer", "filter/gaussianblurfilter", "filter/effect/gaussianblureffect", "filter/projectionfilter", "filter/effect/effect", "filter/effect/colormatrixeffect", "filter/effect/compositeeffect", "filter/effect/offseteffect", "filter/effect/convolvematrixeffect" ], function(require, exports, module) {
     var kity = {}, utils = require("core/utils");
     kity.version = "2.0.0";
     utils.extend(kity, {
@@ -6043,6 +6114,7 @@ define("kity", [ "core/utils", "core/class", "core/browser", "graphic/bezier", "
         Utils: utils,
         Browser: require("core/browser"),
         // shape
+        Box: require("graphic/box"),
         Bezier: require("graphic/bezier"),
         BezierPoint: require("graphic/bezierpoint"),
         Circle: require("graphic/circle"),
@@ -6091,6 +6163,8 @@ define("kity", [ "core/utils", "core/class", "core/browser", "graphic/bezier", "
         ScaleAnimator: require("animate/scaleanimator"),
         Timeline: require("animate/timeline"),
         TranslateAnimator: require("animate/translateanimator"),
+        PathAnimator: require("animate/pathanimator"),
+        MotionAnimator: require("animate/motionanimator"),
         // filter
         Filter: require("filter/filter"),
         GaussianblurFilter: require("filter/gaussianblurfilter"),
@@ -6106,19 +6180,18 @@ define("kity", [ "core/utils", "core/class", "core/browser", "graphic/bezier", "
     return window.kity = kity;
 });
 
-/*global use:true*/
+/* global use, inc: true */
 
 /**
  * 模块暴露
  */
 
-(function(global) {
+(function() {
 
-    define('export', function(require) {
-        return require('kity');
-    });
+    try {
+        inc.use('kity');
+    } catch (e) {
+        use('kity');
+    }
 
-    // build 环境中才含有use
-    if (use) use('export');
-
-})(this);})();
+})();})();
