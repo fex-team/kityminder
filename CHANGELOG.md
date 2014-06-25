@@ -9,7 +9,7 @@
 
 ### Hot Fix
 
-1. 修复新版 Chrome 浏览器无法导出正确文件格式的问题（#77）
+1. 修复新版 Chrome 浏览器无法导出正确文件格式的问题（[#77](https://github.com/fex-team/kityminder/issues/77)）
 
 ## v1.1.3.1
 
