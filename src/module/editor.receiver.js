@@ -12,17 +12,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.isTypeText = false;
         return this;
     },
-    setTextEditStatus: function(status) {
-        this.textEditStatus = status || false;
-        return this;
-    },
-    isTextEditStatus: function() {
-        return this.textEditStatus;
-    },
-    constructor: function(km) {
+    constructor: function(km,sel,range) {
         var me = this;
         this.setKityMinder(km);
-        this.textEditStatus = false;
+
         var _div = document.createElement('div');
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
@@ -33,9 +26,11 @@ Minder.Receiver = kity.createClass('Receiver', {
             });
         }
         utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
-        this.km.on('textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
+        this.selection = sel;
+        this.range = range;
     },
     setRange: function(range, index) {
 
@@ -76,7 +71,23 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     setMinderNode: function(node) {
         this.minderNode = node;
+        //更新minderNode下的textshape
+        this.setTextShape(node.getTextShape());
+        //更新textshape的baseOffset
+        this.setBaseOffset();
+        //更新接受容器的样式
+        this.setContainerStyle();
+        //更新textOffsetData数据
+        this.updateTextOffsetData();
+        //更新选取高度
+        this.setSelectionHeight();
+        //更新接收容器内容
+        this.setContainerTxt();
+
         return this;
+    },
+    getMinderNode:function(){
+        return this.minderNode;
     },
     keyboardEvents: function(e) {
 
@@ -84,7 +95,6 @@ Minder.Receiver = kity.createClass('Receiver', {
         var me = this;
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
-        var keys = KityMinder.keymap;
 
         function setTextToContainer() {
             if (!me.range.hasNativeRange()) {
@@ -109,7 +119,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.render();
             clearTimeout(me.inputTextTimer);
             me.inputTextTimer = setTimeout(function(){
-                me.km.layout(300);
+                me.km.layout();
             },250);
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
@@ -117,15 +127,14 @@ Minder.Receiver = kity.createClass('Receiver', {
                 me.textShape.setOpacity(0);
             }
             me.setBaseOffset();
-            me.updateTextData();
-
+            me.updateTextOffsetData();
             me.updateIndex();
-
             me.updateSelection();
             me.timer = setTimeout(function() {
                 me.selection.setShow();
             }, 300);
 
+            me.km.setStatus('textedit');
         }
 
 
@@ -144,8 +153,14 @@ Minder.Receiver = kity.createClass('Receiver', {
                 switch (keyCode) {
                     case keymap.Enter:
                     case keymap.Tab:
+                    case keymap.left:
+                    case keymap.right:
+                    case keymap.up:
+                    case keymap.down:
                         if(this.selection.isShow()){
-                            this.clear().setTextEditStatus(false);
+                            this.clear();
+                            this.km.setStatus('inputready');
+                            clearTimeout(me.inputTextTimer);
                             e.preventDefault();
                         }else{
                             this.km.setStatus('normal');
@@ -157,6 +172,12 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Alt:
                     case keymap.Cmd:
                         return;
+                    case keymap.Del:
+                    case keymap.Backspace:
+                        if(!this.selection.isShow()){
+                            this.km.setStatus('normal');
+                            return;
+                        }
                 }
 
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
@@ -197,7 +218,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                         }
                         if (this.keydownNode === this.minderNode) {
                             this.rollbackStatus();
-                            this.setTextEditStatus(false);
                             this.clear();
                         }
                         e.preventDefault();
@@ -205,6 +225,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap.Backspace:
                     case keymap.Spacebar:
+
                         setTextToContainer();
                         return;
                 }
@@ -222,7 +243,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.index = this.range.getStart().startOffset;
         return this;
     },
-    updateTextData: function() {
+    updateTextOffsetData: function() {
         this.textShape.textData = this.getTextOffsetData();
         return this;
     },
@@ -406,18 +427,31 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateRange: function(range) {
+        range = range || this.range;
         var node = this.container.firstChild;
         range.setStart(node, this.selection.startOffset);
         range.setEnd(node, this.selection.endOffset);
         range.select();
         return this;
     },
+    updateContainerRangeBySel:function(){
+        this.updateRange(this.range)
+    },
     setIndex: function(index) {
         this.index = index;
         return this;
     },
     setContainerTxt: function(txt) {
-        this.container.textContent = txt;
+        this.container.textContent = txt || this.textShape.getContent();
         return this;
+    },
+    setReady:function(){
+        this._ready = true;
+    },
+    clearReady:function(){
+        this._ready = false;
+    },
+    isReady:function(){
+        return this._ready;
     }
 });

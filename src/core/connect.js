@@ -69,7 +69,7 @@ kity.extendClass(Minder, {
 
 KityMinder.registerModule('Connect', {
     events: {
-        'nodecreate': function(e) {
+        'nodeattach': function(e) {
             this.createConnect(e.node);
         },
         'noderemove': function(e) {

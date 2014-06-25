@@ -82,10 +82,12 @@ Minder.Selection = kity.createClass( 'Selection', {
         } catch ( e ) {
            console.log(e);
         }
-        return this.update();
+        this.update();
+        return this;
     },
     setHeight: function ( height ) {
         this.height = height;
+        return this;
     },
     setHide: function () {
         clearInterval( this.timer );
@@ -112,11 +114,13 @@ Minder.Selection = kity.createClass( 'Selection', {
                 state = state ? '' : 'none';
             }, 400 );
         }
-
         return this;
     },
     isShow:function(){
         return this._show;
+    },
+    isHide:function(){
+        return !this._show;
     },
     setTextShape: function ( text ) {
         if ( !text ) {

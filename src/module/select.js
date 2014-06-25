@@ -29,7 +29,7 @@ KityMinder.registerModule('Select', function() {
                 startPosition = g.snapToSharp(e.getPosition());
             },
             selectMove: function(e) {
-                if (minder.isTextEditStatus()) {
+                if (minder.getStatus() == 'textedit') {
                     return;
                 }
                 if (!startPosition) return;
@@ -95,7 +95,8 @@ KityMinder.registerModule('Select', function() {
     var lastDownNode = null, lastDownPosition = null;
     return {
         'events': {
-            'normal.mousedown textedit.mousedown': function(e) {
+            'normal.mousedown textedit.mousedown inputready.mousedown': function(e) {
+
                 var downNode = e.getTargetNode();
 
                 // 没有点中节点：
@@ -127,8 +128,8 @@ KityMinder.registerModule('Select', function() {
                     lastDownPosition = e.getPosition(this.getRenderContainer());
                 }
             },
-            'normal.mousemove textedit.mousemove': marqueeActivator.selectMove,
-            'normal.mouseup textedit.mouseup': function(e) {
+            'normal.mousemove textedit.mousemove inputready.mousemove': marqueeActivator.selectMove,
+            'normal.mouseup textedit.mouseup inputready.mouseup': function(e) {
                 var upNode = e.getTargetNode();
 
                 // 如果 mouseup 发生在 lastDownNode 外，是无需理会的
