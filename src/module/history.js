@@ -54,6 +54,7 @@ KityMinder.registerModule("HistoryModule", function() {
             }
         },
         partialRenewal: function(target) {
+            var selectedNodes = [];
             function compareNode(source, target) {
                 if (source.getText() != target.getText()) {
                     return false;
@@ -81,9 +82,7 @@ KityMinder.registerModule("HistoryModule", function() {
                 if (compareNode(srcNode, tagNode) === false) {
                     srcNode.setValue(tagNode);
                     if (srcNode.isSelected()) {
-                        km.select(srcNode);
-                    } else {
-                        km.removeSelectedNodes(srcNode);
+                        selectedNodes.push(srcNode);
                     }
                 }
                 for (var i = 0, j = 0, si, tj;
@@ -102,6 +101,7 @@ KityMinder.registerModule("HistoryModule", function() {
 
             traverseNode(km.getRoot(), target);
             km.layout();
+            km.select(selectedNodes,true);
 
 
         },
