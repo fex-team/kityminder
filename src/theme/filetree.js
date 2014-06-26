@@ -14,7 +14,7 @@ KityMinder.registerTheme('filetree', {
     'main-font-size': 16,
     'main-padding': [6, 20],
     'main-margin': [15, 15, 15, 10],
-    'main-radius': 10,
+    'main-radius': 0,
     'main-space': 5,
 
     'sub-color': 'black',
@@ -23,7 +23,7 @@ KityMinder.registerTheme('filetree', {
     'sub-font-size': 12,
     'sub-padding': [5, 10],
     'sub-margin': [15, 15, 15, 10],
-    'sub-radius': 5,
+    'sub-radius': 0,
     'sub-space': 5,
 
     'connect-color': 'white',

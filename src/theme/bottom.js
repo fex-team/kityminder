@@ -14,7 +14,7 @@ KityMinder.registerTheme('bottom', {
     'main-font-size': 16,
     'main-padding': [6, 20],
     'main-margin': [30, 0, 10, 0],
-    'main-radius': 10,
+    'main-radius': 5,
     'main-space': 5,
 
     'sub-color': 'white',

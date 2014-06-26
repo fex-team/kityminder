@@ -61,16 +61,14 @@ Minder.Receiver = kity.createClass('Receiver', {
     getTextShapeHeight: function() {
         return this.textShape.getRenderBox().height;
     },
-    appendTextShapeToPaper: function(paper) {
-        paper.addShape(this.textShape);
-        return this;
-    },
     setKityMinder: function(km) {
         this.km = km;
         return this;
     },
     setMinderNode: function(node) {
         this.minderNode = node;
+        //追加selection到节点
+        this._addSelection();
         //更新minderNode下的textshape
         this.setTextShape(node.getTextShape());
         //更新textshape的baseOffset
@@ -85,6 +83,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.setContainerTxt();
 
         return this;
+    },
+    _addSelection:function(){
+        if (this.selection.container) this.selection.remove();
+        this.minderNode.getRenderContainer().addShape(this.selection);
     },
     getMinderNode:function(){
         return this.minderNode;
@@ -119,7 +121,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.render();
             clearTimeout(me.inputTextTimer);
             me.inputTextTimer = setTimeout(function(){
-                me.km.layout();
+                me.km.layout(300);
             },250);
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
@@ -314,8 +316,8 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
 
             this.textData.push({
-                x: box.x + this.offset.x,
-                y: this.offset.y,
+                x: box.x ,
+                y: box.y,
                 width: box.width,
                 height: box.height
             });
@@ -326,6 +328,8 @@ Minder.Receiver = kity.createClass('Receiver', {
         var me = this;
         this.getTextOffsetData();
         var hadChanged = false;
+        //要剪掉基数
+        this._getRelativeValue(offset);
         utils.each(this.textData, function(i, v) {
             //点击开始之前
             if (i === 0 && offset.x <= v.x) {
@@ -356,9 +360,13 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.setHeight(this.getTextShapeHeight());
         return this;
     },
-
+    _getRelativeValue:function(offset){
+        offset.x = offset.x - this.offset.x;
+        offset.y = offset.y - this.offset.y;
+    },
     updateSelectionByMousePosition: function(offset, dir) {
-
+        //要剪掉基数
+        this._getRelativeValue(offset);
         var me = this;
         utils.each(this.textData, function(i, v) {
             //点击开始之前
@@ -435,7 +443,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateContainerRangeBySel:function(){
-        this.updateRange(this.range)
+        this.updateRange(this.range);
     },
     setIndex: function(index) {
         this.index = index;
