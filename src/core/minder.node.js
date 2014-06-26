@@ -11,13 +11,20 @@ kity.extendClass(Minder, {
 
     createNode: function(unknown, parent, index) {
         var node = new MinderNode(unknown);
-
-        if (parent) parent.insertChild(node, index);
-        this.handelNodeCreate(node);
         this.fire('nodecreate', {
             node: node
         });
+        this.appendNode(node,parent, index);
         return node;
+    },
+
+    appendNode: function(node, parent, index) {
+        if (parent) parent.insertChild(node, index);
+        this.handelNodeCreate(node);
+        this.fire('nodeattach', {
+            node: node
+        });
+        return this;
     },
 
     removeNode: function(node) {

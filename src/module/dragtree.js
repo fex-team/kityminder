@@ -327,16 +327,16 @@ KityMinder.registerModule('DragTree', function() {
             dragger = new TreeDragger(this);
         },
         events: {
-            'mousedown': function(e) {
+            'normal.mousedown inputready.mousedown': function(e) {
                 // 单选中根节点也不触发拖拽
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
-            'mousemove': function(e) {
+            'normal.mousemove': function(e) {
                 dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
-            'mouseup': function(e) {
+            'normal.mouseup': function(e) {
                 dragger.dragEnd(e.getPosition(this.getRenderContainer()));
                 e.stopPropagation();
                 this.fire('contentchange');

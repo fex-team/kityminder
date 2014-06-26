@@ -30,6 +30,11 @@ utils.extend(TextRenderer, {
     }
 });
 
+kity.extendClass(MinderNode,{
+    getTextShape : function(){
+        return  this.getRenderer('TextRenderer').getRenderShape();
+    }
+});
 KityMinder.registerModule('text', {
     'renderers': {
         center: TextRenderer

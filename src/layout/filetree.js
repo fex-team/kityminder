@@ -41,7 +41,7 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 y += child.getStyle('margin-top');
                 child.setLayoutTransform(new kity.Matrix().translate(x, y));
                 y += childTreeBox.height + children[i].getStyle('margin-bottom');
-                child.setLayoutVector(new kity.Vector(childContentBox.left + 10, childContentBox.bottom));
+                child.setLayoutVector(new kity.Vector(childContentBox.left + 6, childContentBox.bottom));
             }
         }
     },

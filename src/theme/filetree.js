@@ -13,7 +13,7 @@ KityMinder.registerTheme('filetree', {
     'main-stroke': 'none',
     'main-font-size': 16,
     'main-padding': [6, 20],
-    'main-margin': [30, 0, 10, 0],
+    'main-margin': [15, 15, 15, 10],
     'main-radius': 10,
     'main-space': 5,
 
@@ -22,7 +22,7 @@ KityMinder.registerTheme('filetree', {
     'sub-stroke': 'none',
     'sub-font-size': 12,
     'sub-padding': [5, 10],
-    'sub-margin': [5, 15, 10, 5],
+    'sub-margin': [15, 15, 15, 10],
     'sub-radius': 5,
     'sub-space': 5,
 

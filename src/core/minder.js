@@ -88,9 +88,6 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._shortcutkeys = {};
         this._bindshortcutKeys();
     },
-    isTextEditStatus: function() {
-        return false;
-    },
     addShortcutKeys: function(cmd, keys) {
         var obj = {},
             km = this;
