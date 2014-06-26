@@ -66,6 +66,12 @@ KityMinder.registerLayout('default', kity.createClass({
 
         y = -totalTreeHeight / 2;
 
+        if (side != 'left') {
+            parent.setLayoutVector(new kity.Vector(nodeContentBox.right, nodeContentBox.cy));
+        } else {
+            parent.setLayoutVector(new kity.Vector(nodeContentBox.left, nodeContentBox.cy));
+        }
+
         for (i = 0; i < children.length; i++) {
             child = children[i];
             childTreeBox = childTreeBoxes[i];
@@ -77,15 +83,9 @@ KityMinder.registerLayout('default', kity.createClass({
             if (side == 'right') {
                 x = nodeContentBox.right - childContentBox.left;
                 x += parent.getStyle('margin-right') + child.getStyle('margin-left');
-
-                // 设置布局矢量
-                child.setLayoutVector(new kity.Vector(childContentBox.right, childContentBox.cy));
             } else {
                 x = nodeContentBox.left - childContentBox.right;
                 x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
-
-                // 设置布局矢量
-                child.setLayoutVector(new kity.Vector(childContentBox.left, childContentBox.cy));
             }
 
             // 竖直方向上的布局

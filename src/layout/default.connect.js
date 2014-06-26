@@ -14,7 +14,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection,
     var start, end, vector;
     var abs = Math.abs;
     var pathData = [];
-    var side = node.getLayoutVector().x > 0 ? 'right' : 'left';
+    var side = box.x > pBox.x ? 'right' : 'left';
 
     node.getMinder().getPaper().addResource(connectMarker);
 
