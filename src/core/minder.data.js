@@ -128,10 +128,7 @@ kity.extendClass(Minder, {
 
         importNode(this._root, json, this);
 
-        this._root.preTraverse(function(node) {
-            node.render();
-        });
-        this._root.layout();
+        this.refresh(500);
 
         this.fire('import', params);
 

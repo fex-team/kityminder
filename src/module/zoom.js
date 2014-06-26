@@ -3,7 +3,7 @@ KityMinder.registerModule( 'Zoom', function () {
 
     var timeline;
 
-    me.setOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
+    me.setDefaultOptions( 'zoom', [ 50, 80, 100, 120, 150, 200 ] );
 
     function zoomMinder( minder, zoom ) {
         var paper = minder.getPaper();

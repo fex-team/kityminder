@@ -176,8 +176,6 @@ kity.extendClass(Minder, {
         root = root || this.getRoot();
         var me = this;
 
-        if (root.getComplex() > 100) duration = 0;
-
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);
             var lastMatrix = node._lastLayoutTransform || new kity.Matrix();
@@ -202,6 +200,11 @@ kity.extendClass(Minder, {
                             matrix: value
                         });
                     }).start(node, duration, 'ease').on('finish', function() {
+                        // 可能性能低的时候会丢帧
+                        me.fire('layoutapply', {
+                            node: node,
+                            matrix: matrix
+                        });
                         me.fire('layoutfinish', {
                             node: node,
                             matrix: matrix

@@ -139,7 +139,7 @@ KityMinder.registerModule("KeyboardModule", function() {
                 var node = e.getTargetNode();
                 var lang = this.getLang();
 
-                this.receiver.keydownNode = node;
+                if (this.receiver) this.receiver.keydownNode = node;
 
                 var keyEvent = e.originEvent;
 

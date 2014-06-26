@@ -224,7 +224,9 @@ KityMinder.registerModule('Expand', function() {
         events: {
             'layoutapply': function(e) {
                 var r = e.node.getRenderer('ExpanderRenderer');
-                r.update(r.getRenderShape(), e.node);
+                if (r.getRenderShape()) {
+                    r.update(r.getRenderShape(), e.node);
+                }
             },
             'preimport': function(e) {
                 var json = e.json;
@@ -233,6 +235,7 @@ KityMinder.registerModule('Expand', function() {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
                 node.getRenderContainer().setVisible(visible);
+                if (!visible) e.stopPropagation();
             }
         },
         renderers: {

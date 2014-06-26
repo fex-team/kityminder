@@ -1,5 +1,6 @@
 KityMinder.registerModule('Select', function() {
     var minder = this;
+    var rc = minder.getRenderContainer();
     var g = KityMinder.Geometry;
 
     // 在实例上渲染框选矩形、计算框选范围的对象
@@ -26,7 +27,7 @@ KityMinder.registerModule('Select', function() {
                     return this.selectEnd();
                 }
 
-                startPosition = g.snapToSharp(e.getPosition('paper'));
+                startPosition = g.snapToSharp(e.getPosition(rc));
             },
             selectMove: function(e) {
                 if (minder.getStatus() == 'textedit') {
@@ -35,9 +36,7 @@ KityMinder.registerModule('Select', function() {
                 if (!startPosition) return;
 
                 var p1 = startPosition,
-                    p2 = e.getPosition('paper');
-
-                console.log(e.kityEvent.targetShape);
+                    p2 = e.getPosition(rc);
 
                 // 检测是否要进入选区模式
                 if (!marqueeMode) {
@@ -47,7 +46,7 @@ KityMinder.registerModule('Select', function() {
                     }
                     // 已经达到阈值，记录下来并且重置选区形状
                     marqueeMode = true;
-                    minder.getPaper().addShape(marqueeShape);
+                    rc.addShape(marqueeShape);
                     marqueeShape
                         .fill(minder.getStyle('marquee-background'))
                         .stroke(minder.getStyle('marquee-stroke')).setOpacity(0.8).getDrawer().clear();
@@ -71,7 +70,7 @@ KityMinder.registerModule('Select', function() {
 
                 // 计算选中范围
                 minder.getRoot().traverse(function(node) {
-                    var renderBox = node.getRenderContainer().getRenderBox('top');
+                    var renderBox = node.getLayoutBox();
                     if (g.getIntersectBox(renderBox, marquee)) {
                         selectedNodes.push(node);
                     }

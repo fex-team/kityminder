@@ -70,21 +70,21 @@
         var lastVersion = localStorage.lastKMVersion;
         $('#km-version').text( 'v' + KM.version );
 
-        if( lastVersion != KM.version ) {
+        if (lastVersion != KM.version) {
             $( '#km-version' ).addClass( 'new-version' );
             localStorage.lastKMVersion = KM.version;
         }
     });
 
-    km.on('unziperror', function(ev){
+    km.on('unziperror', function(ev) {
         alert('unziperror');
     });
 
-    km.on('parseerror', function(ev){
+    km.on('parseerror', function(ev) {
         alert('parseerror');
     });
 
-    km.on('unknownprotocal', function(ev){
+    km.on('unknownprotocal', function(ev) {
         alert('unknownprotocal');
     });
 </script>
