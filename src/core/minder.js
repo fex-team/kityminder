@@ -176,6 +176,10 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
     },
     setStatus: function(status) {
         if (status) {
+            this.fire('statuschange',{
+                lastStatus:this._status,
+                currentStatus:status
+            });
             this._rollbackStatus = this._status;
             this._status = status;
         } else {

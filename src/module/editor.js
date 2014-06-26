@@ -40,7 +40,6 @@ KityMinder.registerModule('TextEditModule', function() {
         'events': {
             'ready': function() {
                 this._renderTarget.appendChild(receiver.container);
-                this.getRenderContainer().addShape(sel);
             },
 
             'normal.beforemousedown textedit.beforemousedown inputready.beforemousedown': function(e) {
@@ -73,7 +72,6 @@ KityMinder.registerModule('TextEditModule', function() {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor', 'default');
                     if (this.isSingleSelect() && node.isSelected()) {
-
                         sel.collapse();
 
 
@@ -182,6 +180,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 inputStatusReady(e.getTargetNode());
 
+                km.setStatus('textedit');
+
                 receiver.updateSelectionShow();
             },
 //            'restoreScene': function() {
@@ -226,7 +226,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 };
                 if (cmds[e.commandName]) {
                     inputStatusReady(km.getSelectedNode());
-                    selectionReadyShow = true;
+                    receiver.updateSelectionShow();
                     return;
 
                 }
@@ -236,18 +236,11 @@ KityMinder.registerModule('TextEditModule', function() {
                     this.setStatus('normal');
                 }
             },
-            'layoutapply':function(e){
+            'layoutfinish':function(e){
                 if (e.node === receiver.minderNode && (this.getStatus() == 'textedit' || this.getStatus() == 'inputready') ) {//&& selectionReadyShow
                     receiver
                         .setBaseOffset()
-                        .setContainerStyle()
-                        .updateTextOffsetData();
-
-                    if (sel.collapsed) {
-                        receiver.updateSelection();
-                    } else {
-                        receiver.updateSelectionShow();
-                    }
+                        .setContainerStyle();
 
                 }
             },

@@ -316,6 +316,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
     _renderOrderHint: function(hint) {
         this._orderHinter.render(hint);
+    },
+    preventDragMove:function(){
+        this._startPosition = null;
     }
 });
 
@@ -340,6 +343,11 @@ KityMinder.registerModule('DragTree', function() {
                 dragger.dragEnd(e.getPosition(this.getRenderContainer()));
                 e.stopPropagation();
                 this.fire('contentchange');
+            },
+            'statuschange':function(e){
+                if(e.lastStatus == 'textedit' && e.currentStatus == 'normal'){
+                    dragger.preventDragMove();
+                }
             }
         },
         commands: {
