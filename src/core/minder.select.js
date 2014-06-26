@@ -9,11 +9,17 @@ kity.extendClass(Minder, {
         var i = 0;
 
         current.forEach(function(node) {
-            if (last.indexOf(node) == -1) changed.push(node);
+            if (last.indexOf(node) == -1) {
+                changed.push(node);
+                node.setTmpData('selected', true);
+            }
         });
 
         last.forEach(function(node) {
-            if (current.indexOf(node) == -1) changed.push(node);
+            if (current.indexOf(node) == -1) {
+                changed.push(node);
+                node.setTmpData('selected', false);
+            }
         });
 
         while (i < changed.length) changed[i++].render();
@@ -112,6 +118,6 @@ kity.extendClass(Minder, {
 
 kity.extendClass(MinderNode, {
     isSelected: function() {
-        return (~this.getMinder().getSelectedNodes().indexOf(this));
+        return this.getTmpData('selected');
     }
 });
