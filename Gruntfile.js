@@ -27,7 +27,7 @@ module.exports = function (grunt) {
     var getPath = function (readFile) {
 
         var sources = require("fs").readFileSync(readFile);
-        sources = /Array\(([^)]+)\)/.exec(sources);
+        sources = /paths\s=\s\[([\s\S]*?)\]/ig.exec(sources);
         sources = sources[1].replace(/\/\/.*\n/g, '\n').replace(/'|"|\n|\t|\s/g, '');
         sources = sources.split(",");
         sources.forEach(function (filepath, index) {
@@ -65,7 +65,6 @@ module.exports = function (grunt) {
                 files: (function () {
                     var files = {};
                     files[distPath + 'kityminder.all.min.js'] = distPath + 'kityminder.all.js';
-                    console.log(files);
                     return files;
                 })()
             }
@@ -101,7 +100,7 @@ module.exports = function (grunt) {
                 overwrite: true,
                 replacements: [{
                     from: /kity\/dist\/kity\.js/ig,
-                    to: 'lib/kitygraph.all.min.js'
+                    to: 'lib/kity.min.js'
                 }, {
                     from: /import\.js/,
                     to: 'kityminder.all.min.js'
@@ -154,13 +153,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-text-replace');
-    // Build task(s).
-    grunt.registerTask('default', ['concat', 'uglify', 'copy', 'replace']);
+
 
     /* [liverload plugin & task ] ------------------------------------*/
     grunt.loadNpmTasks('grunt-regarde');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-livereload');
+
+    // Build task(s).
+    grunt.registerTask('default', ['concat', 'uglify', 'copy', 'replace']);
     grunt.registerTask('live', ['livereload-start', 'connect', 'regarde']);
 
 };

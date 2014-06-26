@@ -38,6 +38,13 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
     },
 
     /**
+     * 判断节点是否叶子
+     */
+    isLeaf: function() {
+        return this.children.length === 0;
+    },
+
+    /**
      * 获取节点的根节点
      */
     getRoot: function() {
@@ -65,11 +72,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
     },
 
     /**
-     * 获得节点的复杂度
-     * @return {[type]} [description]
+     * 获得节点的复杂度（即子树中节点的数量）
      */
     getComplex: function() {
-
+        var complex = 0;
+        this.traverse(function() {
+            complex++;
+        });
+        return complex;
     },
 
     /**

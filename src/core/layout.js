@@ -42,6 +42,10 @@ kity.extendClass(MinderNode, {
         return this.getLayoutInstance().getOrderHint(this);
     },
 
+    getExpandPosition: function() {
+        return this.getLayoutInstance().getExpandPosition();
+    },
+
     getLayoutInstance: function() {
         var LayoutClass = KityMinder._layout[this.getLayout()];
         var layout = new LayoutClass();
@@ -128,30 +132,19 @@ kity.extendClass(MinderNode, {
             }
         }
 
-        this.getMinder().layout(this, duration);
+        this.getMinder().layout(duration);
 
         return this;
-    },
-
-    getLayoutContextPoints: function() {
-        return this.getLayoutInstance().getLayoutContextPoints(this);
     }
 });
 
 kity.extendClass(Minder, {
 
-    layout: function(root, duration) {
-        if (+root === root) {
-            duration = root;
-            root = null;
-        }
+    layout: function(duration) {
 
-        root = root || this.getRoot();
-
-        // traverse without root
-        root.traverse(function(node) {
+        this.getRoot().traverse(function(node) {
             node.setLayoutTransform(null);
-        }, true);
+        });
 
         function layoutNode(node) {
 
@@ -167,16 +160,23 @@ kity.extendClass(Minder, {
             layout.doLayout(node);
         }
 
-        layoutNode(root);
+        layoutNode(this.getRoot());
 
-        this.applyLayoutResult(root, duration);
+        this.applyLayoutResult(this.getRoot(), duration);
 
         return this.fire('layout');
+    },
+
+    refresh: function(duration) {
+        this.getRoot().preTraverse(function(node) { node.render(); });
+        return this.layout(duration);
     },
 
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+
+        if (root.getComplex() > 100) duration = 0;
 
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);

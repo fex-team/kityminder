@@ -33,6 +33,7 @@ KityMinder.registerLayout('bottom', kity.createClass({
                 return box;
             });
             var nodeContentBox = node.getContentBox();
+            node.setLayoutVector(new kity.Vector(nodeContentBox.cx - 5, nodeContentBox.bottom));
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
             x = -totalTreeWidth / 2;
@@ -50,7 +51,6 @@ KityMinder.registerLayout('bottom', kity.createClass({
                 y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
                 children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
                 x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
-                child.setLayoutVector(new kity.Vector(childContentBox.cx - 5, childContentBox.bottom));
             }
         }
     }
@@ -64,6 +64,5 @@ KityMinder.registerConnectProvider('bottom', function(node, parent, connection) 
     pathData.push('L', new kity.Point(pBox.cx, pBox.bottom + parent.getStyle('margin-bottom')));
     pathData.push('L', new kity.Point(box.cx, pBox.bottom + parent.getStyle('margin-bottom')));
     pathData.push('L', new kity.Point(box.cx, box.top));
-    console.log(pathData);
     connection.setPathData(pathData);
 });

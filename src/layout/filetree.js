@@ -28,6 +28,7 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 return box;
             });
             var nodeContentBox = node.getContentBox();
+            node.setLayoutVector(new kity.Vector(nodeContentBox.left + 6, nodeContentBox.bottom));
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
             y = nodeContentBox.bottom + node.getStyle('margin-bottom');
@@ -41,7 +42,6 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 y += child.getStyle('margin-top');
                 child.setLayoutTransform(new kity.Matrix().translate(x, y));
                 y += childTreeBox.height + children[i].getStyle('margin-bottom');
-                child.setLayoutVector(new kity.Vector(childContentBox.left + 10, childContentBox.bottom));
             }
         }
     },
