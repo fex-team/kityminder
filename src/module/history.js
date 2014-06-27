@@ -69,7 +69,9 @@ KityMinder.registerModule("HistoryModule", function() {
             }
 
             function appendChildNode(parent, child) {
-
+                if (child.isSelected()) {
+                    selectedNodes.push(child);
+                }
                 km.appendNode(child,parent);
                 child.render();
                 for (var i = 0, ci; ci = child.children[i++];) {
@@ -81,9 +83,11 @@ KityMinder.registerModule("HistoryModule", function() {
 
                 if (compareNode(srcNode, tagNode) === false) {
                     srcNode.setValue(tagNode);
+                    srcNode.render();
                     if (srcNode.isSelected()) {
                         selectedNodes.push(srcNode);
                     }
+
                 }
                 for (var i = 0, j = 0, si, tj;
                     (si = srcNode.children[i], tj = tagNode.children[j], si || tj); i++, j++) {
@@ -145,23 +149,7 @@ KityMinder.registerModule("HistoryModule", function() {
     //为km实例添加history管理
     this.historyManager = new HistoryManager(this);
 
-    var keys = {
-            /*Shift*/
-            16: 1,
-            /*Ctrl*/
-            17: 1,
-            /*Alt*/
-            18: 1,
-            /*Command*/
-            91: 1,
-            37: 1,
-            38: 1,
-            39: 1,
-            40: 1
-        },
-        keycont = 0,
-        lastKeyCode,
-        saveSceneTimer;
+
     return {
         defaultOptions: {
             maxUndoCount: 20,
@@ -172,7 +160,7 @@ KityMinder.registerModule("HistoryModule", function() {
                 base: Command,
 
                 execute: function(km) {
-                    km.historyManager.undo()
+                    km.historyManager.undo();
                 },
 
                 queryState: function(km) {
@@ -187,7 +175,7 @@ KityMinder.registerModule("HistoryModule", function() {
                 base: Command,
 
                 execute: function(km) {
-                    km.historyManager.redo()
+                    km.historyManager.redo();
                 },
 
                 queryState: function(km) {
@@ -206,36 +194,8 @@ KityMinder.registerModule("HistoryModule", function() {
             "saveScene": function(e) {
                 this.historyManager.saveScene();
             },
-            'renderNode': function(e) {
-                var node = e.node;
-                if (node.isSelected()) {
-                    this.select(node)
-                }
-            },
-            //            "keydown": function ( e ) {
-            //                var orgEvt = e.originEvent;
-            //                var keyCode = orgEvt.keyCode || orgEvt.which;
-            //                if ( !keys[ keyCode ] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey ) {
-            //
-            //
-            //                    if ( km.historyManager.list.length == 0 ) {
-            //                        km.historyManager.saveScene();
-            //                    }
-            //                    clearTimeout( saveSceneTimer );
-            //
-            //                    saveSceneTimer = setTimeout( function () {
-            //                        km.historyManager.saveScene();
-            //                    }, 200 );
-            //
-            //                    lastKeyCode = keyCode;
-            //                    keycont++;
-            //                    if ( keycont >= km.getOptions( 'maxInputCount' ) ) {
-            //                        km.historyManager.saveScene()
-            //                    }
-            //                }
-            //            },
             "import": function() {
-                this.historyManager.reset()
+                this.historyManager.reset();
             }
         }
     };
