@@ -119,5 +119,11 @@ kity.extendClass(Minder, {
 kity.extendClass(MinderNode, {
     isSelected: function() {
         return this.getTmpData('selected');
+    },
+    clearSelectedFlag:function(){
+        this.setTmpData('selected');
+    },
+    setSelectedFlag:function(){
+        this.setTmpData('selected',true);
     }
 });

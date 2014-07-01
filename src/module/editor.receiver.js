@@ -105,7 +105,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             //当第一次输入内容时进行保存
             if(me.lastMinderNode !== me.minderNode){
                 me.km.fire('saveScene',{
-                    notcompare:true
+                    inputStatus:true
                 });
                 me.lastMinderNode = me.minderNode;
             }

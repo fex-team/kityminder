@@ -3,8 +3,9 @@ KityMinder.registerModule("HistoryModule", function() {
     var km = this;
 
     var Scene = kity.createClass('Scene', {
-        constructor: function(root) {
+        constructor: function(root,inputStatus) {
             this.data = root.clone();
+            this.inputStatus = inputStatus;
         },
         getData: function() {
             return this.data;
@@ -13,7 +14,33 @@ KityMinder.registerModule("HistoryModule", function() {
             return this.getData().clone();
         },
         equals: function(scene) {
-            return this.getData().equals(scene.getData())
+            var nodeA = scene.getData(),isSelectedA = false;
+            var nodeB = this.getData(),isSelectedB = false;
+            if(nodeA.isSelected()){
+                isSelectedA = true;
+                nodeA.clearSelectedFlag();
+            }
+
+            if(nodeB.isSelected()){
+                isSelectedB = true;
+                nodeB.clearSelectedFlag();
+            }
+            var result = nodeB.equals(nodeA);
+
+            if(isSelectedA){
+                nodeA.setSelectedFlag();
+            }
+
+            if(isSelectedB){
+                nodeB.setSelectedFlag();
+            }
+            return result;
+        },
+        isInputStatus:function(){
+            return this.inputStatus;
+        },
+        setInputStatus:function(status){
+            this.inputStatus = status;
         }
     });
     var HistoryManager = kity.createClass('HistoryManager', {
@@ -26,16 +53,25 @@ KityMinder.registerModule("HistoryModule", function() {
         },
         undo: function() {
             if (this.hasUndo) {
-                //                if(this.km.getStatus() == 'textedit'){
-                //                    return this.restore(this.index);
-                //                }
+                var currentScene = this.list[this.index];
+                //如果是输入文字时的保存，直接回复当前场景
+                if(currentScene && currentScene.isInputStatus()){
+                    this.saveScene();
+                    this.restore(--this.index);
+                    currentScene.setInputStatus(false);
+                    return;
+                }
+                if(this.list.length == 1){
+                    this.restore(0);
+                    return;
+                }
                 if (!this.list[this.index - 1] && this.list.length == 1) {
                     this.reset();
                     return;
                 }
                 while (this.list[this.index].equals(this.list[this.index - 1])) {
                     this.index--;
-                    if (this.index == 0) {
+                    if (this.index === 0) {
                         return this.restore(0);
                     }
                 }
@@ -84,10 +120,9 @@ KityMinder.registerModule("HistoryModule", function() {
                 if (compareNode(srcNode, tagNode) === false) {
                     srcNode.setValue(tagNode);
                     srcNode.render();
-                    if (srcNode.isSelected()) {
-                        selectedNodes.push(srcNode);
-                    }
-
+                }
+                if (srcNode.isSelected()) {
+                    selectedNodes.push(srcNode);
                 }
                 for (var i = 0, j = 0, si, tj;
                     (si = srcNode.children[i], tj = tagNode.children[j], si || tj); i++, j++) {
@@ -109,20 +144,25 @@ KityMinder.registerModule("HistoryModule", function() {
 
 
         },
-        restore: function() {
-            var scene = this.list[this.index];
+        restore: function(index) {
+            index = index === undefined ? this.index : index;
+            var scene = this.list[index];
             this.partialRenewal(scene.cloneData());
             this.update();
             this.km.fire('restoreScene');
             this.km.fire('contentChange');
         },
-        getScene: function() {
-            return new Scene(this.km.getRoot());
+        getScene: function(inputStatus) {
+            return new Scene(this.km.getRoot(),inputStatus);
         },
-        saveScene: function() {
-            var currentScene = this.getScene();
+        saveScene: function(inputStatus) {
+            var currentScene = this.getScene(inputStatus);
             var lastScene = this.list[this.index];
             if (lastScene && lastScene.equals(currentScene)) {
+                if(inputStatus){
+                    lastScene.setInputStatus(true);
+                    this.update();
+                }
                 return;
             }
             this.list = this.list.slice(0, this.index + 1);
@@ -136,8 +176,14 @@ KityMinder.registerModule("HistoryModule", function() {
             this.update();
         },
         update: function() {
+
             this.hasRedo = !!this.list[this.index + 1];
-            this.hasUndo = !!this.list[this.index - 1]; //|| this.km.getStatus() == 'textedit';
+            this.hasUndo = !!this.list[this.index - 1];
+            var currentScene = this.list[this.index];
+            if(currentScene && currentScene.isInputStatus()){
+                this.hasUndo = true;
+            }
+
         },
         reset: function() {
             this.list = [];
@@ -192,10 +238,11 @@ KityMinder.registerModule("HistoryModule", function() {
         },
         "events": {
             "saveScene": function(e) {
-                this.historyManager.saveScene();
+                this.historyManager.saveScene(e.inputStatus);
             },
             "import": function() {
                 this.historyManager.reset();
+//                this.historyManager.saveScene();
             }
         }
     };
