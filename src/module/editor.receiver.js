@@ -102,6 +102,13 @@ Minder.Receiver = kity.createClass('Receiver', {
             if (!me.range.hasNativeRange()) {
                 return;
             }
+            //当第一次输入内容时进行保存
+            if(me.lastMinderNode !== me.minderNode){
+                me.km.fire('saveScene',{
+                    notcompare:true
+                });
+                me.lastMinderNode = me.minderNode;
+            }
             var text = me.container.textContent.replace(/[\u200b\t\r\n]/g, '');
 
             if (me.textShape.getOpacity() === 0) {
@@ -173,13 +180,13 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
-                        return;
+                    case keymap.F2:
                     case keymap.Del:
                     case keymap.Backspace:
-                        if(!this.selection.isShow()){
+                        if(this.selection.isHide()){
                             this.km.setStatus('normal');
-                            return;
                         }
+                        return;
                 }
 
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
