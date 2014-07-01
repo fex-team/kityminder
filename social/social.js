@@ -100,7 +100,6 @@ $(function() {
         bindShortCuts();
         bindDraft();
         if (draftManager) watchChanges();
-        loadDraft(0);
     }
 
     // 创建 UI
@@ -146,7 +145,7 @@ $(function() {
         $save_btn = $('#save-button').addClass('baidu-cloud').find('a');
         $share_btn = $('#share-button').addClass('share').find('a');
 
-        $draft_btn = $('<button id="draft-btn">草稿箱</button>').appendTo($menu);
+        $draft_btn = $('<button id="draft-btn">草稿箱</button>').prependTo($('#about'));
 
         $draft_menu = $.kmuidropmenu().addClass('draft-menu kmui-combobox-menu').appendTo('body');
         $draft_menu.kmui().attachTo($draft_btn);
@@ -833,7 +832,7 @@ $(function() {
             $draft_menu.append('<li class="draft-clear"><a href="#">清空草稿箱</a></li>');
         }
 
-        //adjustDraftMenu();
+        adjustDraftMenu();
     }
 
     function adjustDraftMenu() {

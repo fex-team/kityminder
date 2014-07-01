@@ -21,9 +21,9 @@ button.file-button:active,button.file-button.active{background:#007fcc;box-shado
 #save-button:hover a:before{background-position:0 -24px}
 #share-button a{position:relative}#share-button a:before{content:' ';display:block;width:24px;height:24px;background:url(../themes/default/images/share.png);position:absolute;left:4px;top:2px}
 #share-button:hover a:before{background-position:0 -24px}
-#draft-btn{padding-right:28px;position:relative;border-radius:5px 5px 0 0}#draft-btn:after{content:' ';display:block;position:absolute;right:10px;top:12px;width:0;height:0;border:solid;border-width:4px 5px;border-color:#333 transparent transparent transparent}
+#draft-btn{padding-right:28px;position:relative;border-radius:5px 5px 0 0;float:left;margin-left:0}#draft-btn:after{content:' ';display:block;position:absolute;right:10px;top:12px;width:0;height:0;border:solid;border-width:4px 5px;border-color:#333 transparent transparent transparent}
 #draft-btn:active:after,#draft-btn.active:after{border-color:#fff transparent transparent transparent}
-.draft-menu.kmui-dropdown-menu{margin-top:14px;margin-left:-1px}.draft-menu.kmui-dropdown-menu span.update-time{float:right;color:#ccc;margin-left:20px;padding-right:16px}
+.draft-menu.kmui-dropdown-menu{margin-top:14px;margin-left:-1px;box-shadow:0 1px 5px rgba(0,0,0,0.3)}.draft-menu.kmui-dropdown-menu span.update-time{float:right;color:#ccc;margin-left:20px;padding-right:16px}
 .draft-menu.kmui-dropdown-menu li.draft-item a{position:relative}.draft-menu.kmui-dropdown-menu li.draft-item a:before{content:' ';display:block;width:24px;height:24px;background:url(../themes/default/images/draft.png) no-repeat 0 -24px;position:absolute;left:4px;top:2px}
 .draft-menu.kmui-dropdown-menu li.draft-item:hover a:before{background-position:0 -48px}
 .draft-menu.kmui-dropdown-menu li.draft-item{position:relative}.draft-menu.kmui-dropdown-menu li.draft-item:hover a.delete{display:block}
