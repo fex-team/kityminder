@@ -57,13 +57,60 @@ var RemoveNodeCommand = kity.createClass('RemoverNodeCommand', {
     }
 });
 
+var EditNodeCommand = kity.createClass('EditNodeCommand', {
+    base: Command,
+    execute: function(km) {
+        var selectedNode = km.getSelectedNode();
+        if (!selectedNode) {
+            return null;
+        }
+        km.select(selectedNode, true);
+        km.textEditNode(selectedNode);
+    },
+    queryState: function(km) {
+        var selectedNode = km.getSelectedNode();
+        if (!selectedNode) {
+            return -1;
+        } else {
+            return 0;
+        }
+    },
+    isNeedUndo: function() {
+        return false;
+    }
+});
 
 KityMinder.registerModule('NodeModule', function() {
     return {
         commands: {
             'AppendChildNode': AppendChildCommand,
             'AppendSiblingNode': AppendSiblingCommand,
-            'RemoveNode': RemoveNodeCommand
-        }
+            'RemoveNode': RemoveNodeCommand,
+            'EditNode': EditNodeCommand
+        },
+        'contextmenu': [{
+            label: this.getLang('node.appendsiblingnode'),
+            exec: function() {
+                this.execCommand('AppendSiblingNode', this.getLang('topic'));
+            },
+            cmdName: 'appendsiblingnode'
+        }, {
+            label: this.getLang('node.appendchildnode'),
+            exec: function() {
+                this.execCommand('AppendChildNode', this.getLang('topic'));
+            },
+            cmdName: 'appendchildnode'
+        }, {
+            label: this.getLang('node.editnode'),
+            exec: function() {
+                this.execCommand('EditNode');
+            },
+            cmdName: 'editnode'
+        }, {
+            label: this.getLang('node.removenode'),
+            cmdName: 'RemoveNode'
+        }, {
+            divider: 1
+        }]
     };
 });

@@ -32,7 +32,7 @@ KityMinder.registerModule('PriorityModule', function() {
                 .setSize(this.width, this.height);
 
             number = new kity.Text()
-                .setX(this.width / 2 + 0.5).setY(this.height / 2 + 0.5)
+                .setX(this.width / 2 + 0.5).setY(this.height / 2 - 0.5)
                 .setTextAnchor('middle')
                 .setVerticalAlign('middle')
                 .setFontSize(12)
@@ -73,6 +73,10 @@ KityMinder.registerModule('PriorityModule', function() {
                 if (val) break;
             }
             return val;
+        },
+
+        queryState: function(km) {
+            return km.getSelectedNodes().length ? 0 : -1;
         }
     });
     return {

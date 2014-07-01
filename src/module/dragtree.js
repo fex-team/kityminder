@@ -228,6 +228,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         var sources = this._dragSources;
         var ancestor = MinderNode.getCommonAncestor(sources);
 
+        // 只有一个元素选中，公共祖先是其父
         if (ancestor == sources[0]) ancestor = sources[0].parent;
 
         if (sources.length === 0 || ancestor != sources[0].parent) {

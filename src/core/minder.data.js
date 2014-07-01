@@ -16,46 +16,30 @@ Utils.extend(KityMinder, {
     }
 });
 
-// 这里的 Json 是一个对象
-function exportNode(node) {
-    var exported = {};
-    exported.data = node.getData();
-    var childNodes = node.getChildren();
-    if (childNodes.length) {
-        exported.children = [];
-        for (var i = 0; i < childNodes.length; i++) {
-            exported.children.push(exportNode(childNodes[i]));
-        }
-    }
-    return exported;
-}
-
 var DEFAULT_TEXT = {
     'root': 'maintopic',
     'main': 'topic',
     'sub': 'topic'
 };
 
-function importNode(node, json, km) {
-    var data = json.data;
-    node.data = {};
-    for (var field in data) {
-        node.setData(field, data[field]);
-    }
-
-    node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
-
-    var childrenTreeData = json.children || [];
-    for (var i = 0; i < childrenTreeData.length; i++) {
-        var childNode = km.createNode(null, node);
-        importNode(childNode, childrenTreeData[i], km);
-    }
-    return node;
-}
-
 // 导入导出
 kity.extendClass(Minder, {
     exportData: function(protocalName) {
+
+        // 这里的 Json 是一个对象
+        function exportNode(node) {
+            var exported = {};
+            exported.data = node.getData();
+            var childNodes = node.getChildren();
+            if (childNodes.length) {
+                exported.children = [];
+                for (var i = 0; i < childNodes.length; i++) {
+                    exported.children.push(exportNode(childNodes[i]));
+                }
+            }
+            return exported;
+        }
+
         var json, protocal;
 
         json = exportNode(this.getRoot());
@@ -66,6 +50,9 @@ kity.extendClass(Minder, {
             protocalName: protocalName,
             protocal: protocal
         }, true)) === true) return;
+
+        json.template = this.getTemplate();
+        json.theme = this.getTheme();
 
         if (protocal) {
             return protocal.encode(json, this);
@@ -119,6 +106,24 @@ kity.extendClass(Minder, {
     },
 
     _doImport: function(json, params) {
+
+        function importNode(node, json, km) {
+            var data = json.data;
+            node.data = {};
+            for (var field in data) {
+                node.setData(field, data[field]);
+            }
+
+            node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
+
+            var childrenTreeData = json.children || [];
+            for (var i = 0; i < childrenTreeData.length; i++) {
+                var childNode = km.createNode(null, node);
+                importNode(childNode, childrenTreeData[i], km);
+            }
+            return node;
+        }
+
         this._fire(new MinderEvent('preimport', params, false));
 
         // 删除当前所有节点
@@ -126,9 +131,20 @@ kity.extendClass(Minder, {
             this.removeNode(this._root.getChildren()[0]);
         }
 
+        // compality for v1.1.3
+        var ocs = json.data.currentstyle; // old current-style
+        delete json.data.currentstyle;
+
         importNode(this._root, json, this);
 
-        this.refresh(500);
+        if (ocs == 'bottom') {
+            json.template = 'structure';
+            json.theme = 'snow';
+        }
+
+        this.setTemplate(json.template || null);
+        this.setTheme(json.theme || null);
+        this.refresh();
 
         this.fire('import', params);
 

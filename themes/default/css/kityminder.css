@@ -23,18 +23,17 @@ html, body, #kityminder, div.kmui-editor-body {
 }
 .kmui-container .kmui-toolbar{
     background-color: #fafafa;
-    z-index: 99999;
-    margin-right: 400px;
+    z-index: 999;
 }
 .kmui-toolbar .kmui-btn-toolbar{
     padding: 5px;
 }
 .kmui-toolbar {
     position: absolute;
-    left: 10px;
-    top: 10px;
-    border-radius: 4px;
-    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
+    left: 0;
+    right: 0;
+    top: 30px;
+    border-bottom: 1px solid #f0f0f0;
 }
 .kmui-container .kmui-editor-body {
     background: rgb(50, 60, 61) url(../images/grid.png) repeat;
@@ -44,6 +43,25 @@ html, body, #kityminder, div.kmui-editor-body {
 svg, body {
     font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
 }
-#about{position:absolute;bottom:10px;right:10px;height:24px;line-height:24px;color:#888;font-family:Arial;font-size:13px;font-weight:normal;margin:0;text-shadow:0 1px 1px #000}#about a{color:#888}#about a:hover{color:#fff}
+#about {
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 30px;
+    line-height: 30px;
+    background: #fafafa;
+    color: #333;
+    font-family:Arial;
+    font-size:13px;
+    font-weight:normal;
+    margin:0;
+    text-align: right;
+    padding: 0 15px;
+    border-top: 1px solid #f0f0f0;
+}
+#about a {
+    color: #333;
+}
 #km-version.new-version{position:relative;padding-right:30px}
 #km-version.new-version:after{content:'NEW';color:#ff0;position:absolute;top:-10px;right:-5px;display:block;background:#f00;padding:0 5px;border-radius:4px;text-shadow:none;box-shadow:-1px 1px 3px rgba(0,0,0,0.3);-webkit-transform:scale(.6);-moz-transform:scale(.6);-ms-transform:scale(.6);transform:scale(.6)}

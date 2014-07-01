@@ -36,6 +36,10 @@ Utils.extend(KityMinder, {
 
         // 首个注册的主题为默认主题
         if (!KityMinder._defaultTheme) KityMinder._defaultTheme = name;
+    },
+
+    getThemeList: function() {
+        return KityMinder._themes;
     }
 });
 
@@ -46,21 +50,16 @@ kity.extendClass(Minder, {
      * @param  {String} name 要使用的主题的名称
      */
     useTheme: function(name) {
-        if (!KityMinder._themes[name]) {
-            return false;
-        }
 
-        this._theme = name;
-
-        this.getRoot().traverse(function(node) {
-            node.render();
-        });
-
-        this.getRoot().layout();
-
-        this.getPaper().getContainer().style.background = this.getStyle('background');
+        this.setTheme(name);
+        this.refresh(800);
 
         return true;
+    },
+
+    setTheme: function(name) {
+        this._theme = name || null;
+        this.getPaper().getContainer().style.background = this.getStyle('background');
     },
 
     /**
@@ -68,7 +67,12 @@ kity.extendClass(Minder, {
      * @return {[type]} [description]
      */
     getTheme: function(node) {
-        return this._theme || KityMinder._defaultTheme;
+        return this._theme || null;
+    },
+
+    getThemeItems: function(node) {
+        var theme = this.getTheme(node);
+        return KityMinder._themes[this.getTheme(node)] || KityMinder._themes[KityMinder._defaultTheme];
     },
 
     /**
@@ -76,10 +80,10 @@ kity.extendClass(Minder, {
      * @param  {String} item 样式名称
      */
     getStyle: function(item, node) {
-        var theme = KityMinder._themes[this.getTheme(node)];
+        var items = this.getThemeItems(node);
         var segment, dir, selector, value, matcher;
 
-        if (item in theme) return theme[item];
+        if (item in items) return items[item];
 
         // 尝试匹配 CSS 数组形式的值
         // 比如 item 为 'pading-left'
@@ -90,8 +94,8 @@ kity.extendClass(Minder, {
         dir = segment.pop();
         item = segment.join('-');
 
-        if (item in theme) {
-            value = theme[item];
+        if (item in items) {
+            value = items[item];
             if (Utils.isArray(value) && (matcher = cssLikeValueMatcher[dir])) {
                 return matcher(value);
             }
@@ -127,7 +131,7 @@ KityMinder.registerModule('Theme', {
             },
 
             queryValue: function(km) {
-                return km.getTheme();
+                return km.getTheme() || 'default';
             }
         })
     }

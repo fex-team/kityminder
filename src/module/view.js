@@ -100,7 +100,7 @@ KityMinder.registerModule('View', function() {
         enableReadOnly: false
     });
 
-    var CameraCommand = kity.createClass("CameraCommand", {
+    var CameraCommand = kity.createClass('CameraCommand', {
         base: Command,
         execute: function(km, focusNode, noAnimate) {
             focusNode = focusNode || km.getRoot();
@@ -112,7 +112,7 @@ KityMinder.registerModule('View', function() {
             if (noAnimate) {
                 km.getRenderContainer().translate(dx, dy);
             } else {
-                km.getRenderContainer().fxTranslate(dx, dy, 1000, "easeOutQuint");
+                km.getRenderContainer().fxTranslate(dx, dy, 1000, 'easeOutQuint');
             }
             this.setContentChanged(false);
         },

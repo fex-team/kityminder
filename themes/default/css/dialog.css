@@ -1,8 +1,8 @@
 .kmui-modal {
     position: fixed;
-    top: 60px;
+    top: 90px;
     right:10px;
-    background-color: #ffffff;
+    background-color: #fafafa;
     outline: 0;
     border-radius: 5px;
     box-shadow: 3px 3px 8px rgba(0,0,0, .5);

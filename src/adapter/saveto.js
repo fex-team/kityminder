@@ -1,7 +1,7 @@
-KM.registerToolbarUI( 'saveto', function ( name ) {
+KM.registerToolbarUI('saveto', function(name) {
 
     var me = this,
-        label = me.getLang( 'tooltips.' + name ),
+        label = me.getLang('tooltips.' + name),
         options = {
             label: label,
             title: label,
@@ -16,92 +16,81 @@ KM.registerToolbarUI( 'saveto', function ( name ) {
         $combox = null,
         comboboxWidget = null;
 
-    utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
-        var p = KityMinder.findProtocal( k );
-        if ( p.encode ) {
+    utils.each(KityMinder.getAllRegisteredProtocals(), function(k) {
+        var p = KityMinder.findProtocal(k);
+        if (p.encode) {
             var text = p.fileDescription + '（' + p.fileExtension + '）';
-            options.value.push( k );
-            options.items.push( text );
-            options.autowidthitem.push( $.wordCountAdaptive( text ), true );
+            options.value.push(k);
+            options.items.push(text);
+            options.autowidthitem.push($.wordCountAdaptive(text), true);
         }
-    } );
+    });
 
 
     //实例化
-    $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
+    $combox = $.kmuibuttoncombobox(options).css('zIndex', me.getOptions('zIndex') + 1);
     comboboxWidget = $combox.kmui();
 
-    function doDownload( url, filename ) {
-        var a = document.createElement( 'a' );
-        a.setAttribute( 'download', filename );
-        a.setAttribute( 'href', url );
-        document.body.appendChild(a);
-        var evt;
-        try {
-            evt = new MouseEvent( 'click' );
-        } catch ( error ) {
-            evt = document.createEvent( 'MouseEvents' );
-            evt.initEvent( 'click', true, true );
-        }
-        a.dispatchEvent( evt );
-        document.body.removeChild(a);
+    function doProxyDownload(url, filename, type) {
+        var content = url.split(',')[1];
+        var $form = $('<form></form>').attr({
+            'action': 'http://172.22.73.36/naotu/download.php',
+            'method': 'POST'
+        });
+
+        var $content = $('<input />').attr({
+            name: 'content',
+            type: 'hidden',
+            value: decodeURIComponent(content)
+        }).appendTo($form);
+
+        var $type = $('<input />').attr({
+            name: 'type',
+            type: 'hidden',
+            value: type
+        }).appendTo($form);
+
+        var $filename = $('<input />').attr({
+            name: 'filename',
+            type: 'hidden',
+            value: filename
+        }).appendTo($form);
+
+        $form.appendTo('body').submit().remove();
     }
 
-    var ie_ver = function () {
-        var iev = 0;
-        var ieold = ( /MSIE (\d+\.\d+);/.test( navigator.userAgent ) );
-        var trident = !! navigator.userAgent.match( /Trident\/7.0/ );
-        var rv = navigator.userAgent.indexOf( "rv:11.0" );
-        if ( ieold ) iev = new Number( RegExp.$1 );
-        if ( navigator.appVersion.indexOf( "MSIE 10" ) != -1 ) iev = 10;
-        if ( trident && rv != -1 ) iev = 11;
-        return iev;
-    };
-    var doSave = function ( urltype, d, filename ) {
-        var iframe = document.createElement( 'iframe' );
-        iframe.style.display = 'none';
-        document.body.appendChild( iframe );
-        iframe.contentDocument.open( urltype, 'replace' );
-        iframe.contentDocument.writeln( d );
-        iframe.contentDocument.execCommand( 'saveas', '', filename );
-    };
+    function doDownload(url, filename, type) {
+        if (kity.Browser.ie || ~window.location.href.indexOf('naotu.baidu.com')) {
+            return doProxyDownload(url, filename, type);
+        }
+        var a = document.createElement('a');
+        a.setAttribute('download', filename);
+        a.setAttribute('href', url);
+        a.click();
+    }
 
-    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        var data = me.exportData( res.value );
-        var p = KityMinder.findProtocal( res.value );
+    comboboxWidget.on('comboboxselect', function(evt, res) {
+        var data = me.exportData(res.value);
+        var p = KityMinder.findProtocal(res.value);
         var filename = me.getMinderTitle() + p.fileExtension;
-        if ( typeof ( data ) == 'string' ) {
-            var url = 'data:' + (p.mineType || 'text/plain') + '; utf-8,' + encodeURIComponent( data );
-            if ( ie_ver() > 0 ) {
-                if ( p.fileExtension === '.km' ) {
-                    doSave( 'application/x-javascript', data, me.getMinderTitle() );
-                } else if ( p.fileExtension === '.svg' ) {
-                    //doSave( 'image/svg+xml', data, filename );
-                } else {
-                    doSave( 'text/html', data, filename );
-                }
-            } else {
-                doDownload( url, filename );
-            }
-        } else if ( data && data.then ) {
-            data.then( function ( url ) {
-                if ( ie_ver() > 0 ) {
-                    //doSave( 'application/base64', url.replace( 'image/octet-stream,', '' ), filename );
-                } else {
-                    doDownload( url, filename );
-                }
-            } );
+        if (typeof(data) == 'string') {
+            var url = 'data:' + (p.mineType || 'text/plain') + '; utf-8,' + encodeURIComponent(data);
+            doDownload(url, filename, 'text');
+        } else if (data && data.then) {
+            data.then(function(url) {
+                doDownload(url, filename, 'base64');
+            });
         }
-    } ).on( "beforeshow", function () {
-        if ( $combox.parent().length === 0 ) {
-            $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
+    }).on('beforeshow', function() {
+        if ($combox.parent().length === 0) {
+            $combox.appendTo(me.$container.find('.kmui-dialog-container'));
         }
-    } ).on( 'aftercomboboxselect', function () {
+    }).on('aftercomboboxselect', function() {
         this.setLabelWithDefaultValue();
-    } );
+    });
 
 
 
-    return comboboxWidget.button().addClass( 'kmui-combobox' );
+    return comboboxWidget.button().addClass('kmui-combobox');
 
-} );
+});

@@ -12,6 +12,7 @@ KM.ui.define('menu',{
             }:{}))
             this.trigger('aftershow');
         }
+        $obj.addClass('active');
     },
     hide : function(all){
         var $parentmenu;
@@ -26,6 +27,8 @@ KM.ui.define('menu',{
             this.root().css('display','none');
             this.trigger('afterhide');
         }
+        var $obj = this.data('$mergeObj');
+        if ($obj) $obj.removeClass('active');
     },
     attachTo : function($obj){
         var me = this;

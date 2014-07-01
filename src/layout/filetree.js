@@ -21,27 +21,36 @@ KityMinder.registerLayout('filetree', kity.createClass({
         if (!children.length) {
             return false;
         } else {
-            var totalTreeWidth = 0;
             // 计算每个 child 的树所占的矩形区域
             var childTreeBoxes = children.map(function(node, index, children) {
                 var box = _this.getTreeBox([node]);
                 return box;
             });
             var nodeContentBox = node.getContentBox();
-            node.setLayoutVector(new kity.Vector(nodeContentBox.left + 6, nodeContentBox.bottom));
+            node.setLayoutVector(new kity.Vector(0, nodeContentBox.bottom));
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
+
             y = nodeContentBox.bottom + node.getStyle('margin-bottom');
 
-            for (var i = 0; i < children.length; i++) {
+            for (i = 0; i < children.length; i++) {
                 child = children[i];
                 childTreeBox = childTreeBoxes[i];
                 childContentBox = child.getContentBox();
+
+                x = child.getStyle('margin-left') - childContentBox.left;
+
                 if (!childContentBox.width) continue;
-                x = 10;
+
                 y += child.getStyle('margin-top');
-                child.setLayoutTransform(new kity.Matrix().translate(x, y));
-                y += childTreeBox.height + children[i].getStyle('margin-bottom');
+                y -= childTreeBox.top;
+
+                // 设置布局结果
+                transform = new kity.Matrix().translate(x, y);
+
+                child.setLayoutTransform(transform);
+
+                y += childTreeBox.bottom + child.getStyle('margin-bottom');
             }
         }
     },
@@ -81,8 +90,8 @@ KityMinder.registerConnectProvider('filetree', function(node, parent, connection
     var box = node.getLayoutBox(),
         pBox = parent.getLayoutBox();
     var pathData = [];
-    var left = pBox.left + 5;
-    pathData.push('M', new kity.Point(left, pBox.bottom));
+    var left = parent.getLayoutPoint().x;
+    pathData.push('M', new kity.Point(left, pBox.bottom + 1));
     pathData.push('L', new kity.Point(left, box.cy));
     pathData.push('L', new kity.Point(box.left, box.cy));
     connection.setPathData(pathData);

@@ -104,7 +104,7 @@ KityMinder.registerModule('image', function() {
         base: KityMinder.Renderer,
 
         create: function(node) {
-            return new kity.Image();
+            return new kity.Image(node.getData('image'));
         },
 
         shouldRender: function(node) {

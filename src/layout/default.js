@@ -88,19 +88,19 @@ KityMinder.registerLayout('default', kity.createClass({
                 x -= parent.getStyle('margin-left') + child.getStyle('margin-right');
             }
 
-            // 竖直方向上的布局
-            y += childTreeBox.height / 2;
-
             if (i > 0) {
                 y += children[i].getStyle('margin-top');
             }
+
+            // 竖直方向上的布局
+            y -= childTreeBox.top;
 
             // 设置布局结果
             transform = new kity.Matrix().translate(x, y);
 
             child.setLayoutTransform(transform);
 
-            y += childTreeBox.height / 2 + child.getStyle('margin-bottom');
+            y += childTreeBox.bottom + child.getStyle('margin-bottom');
         }
 
         if (parent.isRoot()) {

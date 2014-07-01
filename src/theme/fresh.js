@@ -1,4 +1,7 @@
 KityMinder.registerTheme('fresh', {
+
+    'name': '文艺小清新',
+
     'background': 'white',
 
     'root-color': '#fff',
@@ -7,7 +10,7 @@ KityMinder.registerTheme('fresh', {
     'root-stroke': 'none',
     'root-font-size': 16,
     'root-padding': [12, 24],
-    'root-margin': 100,
+    'root-margin': [30, 100],
     'root-radius': 5,
     'root-space': 10,
 

@@ -2,20 +2,28 @@ utils.extend(KityMinder, {
     _templates: {},
     registerTemplate: function(name, supports) {
         KityMinder._templates[name] = supports;
+    },
+    getTemplateList: function() {
+        return KityMinder._templates;
     }
 });
+
+KityMinder.registerTemplate('default', {});
 
 kity.extendClass(Minder, (function() {
     var originGetTheme = Minder.prototype.getTheme;
     return {
-        useTemplate: function(name) {
-            this._template = name;
+        useTemplate: function(name, duration) {
+            this.setTemplate(name);
+            this.refresh(duration || 800);
+        },
 
-            this.getRoot().traverse(function(node) {
-                node.render();
-            });
+        getTemplate: function() {
+            return this._template || null;
+        },
 
-            this.layout(300);
+        setTemplate: function(name) {
+            this._template = name || null;
         },
 
         getTemplateSupports: function() {
@@ -55,8 +63,8 @@ KityMinder.registerModule('TemplateModule', {
                 minder.useTemplate(name);
             },
 
-            queryCommandValue: function(minder) {
-                return minder._template;
+            queryValue: function(minder) {
+                return minder.getTemplate() || 'default';
             }
         })
     }

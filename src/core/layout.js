@@ -39,7 +39,7 @@ kity.extendClass(MinderNode, {
     },
 
     getOrderHint: function(refer) {
-        return this.getLayoutInstance().getOrderHint(this);
+        return this.parent.getLayoutInstance().getOrderHint(this);
     },
 
     getExpandPosition: function() {
@@ -169,12 +169,21 @@ kity.extendClass(Minder, {
 
     refresh: function(duration) {
         this.getRoot().preTraverse(function(node) { node.render(); });
-        return this.layout(duration);
+        this.layout(duration).fire('contentchange').fire('interactchange');
+        return this;
     },
 
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+
+        function applyMatrix(node, matrix) {
+            node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
+            me.fire('layoutapply', {
+                node: node,
+                matrix: matrix
+            });
+        }
 
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);
@@ -193,33 +202,23 @@ kity.extendClass(Minder, {
 
                 // 如果要求以动画形式来更新，创建动画
                 if (duration > 0) {
-                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, function(node, value) {
-                        node.getRenderContainer().setMatrix(node._lastLayoutTransform = value);
-                        me.fire('layoutapply', {
-                            node: node,
-                            matrix: value
+                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
+                        .start(node, duration, 'ease')
+                        .on('finish', function() {
+                            // 可能性能低的时候会丢帧
+                            setTimeout(function() {
+                                applyMatrix(node, matrix);
+                                me.fire('layoutfinish', {
+                                    node: node,
+                                    matrix: matrix
+                                });
+                            });
                         });
-                    }).start(node, duration, 'ease').on('finish', function() {
-                        // 可能性能低的时候会丢帧
-                        me.fire('layoutapply', {
-                            node: node,
-                            matrix: matrix
-                        });
-                        me.fire('layoutfinish', {
-                            node: node,
-                            matrix: matrix
-                        });
-                    });
                 }
 
                 // 否则直接更新
                 else {
-                    node.getRenderContainer().setMatrix(matrix);
-                    node._lastLayoutTransform = matrix;
-                    me.fire('layoutapply', {
-                        node: node,
-                        matrix: matrix
-                    });
+                    applyMatrix(node, matrix);
                     me.fire('layoutfinish', {
                         node: node,
                         matrix: matrix

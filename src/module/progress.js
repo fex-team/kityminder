@@ -65,6 +65,10 @@ KityMinder.registerModule('ProgressModule', function() {
                 if (val) break;
             }
             return val;
+        },
+
+        queryState: function(km) {
+            return km.getSelectedNodes().length ? 0 : -1;
         }
     });
 

@@ -61,7 +61,7 @@ KityMinder.registerModule('Expand', function() {
         /**
          * 策略 2：把操作进行到儿子
          */
-        DEEP_TO_CHILD: generateDeepPolicy(1),
+        DEEP_TO_CHILD: generateDeepPolicy(2),
 
         /**
          * 策略 3：把操作进行到叶子
@@ -118,6 +118,7 @@ KityMinder.registerModule('Expand', function() {
         base: Command,
         execute: function(km) {
             var nodes = km.getSelectedNodes();
+            if (!nodes.length) nodes.push(km.getRoot());
             nodes.forEach(function(node) {
                 node.expand(EXPAND_POLICY.DEEP_TO_LEAF);
             });
@@ -129,9 +130,9 @@ KityMinder.registerModule('Expand', function() {
     var CollapseNodeCommand = kity.createClass('CollapseNodeCommand', {
         base: Command,
         execute: function(km) {
-            var nodes = km.getSelectedNodes();
+            var nodes = km.getRoot().getChildren();
             nodes.forEach(function(node) {
-                node.collapse(EXPAND_POLICY.DEEP_TO_LEAF);
+                node.collapse();
             });
         },
         queryState: function(km) {

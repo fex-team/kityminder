@@ -1,4 +1,13 @@
 KityMinder.LANG['zh-cn'] = {
+    'template': {
+        'default': '思维导图',
+        'structure': '组织结构图'
+    },
+    'theme': {
+        'default': '脑图经典',
+        'snow': '温柔冷光',
+        'fresh': '文艺小清新'
+    },
     'maintopic': '中心主题',
     'topic': '分支主题',
     'tooltips': {
@@ -21,9 +30,11 @@ KityMinder.LANG['zh-cn'] = {
         'preference': '偏好设置',
         'image': '插入图片',
         'hyperlink': '插入链接',
-        'unhyperlink': "删除链接",
-        'expandnode': "展开节点",
-        'collapsenode': "收起节点"
+        'unhyperlink': '删除链接',
+        'expandnode': '展开节点',
+        'collapsenode': '收起节点',
+        'template': '模板',
+        'theme': '皮肤'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
@@ -72,11 +83,17 @@ KityMinder.LANG['zh-cn'] = {
     },
     'hyperlink': {
         'hyperlink': '插入超链接',
-        'unhyperlink': "取消超链接"
+        'unhyperlink': '取消超链接'
     },
     'image': {
         'image': '插入图片',
         'removeimage': '删除图片'
+    },
+    'marker': {
+        'marker': '设置进度/优先级'
+    },
+    'resource': {
+        'resource': '设置资源'
     }
 
 };

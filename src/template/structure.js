@@ -1,4 +1,6 @@
-KityMinder.registerTemplate('bottom', {
+KityMinder.registerTemplate('structure', {
+
+    name: '组织结构图',
 
     getLayout: function(node) {
 
@@ -6,9 +8,5 @@ KityMinder.registerTemplate('bottom', {
         if (node.isRoot()) return 'bottom';
 
         return 'filetree';
-    },
-
-    getTheme: function(node) {
-        return node ? (node.isRoot() ? 'bottom' : 'filetree') : 'default';
     }
 });

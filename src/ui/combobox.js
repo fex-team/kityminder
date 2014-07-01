@@ -195,6 +195,19 @@
                 } );
 
             },
+            selectItemByValue: function( value ){
+
+                var values = this.data('options').value,
+                    me = this,
+                    i;
+
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] == value) return me.select(i);
+                }
+
+                return false;
+
+            },
             getItems: function () {
                 return this.data( "options" ).items;
             },
