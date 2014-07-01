@@ -3,7 +3,7 @@
     var content = '<div class="hyperlink-content" style="padding:20px;width:360px;">';
     content += '<style>';
     content += '.kmui-dialog-<%= container %> input{';
-    content += 'width: 75%;';
+    content += 'width: 74%;';
     content += 'padding: 6px 12px;';
     content += 'font-size: 14px;';
     content += 'line-height: 1.42857143;';

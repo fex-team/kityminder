@@ -100,7 +100,6 @@ $( function () {
         bindShortCuts();
         bindDraft();
         if ( draftManager ) watchChanges();
-        if ( draftManager && !loadPath() && !isShareLink ) loadDraft( 0 );
     }
 
     // 创建 UI
