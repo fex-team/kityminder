@@ -31,11 +31,16 @@ KityMinder.registerModule('TextEditModule', function() {
                 .updateContainerRangeBySel();
 
             km.setStatus('inputready');
+
         }
 
     }
 
-
+    km.textEditNode = function(node){
+        inputStatusReady(node);
+        km.setStatus('textedit');
+        receiver.updateSelectionShow();
+    };
     return {
         'events': {
             'ready': function() {
@@ -178,39 +183,20 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'normal.dblclick textedit.dblclick inputready.dblclick': function(e) {
 
-                inputStatusReady(e.getTargetNode());
+                var node = e.getTargetNode();
+                if(node){
+                    inputStatusReady(e.getTargetNode());
 
-                km.setStatus('textedit');
+                    km.setStatus('textedit');
 
-                receiver.updateSelectionShow();
+                    receiver.updateSelectionShow();
+                }
+
             },
-//            'restoreScene': function() {
-//                var node = this.getSelectedNode();
-//                if (node && this.isSingleSelect()) {
-//                    var textShape = node.getRenderer('TextRenderer').getRenderShape();
-//                    sel.setHide();
-//                    sel.setStartOffset(0);
-//                    sel.setEndOffset(textShape.getContent().length);
-//
-//                    receiver.setTextEditStatus(true)
-//                        .setSelection(sel)
-//                        .setKityMinder(this)
-//                        .setMinderNode(node)
-//                        .setTextShape(textShape)
-//                        .setRange(range)
-//                        .setBaseOffset()
-//                        .setContainerStyle()
-//                        .setSelectionHeight()
-//                        .setContainerTxt(textShape.getContent())
-//                        .updateRange(range).setTextEditStatus(true);
-//                    km.setStatus('normal');
-//
-//                    sel.setData('relatedNode', node);
-//                } else {
-//                    receiver.clear();
-//                }
-//
-//            },
+            'restoreScene': function() {
+                receiver.clear();
+                inputStatusReady(this.getSelectedNode());
+            },
             'stopTextEdit': function() {
                 receiver.clear();
                 km.setStatus('normal');
