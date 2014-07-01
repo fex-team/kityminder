@@ -17,8 +17,13 @@ var ViewDragger = kity.createClass("ViewDragger", {
         paper.setStyle('cursor', value ? '-webkit-grab' : 'default');
         this._enabled = value;
     },
-    move: function(offset) {
-        this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
+    move: function(offset, duration) {
+        if (!duration) {
+            this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
+        }
+        else {
+            this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
+        }
     },
 
     _bind: function() {
@@ -81,7 +86,7 @@ KityMinder.registerModule('View', function() {
 
     var km = this;
 
-    var ToggleHandCommand = kity.createClass("ToggleHandCommand", {
+    var ToggleHandCommand = kity.createClass('ToggleHandCommand', {
         base: Command,
         execute: function(minder) {
 
@@ -102,21 +107,41 @@ KityMinder.registerModule('View', function() {
 
     var CameraCommand = kity.createClass('CameraCommand', {
         base: Command,
-        execute: function(km, focusNode, noAnimate) {
+        execute: function(km, focusNode, duration) {
             focusNode = focusNode || km.getRoot();
             var viewport = km.getPaper().getViewPort();
             var offset = focusNode.getRenderContainer().getRenderBox('view');
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
+            var dragger = km._viewDragger;
 
-            if (noAnimate) {
-                km.getRenderContainer().translate(dx, dy);
-            } else {
-                km.getRenderContainer().fxTranslate(dx, dy, 1000, 'easeOutQuint');
-            }
+            dragger.move(new kity.Point(dx, dy), duration);
             this.setContentChanged(false);
         },
         enableReadOnly: false
+    });
+
+    var MoveCommand = kity.createClass('MoveCommand', {
+        base: Command,
+
+        execute: function(km, dir) {
+            var dragger = this._viewDragger;
+            var size = km._lastClientSize;
+            switch (dir) {
+                case 'up':
+                    dragger.move(new kity.Point(0, -size.height / 2));
+                    break;
+                case 'down':
+                    dragger.move(new kity.Point(0, size.height / 2));
+                    break;
+                case 'left':
+                    dragger.move(new kity.Point(-size.width / 2, 0));
+                    break;
+                case 'right':
+                    dragger.move(new kity.Point(size.width / 2, 0));
+                    break;
+            }
+        }
     });
 
     return {
@@ -125,7 +150,8 @@ KityMinder.registerModule('View', function() {
         },
         commands: {
             'hand': ToggleHandCommand,
-            'camera': CameraCommand
+            'camera': CameraCommand,
+            'move': MoveCommand
         },
         events: {
             keyup: function(e) {
@@ -160,11 +186,11 @@ KityMinder.registerModule('View', function() {
             },
             'normal.dblclick readonly.dblclick': function(e) {
                 if (e.kityEvent.targetShape instanceof kity.Paper) {
-                    this.execCommand('camera', this.getRoot());
+                    this.execCommand('camera', this.getRoot(), 800);
                 }
             },
             ready: function() {
-                this.execCommand('camera', null, true);
+                this.execCommand('camera', null, 0);
                 this._lastClientSize = {
                     width: this.getRenderTarget().clientWidth,
                     height: this.getRenderTarget().clientHeight

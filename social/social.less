@@ -1,18 +1,19 @@
 #social {
     position: absolute;
-    height: 30px;
+    height: 40px;
     left: 0;
     right: 0;
     top: 0;
-    line-height: 30px;
-    overflow: hidden;
+    line-height: 40px;
+    overflow: visible;
     background: #fafafa;
-    border-bottom: 1px solid #fff;
-    box-shadow: inset 0 -1px #f0f0f0;
-    z-index: 1000;
+    z-index: 999999;
+    padding-left: 5px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa url(../themes/default/images/kmcat.png) no-repeat 180px 15px;
 
     h2 {
-        margin: 0 200px;
+        margin: 0;
         padding: 0;
         color: #999;
         text-shadow: 0 1px white;
@@ -55,6 +56,33 @@
             }
         }
     }
+
+    .tool-button {
+        vertical-align: bottom;
+        border: 1px solid transparent;
+        height: 31px;
+        z-index: 999999;
+        position: relative;
+        top: 1px;
+        color: #333;
+
+        border-radius: 4px 4px 0 0;
+
+        &:hover {
+            background: rgba(255,255,255, .8);
+            border-color: #f0f0f0 #f0f0f0 white #f0f0f0;
+        }
+
+        &:active, .active {
+            background: none;
+            color: black;
+        }
+
+        &.selected {
+            background: white;
+            border-color: #f0f0f0 #f0f0f0 white #f0f0f0;
+        }
+    }
 }
 
 .niceblue {
@@ -67,6 +95,47 @@
     background: linear-gradient(to bottom,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* W3C */
 
     &:after {
+        border-color: #fff transparent transparent transparent;
+    }
+}
+
+.ribbon {
+    background: #4584c2; /* Old browsers */
+    background: -moz-linear-gradient(top, #4584c2 0%, #295caa 50%, #194188 51%, #4168ce 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4584c2), color-stop(50%,#295caa), color-stop(51%,#194188), color-stop(100%,#4168ce)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #4584c2 0%,#295caa 50%,#194188 51%,#4168ce 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #4584c2 0%,#295caa 50%,#194188 51%,#4168ce 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #4584c2 0%,#295caa 50%,#194188 51%,#4168ce 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #4584c2 0%,#295caa 50%,#194188 51%,#4168ce 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4584c2', endColorstr='#4168ce',GradientType=0 ); /* IE6-9 */
+    box-shadow: inset 0 1px 0 rgb(125,172,215);
+    border: 1px solid rgb(65,106,189);
+    color: white;
+
+    &:hover, &.hover {
+        background: #598fc1; /* Old browsers */
+        background: -moz-linear-gradient(top,  #598fc1 0%, #3764a8 50%, #194188 51%, #5577cc 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#598fc1), color-stop(50%,#3764a8), color-stop(51%,#194188), color-stop(100%,#5577cc)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  #598fc1 0%,#3764a8 50%,#194188 51%,#5577cc 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  #598fc1 0%,#3764a8 50%,#194188 51%,#5577cc 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  #598fc1 0%,#3764a8 50%,#194188 51%,#5577cc 100%); /* IE10+ */
+        background: linear-gradient(to bottom,  #598fc1 0%,#3764a8 50%,#194188 51%,#5577cc 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#598fc1', endColorstr='#5577cc',GradientType=0 ); /* IE6-9 */
+
+    }
+    
+    padding-right: 28px;
+    position: relative;
+    &:after {
+        content: ' ';
+        display: block;
+        position: absolute;
+        right: 10px;
+        top: 12px;
+        width: 0;
+        height: 0;
+        border: solid;
+        border-width: 4px 5px;
         border-color: #fff transparent transparent transparent;
     }
 }
@@ -93,6 +162,19 @@
     }
 }
 
+.kmui-modal button {
+    .niceblue;
+
+    &:hover, &.hover {
+        background: #009fff;
+    }
+
+    &:active, &.active {
+        background: darken(#009fff, 10%);
+        box-shadow: inset 0 2px 3px rgba(0,0,0, .2);
+    }
+}
+
 button {
     font-family: Arial, "Heiti SC", "Microsoft Yahei";
     outline: none;
@@ -109,9 +191,6 @@ button {
     margin-left: 5px;
     background: none;
     border-radius: 2px;
-
-    &:hover, &.hover {
-    }
 
     &:active, &.active {
         box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
@@ -145,17 +224,13 @@ button {
     }
     &.file-button {
         .dropdown;
-        .niceblue;
+        .ribbon;
 
         border-radius: 5px 5px 0 0;
         margin-left: 5px;
-
-        &:hover, &.hover {
-            background: #009fff;
-        }
+        vertical-align: bottom;
 
         &:active, &.active {
-            background: darken(#009fff, 10%);
             box-shadow: inset 0 2px 3px rgba(0,0,0, .2);
         }
 
@@ -199,14 +274,12 @@ button {
 }
 #draft-btn {
     .dropdown;
-    border-radius: 5px 5px 0 0;
     float: left;
-    margin-left: 0;
+    border-radius: 5px 5px 0 0;
 }
 .draft-menu.kmui-dropdown-menu {
     margin-top: 14px;
     margin-left: -1px;
-    box-shadow: 0px 1px 5px rgba(0,0,0, .3);
     span.update-time {
         float: right;
         color: #CCC;
@@ -276,17 +349,21 @@ button {
     }
 }
 .file-menu.kmui-dropdown-menu {
-    margin-top: 14px;
+    margin-top: 15px;
     margin-left: 1px;
+    border-radius: 0 0 4px 4px;
     box-shadow: 0px 1px 5px rgba(0,0,0, .3);
 
-    #save-button, #manage-file-button, #share-button + .kmui-divider {
+    #save-button, #manage-file-button {
         display: none;
     }
 
     &.logined {
-        #save-button, #manage-file-button, #share-button + .kmui-divider {
+        #save-button, #manage-file-button{
             display: block;
+        }
+        #net-hint-buttom {
+            display: none;
         }
     }
 }

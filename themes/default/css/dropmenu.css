@@ -1,6 +1,6 @@
 .kmui-dropdown-menu {
     position: absolute;
-    z-index: 1000;
+    z-index: 99999999999;
     display: none;
     min-width: 160px;
     padding: 5px 0;

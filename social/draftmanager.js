@@ -38,7 +38,6 @@ function DraftManager( minder ) {
     function load() {
         if ( current ) {
             minder.importData( current.data, 'json' );
-            minder.execCommand('camera');
         }
         return current;
     }

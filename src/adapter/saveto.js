@@ -60,7 +60,7 @@ KM.registerToolbarUI('saveto', function(name) {
     }
 
     function doDownload(url, filename, type) {
-        if (kity.Browser.ie || ~window.location.href.indexOf('naotu.baidu.com')) {
+        if (!kity.Browser.chrome || ~window.location.href.indexOf('naotu.baidu.com')) {
             return doProxyDownload(url, filename, type);
         }
         var a = document.createElement('a');

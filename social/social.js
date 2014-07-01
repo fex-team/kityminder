@@ -52,7 +52,7 @@ $.extend($.fn, {
 $(function() {
 
     // UI 元素
-    var $panel, $title, $menu, $user, $share_btn, $save_btn, $file_btn, $file_menu, $login_btn, $user_btn, $logout_btn,
+    var $panel, $title, $menu, $user, $share_btn, $save_btn, $file_btn, $tool_btn, $file_menu, $login_btn, $user_btn, $logout_btn,
         $draft_btn, $draft_menu, $share_dialog, $share_url, $copy_url_btn,
 
         // 当前文件的远端路径
@@ -100,6 +100,7 @@ $(function() {
         bindShortCuts();
         bindDraft();
         if (draftManager) watchChanges();
+        if (draftManager && !loadPath() && !isShareLink) loadDraft(0);
     }
 
     // 创建 UI
@@ -111,6 +112,19 @@ $(function() {
         $title = $('<h2>百度脑图</h2>').appendTo($panel);
 
         $file_btn = $('<button>文件</button>').addClass('file-button').appendTo($menu);
+        $tool_btn = $('<button>工具箱</button>').addClass('tool-button').appendTo($menu);
+
+        $tool_btn.click(function() {
+            var hide = !localStorage.hide_toolbar;
+            $('#kityminder div.kmui-btn-toolbar').css('display', hide ? 'none' : 'block');
+            if (hide) {
+                $tool_btn.removeClass('selected');
+                localStorage.hide_toolbar = true;
+            } else {
+                $tool_btn.addClass('selected');
+                delete localStorage.hide_toolbar;
+            }
+        }).click().click();
 
         $file_menu = $.kmuidropmenu({
             data: [{
@@ -124,7 +138,10 @@ $(function() {
                 id: 'share-button'
             }, {
                 divider: true,
-                id: 'cloud-divider'
+            }, {
+                label: '登陆到网盘...',
+                click: login,
+                id: 'net-hint-buttom'
             }, {
                 label: '保存到百度云 (Ctrl + S)',
                 click: save,
@@ -583,7 +600,7 @@ $(function() {
             draftManager.sync();
         }
 
-        minder.execCommand('camera', minder.getRoot());
+        minder.execCommand('camera', minder.getRoot(), 300);
         $title.loading(false).text(getFileName(remotePath));
 
         watchingChanges = true;
@@ -638,7 +655,7 @@ $(function() {
         setRemotePath(null, true);
         draftManager.create();
         minder.importData('新建脑图', 'plain');
-        minder.execCommand('camera', minder.getRoot());
+        minder.execCommand('camera', minder.getRoot(), 300);
     }
 
     function generateRemotePath() {
@@ -810,8 +827,8 @@ $(function() {
             draft = list.shift();
             $draft_menu.append('<li disabled="disabled" class="current-draft kmui-combobox-item kmui-combobox-item-disabled kmui-combobox-checked">' +
                 '<span class="kmui-combobox-icon"></span>' +
-                '<label class="kmui-combobox-item-label">' + draft.name +
-                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' +
+                '<label class="kmui-combobox-item-label">' +
+                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name +
                 '</label>' +
                 '</li>');
             $draft_menu.append('<li class="kmui-divider"></li>');
@@ -823,7 +840,7 @@ $(function() {
         while (list.length) {
             draft = list.shift();
             $draft = $('<li class="draft-item">' +
-                '<a href="#">' + draft.name + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span></a><a class="delete" title="删除该草稿"></a></li>');
+                '<a href="#">' + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name + '</a><a class="delete" title="删除该草稿"></a></li>');
             $draft.data('draft-index', index++);
             $draft.appendTo($draft_menu);
         }
@@ -873,10 +890,6 @@ $(function() {
     function loadDraft(index) {
         var draft = draftManager.open(index),
             isRemote;
-        if (!draft) {
-            minder.initStyle();
-            return;
-        }
 
         isRemote = draft.path.indexOf('/apps/kityminder') === 0;
         if (isRemote) {
@@ -888,6 +901,7 @@ $(function() {
         if (!isRemote) {
             setRemotePath(null, false);
         }
+        minder.execCommand('camera', null, 300);
     }
 
     function getFriendlyTimeSpan(t1_in_ms, t2_in_ms) {
