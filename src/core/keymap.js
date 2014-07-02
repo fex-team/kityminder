@@ -51,9 +51,11 @@ var keymap = KityMinder.keymap = (function(origin) {
     //回退
     'z': 90,
     'y': 89,
-    //粘贴
+
+    //复制粘贴
     'v': 86,
     'x': 88,
+    'c': 67,
 
     's': 83,
 

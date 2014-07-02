@@ -91,7 +91,9 @@ KityMinder.registerModule("HistoryModule", function() {
                 }
                 km.appendNode(child,parent);
                 child.render();
-                for (var i = 0, ci; ci = child.children[i++];) {
+
+                var children = utils.cloneArr(child.children);
+                for (var i = 0, ci; ci = children[i++];) {
                     appendChildNode(child, ci);
                 }
             }
@@ -122,7 +124,7 @@ KityMinder.registerModule("HistoryModule", function() {
             traverseNode(km.getRoot(), target);
             km.layout();
             km.select(selectedNodes,true);
-
+            selectedNodes = [];
 
         },
         restore: function(index) {

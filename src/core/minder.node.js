@@ -60,6 +60,6 @@ kity.extendClass(Minder, {
 
 kity.extendClass(MinderNode, {
     getMinder: function() {
-        return this.root.minder;
+        return this.getRoot().minder;
     }
 });

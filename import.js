@@ -59,6 +59,7 @@
             'module/zoom.js',
             'module/hyperlink.js',
             'module/arrange.js',
+            'module/paste.js',
             'ui/jquery-ui-1.10.4.custom.min.js',
             'ui/widget.js',
             'ui/button.js',
