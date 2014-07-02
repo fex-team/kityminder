@@ -25,7 +25,7 @@ html, body, #kityminder, div.kmui-editor-body {
     color: white;
     text-align: center;
     font-weight: 300;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 #panel {
@@ -37,6 +37,7 @@ html, body, #kityminder, div.kmui-editor-body {
 }
 
 #panel button {
+    font-size: 14px;
     height: 40px;
     line-height: 50px;
     padding-left: 45px;
