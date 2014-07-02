@@ -52,7 +52,7 @@ $.extend($.fn, {
 $(function() {
 
     // UI 元素
-    var $panel, $title, $menu, $user, $share_btn, $save_btn, $file_btn, $tool_btn, $file_menu, $login_btn, $user_btn, $logout_btn,
+    var $panel, $title, $menu, $user, $share_btn, $save_btn, $file_btn, $tool_btn, $file_menu, $login_btn, $user_btn, $user_menu,
         $draft_btn, $draft_menu, $share_dialog, $share_url, $copy_url_btn,
 
         // 当前文件的远端路径
@@ -105,41 +105,22 @@ $(function() {
 
     // 创建 UI
     function initUI() {
-        $panel = $('<div id="social"></div>').appendTo('body');
+        $panel = $('#panel');
 
         $menu = $('<div id="menu"></div>').appendTo($panel);
         $user = $('<div id="user"></div>').appendTo($panel);
-        $title = $('<h2>百度脑图</h2>').appendTo($panel);
+        $title = $('h1#title');
 
-        $file_btn = $('<button>文件</button>').addClass('file-button').appendTo($menu);
-        $tool_btn = $('<button>工具箱</button>').addClass('tool-button').appendTo($menu);
-
-        $tool_btn.click(function() {
-            var hide = !localStorage.hide_toolbar;
-            $('#kityminder div.kmui-btn-toolbar').css('display', hide ? 'none' : 'block');
-            if (hide) {
-                $tool_btn.removeClass('selected');
-                localStorage.hide_toolbar = true;
-            } else {
-                $tool_btn.addClass('selected');
-                delete localStorage.hide_toolbar;
-            }
-        }).click().click();
+        $file_btn = $('<button id="file-btn">文件</button>').addClass('dropdown').appendTo($menu);
 
         $file_menu = $.kmuidropmenu({
             data: [{
                 label: '新建 (Ctrl + N)',
                 click: newFile
             }, {
-                divider: true
-            }, {
-                label: '分享...',
-                click: share,
-                id: 'share-button'
-            }, {
                 divider: true,
             }, {
-                label: '登陆到网盘...',
+                label: '登陆',
                 click: login,
                 id: 'net-hint-buttom'
             }, {
@@ -147,30 +128,58 @@ $(function() {
                 click: save,
                 id: 'save-button'
             }, {
-                label: '到百度云管理文件...',
-                click: function() {
-                    window.open('http://pan.baidu.com/disk/home#dir/path=/apps/kityminder');
-                },
-                id: 'manage-file-button'
-            }, {
                 divider: true
             }]
         }).addClass('file-menu').appendTo('body');
 
         $file_menu.kmui().attachTo($file_btn);
 
-        $save_btn = $('#save-button').addClass('baidu-cloud').find('a');
-        $share_btn = $('#share-button').addClass('share').find('a');
+        $save_btn = $('#save-btn').find('a');
+        $share_btn = $('<button id="share-btn">分享</button>').click(share).appendTo($user);
 
-        $draft_btn = $('<button id="draft-btn">草稿箱</button>').prependTo($('#about'));
+        $draft_btn = $('<button id="draft-btn">草稿箱</button>').addClass('dropdown').appendTo($menu);
 
         $draft_menu = $.kmuidropmenu().addClass('draft-menu kmui-combobox-menu').appendTo('body');
         $draft_menu.kmui().attachTo($draft_btn);
         $draft_menu.on('aftershow', showDraftList);
+        
+        
+        $tool_btn = $('<button id="tool-btn">工具箱</button>').appendTo($menu);
 
-        $login_btn = $('<a id="login-button">登录</a>').appendTo($user).click(login);
-        $user_btn = $('<a id="user-button" href="http://i.baidu.com/" target="_blank"></a>').appendTo($user);
-        $logout_btn = $('<a id="logout-button">注销</a>').appendTo($user).click(logout);
+        $tool_btn.click(function() {
+            var hide = !localStorage.hide_toolbar;
+            $('#kityminder div.kmui-btn-toolbar').css('display', hide ? 'none' : 'block');
+            if (hide) {
+                $tool_btn.removeClass('active');
+                localStorage.hide_toolbar = true;
+            } else {
+                $tool_btn.addClass('active');
+                delete localStorage.hide_toolbar;
+            }
+        }).click().click();
+
+        $login_btn = $('<button id="login-btn">登录</button>').appendTo($user).click(login);
+        $user_btn = $('<button id="user-btn">用户</button>').addClass('dropdown').appendTo($user);
+        
+        $user_menu = $.kmuidropmenu({
+            data: [{
+                label: '个人中心',
+                click: function() {
+                    window.open('http://i.baidu.com/', '_blank');
+                }
+            }, {
+                label: '管理云文件',
+                click: function() {
+                    window.open('http://pan.baidu.com/disk/home#dir/path=/apps/kityminder');
+                },
+                id: 'manage-file-button'
+            }, {
+                divider: true,
+            }, {
+                label: '注销',
+                click: logout
+            }]
+        }).addClass('user-menu').appendTo('body').kmui().attachTo($user_btn);
 
         $share_dialog = $('#share-dialog');
         $share_url = $('#share-url');
@@ -340,9 +349,9 @@ $(function() {
         currentAccount.getDetailInfo({
             success: function(user) {
                 $('<img />').attr({
-                    'src': user.extra.tinyurl,
-                    'width': 16,
-                    'height': 16
+                    'src': user.extra.headurl,
+                    'width': 32,
+                    'height': 32
                 }).prependTo($user_btn);
             }
         });
@@ -741,7 +750,7 @@ $(function() {
         var shareConfig = window._bd_share_config.common,
             resetShare = window._bd_share_main.init;
 
-        $title.loading('正在分享 “' + getFileName(remotePath) + '”...');
+        $share_btn.loading('正在分享...');
 
         $.ajax({
             url: 'http://naotu.baidu.com/mongo.php',
@@ -762,11 +771,11 @@ $(function() {
                     $share_dialog.show();
                     $share_url.val(shareUrl)[0].select();
                 }
-                $title.loading(false);
+                $share_btn.loading(false);
             },
             error: function() {
                 notice('分享失败，可能是当前的环境不支持该操作。');
-                $title.loading(false);
+                $share_btn.loading(false);
             }
         });
 
@@ -849,7 +858,7 @@ $(function() {
             $draft_menu.append('<li class="draft-clear"><a href="#">清空草稿箱</a></li>');
         }
 
-        adjustDraftMenu();
+        //adjustDraftMenu();
     }
 
     function adjustDraftMenu() {
@@ -890,6 +899,8 @@ $(function() {
     function loadDraft(index) {
         var draft = draftManager.open(index),
             isRemote;
+            
+        if (!draft) return;
 
         isRemote = draft.path.indexOf('/apps/kityminder') === 0;
         if (isRemote) {

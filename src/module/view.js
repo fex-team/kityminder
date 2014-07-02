@@ -3,7 +3,6 @@ var ViewDragger = kity.createClass("ViewDragger", {
         this._minder = minder;
         this._enabled = false;
         this._bind();
-        this._minder.getRenderContainer().translate(0.5, 0.5);
     },
     isEnabled: function() {
         return this._enabled;

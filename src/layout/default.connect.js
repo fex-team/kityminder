@@ -41,7 +41,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection,
 
             var radius = node.getStyle('connect-radius');
             var underY = box.bottom + 3;
-            var startY = parent.getType() == 'sub' ? pBox.bottom + 2 : pBox.cy;
+            var startY = parent.getType() == 'sub' ? pBox.bottom + 3 : pBox.cy;
             var p1, p2, p3, mx;
 
             if (side == 'right') {
@@ -57,6 +57,7 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection,
             mx = (p1.x + p2.x) / 2;
 
             if (width % 2 === 0) {
+                p1.y += 0.5;
                 p2.y += 0.5;
                 p3.y += 0.5;
             }

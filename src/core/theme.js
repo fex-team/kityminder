@@ -33,9 +33,6 @@ Utils.extend(KityMinder, {
      */
     registerTheme: function(name, theme) {
         KityMinder._themes[name] = theme;
-
-        // 首个注册的主题为默认主题
-        if (!KityMinder._defaultTheme) KityMinder._defaultTheme = name;
     },
 
     getThemeList: function() {
@@ -67,12 +64,12 @@ kity.extendClass(Minder, {
      * @return {[type]} [description]
      */
     getTheme: function(node) {
-        return this._theme || null;
+        return this._theme || this.getOptions('defaultTheme');
     },
 
     getThemeItems: function(node) {
         var theme = this.getTheme(node);
-        return KityMinder._themes[this.getTheme(node)] || KityMinder._themes[KityMinder._defaultTheme];
+        return KityMinder._themes[this.getTheme(node)];
     },
 
     /**
@@ -122,6 +119,9 @@ kity.extendClass(MinderNode, {
 });
 
 KityMinder.registerModule('Theme', {
+    defaultOptions: {
+        defaultTheme: 'fresh-blue'
+    },
     commands: {
         'theme': kity.createClass('ThemeCommand', {
             base: Command,

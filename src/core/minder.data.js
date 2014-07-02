@@ -140,6 +140,9 @@ kity.extendClass(Minder, {
         if (ocs == 'bottom') {
             json.template = 'structure';
             json.theme = 'snow';
+        } else if (ocs == 'default') {
+            json.template = 'default';
+            json.theme = 'classic';
         }
 
         this.setTemplate(json.template || null);

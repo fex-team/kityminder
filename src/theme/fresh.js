@@ -5,7 +5,7 @@
 
     function generate(h) {
         return {
-            'background': '#fefefe',
+            'background': '#fbfbfb',
 
             'root-color': 'white',
             'root-background': hsl(h, 37, 60),

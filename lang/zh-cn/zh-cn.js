@@ -4,14 +4,14 @@ KityMinder.LANG['zh-cn'] = {
         'structure': '组织结构图'
     },
     'theme': {
-        'default': '脑图经典',
+        'classic': '脑图经典',
         'snow': '温柔冷光',
         'fresh-red': '清新红',
-        'fresh-soil': '泥土',
-        'fresh-green': '自然',
-        'fresh-blue': '天空',
-        'fresh-purple': '浪漫',
-        'fresh-pink': '可爱'
+        'fresh-soil': '泥土黄',
+        'fresh-green': '文艺绿',
+        'fresh-blue': '天空蓝',
+        'fresh-purple': '浪漫紫',
+        'fresh-pink': '脑残粉'
     },
     'maintopic': '中心主题',
     'topic': '分支主题',

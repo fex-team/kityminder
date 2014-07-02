@@ -1,4 +1,5 @@
 KityMinder.registerTheme('snow', {
+    'background': 'url(themes/default/images/grid.png) repeat',
 
     'root-color': '#430',
     'root-background': '#e9df98',

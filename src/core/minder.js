@@ -54,6 +54,7 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._paper.getNode().ondragstart = function(e) {
             e.preventDefault();
         };
+        this._paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
 
         this._addRenderContainer();
 
