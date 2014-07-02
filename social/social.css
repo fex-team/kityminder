@@ -4,7 +4,7 @@
 #social #user #logout-button,#social #user #user-button{display:none}
 #social #user.logined #logout-button,#social #user.logined #user-button{display:inline-block}
 #social #user.logined #login-button{display:none}
-#social .tool-button{vertical-align:bottom;border:1px solid transparent;height:31px;z-index:999999;position:relative;top:1px;color:#333;border-radius:4px 4px 0 0}#social .tool-button:hover{background:rgba(255,255,255,0.8);border-color:#f0f0f0 #f0f0f0 #fff #f0f0f0}
+#social .tool-button{vertical-align:bottom;border:1px solid transparent;height:31px;z-index:999999;position:relative;top:1px;color:#333;border-radius:4px 4px 0 0}#social .tool-button:hover{background:rgba(255,255,255,0.8);border-color:#f0f0f0 #f0f0f0 transparent #f0f0f0}
 #social .tool-button:active,#social .tool-button .active{background:none;color:#000}
 #social .tool-button.selected{background:#fff;border-color:#f0f0f0 #f0f0f0 #fff #f0f0f0}
 .niceblue{color:#fff;background:-moz-linear-gradient(top, #0099f2 0, #4096ee 0, #0076dd 100%);background:-webkit-gradient(linear, left top, left bottom, color-stop(0, #0099f2), color-stop(0, #4096ee), color-stop(100%, #0076dd));background:-webkit-linear-gradient(top, #0099f2 0, #4096ee 0, #0076dd 100%);background:-o-linear-gradient(top, #0099f2 0, #4096ee 0, #0076dd 100%);background:-ms-linear-gradient(top, #0099f2 0, #4096ee 0, #0076dd 100%);background:linear-gradient(to bottom, #0099f2 0, #4096ee 0, #0076dd 100%);}.niceblue:after{border-color:#fff transparent transparent transparent}
