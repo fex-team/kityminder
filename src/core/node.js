@@ -185,6 +185,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
         if (index >= 0) {
             removed = this.children.splice(index, 1)[0];
             removed.parent = null;
+            removed.root = removed;
         }
     },
 

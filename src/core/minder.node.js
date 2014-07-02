@@ -40,6 +40,7 @@ kity.extendClass(Minder, {
     handelNodeCreate: function(node) {
         var rc = this._rc;
         node.traverse(function(current) {
+            current.attached = true;
             rc.addShape(current.getRenderContainer());
         });
         rc.addShape(node.getRenderContainer());
@@ -48,6 +49,7 @@ kity.extendClass(Minder, {
     handelNodeRemove: function(node) {
         var rc = this._rc;
         node.traverse(function(current) {
+            current.attached = false;
             rc.removeShape(current.getRenderContainer());
         });
     },

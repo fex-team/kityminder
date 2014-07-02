@@ -123,7 +123,9 @@ KityMinder.registerModule("HistoryModule", function() {
 
             traverseNode(km.getRoot(), target);
             km.layout();
+
             km.select(selectedNodes,true);
+
             selectedNodes = [];
 
         },
