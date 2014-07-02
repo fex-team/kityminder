@@ -6,6 +6,13 @@ if (!kity.Browser.ie) {
             fileExtension: '.svg',
             mineType: 'image/svg+xml',
             encode: function(json, km) {
+                var paper = km.getPaper();
+                var viewport = paper.getViewPort();
+                var originZoom = viewport.zoom;
+
+                viewport.zoom = 1;
+                paper.setViewPort(viewport);
+
                 var domContainer = km.getPaper().container,
                     svgXml,
                     $svg,
@@ -33,6 +40,10 @@ if (!kity.Browser.ie) {
 
                 // need a xml with width and height
                 svgXml = $('<div></div>').append($svg).html();
+
+                svgXml = $('<div></div>').append($svg).html();
+                viewport.zoom = originZoom;
+                paper.setViewPort(viewport);
 
                 // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
                 svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');

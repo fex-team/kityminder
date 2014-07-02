@@ -10,6 +10,13 @@ if (!kity.Browser.ie) {
             fileDescription: 'PNG 图片',
             fileExtension: '.png',
             encode: function(json, km) {
+                var paper = km.getPaper();
+                var viewport = paper.getViewPort();
+                var originZoom = viewport.zoom;
+
+                viewport.zoom = 1;
+                paper.setViewPort(viewport);
+
                 var domContainer = km.getPaper().container,
                     svgXml,
                     $svg,
@@ -34,6 +41,8 @@ if (!kity.Browser.ie) {
                 svgXml = km.getPaper().container.innerHTML;
 
                 renderContainer.translate(renderBox.x, renderBox.y);
+                viewport.zoom = originZoom;
+                paper.setViewPort(viewport);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
@@ -49,7 +58,7 @@ if (!kity.Browser.ie) {
                 svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');
 
                 blob = new Blob([svgXml], {
-                    type: "image/svg+xml;charset=utf-8"
+                    type: 'image/svg+xml;charset=utf-8'
                 });
 
                 DomURL = window.URL || window.webkitURL || window;

@@ -90,9 +90,13 @@ KityMinder.registerModule('Zoom', function() {
                 var keyCode = originEvent.keyCode || originEvent.which;
                 if (keymap['='] == keyCode) {
                     me.execCommand('zoom-in');
+                    e.stopPropagation();
+                    e.preventDefault();
                 }
                 if (keymap['-'] == keyCode) {
                     me.execCommand('zoom-out');
+                    e.stopPropagation();
+                    e.preventDefault();
 
                 }
             },
