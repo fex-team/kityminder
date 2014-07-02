@@ -1,4 +1,3 @@
-
 if (!kity.Browser.ie) {
     KityMinder.registerProtocal('png', function() {
         function loadImage(url, callback) {
@@ -15,8 +14,9 @@ if (!kity.Browser.ie) {
                     svgXml,
                     $svg,
 
-                    bgDeclare = getComputedStyle(domContainer).backgroundImage,
-                    bgUrl = /url\((.+)\)$/.exec(bgDeclare)[1],
+                    bgDeclare = km.getStyle('background').toString(),
+                    bgUrl = /url\((.+)\)/.exec(bgDeclare),
+                    bgColor = kity.Color.parse(bgDeclare),
 
                     renderContainer = km.getRenderContainer(),
                     renderBox = renderContainer.getRenderBox(),
@@ -29,7 +29,6 @@ if (!kity.Browser.ie) {
                     ctx = canvas.getContext('2d'),
                     blob, DomURL, url, img, finishCallback;
 
-                bgUrl = bgUrl.replace(/"/g, '');
                 renderContainer.translate(-renderBox.x, -renderBox.y);
 
                 svgXml = km.getPaper().container.innerHTML;
@@ -60,10 +59,10 @@ if (!kity.Browser.ie) {
                 canvas.width = width + padding * 2;
                 canvas.height = height + padding * 2;
 
-                function fillBackground(ctx, image, width, height) {
+                function fillBackground(ctx, style) {
                     ctx.save();
-                    ctx.fillStyle = ctx.createPattern(image, "repeat");
-                    ctx.fillRect(0, 0, width, height);
+                    ctx.fillStyle = style;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.restore();
                 }
 
@@ -75,11 +74,11 @@ if (!kity.Browser.ie) {
                     var url = canvas.toDataURL('png');
                     return url;
                 }
-                loadImage(url, function() {
-                    var svgImage = this;
-                    loadImage(bgUrl, function() {
+
+                function drawSVG() {
+                    loadImage(url, function() {
+                        var svgImage = this;
                         var downloadUrl;
-                        fillBackground(ctx, this, canvas.width, canvas.height);
                         drawImage(ctx, svgImage, padding, padding);
                         DomURL.revokeObjectURL(url);
                         downloadUrl = generateDataUrl(canvas);
@@ -87,7 +86,17 @@ if (!kity.Browser.ie) {
                             finishCallback(downloadUrl);
                         }
                     });
-                });
+                }
+
+                if (bgUrl) {
+                    loadImage(bgUrl[1], function() {
+                        fillBackground(ctx, ctx.createPattern(this, 'repeat'));
+                        drawSVG();
+                    });
+                } else {
+                    fillBackground(ctx, bgColor.toString());
+                    drawSVG();
+                }
 
                 return {
                     then: function(callback) {
