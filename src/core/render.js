@@ -27,6 +27,7 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
 kity.extendClass(Minder, {
 
     _createRendererForNode: function(node) {
+
         var registered = this._renderers;
         var renderers = [];
 
@@ -48,6 +49,7 @@ kity.extendClass(Minder, {
     },
 
     renderNode: function(node) {
+
         var rendererClasses = this._renderers;
         var g = KityMinder.Geometry;
         var i, latestBox, renderer;
@@ -107,6 +109,7 @@ kity.extendClass(Minder, {
 
 kity.extendClass(MinderNode, {
     render: function() {
+        if (!this.attached) return;
         this.getMinder().renderNode(this);
         return this;
     },

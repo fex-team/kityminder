@@ -81,14 +81,14 @@ kity.extendClass(Minder, {
         return this._selectedNodes.length == 1;
     },
 
-    getSelectedAncestors: function() {
+    getSelectedAncestors: function(includeRoot) {
         var nodes = this.getSelectedNodes().slice(0),
             ancestors = [],
             judge;
 
         // 根节点不参与计算
         var rootIndex = nodes.indexOf(this.getRoot());
-        if (~rootIndex) {
+        if (~rootIndex && !includeRoot) {
             nodes.splice(rootIndex, 1);
         }
 

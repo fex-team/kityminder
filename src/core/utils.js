@@ -268,6 +268,9 @@ var utils = Utils = KityMinder.Utils = {
                 }[a]
             }
         }) : '';
+    },
+    cloneArr:function(arr){
+        return [].concat(arr);
     }
 
 };
