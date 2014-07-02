@@ -192,6 +192,9 @@ kity.extendClass(Minder, {
             var offset = node.getLayoutOffset();
             matrix.translate(offset.x, offset.y);
 
+            matrix.m.e = Math.round(matrix.m.e);
+            matrix.m.f = Math.round(matrix.m.f);
+
             if (!matrix.equals(lastMatrix) || true) {
 
                 // 如果当前有动画，停止动画

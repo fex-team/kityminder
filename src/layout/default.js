@@ -116,7 +116,7 @@ KityMinder.registerLayout('default', kity.createClass({
     getOrderHint: function(node) {
         var hint = [];
         var box = node.getLayoutBox();
-        var offset = node.getLevel() > 1 ? 3 : 5;
+        var offset = 5;
 
         hint.push({
             type: 'up',

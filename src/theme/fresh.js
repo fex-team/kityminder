@@ -9,7 +9,7 @@
 
             'root-color': 'white',
             'root-background': hsl(h, 37, 60),
-            'root-stroke': 'none',
+            'root-stroke': hsl(h, 37, 60),
             'root-font-size': 16,
             'root-padding': [12, 24],
             'root-margin': [30, 100],
@@ -52,7 +52,7 @@
 
             'order-hint-area-color': hsl(h, 100, 95).set('a', 0.5),
             'order-hint-path-color': hsl(h, 100, 25),
-            'order-hint-path-width': 2
+            'order-hint-path-width': 1
         };
     }
 

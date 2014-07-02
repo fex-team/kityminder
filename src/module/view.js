@@ -2,11 +2,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
     constructor: function(minder) {
         this._minder = minder;
         this._enabled = false;
-        this._offset = {
-            x: 0,
-            y: 0
-        };
         this._bind();
+        this._minder.getRenderContainer().translate(0.5, 0.5);
     },
     isEnabled: function() {
         return this._enabled;
@@ -203,7 +200,7 @@ KityMinder.registerModule('View', function() {
                     },
                     b = this._lastClientSize;
                 this.getRenderContainer().translate(
-                    (a.width - b.width) / 2, (a.height - b.height) / 2);
+                    (a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0);
                 this._lastClientSize = a;
             }
         }
