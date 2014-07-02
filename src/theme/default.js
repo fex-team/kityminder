@@ -1,10 +1,7 @@
 KityMinder.registerTheme('default', {
-
-    'name': '脑图经典',
-
     'root-color': '#430',
     'root-background': '#e9df98',
-    'root-stroke': 'none',
+    'root-stroke': '#e9df98',
     'root-font-size': 24,
     'root-padding': [15, 25],
     'root-margin': [30, 100],
@@ -14,7 +11,7 @@ KityMinder.registerTheme('default', {
 
     'main-color': '#333',
     'main-background': '#a4c5c0',
-    'main-stroke': 'none',
+    'main-stroke': '#a4c5c0',
     'main-font-size': 16,
     'main-padding': [6, 20],
     'main-margin': 20,
@@ -37,6 +34,7 @@ KityMinder.registerTheme('default', {
     'connect-radius': 5,
 
     'selected-background': 'rgb(254, 219, 0)',
+    'selected-stroke': 'rgb(254, 219, 0)',
     'selected-color': 'black',
 
     'marquee-background': 'rgba(255,255,255,.3)',
@@ -49,5 +47,5 @@ KityMinder.registerTheme('default', {
 
     'order-hint-area-color': 'rgba(0, 255, 0, .5)',
     'order-hint-path-color': '#0f0',
-    'order-hint-path-width': 2
+    'order-hint-path-width': 1
 });

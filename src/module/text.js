@@ -11,7 +11,9 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
     update: function(text, node) {
         this.setTextStyle(node, text.setContent(node.getText()));
-        return text.getBoundaryBox();
+        var box = text.getBoundaryBox();
+        var r = Math.round;
+        return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
     },
 
     setTextStyle: function(node, text) {
@@ -31,7 +33,7 @@ utils.extend(TextRenderer, {
 });
 
 kity.extendClass(MinderNode,{
-    getTextShape : function(){
+    getTextShape : function() {
         return  this.getRenderer('TextRenderer').getRenderShape();
     }
 });

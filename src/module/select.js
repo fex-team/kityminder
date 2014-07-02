@@ -56,7 +56,10 @@ KityMinder.registerModule('Select', function() {
                     selectedNodes = [];
 
                 // 使其犀利
-                g.snapToSharp(marquee);
+                marquee.left = Math.round(marquee.left);
+                marquee.top = Math.round(marquee.top);
+                marquee.right = Math.round(marquee.right);
+                marquee.bottom = Math.round(marquee.bottom);
 
                 // 选区形状更新
                 marqueeShape.getDrawer().pipe(function() {

@@ -91,8 +91,9 @@ KityMinder.registerConnectProvider('filetree', function(node, parent, connection
         pBox = parent.getLayoutBox();
     var pathData = [];
     var left = parent.getLayoutPoint().x;
-    pathData.push('M', new kity.Point(left, pBox.bottom + 1));
-    pathData.push('L', new kity.Point(left, box.cy));
-    pathData.push('L', new kity.Point(box.left, box.cy));
+    var r = Math.round;
+    pathData.push('M', new kity.Point(r(left), r(pBox.bottom)));
+    pathData.push('L', new kity.Point(r(left), r(box.cy)));
+    pathData.push('L', new kity.Point(r(box.left), r(box.cy)));
     connection.setPathData(pathData);
 });

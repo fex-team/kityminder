@@ -34,8 +34,8 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
             .setPosition(outlineBox.x, outlineBox.y)
             .setSize(outlineBox.width, outlineBox.height)
             .setRadius(node.getStyle('radius'))
-            .fill(node.getStyle(prefix + 'background'))
-            .stroke(node.getStyle(prefix + 'stroke'),
+            .fill(node.getStyle(prefix + 'background') || node.getStyle('background'))
+            .stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
                 node.getStyle(prefix + 'stroke-width'));
 
         return outlineBox;
