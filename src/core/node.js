@@ -255,22 +255,49 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
         return cloneNode(null, this);
     },
 
-    equals: function(node) {
+    equals: function(node,ignoreSelected) {
+        var me = this;
+        function restoreSelected(){
+            if(isSelectedA){
+                me.setSelectedFlag();
+            }
+            if(isSelectedB){
+                node.setSelectedFlag();
+            }
+        }
+        if(ignoreSelected){
+            var isSelectedA = false;
+            var isSelectedB = false;
+            if(me.isSelected()){
+                isSelectedA = true;
+                me.clearSelectedFlag();
+            }
+
+            if(node.isSelected()){
+                isSelectedB = true;
+                node.clearSelectedFlag();
+            }
+        }
         if (node.children.length != this.children.length) {
+            restoreSelected();
             return false;
         }
-        if (utils.compareObject(node.getData(), this.getData()) === false) {
+        if (utils.compareObject(node.getData(), me.getData()) === false) {
+            restoreSelected();
             return false;
         }
-        if (utils.compareObject(node.getTmpData(), this.getTmpData()) === false) {
+        if (utils.compareObject(node.getTmpData(), me.getTmpData()) === false) {
+            restoreSelected();
             return false;
         }
         for (var i = 0, ci;
-            (ci = this.children[i]); i++) {
-            if (ci.equals(node.children[i]) === false) {
+            (ci = me.children[i]); i++) {
+            if (ci.equals(node.children[i],ignoreSelected) === false) {
+                restoreSelected();
                 return false;
             }
         }
+        restoreSelected();
         return true;
 
     },

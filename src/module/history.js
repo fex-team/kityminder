@@ -14,27 +14,8 @@ KityMinder.registerModule("HistoryModule", function() {
             return this.getData().clone();
         },
         equals: function(scene) {
-            var nodeA = scene.getData(),isSelectedA = false;
-            var nodeB = this.getData(),isSelectedB = false;
-            if(nodeA.isSelected()){
-                isSelectedA = true;
-                nodeA.clearSelectedFlag();
-            }
+            return this.getData().equals(scene.getData());
 
-            if(nodeB.isSelected()){
-                isSelectedB = true;
-                nodeB.clearSelectedFlag();
-            }
-            var result = nodeB.equals(nodeA);
-
-            if(isSelectedA){
-                nodeA.setSelectedFlag();
-            }
-
-            if(isSelectedB){
-                nodeB.setSelectedFlag();
-            }
-            return result;
         },
         isInputStatus:function(){
             return this.inputStatus;
