@@ -6,7 +6,12 @@ KityMinder.LANG['zh-cn'] = {
     'theme': {
         'default': '脑图经典',
         'snow': '温柔冷光',
-        'fresh': '文艺小清新'
+        'fresh-red': '清新红',
+        'fresh-soil': '泥土',
+        'fresh-green': '自然',
+        'fresh-blue': '天空',
+        'fresh-purple': '浪漫',
+        'fresh-pink': '可爱'
     },
     'maintopic': '中心主题',
     'topic': '分支主题',
