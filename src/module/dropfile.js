@@ -37,7 +37,11 @@ KityMinder.registerModule('DropFile', function() {
     function importMinderFile(minder, file) {
         if (!file) return;
 
-        var ext = /(.)\w+$/.exec(file.name)[0];
+        var ext = /(.)\w+$/.exec(file.name);
+        
+        if (!ext) return alert('不支持导入此类文件！');
+        
+        ext = ext[0];
 
         if ((/xmind/g).test(ext)) { //xmind zip
             importSync(minder, file, 'xmind');
@@ -50,7 +54,7 @@ KityMinder.registerModule('DropFile', function() {
         } else if (/txt/.test(ext)) {
             importAsync(minder, file, 'plain');
         } else {
-            alert('不支持该文件!');
+            alert('不支持导入此类文件!');
         }
     }
 

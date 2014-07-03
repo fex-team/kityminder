@@ -114,15 +114,15 @@
     });
 
     km.on('unziperror', function(ev) {
-        alert('unziperror');
+        alert('文件解析错误，文件可能已损坏！');
     });
 
     km.on('parseerror', function(ev) {
-        alert('parseerror');
+        alert('文件解析错误，文件可能已损坏！');
     });
 
     km.on('unknownprotocal', function(ev) {
-        alert('unknownprotocal');
+        alert('不支持的文件格式！');
     });
 </script>
 

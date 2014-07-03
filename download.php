@@ -21,10 +21,10 @@ if (isset($_REQUEST['content'])) {
         $filename = "kikyminder";
     }
 
-    header("Content-type: application/octet-stream; charset=utf-8; name=".$filename);
+    header("Content-type: application/octet-stream; charset=utf8; name=".urlencode($filename));
     header("Accept-Length: ".strlen($content));
     header("Content-Length: ".strlen($content));
-    header("Content-Disposition: attachment; filename=".$filename);
+    header("Content-Disposition: attachment; filename=".urlencode($filename));
     header('Content-Description: File Transfer');
     echo $content;
 

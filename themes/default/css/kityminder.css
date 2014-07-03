@@ -114,6 +114,7 @@ button#tool-btn {
 #panel button#tool-btn {
     padding-right: 20px;
     position: relative;
+    overflow: visible;
 }
 
 #panel button#tool-btn.active:before {
@@ -273,9 +274,17 @@ svg, body {
     transition: all ease .3s 0.3s;
     
     -webkit-transform: translate(100%);
+    -moz-transform: translate(100%);
+    -ms-transform: translate(100%);
+    -o-transform: translate(100%);
+    transform: translate(100%);
 }
-#about:hover {
+#about:hover, #about:hover #km-cat {
     -webkit-transform: translate(0);
+    -moz-transform: translate(0);
+    -ms-transform: translate(0);
+    -o-transform: translate(0);
+    transform: translate(0);
 }
 #about a {
     color: #eee;
@@ -286,10 +295,11 @@ svg, body {
     top: 5px;
     transition: all ease 1.3s 0.3s;
     -webkit-transform: translate(-60px, 0);
+    -moz-transform: translate(-60px, 0);
+    -ms-transform: translate(-60px, 0);
+    -o-transform: translate(-60px, 0);
+    transform: translate(-60px, 0);
     cursor: pointer;
-}
-#about:hover #km-cat {
-    -webkit-transform: translate(0);
 }
 #about #cat-face {
     fill: #393F4F;

@@ -4,7 +4,8 @@
         var content = url.split(',')[1];
         var $form = $('<form></form>').attr({
             'action': 'download.php',
-            'method': 'POST'
+            'method': 'POST',
+            'accept-charset': 'utf-8'
         });
 
         var $content = $('<input />').attr({
@@ -24,6 +25,8 @@
             type: 'hidden',
             value: filename
         }).appendTo($form);
+
+        $('<input name="iehack" value="&#9760;" />').appendTo($form);
 
         $form.appendTo('body').submit().remove();
     }
