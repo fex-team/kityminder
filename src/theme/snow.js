@@ -47,5 +47,7 @@ KityMinder.registerTheme('snow', {
 
     'order-hint-area-color': 'rgba(0, 255, 0, .5)',
     'order-hint-path-color': '#0f0',
-    'order-hint-path-width': 1
+    'order-hint-path-width': 1,
+
+    'text-selection-color': 'rgb(27,171,255)'
 });
