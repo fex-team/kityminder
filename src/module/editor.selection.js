@@ -5,8 +5,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.callBase();
         this.height = height || 20;
         this.setAttr('id','_kity_selection');
-        this.stroke( color || 'rgb(27,171,255)', width || 1 );
-        this.width = 0;
+        this.width = 2;
         this.fill('rgb(27,171,255)');
         this.setHide();
         this.timer = null;
@@ -18,14 +17,11 @@ Minder.Selection = kity.createClass( 'Selection', {
 
     },
     setColor:function(color){
-        this.stroke(color);
         this.fill(color);
     },
     collapse : function(toEnd){
-
-//        this.stroke( 'rgb(27,171,255)', 1 );
         this.setOpacity(1);
-        this.width = 1;
+        this.width = 2;
         this.collapsed = true;
         if(toEnd){
             this.startOffset = this.endOffset;
@@ -45,7 +41,6 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
@@ -60,7 +55,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
+//        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
@@ -69,19 +64,13 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.setShowHold();
         }
         this.setPosition(offset).setWidth(width);
-        //解决在框选内容时，出现很窄的光标
-        if(width === 0){
-            this.setOpacity(0);
-        }else{
-            this.setOpacity(0.5);
-        }
         this.bringTop();
         return this;
     },
     setPosition: function ( offset ) {
         try {
-            this.x = offset.x;
-            this.y = offset.y;
+            this.x = Math.round(offset.x);
+            this.y = Math.round(offset.y);
 
         } catch ( e ) {
            console.log(e);

@@ -139,7 +139,6 @@ KityMinder.registerModule('TextEditModule', function() {
 
 
                 if (node && !selectionReadyShow && receiver.isReady()) {
-
                     sel.collapse();
 
                     sel.setColor(node.getStyle('text-selection-color'));
@@ -159,7 +158,11 @@ KityMinder.registerModule('TextEditModule', function() {
                 //当选中节点后，输入状态准备
                 if(sel.isHide()){
                     inputStatusReady(e.getTargetNode());
+                }else {
+                    //当有光标时，要同步选区
+                    receiver.updateContainerRangeBySel();
                 }
+
 
 
 
@@ -240,9 +243,9 @@ KityMinder.registerModule('TextEditModule', function() {
                 km.setStatus('normal');
                 receiver.clear();
             },
-//            'blur': function() {
-//                receiver.clear();
-//            },
+            'blur': function() {
+                receiver.clear();
+            },
             'import': function() {
                 km.setStatus('normal');
                 receiver.clear();
