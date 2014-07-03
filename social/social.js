@@ -109,7 +109,7 @@ $(function() {
 
         $menu = $('<div id="menu"></div>').appendTo($panel);
         $user = $('<div id="user"></div>').appendTo($panel);
-        $title = $('h1#title');
+        $title = $('<h1 id="title"></h1>').appendTo($panel);
 
         $file_btn = $('<button id="file-btn">文件</button>').addClass('dropdown').appendTo($menu);
 
