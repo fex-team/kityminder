@@ -40,6 +40,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
         var me = this;
+
         setTimeout(function() {
             me.container.focus();
             range.select();
@@ -327,24 +328,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     setContainerStyle: function() {
-        var textShapeBox = this.getBaseOffset('paper');
+        var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + textShapeBox.height * 0.1 ) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y  ) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
-
-        if (!this.selection.isShow()) {
-            var paperContainer = this.km.getPaper();
-            var width = paperContainer.node.parentNode.clientWidth;
-            var height = paperContainer.node.parentNode.clientHeight;
-            if (width < this.container.offsetWidth + this.container.offsetLeft) {
-                this.km.getRenderContainer().translate(width / -3, 0);
-                this.setContainerStyle();
-            } else if (height < this.container.offsetTop + this.container.offsetHeight) {
-                this.km.getRenderContainer().translate(0, height / -3);
-                this.setContainerStyle();
-            }
-        }
-
 
         return this;
     },
