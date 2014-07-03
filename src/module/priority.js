@@ -28,7 +28,7 @@ KityMinder.registerModule('PriorityModule', function() {
 
             bg = new kity.Rect()
                 .setRadius(3)
-                .setPosition(0, 0)
+                .setPosition(0.5, 0.5)
                 .setSize(this.width, this.height);
 
             number = new kity.Text()

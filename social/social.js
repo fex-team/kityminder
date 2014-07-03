@@ -150,7 +150,7 @@ $(function() {
         menus = menus.concat([{
             divider: true,
         }, {
-            label: '登陆',
+            label: '请登录',
             click: login,
             id: 'net-hint-buttom'
         }, {

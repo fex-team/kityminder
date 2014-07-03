@@ -91,13 +91,19 @@ kity.extendClass(Minder, {
         var stoped = this._fire(new MinderEvent('beforeimport', params, true));
         if (stoped) return this;
 
-        json = params.json || (params.json = protocal.decode(local));
+        try {
+            json = params.json || (params.json = protocal.decode(local));
+        } catch (e) {
+            return this.fire('parseerror');
+        }
 
         if (typeof json === 'object' && 'then' in json) {
             var self = this;
-            json.then(local, function(data) {
+            json.then(function(data) {
                 params.json = data;
                 self._doImport(data, params);
+            }).error(function() {
+                self.fire('parseerror');
             });
         } else {
             this._doImport(json, params);
@@ -123,6 +129,8 @@ kity.extendClass(Minder, {
             }
             return node;
         }
+
+        if (!json) return;
 
         this._fire(new MinderEvent('preimport', params, false));
 
