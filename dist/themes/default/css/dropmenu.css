@@ -1,6 +1,6 @@
 .kmui-dropdown-menu {
     position: absolute;
-    z-index: 1000;
+    z-index: 99999999999;
     display: none;
     min-width: 160px;
     padding: 5px 0;
@@ -51,7 +51,7 @@
     background: -webkit-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Chrome10+,Safari5.1+ */
     background: -o-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* W3C */
+    background: #5a6378; /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0099f2', endColorstr='#0076dd',GradientType=0 ); /* IE6-8 */
 
     color: white;

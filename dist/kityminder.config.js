@@ -63,14 +63,14 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand | zoom-in zoom zoom-out | collapsenode expandnode | undo redo | bold italic | fontfamily fontsize forecolor | saveto | hyperlink unhyperlink image removeimage | markers resource | node | help'
+            'undo redo |  template theme | fontfamily fontsize bold italic forecolor | node hyperlink unhyperlink image removeimage markers resource | collapsenode expandnode | hand zoom-in zoom zoom-out | help'
         ]
         //只读模式，默认是false
         //readOnly: true
 
         //设置主题
-        //,defaultlayoutstyle : 'default' //设置默认的主题
-        //,layoutstyle : []   //添加有那些主图
+        //,defaultTemplate : 'default' //设置默认的主题
+        //,defaultTheme : 'fresh-blue'   //添加有那些主图
 
         //回退相关选项
         //,maxUndoCount:20  //最大可回退的次数，默认20

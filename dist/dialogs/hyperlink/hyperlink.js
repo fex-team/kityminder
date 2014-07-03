@@ -1,9 +1,9 @@
-( function ( utils ) {
+(function(utils) {
     //todo 这里先写死成中文
     var content = '<div class="hyperlink-content" style="padding:20px;width:360px;">';
     content += '<style>';
     content += '.kmui-dialog-<%= container %> input{';
-    content += 'width: 75%;';
+    content += 'width: 74%;';
     content += 'padding: 6px 12px;';
     content += 'font-size: 14px;';
     content += 'line-height: 1.42857143;';
@@ -35,36 +35,51 @@
 
 
 
-    KM.registerWidget( 'hyperlink', {
+    KM.registerWidget('hyperlink', {
         tpl: content,
-        initContent: function ( km ) {
-            var lang = km.getLang( 'dialogs.hyperlink' ),
+        initContent: function(km) {
+            var lang = km.getLang('dialogs.hyperlink'),
                 html;
-            if ( lang ) {
-                html = $.parseTmpl( this.tpl, utils.extend( {
+            if (lang) {
+                html = $.parseTmpl(this.tpl, utils.extend({
                     'container': 'hyperlink'
-                }, lang ) );
+                }, lang));
             }
-            this.root().html( html );
+            this.root().html(html);
         },
-        initEvent: function ( km, $w ) {
-            $w.find( '#hyperlink_insert' ).on( 'click', function () {
-                km.execCommand( 'hyperlink', $w.find( '#hyperlink_href' ).val() );
-                $w.kmui().hide();
-            } );
-            $w.find( '#hyperlink_href' ).on( 'keydown', function ( e ) {
-                if ( e.keyCode === 13 ) {
-                    km.execCommand( 'hyperlink', $w.find( '#hyperlink_href' ).val() );
-                    $w.kmui().hide();
+        initEvent: function(km, $w) {
+            var $btn = $w.find('#hyperlink_insert');
+            $btn.attr('disabled', 'disabled');
+            var $href = $w.find('#hyperlink_href').on('input', function() {
+                var url = $href.val();
+                if (!/^https?\:\/\/(\w+\.)+\w+/.test(url)) {
+                    $href.css('color', 'red');
+                    $href.data('error', true);
+                    $btn.attr('disabled', 'disabled');
+                } else {
+                    $href.css('color', 'black');
+                    $href.data('error', false);
+                    $btn.removeAttr('disabled');
                 }
-            } );
-            var url = km.queryCommandValue( 'hyperlink' );
-            var $input = $w.find( '#hyperlink_href' );
-            $input.val( url || 'http://' );
-            setTimeout( function () {
-                $input.focus()
-            } )
+            });
+            $btn.on('click', function() {
+                if ($btn.attr('disabled')) return;
+                var url = $w.find('#hyperlink_href').val();
+                km.execCommand('hyperlink', url);
+                $w.kmui().hide();
+            });
+            $w.find('#hyperlink_href').on('keydown', function(e) {
+                if (e.keyCode === 13) {
+                    $btn.click();
+                }
+            });
+            var url = km.queryCommandValue('hyperlink');
+            var $input = $w.find('#hyperlink_href');
+            $input.val(url || 'http://');
+            setTimeout(function() {
+                $input.select();
+            });
         },
         width: 400
-    } );
-} )( KM.Utils );
+    });
+})(KM.Utils);

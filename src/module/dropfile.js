@@ -22,7 +22,7 @@ KityMinder.registerModule('DropFile', function() {
         var minder = this;
 
         if (kity.Browser.ie && Number(kity.Browser.version) < 10) {
-            alert('文件导入对IE浏览器仅支持10以上版本');
+            alert('文件导入对 IE 浏览器仅支持 10 以上版本');
             return;
         }
 
@@ -30,20 +30,27 @@ KityMinder.registerModule('DropFile', function() {
 
         if (files) {
             var file = files[0];
-            var ext = file.type || (/(.)\w+$/).exec(file.name)[0];
-            console.log(ext);
+            importMinderFile(minder, file);
+        }
+    }
 
-            if ((/xmind/g).test(ext)) { //xmind zip
-                importSync(minder, file, 'xmind');
-            } else if ((/mmap/g).test(ext)) { // mindmanager zip
-                importSync(minder, file, 'mindmanager');
-            } else if ((/mm/g).test(ext)) { //freemind xml
-                importAsync(minder, file, 'freemind');
-            } else if (/km/.test(ext)) { // txt json
-                importAsync(minder, file, 'json');
-            } else if (/txt/.test(ext)) {
-                importAsync(minder, file, 'plain');
-            }
+    function importMinderFile(minder, file) {
+        if (!file) return;
+
+        var ext = /(.)\w+$/.exec(file.name)[0];
+
+        if ((/xmind/g).test(ext)) { //xmind zip
+            importSync(minder, file, 'xmind');
+        } else if ((/mmap/g).test(ext)) { // mindmanager zip
+            importSync(minder, file, 'mindmanager');
+        } else if ((/mm/g).test(ext)) { //freemind xml
+            importAsync(minder, file, 'freemind');
+        } else if (/km/.test(ext)) { // txt json
+            importAsync(minder, file, 'json');
+        } else if (/txt/.test(ext)) {
+            importAsync(minder, file, 'plain');
+        } else {
+            alert('不支持该文件!');
         }
     }
 
@@ -51,7 +58,7 @@ KityMinder.registerModule('DropFile', function() {
         if (!importing) return;
         createDraft(this);
         social.setRemotePath(null, false);
-        this.execCommand('camera', this.getRoot());
+        this.execCommand('camera', this.getRoot(), 800);
         setTimeout(function() {
             social.watchChanges(true);
         }, 10);
@@ -79,6 +86,13 @@ KityMinder.registerModule('DropFile', function() {
         draftManager = window.draftManager || (window.draftManager = new window.DraftManager(minder));
         draftManager.create();
     }
+
+    kity.extendClass(Minder, {
+        importFile: function(file) {
+            importMinderFile(this, file);
+            return this;
+        }
+    });
 
     return {
         events: {

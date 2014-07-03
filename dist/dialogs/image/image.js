@@ -2,7 +2,7 @@
     var content = '<div class="image-content" style="padding:20px;width:360px;">';
     content += '<style>';
     content += '.kmui-dialog-<%= container %> input{';
-    content += 'width: 75%;';
+    content += 'width: 74%;';
     content += 'padding: 6px 12px;';
     content += 'font-size: 14px;';
     content += 'line-height: 1.42857143;';
@@ -49,24 +49,39 @@
             this.root().html(html);
         },
         initEvent: function(km, $w) {
-            $w.find('#image_insert').on('click', function() {
-                km.execCommand('image', $w.find('#image_href').val());
+            var $btn = $w.find('#image_insert').attr('disabled', 'disabled');
+            var $href = $w.find('#image_href').on('input', function() {
+                var url = $href.val();
+                if (!/^https?\:\/\/(\w+\.)+\w+/.test(url)) {
+                    $href.css('color', 'red');
+                    $href.data('error', true);
+                } else {
+                    $href.css('color', 'black');
+                    $href.data('error', false);
+                }
+                $w.find('#image_preview').attr('src', $href.val());
+            });
+            $w.find('#image_preview').on('load', function() {
+                $btn.removeAttr('disabled');
+            }).on('error', function() {
+                $btn.attr('disabled', 'disabled');
+            });
+            $btn.on('click', function() {
+                if ($btn.attr('disabled')) return;
+                km.execCommand('image', $href.val());
                 $w.kmui().hide();
             });
-            $w.find('#image_href').on('keydown', function(e) {
+            $href.on('keydown', function(e) {
                 if (e.keyCode === 13) {
-                    km.execCommand('image', $w.find('#image_href').val());
-                    $w.kmui().hide();
+                    $btn.click();
                 }
-            }).on('input', function() {
-                $w.find('#image_preview').attr('src', $w.find('#image_href').val());
             });
             var url = km.queryCommandValue('image');
             var $input = $w.find('#image_href');
             $input.val(url || 'http://');
             if (url) $w.find('#image_preview').attr('src', url);
             setTimeout(function() {
-                $input.focus();
+                $input.select();
             });
         },
         width: 400

@@ -63,7 +63,7 @@
         'KITYMINDER_HOME_URL': getKMBasePath(),
         //定义工具栏
         toolbars: [
-            'hand | zoom-in zoom zoom-out | saveto | collapsenode expandnode | undo redo | template theme | bold italic | fontfamily fontsize forecolor| hyperlink unhyperlink image removeimage | markers resource | node | help'
+            'undo redo |  template theme | fontfamily fontsize bold italic forecolor | node hyperlink unhyperlink image removeimage markers resource | collapsenode expandnode | hand zoom-in zoom zoom-out | help'
         ]
         //只读模式，默认是false
         //readOnly: true

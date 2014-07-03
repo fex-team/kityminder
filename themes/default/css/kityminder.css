@@ -12,17 +12,17 @@ html, body, #kityminder, div.kmui-editor-body {
 #title, #panel {
     background: #393F4F;
     font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
-    -webkit-font-smoothing: antialiased;
+    /* -webkit-font-smoothing: antialiased; */
 }
 
 #title {
     height: 40px;
-    line-height: 40px;
+    line-height: 45px;
     padding: 0;
     margin: 0;
     padding: 0;
     font-size: 14px;
-    color: white;
+    color: #DBDBDB;
     text-align: center;
     font-weight: 300;
     font-size: 14px;
@@ -103,7 +103,7 @@ button#tool-btn {
     display: block;
     position: absolute;
     top: 21px;
-    left: 27px;
+    left: 40px;
     width: 0;
     height: 0;
     border: solid;
@@ -112,14 +112,14 @@ button#tool-btn {
 }
 
 #panel button#tool-btn.active {
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255, 255, 255, .1);
-    background-color: #677085;
-    border: 1px solid #2E2E2E;
+    /* box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255, 255, 255, .1); */
+    /* background-color: #677085; */
+    /* border: 1px solid #2E2E2E; */
     /* padding-top: 10px; */
     /* padding-bottom: 10px; */
-    height: 28px;
-    margin-top: -1px;
-    margin-left: 7px;
+    /* height: 28px; */
+    /* margin-top: -1px; */
+    /* margin-left: 7px; */
     position: relative;
 }
 

@@ -2,13 +2,213 @@
 html, body, div {
     margin: 0;
     padding: 0;
+    /* background: #FFFFFF; */
 }
 html, body, #kityminder, div.kmui-editor-body {
-    height: 100%;
-    width: 100%;
     overflow: hidden;
     -moz-user-select: none;
 }
+
+#title, #panel {
+    background: #393F4F;
+    font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
+    /* -webkit-font-smoothing: antialiased; */
+}
+
+#title {
+    height: 40px;
+    line-height: 45px;
+    padding: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #DBDBDB;
+    text-align: center;
+    font-weight: 300;
+    font-size: 14px;
+}
+
+#panel {
+    height: 40px;
+    overflow: visible;
+    padding: 0 15px;
+    position: relative;
+    border-bottom: 8px solid #5A6378;
+}
+
+#panel button {
+    font-size: 14px;
+    height: 24px;
+    line-height: 28px;
+    padding-right: 7px;
+    padding-left: 30px;
+    cursor: pointer;
+    color: #a3a6ae;
+    margin: 0 8px;
+    background: url(../images/menu-icons.png) no-repeat;
+    vertical-align: middle;
+    margin-top: -3px;
+}
+
+#menu, #user {
+    height: 40px;
+    line-height: 40px;
+}
+
+#menu {
+    float: left;
+    flo
+}
+
+#panel button:hover, #panel button.active {
+    color: white;
+    box-shadow: none;
+}
+
+button.dropdown {
+    padding-right: 28px !important;
+    position: relative;
+}
+button.dropdown:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    width: 0;
+    height: 0;
+    border: solid;
+    border-width: 4px 5px;
+    border-color: #a3a6ae transparent transparent transparent;
+}
+button.dropdown:hover:after, button.dropdown.active:after {
+    border-color: #fff transparent transparent transparent;
+}
+
+#file-btn:hover, #file-btn.active {
+    background-position: 0 -24px;
+}
+
+
+button#tool-btn {
+    background-position: 0 -48px;
+}
+
+#tool-btn:hover, #tool-btn.active {
+    background-position: 0 -72px;
+}
+
+#tool-btn.active:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    top: 21px;
+    left: 40px;
+    width: 0;
+    height: 0;
+    border: solid;
+    border-width: 11px 11px;
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #FFF rgba(0, 0, 0, 0);
+}
+
+#panel button#tool-btn.active {
+    /* box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255, 255, 255, .1); */
+    /* background-color: #677085; */
+    /* border: 1px solid #2E2E2E; */
+    /* padding-top: 10px; */
+    /* padding-bottom: 10px; */
+    /* height: 28px; */
+    /* margin-top: -1px; */
+    /* margin-left: 7px; */
+    position: relative;
+}
+
+#user {
+    /* position: absolute; */
+    /* top: 0; */
+    /* right: 10px; */
+    float: right;
+}
+
+#user-btn, #logout-btn, #user.logined #login-btn {
+    display: none;
+}
+
+#user.logined #user-btn, #user.logined #logout-btn {
+    display: inline-block;
+}
+
+button#user-btn {
+    position: relative;
+    margin-right: 0;
+}
+
+button#user-btn, button#login-btn {
+    background-position: 0 -96px;
+}
+
+button#user-btn:hover, button#login-btn:hover,
+button#user-btn.active, button#login-btn.active {
+    background-position: 0 -120px;
+}
+
+#user-btn img {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 18px;
+    height: 18px;
+    /* display: none; */
+}
+
+button#logout-btn {
+    background: none;
+    margin: none;
+    padding-left: 0;
+}
+
+button#draft-btn {
+    background-position: 0 -144px;
+}
+
+button#draft-btn:hover, 
+button#draft-btn.active {
+    background-position: 0 -168px;
+}
+
+li#manage-file-button {
+    position: relative;
+}
+
+li#manage-file-button:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    left: 5px;
+    background: url(../images/baiducloud.png) no-repeat 3px 0;
+}
+li#manage-file-button:hover:before {
+    background-position: 3px -24px;
+}
+
+button#share-btn {
+    background-position: 0 -192px;
+}
+
+button#share-btn:hover {
+    background-position: 0 -216px;
+}
+
+#kityminder {
+    position: absolute;
+    left: 0;
+    top: 48px;
+    right: 0;
+    bottom: 0;
+}
+
 .km_receiver{
     width:0;
     height:0;
@@ -16,34 +216,78 @@ html, body, #kityminder, div.kmui-editor-body {
 .km-minderNode{
     cursor:default;
 }
-.kmui-container {
-    height: 100%;
-}
-.kmui-container {
+.kmui-container, .kmui-editor-body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 .kmui-container .kmui-toolbar{
-    background-color: #fafafa;
-    z-index: 99999;
-    margin-right: 400px;
+    background-color: #fff;
+    z-index: 999;
+}
+.kmui-container .kmui-toolbar:after {
 }
 .kmui-toolbar .kmui-btn-toolbar{
     padding: 5px;
+    border-bottom: 1px solid #f0f0f0;
 }
 .kmui-toolbar {
     position: absolute;
-    left: 10px;
-    top: 10px;
-    border-radius: 4px;
-    box-shadow: 3px 3px 8px rgba(0,0,0, .5);
+    left: 0;
+    right: 0;
+    top: 0;
 }
 .kmui-container .kmui-editor-body {
-    background: rgb(50, 60, 61) url(../images/grid.png) repeat;
+    background: #fbfbfb;
     /*line-height: 0;*/
     overflow: hidden;
 }
 svg, body {
     font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
 }
-#about{position:absolute;bottom:10px;right:10px;height:24px;line-height:24px;color:#888;font-family:Arial;font-size:13px;font-weight:normal;margin:0;text-shadow:0 1px 1px #000}#about a{color:#888}#about a:hover{color:#fff}
+#about {
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    height: 40px;
+    line-height: 40px;
+    background: #5d697a;
+    color: #eee;
+    font-family:Arial;
+    font-size:13px;
+    font-weight:normal;
+    margin:0;
+    text-align: right;
+    padding: 0 15px 0 60px;
+    border-bottom: 5px solid #393F4F;
+    -webkit-font-smoothing: antialiased;
+    position: absolute;
+    
+    transition: all ease .3s 0.3s;
+    
+    -webkit-transform: translate(100%);
+}
+#about:hover {
+    -webkit-transform: translate(0);
+}
+#about a {
+    color: #eee;
+}
+#about #km-cat {
+    position: absolute;
+    left: 15px;
+    top: 5px;
+    transition: all ease 1.3s 0.3s;
+    -webkit-transform: translate(-60px, 0);
+    cursor: pointer;
+}
+#about:hover #km-cat {
+    -webkit-transform: translate(0);
+}
+#about #cat-face {
+    fill: #393F4F;
+}
 #km-version.new-version{position:relative;padding-right:30px}
 #km-version.new-version:after{content:'NEW';color:#ff0;position:absolute;top:-10px;right:-5px;display:block;background:#f00;padding:0 5px;border-radius:4px;text-shadow:none;box-shadow:-1px 1px 3px rgba(0,0,0,0.3);-webkit-transform:scale(.6);-moz-transform:scale(.6);-ms-transform:scale(.6);transform:scale(.6)}

@@ -2,7 +2,7 @@
 /**
  * 百度脑图社会化功能
  *
- * 1. 百度账号登陆
+ * 1. 百度账号登录
  * 2. 百度云存储
  * 3. 分享
  * 4. 草稿箱同步
@@ -103,6 +103,67 @@ $(function() {
         if (draftManager && !loadPath() && !isShareLink) loadDraft(0);
     }
 
+    function createFileMenu() {
+        var menus = [{
+            label: '新建 (Ctrl + N)',
+            click: newFile
+        }, {
+            divider: true
+        }];
+
+        // 导入菜单组
+        var acceptFiles = [];
+        KityMinder.getSupportedProtocals().forEach(function(name) {
+            var p = KityMinder.findProtocal(name);
+            if (p.decode) {
+                acceptFiles.push(p.fileExtension);
+            }
+        });
+        menus = menus.concat([{
+            label: '导入本地文件',
+            click: function() {
+                $('<input type="file" />')
+                    .attr('accept', acceptFiles.join(','))
+                    .on('change', function(e) {
+                        e = e.originalEvent;
+                        minder.importFile(e.target.files[0]);
+                    }).click();
+            }
+        }, {
+            divider: true
+        }]);
+
+        // 导出菜单组
+        KityMinder.getSupportedProtocals().forEach(function(name) {
+            var p = KityMinder.findProtocal(name);
+            if (p.encode) {
+                var text = p.fileDescription + '（' + p.fileExtension + '）';
+                menus.push({
+                    label: '导出 ' + text,
+                    click: function() {
+                        minder.exportFile(name);
+                    }
+                });
+            }
+        });
+
+        menus = menus.concat([{
+            divider: true,
+        }, {
+            label: '登陆',
+            click: login,
+            id: 'net-hint-buttom'
+        }, {
+            label: '保存到百度云 (Ctrl + S)',
+            click: save,
+            id: 'save-button'
+        }, {
+            divider: true
+        }]);
+
+        return menus;
+    }
+
     // 创建 UI
     function initUI() {
         $panel = $('#panel');
@@ -113,24 +174,9 @@ $(function() {
 
         $file_btn = $('<button id="file-btn">文件</button>').addClass('dropdown').appendTo($menu);
 
-        $file_menu = $.kmuidropmenu({
-            data: [{
-                label: '新建 (Ctrl + N)',
-                click: newFile
-            }, {
-                divider: true,
-            }, {
-                label: '登陆',
-                click: login,
-                id: 'net-hint-buttom'
-            }, {
-                label: '保存到百度云 (Ctrl + S)',
-                click: save,
-                id: 'save-button'
-            }, {
-                divider: true
-            }]
-        }).addClass('file-menu').appendTo('body');
+        $file_menu = $.kmuidropmenu({ data: createFileMenu() })
+            .addClass('file-menu')
+            .appendTo('body');
 
         $file_menu.kmui().attachTo($file_btn);
 
@@ -142,9 +188,8 @@ $(function() {
         $draft_menu = $.kmuidropmenu().addClass('draft-menu kmui-combobox-menu').appendTo('body');
         $draft_menu.kmui().attachTo($draft_btn);
         $draft_menu.on('aftershow', showDraftList);
-        
-        
-        $tool_btn = $('<button id="tool-btn">工具箱</button>').appendTo($menu);
+
+        $tool_btn = $('<button id="tool-btn" title="打开/收起工具箱">工具箱</button>').appendTo($menu);
 
         $tool_btn.click(function() {
             var hide = !localStorage.hide_toolbar;
@@ -160,7 +205,7 @@ $(function() {
 
         $login_btn = $('<button id="login-btn">登录</button>').appendTo($user).click(login);
         $user_btn = $('<button id="user-btn">用户</button>').addClass('dropdown').appendTo($user);
-        
+
         $user_menu = $.kmuidropmenu({
             data: [{
                 label: '个人中心',
@@ -899,7 +944,7 @@ $(function() {
     function loadDraft(index) {
         var draft = draftManager.open(index),
             isRemote;
-            
+
         if (!draft) return;
 
         isRemote = draft.path.indexOf('/apps/kityminder') === 0;

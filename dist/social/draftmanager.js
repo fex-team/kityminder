@@ -9,27 +9,6 @@ function DraftManager( minder ) {
     function init() {
         drafts = localStorage.getItem( 'drafts' );
         drafts = drafts ? JSON.parse( drafts ) : [];
-        loadDraftForOldVersion();
-    }
-
-    /**
-     * @todo 1.2 版本中删除该方法
-     *
-     * 加载老版本的草稿
-     */
-    function loadDraftForOldVersion() {
-        var path = localStorage.getItem( 'draft_filename' ),
-            data = localStorage.getItem( 'draft_data' );
-        if ( path && data ) {
-            drafts.push( {
-                path: path,
-                data: data,
-                name: JSON.parse( data ).data.text,
-                update: new Date()
-            } );
-            localStorage.removeItem( 'draft_filename' );
-            localStorage.removeItem( 'draft_data' );
-        }
     }
 
     function store() {
@@ -58,7 +37,7 @@ function DraftManager( minder ) {
 
     function load() {
         if ( current ) {
-            minder.importData( current.data, "json" );
+            minder.importData( current.data, 'json' );
         }
         return current;
     }
@@ -80,8 +59,9 @@ function DraftManager( minder ) {
         } else {
             current.path = path || current.path;
             current.name = minder.getMinderTitle();
-            current.data = minder.exportData( "json" );
-            current.sync = false;
+            var data = minder.exportData( 'json' );
+            current.sync = current.sync && (data == current.data);
+            current.data = data;
             current.update = new Date();
             store();
         }

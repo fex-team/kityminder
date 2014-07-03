@@ -72,7 +72,7 @@ module.exports = function (grunt) {
         copy: {
             dir: {
                 files: [{
-                    src: ['dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**', 'index.html'],
+                    src: ['dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**', 'index.html', 'download.php'],
                     dest: distPath
                 }]
             },
