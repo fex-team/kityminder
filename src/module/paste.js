@@ -53,7 +53,7 @@ KityMinder.registerModule( "pasteModule", function () {
                                 if(node){
                                     km.fire('saveScene');
                                     for(var i= 0,ni;ni=_cacheNodes[i++];){
-                                        appendChildNode(node,ni);
+                                        appendChildNode(node,ni.clone());
                                     }
                                     km.layout(300);
                                     km.select(_selectedNodes,true);

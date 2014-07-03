@@ -17,9 +17,13 @@ Minder.Selection = kity.createClass( 'Selection', {
         this._show = false;
 
     },
+    setColor:function(color){
+        this.stroke(color);
+        this.fill(color);
+    },
     collapse : function(toEnd){
 
-        this.stroke( 'rgb(27,171,255)', 1 );
+//        this.stroke( 'rgb(27,171,255)', 1 );
         this.setOpacity(1);
         this.width = 1;
         this.collapsed = true;
@@ -105,6 +109,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         clearInterval( this.timer );
         var me = this,
             state = '';
+
         me.setStyle( 'display', '' );
         me._show = true;
         if(this.collapsed){
