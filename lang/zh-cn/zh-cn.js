@@ -95,10 +95,10 @@ KityMinder.LANG['zh-cn'] = {
         'removeimage': '删除图片'
     },
     'marker': {
-        'marker': '设置进度/优先级'
+        'marker': '进度/优先级'
     },
     'resource': {
-        'resource': '设置资源'
+        'resource': '分配资源'
     }
 
 };

@@ -111,16 +111,21 @@ button#tool-btn {
     border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #FFF rgba(0, 0, 0, 0);
 }
 
-#panel button#tool-btn.active {
-    /* box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255, 255, 255, .1); */
-    /* background-color: #677085; */
-    /* border: 1px solid #2E2E2E; */
-    /* padding-top: 10px; */
-    /* padding-bottom: 10px; */
-    /* height: 28px; */
-    /* margin-top: -1px; */
-    /* margin-left: 7px; */
+#panel button#tool-btn {
+    padding-right: 20px;
     position: relative;
+}
+
+#panel button#tool-btn.active:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: url(../images/check.png) 0 -12px;
+    border: none;
+    right: 2px;
+    top: 8px;
 }
 
 #user {

@@ -4973,8 +4973,8 @@ KityMinder.registerModule('Resource', function() {
             return resource;
         },
 
-        queryState: function() {
-            return 0;
+        queryState: function(km) {
+            return km.getSelectedNode() ? 0 : -1;
         }
     });
 
