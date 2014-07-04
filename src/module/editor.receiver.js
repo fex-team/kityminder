@@ -215,8 +215,11 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.selection.currentEndOffset = 0;
                         }
 
-
-
+                    }else if(keymap.up == keyCode){
+                        this.selection.currentEndOffset = 0;
+                        this.selection.baseOffset = this.selection.endOffset;
+                    }else{
+                        this.selection.currentEndOffset = textlength;
                     }
 
                     if(this.selection.currentEndOffset >= this.selection.baseOffset){
