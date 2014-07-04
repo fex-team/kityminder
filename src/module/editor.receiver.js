@@ -145,6 +145,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             }, 300);
 
             me.km.setStatus('textedit');
+            me.selection.clearBaseOffset();
         }
 
 
@@ -196,31 +197,37 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 //针对按住shift+方向键进行处理
                 if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
+                    if(this.selection.baseOffset === null){
+
+                        this.selection.baseOffset = this.selection.startOffset;
+                        this.selection.currentEndOffset = this.selection.endOffset;
+                    }
                     var textlength = this.textShape.getContent().length;
                     if(keymap.right  == keyCode ){
-                        var endOffset = this.selection.endOffset+1;
-                        if(endOffset > textlength){
-                            endOffset = textlength;
+                        this.selection.currentEndOffset++;
+                        if(this.selection.currentEndOffset > textlength){
+                            this.selection.currentEndOffset = textlength;
                         }
-                        this.selection.setEndOffset(endOffset);
+
                     }else if(keymap.left == keyCode){
-
-                        endOffset = this.selection.endOffset-1;
-                        if(endOffset < 0){
-                            endOffset = 0;
+                        this.selection.currentEndOffset--;
+                        if(this.selection.currentEndOffset < 0){
+                            this.selection.currentEndOffset = 0;
                         }
-                        if(endOffset <= this.selection.startOffset){
-                            if(endOffset == this.selection.startOffset){
-                                this.selection.setEndOffset(endOffset)
-                            }else{
-                                this.selection.setStartOffset(endOffset)
-                            }
 
-                        }else{
-                            this.selection.setEndOffset(endOffset);
-                        }
+
+
                     }
 
+                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
+                        this.selection.setEndOffset(this.selection.currentEndOffset);
+                        if(this.selection.currentEndOffset == this.selection.baseOffset){
+                            this.selection.setStartOffset(this.selection.baseOffset);
+                        }
+                    }else{
+                        this.selection.setStartOffset(this.selection.currentEndOffset);
+                        this.selection.setEndOffset(this.selection.baseOffset);
+                    }
 
                     this.updateContainerRangeBySel();
 
@@ -448,7 +455,8 @@ Minder.Receiver = kity.createClass('Receiver', {
             endOffset = this.textData[this.selection.endOffset],
             width = 0;
         if (this.selection.collapsed) {
-            this.selection.updateShow(startOffset || this.textData[this.textData.length - 1], 1);
+
+            this.selection.updateShow(startOffset || this.textData[this.textData.length - 1], 2);
             return this;
         }
         if (!endOffset) {

@@ -93,6 +93,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                         if(selectionReadyShow){
                             textShape.setStyle('cursor', 'text');
+                            sel.clearBaseOffset();
                             receiver.updateSelection();
 
                             km.setStatus('textedit');
@@ -143,6 +144,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
+                    sel.clearBaseOffset();
+
                     node.getTextShape().setStyle('cursor', 'text');
 
                     receiver.updateSelection();
@@ -161,6 +164,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }else {
                     //当有光标时，要同步选区
                     if(!sel.collapsed){
+                        sel.clearBaseOffset();
                         receiver.updateContainerRangeBySel();
                     }
 
