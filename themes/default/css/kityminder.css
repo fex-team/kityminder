@@ -10,7 +10,7 @@ html, body, #kityminder, div.kmui-editor-body {
 }
 
 #title, #panel {
-    background: #393F4F;
+    background: hsl(224, 16%, 27%);
     font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
     /* -webkit-font-smoothing: antialiased; */
 }

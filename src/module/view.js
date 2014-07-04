@@ -30,8 +30,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
 
         this._minder.on('normal.mousedown readonly.mousedown readonly.touchstart', function(e) {
             // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() &&
-                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+            if (e.getTargetNode() == this.getRoot()) {
                 lastPosition = e.getPosition();
                 isRootDrag = true;
             }

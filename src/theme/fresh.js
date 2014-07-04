@@ -4,7 +4,6 @@
     }
 
     function generate(h) {
-        var textSelectionColor = kity.Color.parse('rgb(27,171,255)');
         return {
             'background': '#fbfbfb',
 
@@ -16,14 +15,13 @@
             'root-margin': [30, 100],
             'root-radius': 5,
             'root-space': 10,
-            'root-text-selection-color': textSelectionColor.set('h', h).set('l', 20),
 
 
             'main-color': 'black',
             'main-background': hsl(h, 33, 95),
             'main-stroke': hsl(h, 37, 60),
             'main-stroke-width': 1,
-            'main-font-size': 16,
+            'main-font-size': 14,
             'main-padding': [6, 20],
             'main-margin': 20,
             'main-radius': 3,
@@ -56,7 +54,7 @@
             'order-hint-path-color': hsl(h, 100, 25),
             'order-hint-path-width': 1,
 
-            'text-selection-color': textSelectionColor.set('h', h)
+            'text-selection-color': hsl(h, 100, 20)
         };
     }
 

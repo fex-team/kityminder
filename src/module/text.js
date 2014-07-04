@@ -13,6 +13,9 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         this.setTextStyle(node, text.setContent(node.getText()));
         var box = text.getBoundaryBox();
         var r = Math.round;
+        if (kity.Browser.ie) {
+            box.y += 1;
+        }
         return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
     },
 

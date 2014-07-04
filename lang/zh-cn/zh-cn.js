@@ -28,9 +28,8 @@ KityMinder.LANG['zh-cn'] = {
         'saveto': '另存为',
         'hand': '允许拖拽',
         'zoom': '放大缩小',
-        'markers': '添加标签',
-        'resource': '分配资源',
-        'switchlayout': '切换主题',
+        'markers': '标签',
+        'resource': '资源',
         'help': '帮助',
         'preference': '偏好设置',
         'image': '插入图片',
@@ -58,14 +57,14 @@ KityMinder.LANG['zh-cn'] = {
             'none': '无',
             'progress': {
                 'title': '进度',
-                'notdone': "未完成",
-                'done1': '完成1/8',
-                'done2': '完成1/4',
-                'done3': '完成3/8',
-                'done4': '完成1/2',
-                'done5': '完成5/8',
-                'done6': '完成3/4',
-                'done7': '完成7/8',
+                'notdone': '未完成',
+                'done1': '完成 1/8',
+                'done2': '完成 1/4',
+                'done3': '完成 3/8',
+                'done4': '完成 1/2',
+                'done5': '完成 5/8',
+                'done6': '完成 3/4',
+                'done7': '完成 7/8',
                 'done': '已完成'
             }
         },
@@ -77,28 +76,24 @@ KityMinder.LANG['zh-cn'] = {
         'resource': {}
     },
     'node': {
-        'appendsiblingnode': '插入同级节点',
+        'appendsiblingnode': '插入兄弟节点',
         'appendchildnode': '插入子节点',
-        'removenode': '删除节点',
-        'editnode': '编辑节点'
-    },
-    'layout': {
-        'default': '左右展开',
-        'bottom': '向下展开'
+        'removenode': '删除',
+        'editnode': '编辑'
     },
     'hyperlink': {
-        'hyperlink': '插入超链接',
-        'unhyperlink': '取消超链接'
+        'hyperlink': '链接...',
+        'unhyperlink': '移除链接'
     },
     'image': {
-        'image': '插入图片',
-        'removeimage': '删除图片'
+        'image': '图片...',
+        'removeimage': '移除图片'
     },
     'marker': {
-        'marker': '进度/优先级'
+        'marker': '进度/优先级...'
     },
     'resource': {
-        'resource': '分配资源'
+        'resource': '资源...'
     }
 
 };
