@@ -151,9 +151,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
             this._minder.execCommand('arrange', this._dragSources, index);
             this._renderOrderHint(null);
+        } else {
+            this._minder.fire('savescene');
         }
         this._leaveDragMode();
-        this._minder.fire('treedragend');
+        this._minder.fire('contentchange');
     },
 
     // 进入拖放模式：
