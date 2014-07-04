@@ -16,6 +16,10 @@ KityMinder.registerModule('Zoom', function() {
             finishValue: zoom / 100,
             setter: function(target, value) {
                 viewport.zoom = value;
+                viewport.center = {
+                    x: viewport.center.x | 0 + 0.5,
+                    y: viewport.center.y | 0 + 0.5
+                };
                 target.setViewPort(viewport);
             }
         });
