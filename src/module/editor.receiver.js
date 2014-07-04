@@ -94,12 +94,13 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     keyboardEvents: function(e) {
 
-        clearTimeout(this.timer);
+
         var me = this;
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
         function setTextToContainer() {
+            clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
@@ -142,7 +143,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.updateSelection();
             me.timer = setTimeout(function() {
                 me.selection.setShow();
-            }, 300);
+            }, 200);
 
             me.km.setStatus('textedit');
             me.selection.clearBaseOffset();

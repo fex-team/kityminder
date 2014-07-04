@@ -95,7 +95,9 @@ KityMinder.registerModule('TextEditModule', function() {
                             textShape.setStyle('cursor', 'text');
                             sel.clearBaseOffset();
                             receiver.updateSelection();
-
+                            setTimeout(function() {
+                                sel.setShow();
+                            }, 200);
                             km.setStatus('textedit');
 
                         }
@@ -149,6 +151,9 @@ KityMinder.registerModule('TextEditModule', function() {
                     node.getTextShape().setStyle('cursor', 'text');
 
                     receiver.updateSelection();
+                    setTimeout(function() {
+                        sel.setShow();
+                    }, 200);
 
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
