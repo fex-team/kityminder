@@ -45,6 +45,7 @@ KityMinder.registerModule( "pasteModule", function () {
                             break;
                         case keys.x:
                             getNodes(km.getSelectedAncestors(),true);
+                            km.layout(300);
                             _curstatus = true;
                             break;
                         case keys.v:

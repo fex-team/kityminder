@@ -40,6 +40,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
         var me = this;
+
         setTimeout(function() {
             me.container.focus();
             range.select();
@@ -162,10 +163,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                 switch (keyCode) {
                     case keymap.Enter:
                     case keymap.Tab:
-                    case keymap.left:
-                    case keymap.right:
-                    case keymap.up:
-                    case keymap.down:
                         if(this.selection.isShow()){
                             this.clear();
                             this.km.setStatus('inputready');
@@ -176,7 +173,16 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.fire('contentchange');
                         }
                         return;
-                    case keymap.Shift:
+                    case keymap.left:
+                    case keymap.right:
+                    case keymap.up:
+                    case keymap.down:
+                        if(this.selection.isHide()){
+                            this.km.setStatus('normal');
+                            return;
+                        }
+                        break;
+                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
@@ -188,7 +194,40 @@ Minder.Receiver = kity.createClass('Receiver', {
                         }
                         return;
                 }
+                //针对按住shift+方向键进行处理
+                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
+                    var textlength = this.textShape.getContent().length;
+                    if(keymap.right  == keyCode ){
+                        var endOffset = this.selection.endOffset+1;
+                        if(endOffset > textlength){
+                            endOffset = textlength;
+                        }
+                        this.selection.setEndOffset(endOffset);
+                    }else if(keymap.left == keyCode){
 
+                        endOffset = this.selection.endOffset-1;
+                        if(endOffset < 0){
+                            endOffset = 0;
+                        }
+                        if(endOffset <= this.selection.startOffset){
+                            if(endOffset == this.selection.startOffset){
+                                this.selection.setEndOffset(endOffset)
+                            }else{
+                                this.selection.setStartOffset(endOffset)
+                            }
+
+                        }else{
+                            this.selection.setEndOffset(endOffset);
+                        }
+                    }
+
+
+                    this.updateContainerRangeBySel();
+
+                    this.updateSelectionShow();
+                    e.preventDefault();
+                    return;
+                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
@@ -289,24 +328,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     setContainerStyle: function() {
-        var textShapeBox = this.getBaseOffset('paper');
+        var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + textShapeBox.height * 0.1) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y  ) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
-
-        if (!this.selection.isShow()) {
-            var paperContainer = this.km.getPaper();
-            var width = paperContainer.node.parentNode.clientWidth;
-            var height = paperContainer.node.parentNode.clientHeight;
-            if (width < this.container.offsetWidth + this.container.offsetLeft) {
-                this.km.getRenderContainer().translate(width / -3, 0);
-                this.setContainerStyle();
-            } else if (height < this.container.offsetTop + this.container.offsetHeight) {
-                this.km.getRenderContainer().translate(0, height / -3);
-                this.setContainerStyle();
-            }
-        }
-
 
         return this;
     },

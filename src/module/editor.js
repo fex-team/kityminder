@@ -48,7 +48,7 @@ KityMinder.registerModule('TextEditModule', function() {
     return {
         'events': {
             'ready': function() {
-                this._renderTarget.appendChild(receiver.container);
+                document.body.appendChild(receiver.container);
             },
 
             'normal.beforemousedown textedit.beforemousedown inputready.beforemousedown': function(e) {
@@ -83,7 +83,6 @@ KityMinder.registerModule('TextEditModule', function() {
                     if (this.isSingleSelect() && node.isSelected()) {
                         sel.collapse();
                         sel.setColor(node.getStyle('text-selection-color'));
-
                         receiver
                             .setMinderNode(node)
                             .setCurrentIndex(e.getPosition(this.getRenderContainer()))
@@ -133,13 +132,13 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
             },
             'normal.mouseup textedit.mouseup inputready.mouseup': function(e) {
+
                 mouseDownStatus = false;
 
                 var node = e.getTargetNode();
 
 
                 if (node && !selectionReadyShow && receiver.isReady()) {
-
                     sel.collapse();
 
                     sel.setColor(node.getStyle('text-selection-color'));
@@ -159,7 +158,15 @@ KityMinder.registerModule('TextEditModule', function() {
                 //当选中节点后，输入状态准备
                 if(sel.isHide()){
                     inputStatusReady(e.getTargetNode());
+                }else {
+                    //当有光标时，要同步选区
+                    if(!sel.collapsed){
+                        receiver.updateContainerRangeBySel();
+                    }
+
+
                 }
+
 
 
 
@@ -240,9 +247,9 @@ KityMinder.registerModule('TextEditModule', function() {
                 km.setStatus('normal');
                 receiver.clear();
             },
-//            'blur': function() {
-//                receiver.clear();
-//            },
+            'blur': function() {
+                receiver.clear();
+            },
             'import': function() {
                 km.setStatus('normal');
                 receiver.clear();
