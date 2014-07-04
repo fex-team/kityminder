@@ -69,8 +69,9 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     setPosition: function ( offset ) {
         try {
-            this.x = Math.round(offset.x);
-            this.y = Math.round(offset.y);
+            // 这两个是神奇的 0.5 —— SVG 要边缘锐利，你需要一些对齐
+            this.x = Math.round(offset.x) - 0.5;
+            this.y = Math.round(offset.y) - 1.5;
 
         } catch ( e ) {
            console.log(e);
@@ -79,7 +80,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         return this;
     },
     setHeight: function ( height ) {
-        this.height = height;
+        this.height = Math.round(height) + 2;
         return this;
     },
     setHide: function () {

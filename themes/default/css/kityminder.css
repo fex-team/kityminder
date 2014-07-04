@@ -251,7 +251,7 @@ button#share-btn:hover {
     overflow: hidden;
 }
 svg, body {
-    font-family: Arial, "Hiragino Sans GB", "Microsoft Yahei", "Heiti SC", sans-serif;
+    font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
 }
 #about {
     position:absolute;
