@@ -7,12 +7,13 @@
     padding: 5px 0;
     background-color: #ffffff;
     font-size: 12px;
-    box-shadow: 2px 5px 15px rgba(0, 0, 0, .5);
-    border-radius: 3px;
+    box-shadow: 0 1px 5px hsla(0, 0%, 0%, 0.3);
+    /* border-radius: 3px; */
     min-width: 160px;
     _width: 160px;
     -webkit-transform: translateX(2px);
     font-family: Arial, "Heiti SC", "Microsoft Yahei";
+    /* border-top: 3px solid hsl(224, 16%, 27%); */
 }
 
 .kmui-combobox-menu .kmui-combobox-item {
@@ -47,6 +48,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0099f2', endColorstr='#0076dd',GradientType=0 ); /* IE6-8 */
 
     color: white;
+    background: hsl(222, 14%, 41%);
     /*border: 1px solid #a3bde3;*/
 }
 

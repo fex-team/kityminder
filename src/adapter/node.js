@@ -1,8 +1,8 @@
 KM.registerToolbarUI('node', function(name) {
     var shortcutKeys = {
-        'appendsiblingnode': 'enter',
-        'appendchildnode': 'tab',
-        'removenode': 'del|backspace',
+        'appendsiblingnode': 'Enter',
+        'appendchildnode': 'Tab',
+        'removenode': 'Del',
         'editnode': 'F2'
     };
 
@@ -67,8 +67,6 @@ KM.registerToolbarUI('node', function(name) {
     //comboboxWidget.button().kmui().disabled(-1);
     return comboboxWidget.button().addClass('kmui-combobox');
 
-
-
     function transForInserttopic(options) {
 
         var tempItems = [];
@@ -76,7 +74,7 @@ KM.registerToolbarUI('node', function(name) {
         utils.each(options.items, function(k, v) {
             options.value.push(v);
 
-            tempItems.push((msg[k] || k) + '(' + shortcutKeys[v].toUpperCase() + ')');
+            tempItems.push((msg[k] || k) + ' (' + shortcutKeys[v] + ')');
             options.autowidthitem.push($.wordCountAdaptive(tempItems[tempItems.length - 1]));
         });
 
