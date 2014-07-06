@@ -53,6 +53,7 @@ kity.extendClass(Minder, {
 
         json.template = this.getTemplate();
         json.theme = this.getTheme();
+        json.version = KityMinder.version;
 
         if (protocal) {
             return protocal.encode(json, this);
@@ -139,19 +140,9 @@ kity.extendClass(Minder, {
             this.removeNode(this._root.getChildren()[0]);
         }
 
-        // compality for v1.1.3
-        var ocs = json.data.currentstyle; // old current-style
-        delete json.data.currentstyle;
+        json = KityMinder.compatibility(json);
 
         importNode(this._root, json, this);
-
-        if (ocs == 'bottom') {
-            json.template = 'structure';
-            json.theme = 'snow';
-        } else if (ocs == 'default') {
-            json.template = 'default';
-            json.theme = 'classic';
-        }
 
         this.setTemplate(json.template || null);
         this.setTheme(json.theme || null);

@@ -10,6 +10,7 @@
             'core/module.js',
             'core/event.js',
             'core/minder.js',
+            'core/minder.data.compatibility.js',
             'core/minder.data.js',
             'core/minder.event.js',
             'core/minder.module.js',
