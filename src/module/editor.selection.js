@@ -116,5 +116,8 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     isHide:function(){
         return !this._show;
+    },
+    clearBaseOffset:function(){
+        this.baseOffset = this.currentEndOffset = null;
     }
 } );
