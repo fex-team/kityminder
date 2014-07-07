@@ -99,7 +99,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer() {
+        function setTextToContainer(keyCode) {
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
@@ -131,10 +131,15 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.setContainerStyle();
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
-            clearTimeout(me.inputTextTimer);
-            me.inputTextTimer = setTimeout(function(){
-                me.km.layout(300);
-            },250);
+            //移动光标不做layout
+            if(!keymap.direction[keyCode]){
+                clearTimeout(me.inputTextTimer);
+
+                me.inputTextTimer = setTimeout(function(){
+                    me.km.layout(300);
+                },250);
+            }
+
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
             if (text.length === 0) {
@@ -293,19 +298,19 @@ Minder.Receiver = kity.createClass('Receiver', {
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
                             me.container.textContent = me.container.textContent.replace('$$_kityminder_bookmark_$$', '');
                             me.range.setStart(me.container.firstChild, index).collapse(true).select();
-                            setTextToContainer();
+                            setTextToContainer(keyCode);
                         }, 100);
                     }
                     //剪切
                     if (keyCode == keymap.x) {
                         setTimeout(function() {
-                            setTextToContainer();
+                            setTextToContainer(keyCode);
                         }, 100);
                     }
                     return;
                 }
                 setTimeout(function() {
-                    setTextToContainer();
+                    setTextToContainer(keyCode);
                 });
                 break;
 
@@ -328,7 +333,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                             return;
                         }
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
-                            setTextToContainer();
+                            setTextToContainer(keyCode);
                         }
                         if (this.keydownNode === this.minderNode) {
                             this.rollbackStatus();
@@ -339,14 +344,14 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap.Backspace:
                     case keymap.Spacebar:
-                        setTextToContainer();
+                        setTextToContainer(keyCode);
                         return;
                 }
                 if (this.isTypeText) {
-                    setTextToContainer();
+                    setTextToContainer(keyCode);
                 }
                 if (browser.mac && browser.gecko)
-                    setTextToContainer();
+                    setTextToContainer(keyCode);
                 return true;
         }
 
@@ -514,9 +519,11 @@ Minder.Receiver = kity.createClass('Receiver', {
             width = 0;
         if (this.selection.collapsed) {
             if(startOffset === undefined){
+
                 var tmpOffset = this.textData[this.textData.length - 1];
+                tmpOffset = utils.clone(tmpOffset);
                 tmpOffset.x = tmpOffset.x + tmpOffset.width;
-                startOffset = tmpOffset
+                startOffset = tmpOffset;
             }
             this.selection.updateShow(startOffset, 2);
             return this;
