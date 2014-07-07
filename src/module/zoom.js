@@ -4,6 +4,14 @@ KityMinder.registerModule('Zoom', function() {
     var timeline;
 
     me.setDefaultOptions('zoom', [50, 80, 100, 120, 150, 200]);
+    
+    function fixPaperCTM() {
+        var paper = me.getPaper();
+        var node = paper.shapeNode;
+        var ctm = node.getCTM();
+        var matrix = new kity.Matrix(ctm.a, ctm.b, ctm.c, ctm.d, (ctm.e | 0) + 0.5, (ctm.f | 0) + 0.5);
+        node.setAttribute('transform', 'matrix(' + matrix.toString() + ')');
+    }
 
     function zoomMinder(minder, zoom) {
         var paper = minder.getPaper();
@@ -17,10 +25,11 @@ KityMinder.registerModule('Zoom', function() {
             setter: function(target, value) {
                 viewport.zoom = value;
                 viewport.center = {
-                    x: viewport.center.x | 0 + 0.5,
-                    y: viewport.center.y | 0 + 0.5
+                    x: viewport.center.x,
+                    y: viewport.center.y
                 };
                 target.setViewPort(viewport);
+                fixPaperCTM();
             }
         });
         minder.zoom = zoom;
@@ -28,7 +37,7 @@ KityMinder.registerModule('Zoom', function() {
             timeline.pause();
         }
         timeline = animator.start(paper, 500, 'ease', function() {
-            minder.refresh(300);
+            minder.refresh(500);
         });
     }
 
