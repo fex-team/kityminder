@@ -717,12 +717,16 @@ $(function() {
     }
 
     function save() {
-        if (!currentAccount || save.busy) return;
+        if (!currentAccount) return alert('请先登录！');
+        if (save.busy) {
+            return alert('正在保存...');
+        }
 
         var uploadPath, filename;
 
+        // 确定上传文件名
         if (!remotePath) {
-            filename = window.prompt('请输入文件名: ', minder.getMinderTitle())
+            filename = window.prompt('请输入文件名: ', minder.getMinderTitle());
             if (!filename) return;
             uploadPath = generateRemotePath(filename);
         } else {
