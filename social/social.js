@@ -719,7 +719,7 @@ $(function() {
     function save() {
         if (!currentAccount) return alert('请先登录！');
         if (save.busy) {
-            return alert('正在保存...');
+            return;
         }
 
         var uploadPath, filename;
