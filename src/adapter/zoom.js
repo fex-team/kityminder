@@ -29,17 +29,23 @@ KM.registerToolbarUI( 'zoom', function ( name ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
     } );
+    var lastState, lastValue;
     //状态反射
     me.on( 'interactchange', function () {
 
         var state = this.queryCommandState( name ),
             value = this.queryCommandValue( name );
-        //设置按钮状态
-        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
-        if ( value ) {
+
+        if (state != lastState) {
+            //设置按钮状态
+            comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
+        }
+        if ( value && value != lastValue ) {
             //设置label
             comboboxWidget.selectItemByLabel( value + '%' );
         }
+        lastState = state;
+        lastValue = value;
 
     } );
     //comboboxWidget.button().kmui().disabled(-1);

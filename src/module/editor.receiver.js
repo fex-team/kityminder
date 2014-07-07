@@ -52,7 +52,11 @@ Minder.Receiver = kity.createClass('Receiver', {
             textShape = new kity.Text();
         }
         this.textShape = textShape;
-        this.container.innerHTML = utils.unhtml(textShape.getContent());
+        // techird: add cache
+        if (textShape._lastContent != textShape.getContent()) {
+            this.container.innerHTML = utils.unhtml(textShape.getContent());
+            textShape._lastContent = textShape.getContent();
+        }
         return this;
     },
     setTextShapeSize: function(size) {
@@ -132,7 +136,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
             //移动光标不做layout
-            if(!keymap.direction[keyCode]){
+            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && orgEvt.ctrlKey){
                 clearTimeout(me.inputTextTimer);
 
                 me.inputTextTimer = setTimeout(function(){

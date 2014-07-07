@@ -209,7 +209,8 @@ kity.extendClass(Minder, {
                         .start(node, duration, 'ease')
                         .on('finish', function() {
                             // 可能性能低的时候会丢帧
-                            setTimeout(function() {
+                            clearTimeout(node._lastFixTimeout);
+                            node._lastFixTimeout = setTimeout(function() {
                                 applyMatrix(node, matrix);
                                 me.fire('layoutfinish', {
                                     node: node,
