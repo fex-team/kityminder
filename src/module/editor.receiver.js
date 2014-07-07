@@ -120,11 +120,14 @@ Minder.Receiver = kity.createClass('Receiver', {
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
-
-            me.minderNode.setText(text);
             if (text.length === 0) {
+                me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
+            }else {
+                me.minderNode.setText(text);
             }
+
+
             me.setContainerStyle();
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
@@ -149,7 +152,18 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.selection.clearBaseOffset();
         }
 
+        function restoreTextContent(){
+            if(me.minderNode){
+                var textShape = me.minderNode.getTextShape();
+                if(textShape && textShape.getOpacity() === 0){
+                    me.minderNode.setText(me.minderNode.getTmpData('_lastTextContent'));
+                    me.minderNode.render();
+                    me.minderNode.getTextShape().setOpacity(1);
+                    me.km.layout(300);
+                }
 
+            }
+        }
         switch (e.type) {
 
             case 'input':
@@ -162,6 +176,7 @@ Minder.Receiver = kity.createClass('Receiver', {
 
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
+
                 switch (keyCode) {
                     case keymap.Enter:
                     case keymap.Tab:
@@ -174,12 +189,14 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('normal');
                             this.km.fire('contentchange');
                         }
+                        restoreTextContent();
                         return;
                     case keymap.left:
                     case keymap.right:
                     case keymap.up:
                     case keymap.down:
                         if(this.selection.isHide()){
+                            restoreTextContent();
                             this.km.setStatus('normal');
                             return;
                         }
@@ -198,6 +215,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 //针对按住shift+方向键进行处理
                 if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
+
                     if(this.selection.baseOffset === null){
 
                         this.selection.baseOffset = this.selection.startOffset;
@@ -238,6 +256,9 @@ Minder.Receiver = kity.createClass('Receiver', {
                     this.updateSelectionShow();
                     e.preventDefault();
                     return;
+                }else if(keymap.direction[keyCode]){
+                    this.selection.baseOffset =
+                    this.selection.currentEndOffset = null;
                 }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
