@@ -161,7 +161,9 @@ Minder.Receiver = kity.createClass('Receiver', {
                 break;
 
             case 'beforekeydown':
+                console.log('AA')
                 this.isTypeText = keyCode == 229 || keyCode === 0;
+
                 switch (keyCode) {
                     case keymap.Enter:
                     case keymap.Tab:
@@ -198,6 +200,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 //针对按住shift+方向键进行处理
                 if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
+
                     if(this.selection.baseOffset === null){
 
                         this.selection.baseOffset = this.selection.startOffset;
@@ -238,6 +241,9 @@ Minder.Receiver = kity.createClass('Receiver', {
                     this.updateSelectionShow();
                     e.preventDefault();
                     return;
+                }else if(keymap.direction[keyCode]){
+                    this.selection.baseOffset =
+                    this.selection.currentEndOffset = null;
                 }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
