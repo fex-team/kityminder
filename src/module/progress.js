@@ -30,10 +30,11 @@ KityMinder.registerModule('ProgressModule', function() {
 
             var check = new kity.Path()
                 .getDrawer()
-                    .moveTo(-3, 0)
-                    .lineTo(-1, 3)
-                    .lineTo(3, -2)
+                    .moveTo(-3, -1)
+                    .lineTo(-1, 2)
+                    .lineTo(3, -3)
                 .getPath()
+                .stroke('white', 2)
                 .setVisible(false);
 
             this.addShapes([circle, pie, check]);
