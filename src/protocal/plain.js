@@ -1,5 +1,6 @@
 KityMinder.registerProtocal('plain', function() {
-    var LINE_ENDING = /\r\n|\r|\n/,
+    var LINE_ENDING = '\r',
+        LINE_ENDING_SPLITER = /\r\n|\r|\n/,
         TAB_CHAR = '\t';
 
     function repeat(s, n) {
@@ -42,7 +43,7 @@ KityMinder.registerProtocal('plain', function() {
     function decode(local) {
         var json,
             parentMap = {},
-            lines = local.split(LINE_ENDING),
+            lines = local.split(LINE_ENDING_SPLITER),
             line, level, node;
 
         function addChild(parent, child) {
