@@ -262,6 +262,26 @@ Minder.Receiver = kity.createClass('Receiver', {
                     this.selection.baseOffset =
                     this.selection.currentEndOffset = null;
                 }
+
+                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
+
+                    var textlength = this.textShape.getContent().length;
+                    if(keymap.right  == keyCode ){
+                        this.selection.setStartOffset(textlength).collapse(true);
+                    }else if(keymap.left == keyCode){
+                        this.selection.setStartOffset(0).collapse(true);
+                    }else{
+                        e.preventDefault();
+                        return;
+                    }
+
+                    this.selection.baseOffset =
+                    this.selection.currentEndOffset = null;
+                    this.updateContainerRangeBySel();
+                    this.updateSelectionShow();
+                    e.preventDefault();
+                    return;
+                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
@@ -493,8 +513,12 @@ Minder.Receiver = kity.createClass('Receiver', {
             endOffset = this.textData[this.selection.endOffset],
             width = 0;
         if (this.selection.collapsed) {
-
-            this.selection.updateShow(startOffset || this.textData[this.textData.length - 1], 2);
+            if(startOffset === undefined){
+                var tmpOffset = this.textData[this.textData.length - 1];
+                tmpOffset.x = tmpOffset.x + tmpOffset.width;
+                startOffset = tmpOffset
+            }
+            this.selection.updateShow(startOffset, 2);
             return this;
         }
         if (!endOffset) {
