@@ -54,7 +54,6 @@ KityMinder.registerModule('TextEditModule', function() {
             'normal.beforemousedown textedit.beforemousedown inputready.beforemousedown': function(e) {
                 //右键直接退出
                 if (e.isRightMB()) {
-                    e.stopPropagationImmediately();
                     return;
                 }
 

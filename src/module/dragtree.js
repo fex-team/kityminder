@@ -335,6 +335,7 @@ KityMinder.registerModule('DragTree', function() {
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
                 // 单选中根节点也不触发拖拽
+                if (e.originEvent.button) return;
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
