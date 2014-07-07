@@ -25,7 +25,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;'); //clip:rect(1em 1em 1em 1em);
         this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -200,6 +200,10 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('normal');
                             return;
                         }
+                        if(!orgEvt.shiftKey){
+                            this.selection.baseOffset =
+                            this.selection.currentEndOffset = null;
+                        }
                         break;
                    // case keymap.Shift:
                     case keymap.Control:
@@ -215,9 +219,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 //针对按住shift+方向键进行处理
                 if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
-
                     if(this.selection.baseOffset === null){
-
                         this.selection.baseOffset = this.selection.startOffset;
                         this.selection.currentEndOffset = this.selection.endOffset;
                     }
@@ -292,9 +294,21 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Enter:
                     case keymap.Tab:
                     case keymap.F2:
+                        if(browser.ipad){
+                            if(this.selection.isShow()){
+                                this.clear();
+                                this.km.setStatus('inputready');
+                                clearTimeout(me.inputTextTimer);
+                                e.preventDefault();
+                            }else{
+                                this.km.setStatus('normal');
+                                this.km.fire('contentchange');
+                            }
+                            restoreTextContent();
+                            return;
+                        }
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
                             setTextToContainer();
-
                         }
                         if (this.keydownNode === this.minderNode) {
                             this.rollbackStatus();
@@ -305,7 +319,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap.Backspace:
                     case keymap.Spacebar:
-
                         setTextToContainer();
                         return;
                 }
@@ -362,7 +375,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + 20) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;
@@ -450,7 +463,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                         me.selection.setStartOffset(i);
                     }
                     if (offset.x <= v.x + v.width / 2) {
-                        me.selection.collapse();
+                        me.selection.collapse(true);
                     } else {
                         me.selection.setEndOffset(i + ((me.selection.endOffset > i ||
                             dir == 1) && i != me.textData.length - 1 ? 1 : 0));
