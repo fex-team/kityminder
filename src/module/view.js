@@ -24,20 +24,21 @@ var ViewDragger = kity.createClass("ViewDragger", {
 
     _bind: function() {
         var dragger = this,
-            isRootDrag = false,
+            isTempDrag = false,
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown readonly.mousedown readonly.touchstart', function(e) {
+        this._minder.on('normal.beforemousedown readonly.mousedown readonly.touchstart', function (e) {
+            e.originEvent.preventDefault(); // 阻止中键拉动
             // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot()) {
+            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
                 lastPosition = e.getPosition();
-                isRootDrag = true;
+                isTempDrag = true;
             }
         })
 
         .on('normal.mousemove normal.touchmove', function(e) {
-            if (!isRootDrag) return;
+            if (!isTempDrag) return;
             var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
             if (offset.length() > 3) this.setStatus('hand');
         })
@@ -68,10 +69,13 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null;
 
             // 临时拖动需要还原状态
-            if (isRootDrag) {
+            if (isTempDrag) {
                 dragger.setEnabled(false);
-                isRootDrag = false;
-                this.rollbackStatus();
+                isTempDrag = false;
+                var me = this;
+                setTimeout(function () {
+                    me.rollbackStatus();
+                });
             }
         });
     }
@@ -155,11 +159,10 @@ KityMinder.registerModule('View', function() {
                     e.preventDefault();
                 }
             },
-            mousewheel: function(e) {
+            mousewheel: function (e) {
                 var dx, dy;
                 e = e.originEvent;
                 if (e.ctrlKey || e.shiftKey) return;
-
                 if ('wheelDeltaX' in e) {
 
                     dx = e.wheelDeltaX || 0;
