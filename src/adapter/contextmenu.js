@@ -27,7 +27,7 @@ KM.registerUI( 'contextmenu', function () {
         }
     });
     me.$container.append($menu);
-    me.on('contextmenu', function (e) {
+    me.on('aftercontextmenu', function (e) {
         e.preventDefault();
         
         if (me.getStatus() == 'hand') return;
@@ -65,7 +65,7 @@ KM.registerUI( 'contextmenu', function () {
         }
 
     });
-    me.on('click',function(){
+    me.on('afterclick',function(){
         $menu.kmui().hide();
     });
     me.on('beforemousedown',function(e){
