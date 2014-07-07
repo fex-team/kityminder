@@ -19,25 +19,22 @@ Minder.Selection = kity.createClass( 'Selection', {
     setColor:function(color){
         this.fill(color);
     },
-    collapse : function(toEnd){
+    collapse : function(toStart){
         this.setOpacity(1);
         this.width = 2;
         this.collapsed = true;
-        if(toEnd){
-            this.startOffset = this.endOffset;
-        }else{
+        if(toStart){
             this.endOffset = this.startOffset;
+
+        }else{
+            this.startOffset = this.endOffset;
         }
         return this;
     },
     setStartOffset:function(offset){
         this.startOffset = offset;
-        var tmpOffset = this.startOffset;
-        if(this.startOffset > this.endOffset){
-            this.startOffset = this.endOffset;
-            this.endOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.startOffset >= this.endOffset){
+            this.collapse(true);
             return this;
         }
         this.collapsed = false;
@@ -46,16 +43,12 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     setEndOffset:function(offset){
         this.endOffset = offset;
-        var tmpOffset = this.endOffset;
-        if(this.endOffset < this.startOffset){
-            this.endOffset = this.startOffset;
-            this.startOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.endOffset <= this.startOffset){
+           this.startOffset = offset;
+           this.collapse(true);
             return this;
         }
         this.collapsed = false;
-//        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },

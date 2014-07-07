@@ -95,7 +95,7 @@ KityMinder.registerModule('TextEditModule', function() {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor', 'default');
                     if (this.isSingleSelect() && node.isSelected()) {
-                        sel.collapse();
+                        sel.collapse(true);
                         sel.setColor(node.getStyle('text-selection-color'));
                         receiver
                             .setMinderNode(node)
