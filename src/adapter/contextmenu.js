@@ -27,10 +27,13 @@ KM.registerUI( 'contextmenu', function () {
         }
     });
     me.$container.append($menu);
-    me.on('aftercontextmenu', function (e) {
+    me.on('contextmenu', function(e) {
         e.preventDefault();
+    });
+    me.on('mouseup', function (e) {
+        //e.preventDefault();
         
-        if (me.getStatus() == 'hand') return;
+        if (me.getStatus() == 'hand' || !e.isRightMB()) return;
 
         var node = e.getTargetNode();
         if(node){
