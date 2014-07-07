@@ -86,7 +86,12 @@ $(function() {
 
         notice = (function() {
             return window.alert;
-        })();
+        })(),
+        
+        wordLimit = function (word, limit) {
+            limit = limit || 15;
+            return word.length > limit ? (word.substr(0, limit - 3) + '...') : word;
+        };
 
     start();
 
@@ -338,11 +343,11 @@ $(function() {
             if (!saved) {
                 filename = '* ' + filename;
             }
-            $title.text(filename);
+            $title.text((filename));
         } else if (currentAccount) {
-            $title.text('* ' + minder.getMinderTitle());
+            $title.text(('* ' + minder.getMinderTitle()));
         } else {
-            $title.text(filename || minder.getMinderTitle());
+            $title.text((filename || minder.getMinderTitle()));
         }
 
         document.title = [filename || minder.getMinderTitle(), titleSuffix].join(' - ');
@@ -895,7 +900,7 @@ $(function() {
             $draft_menu.append('<li disabled="disabled" class="current-draft kmui-combobox-item kmui-combobox-item-disabled kmui-combobox-checked">' +
                 '<span class="kmui-combobox-icon"></span>' +
                 '<label class="kmui-combobox-item-label">' +
-                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name +
+                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + wordLimit(draft.name) +
                 '</label>' +
                 '</li>');
             $draft_menu.append('<li class="kmui-divider"></li>');
@@ -907,7 +912,7 @@ $(function() {
         while (list.length) {
             draft = list.shift();
             $draft = $('<li class="draft-item">' +
-                '<a href="#">' + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name + '</a><a class="delete" title="删除该草稿"></a></li>');
+                '<a href="#">' + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + wordLimit(draft.name) + '</a><a class="delete" title="删除该草稿"></a></li>');
             $draft.data('draft-index', index++);
             $draft.appendTo($draft_menu);
         }

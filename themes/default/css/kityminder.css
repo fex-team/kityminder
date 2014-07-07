@@ -26,6 +26,10 @@ html, body, #kityminder, div.kmui-editor-body {
     text-align: center;
     font-weight: 300;
     font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    white-space: nowrap;
 }
 
 #panel {
