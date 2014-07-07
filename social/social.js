@@ -87,8 +87,8 @@ $(function() {
         notice = (function() {
             return window.alert;
         })(),
-        
-        wordLimit = function (word, limit) {
+
+        wordLimit = function(word, limit) {
             limit = limit || 15;
             return word.length > limit ? (word.substr(0, limit - 3) + '...') : word;
         };
@@ -124,7 +124,7 @@ $(function() {
                 acceptFiles.push(p.fileExtension);
             }
         });
-        
+
         function importUseEncoding(encoding) {
             return function() {
                 $('<input type="file" />')
@@ -187,7 +187,9 @@ $(function() {
 
         $file_btn = $('<button id="file-btn">文件</button>').addClass('dropdown').appendTo($menu);
 
-        $file_menu = $.kmuidropmenu({data: createFileMenu()})
+        $file_menu = $.kmuidropmenu({
+            data: createFileMenu()
+        })
             .addClass('file-menu')
             .appendTo('body');
 
@@ -346,19 +348,14 @@ $(function() {
     function setRemotePath(path, saved) {
         var filename;
         remotePath = path;
-        if (remotePath) {
-            filename = getFileName(remotePath);
-            if (!saved) {
-                filename = '* ' + filename;
-            }
-            $title.text((filename));
-        } else if (currentAccount) {
-            $title.text(('* ' + minder.getMinderTitle()));
-        } else {
-            $title.text((filename || minder.getMinderTitle()));
-        }
 
-        document.title = [filename || minder.getMinderTitle(), titleSuffix].join(' - ');
+        filename = remotePath ? getFileName(remotePath) : minder.getMinderTitle();
+
+        if (!saved) filename = '* ' + filename;
+
+        $title.text(filename)
+
+        document.title = [filename, titleSuffix].join(' - ');
     }
 
     // 检查是否在 Cookie 中登录过了
@@ -870,12 +867,16 @@ $(function() {
                         if (e.shiftKey) {
                             share();
                         } else {
-                            setTimeout(function () { save(); });
+                            setTimeout(function() {
+                                save();
+                            });
                         }
                         break;
                     case KM.keymap.n:
                         e.preventDefault();
-                        setTimeout(function () { newFile(); });
+                        setTimeout(function() {
+                            newFile();
+                        });
                         break;
                 }
             }
@@ -887,9 +888,7 @@ $(function() {
         minder.on('contentchange', function() {
             if (!watchingChanges || lastContent == minder.exportData('json')) return;
             var current = draftManager.save();
-            if (currentAccount) {
-                setRemotePath(remotePath, current.sync);
-            }
+            setRemotePath(remotePath, current.sync);
             lastContent = minder.exportData('json');
         });
     }
