@@ -362,7 +362,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y  ) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;
@@ -504,7 +504,14 @@ Minder.Receiver = kity.createClass('Receiver', {
         var node = this.container.firstChild;
         range.setStart(node, this.selection.startOffset);
         range.setEnd(node, this.selection.endOffset);
-        range.select();
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                range.select();
+            });
+        }else{
+            range.select();
+        }
         return this;
     },
     updateContainerRangeBySel:function(){
