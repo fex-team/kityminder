@@ -34,7 +34,7 @@ KityMinder.registerModule('DropFile', function() {
         }
     }
 
-    function importMinderFile(minder, file) {
+    function importMinderFile(minder, file, encoding) {
         if (!file) return;
 
         var ext = /(.)\w+$/.exec(file.name);
@@ -48,11 +48,11 @@ KityMinder.registerModule('DropFile', function() {
         } else if ((/mmap/g).test(ext)) { // mindmanager zip
             importSync(minder, file, 'mindmanager');
         } else if ((/mm/g).test(ext)) { //freemind xml
-            importAsync(minder, file, 'freemind');
+            importAsync(minder, file, 'freemind', encoding);
         } else if (/km/.test(ext)) { // txt json
-            importAsync(minder, file, 'json');
+            importAsync(minder, file, 'json', encoding);
         } else if (/txt/.test(ext)) {
-            importAsync(minder, file, 'plain');
+            importAsync(minder, file, 'plain', encoding);
         } else {
             alert('不支持导入此类文件!');
         }
@@ -78,12 +78,12 @@ KityMinder.registerModule('DropFile', function() {
     }
 
     // 异步加载文件
-    function importAsync(minder, file, protocal) {
+    function importAsync(minder, file, protocal, encoding) {
         var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             importSync(minder, e.target.result, protocal);
         };
-        reader.readAsText(file);
+        reader.readAsText(file, encoding || 'utf8');
     }
 
     function createDraft(minder) {
@@ -92,8 +92,8 @@ KityMinder.registerModule('DropFile', function() {
     }
 
     kity.extendClass(Minder, {
-        importFile: function(file) {
-            importMinderFile(this, file);
+        importFile: function(file, encoding) {
+            importMinderFile(this, file, encoding);
             return this;
         }
     });

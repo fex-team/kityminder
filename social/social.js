@@ -124,16 +124,24 @@ $(function() {
                 acceptFiles.push(p.fileExtension);
             }
         });
-        menus = menus.concat([{
-            label: '导入本地文件',
-            click: function() {
+        
+        function importUseEncoding(encoding) {
+            return function() {
                 $('<input type="file" />')
                     .attr('accept', acceptFiles.join(','))
                     .on('change', function(e) {
                         e = e.originalEvent;
-                        minder.importFile(e.target.files[0]);
+                        minder.importFile(e.target.files[0], encoding);
                     }).click();
-            }
+            };
+        }
+
+        menus = menus.concat([{
+            label: '导入...',
+            click: importUseEncoding('utf8')
+        }, {
+            label: '以 GBK 编码导入...',
+            click: importUseEncoding('gbk')
         }, {
             divider: true
         }]);
