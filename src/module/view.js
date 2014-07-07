@@ -72,10 +72,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
             if (isTempDrag) {
                 dragger.setEnabled(false);
                 isTempDrag = false;
-                var me = this;
-                setTimeout(function () {
-                    me.rollbackStatus();
-                });
+                this.rollbackStatus();
             }
         });
     }
