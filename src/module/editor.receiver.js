@@ -25,7 +25,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;'); //clip:rect(1em 1em 1em 1em);
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
         this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -375,7 +375,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + 20) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;
