@@ -1,5 +1,5 @@
 KityMinder.registerProtocal('plain', function() {
-    var LINE_ENDING = '\n',
+    var LINE_ENDING = /\r\n|\r|\n/,
         TAB_CHAR = '\t';
 
     function repeat(s, n) {
