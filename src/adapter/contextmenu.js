@@ -27,7 +27,11 @@ KM.registerUI( 'contextmenu', function () {
         }
     });
     me.$container.append($menu);
-    me.on('contextmenu',function(e){
+    me.on('contextmenu', function (e) {
+        e.preventDefault();
+        
+        if (me.getStatus() == 'hand') return;
+
         var node = e.getTargetNode();
         if(node){
             this.removeAllSelectedNodes();
@@ -59,7 +63,6 @@ KM.registerUI( 'contextmenu', function () {
                 data:data
             }).position(e.getPosition()).show();
         }
-        e.preventDefault()
 
     });
     me.on('click',function(){
@@ -67,7 +70,7 @@ KM.registerUI( 'contextmenu', function () {
     });
     me.on('beforemousedown',function(e){
         if(e.isRightMB()){
-            e.stopPropagationImmediately();
+            //e.stopPropagationImmediately();
         }
     })
 } );
