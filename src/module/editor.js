@@ -259,7 +259,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'blur': function() {
                 receiver.clear();
             },
-            'import': function() {
+            'textedit.import': function() {
                 km.setStatus('normal');
                 receiver.clear();
             },

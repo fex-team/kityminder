@@ -95,7 +95,7 @@ kity.extendClass(Minder, {
         try {
             json = params.json || (params.json = protocal.decode(local));
         } catch (e) {
-            return this.fire('parseerror');
+            return this.fire('parseerror', { message: e.message });
         }
 
         if (typeof json === 'object' && 'then' in json) {
