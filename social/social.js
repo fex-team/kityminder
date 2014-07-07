@@ -110,7 +110,7 @@ $(function() {
 
     function createFileMenu() {
         var menus = [{
-            label: '新建 (Ctrl + N)',
+            label: '新建',
             click: newFile
         }, {
             divider: true
@@ -445,7 +445,7 @@ $(function() {
                     addToRecentMenu(result.list.filter(function(file) {
                         return getFileFormat(file.path) in fileLoader;
                     }));
-                    syncPreference(result.list);
+                    //syncPreference(result.list);
                 }
             },
             error: loadUserFiles
@@ -866,16 +866,16 @@ $(function() {
                 switch (keyCode) {
                     //保存
                     case KM.keymap.s:
+                        e.preventDefault();
                         if (e.shiftKey) {
                             share();
                         } else {
-                            save();
+                            setTimeout(function () { save(); });
                         }
-                        e.preventDefault();
                         break;
                     case KM.keymap.n:
-                        newFile();
                         e.preventDefault();
+                        setTimeout(function () { newFile(); });
                         break;
                 }
             }
