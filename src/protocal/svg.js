@@ -6,14 +6,9 @@ if (!kity.Browser.ie) {
             fileExtension: '.svg',
             mineType: 'image/svg+xml',
             encode: function(json, km) {
-                var paper = km.getPaper();
-                var viewport = paper.getViewPort();
-                var originZoom = viewport.zoom;
 
-                viewport.zoom = 1;
-                paper.setViewPort(viewport);
-
-                var domContainer = km.getPaper().container,
+                var paper = km.getPaper(),
+                    paperTransform = paper.shapeNode.getAttribute('transform'),
                     svgXml,
                     $svg,
 
@@ -24,13 +19,15 @@ if (!kity.Browser.ie) {
                     height = renderBox.height,
                     padding = 20;
 
+                paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
                 svgXml = km.getPaper().container.innerHTML;
+                paper.shapeNode.setAttribute('transform', paperTransform);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
                     width: width + padding * 2 | 0,
                     height: height + padding * 2 | 0,
-                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC";'
+                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC"; background: ' + km.getStyle('background')
                 });
                 $svg[0].setAttribute('viewBox', [renderBox.x - padding | 0,
                     renderBox.y - padding | 0,
@@ -42,8 +39,6 @@ if (!kity.Browser.ie) {
                 svgXml = $('<div></div>').append($svg).html();
 
                 svgXml = $('<div></div>').append($svg).html();
-                viewport.zoom = originZoom;
-                paper.setViewPort(viewport);
 
                 // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
                 svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');

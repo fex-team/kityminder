@@ -10,14 +10,11 @@ if (!kity.Browser.ie) {
             fileDescription: 'PNG 图片',
             fileExtension: '.png',
             encode: function(json, km) {
-                var paper = km.getPaper();
-                var viewport = paper.getViewPort();
-                var originZoom = viewport.zoom;
+                var originZoom = km._zoomValue;
 
-                viewport.zoom = 1;
-                paper.setViewPort(viewport);
-
-                var domContainer = km.getPaper().container,
+                var paper = km.getPaper(),
+                    paperTransform = paper.shapeNode.getAttribute('transform'),
+                    domContainer = paper.container,
                     svgXml,
                     $svg,
 
@@ -27,27 +24,27 @@ if (!kity.Browser.ie) {
 
                     renderContainer = km.getRenderContainer(),
                     renderBox = renderContainer.getRenderBox(),
-                    transform = renderContainer.getTransform(),
-                    width = renderBox.width,
-                    height = renderBox.height,
+                    width = renderBox.width + 1,
+                    height = renderBox.height + 1,
                     padding = 20,
 
                     canvas = document.createElement('canvas'),
                     ctx = canvas.getContext('2d'),
                     blob, DomURL, url, img, finishCallback;
 
+                paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
                 renderContainer.translate(-renderBox.x, -renderBox.y);
 
-                svgXml = km.getPaper().container.innerHTML;
+                svgXml = paper.container.innerHTML;
 
                 renderContainer.translate(renderBox.x, renderBox.y);
-                viewport.zoom = originZoom;
-                paper.setViewPort(viewport);
+
+                paper.shapeNode.setAttribute('transform', paperTransform);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
-                    width: renderBox.width,
-                    height: renderBox.height,
+                    width: renderBox.width + 1,
+                    height: renderBox.height + 1,
                     style: 'font-family: Arial, "Microsoft Yahei","Heiti SC";'
                 });
 
