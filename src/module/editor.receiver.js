@@ -10,6 +10,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         }
         this.index = 0;
         this.isTypeText = false;
+        this.lastMinderNode = null;
         return this;
     },
     constructor: function(km,sel,range) {
