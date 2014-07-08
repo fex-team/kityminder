@@ -300,7 +300,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
             function area(box) {
                 return box.width * box.height;
             }
-            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox), 1e4);
+            if (!intersectBox) return false;
+            // 面积判断
+            if (area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox))) return true;
+            if (intersectBox.width + 1 >= Math.min(sourceBox.width, targetBox.width)) return true;
+            if (intersectBox.height + 1 >= Math.min(sourceBox.height, targetBox.height)) return true;
+            return false;
         });
         this._renderDropHint(this._dropSucceedTarget);
         return !!this._dropSucceedTarget;
