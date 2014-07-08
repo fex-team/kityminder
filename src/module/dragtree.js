@@ -38,6 +38,7 @@ var DropHinter = kity.createClass('DropHinter', {
                     target.getStyle('drop-hint-color') || 'yellow',
                     target.getStyle('drop-hint-width') || 2
             );
+            this.bringTop();
         }
     }
 });

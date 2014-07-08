@@ -35,8 +35,8 @@ KityMinder.LANG['zh-cn'] = {
         'image': '插入图片',
         'hyperlink': '插入链接',
         'unhyperlink': '删除链接',
-        'expandnode': '展开节点',
-        'collapsenode': '收起节点',
+        'expandnode': '展开到叶子',
+        'collapsenode': '收起到一级节点',
         'template': '模板',
         'theme': '皮肤'
     },

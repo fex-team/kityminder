@@ -41,9 +41,7 @@ KityMinder.registerTheme('snow', {
     'marquee-stroke': 'white',
 
     'drop-hint-color': 'yellow',
-    'sub-drop-hint-width': 2,
-    'main-drop-hint-width': 4,
-    'root-drop-hint-width': 4,
+    'drop-hint-width': 4,
 
     'order-hint-area-color': 'rgba(0, 255, 0, .5)',
     'order-hint-path-color': '#0f0',
