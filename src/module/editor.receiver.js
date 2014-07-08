@@ -229,8 +229,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                    case keymap.Del:
-                    case keymap.Backspace:
+//                    case keymap.Del:
+//                    case keymap.Backspace:
                         if(this.selection.isHide()){
                             this.km.setStatus('normal');
                         }
@@ -323,9 +323,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     return;
                 }
-                setTimeout(function() {
-                    setTextToContainer(keyCode);
-                });
+                setTextToContainer(keyCode);
                 break;
 
             case 'beforekeyup':
