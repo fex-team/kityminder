@@ -249,6 +249,10 @@ $(function() {
             e.stopPropagation();
         });
 
+        $('body').delegate('#global-zeroclipboard-html-bridge', 'mousedown', function(e) {
+            e.stopPropagation();
+        });
+
         var copyTrickTimer = 0;
         $('body').on('mousedown', function(e) {
             copyTrickTimer = setTimeout(function() {

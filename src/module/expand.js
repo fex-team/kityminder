@@ -163,6 +163,10 @@ KityMinder.registerModule('Expand', function() {
                 e.stopPropagation();
                 e.preventDefault();
             });
+            this.on('dblclick click mouseup', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
         },
 
         setState: function(state) {

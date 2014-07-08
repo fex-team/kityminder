@@ -62,9 +62,13 @@ KM.registerUI( 'contextmenu', function () {
             if(item.divider){
                 data.pop();
             }
+            var pos = e.getPosition('screen');
+            var offset = $(me.getPaper().container).offset();
+            pos.y -= offset.top;
+            pos.x -= offset.left;
             $menu.kmui().setData({
                 data:data
-            }).position(e.getPosition()).show();
+            }).position(pos).show();
         }
 
     });
