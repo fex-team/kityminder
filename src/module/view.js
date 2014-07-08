@@ -28,8 +28,11 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown readonly.mousedown readonly.touchstart', function (e) {
-            e.originEvent.preventDefault(); // 阻止中键拉动
+        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+
+            if (e.originEvent.button == 2) {
+                e.originEvent.preventDefault(); // 阻止中键拉动
+            }
             // 点击未选中的根节点临时开启
             if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
                 lastPosition = e.getPosition();
@@ -37,18 +40,19 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('normal.mousemove normal.touchmove', function(e) {
+        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
             if (!isTempDrag) return;
             var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
             if (offset.length() > 3) this.setStatus('hand');
         })
 
-        .on('hand.beforemousedown hand.beforetouchend', function(e) {
+        .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
             if (dragger.isEnabled()) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
             }
+            console.log('touchstart');
         })
 
         .on('hand.beforemousemove hand.beforetouchmove', function(e) {
@@ -65,7 +69,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup', function(e) {
+        .on('mouseup touchend', function(e) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
@@ -86,8 +90,7 @@ KityMinder.registerModule('View', function() {
         base: Command,
         execute: function(minder) {
 
-            minder._viewDragger.setEnabled(!minder._viewDragger.isEnabled());
-            if (minder._viewDragger.isEnabled()) {
+            if (minder.getStatus() != 'hand') {
                 minder.setStatus('hand');
             } else {
                 minder.rollbackStatus();
@@ -96,7 +99,7 @@ KityMinder.registerModule('View', function() {
 
         },
         queryState: function(minder) {
-            return minder._viewDragger.isEnabled() ? 1 : 0;
+            return minder.getStatus() == 'hand' ? 1 : 0;
         },
         enableReadOnly: false
     });
@@ -156,7 +159,10 @@ KityMinder.registerModule('View', function() {
                     e.preventDefault();
                 }
             },
-            mousewheel: function (e) {
+            statuschange: function(e) {
+                this._viewDragger.setEnabled(e.currentStatus == 'hand');
+            },
+            mousewheel: function(e) {
                 var dx, dy;
                 e = e.originEvent;
                 if (e.ctrlKey || e.shiftKey) return;
