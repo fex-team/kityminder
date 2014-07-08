@@ -261,9 +261,12 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-                receiver.clear();
-                if (this.getStatus() == 'textedit') {
-                    this.setStatus('normal');
+//                receiver.clear();
+//                if (this.getStatus() == 'textedit') {
+//                    this.setStatus('normal');
+//                }
+                if(sel.isShow()){
+                    receiver.updateTextOffsetData().updateSelection()
                 }
             },
             'layoutfinish':function(e){
@@ -271,12 +274,18 @@ KityMinder.registerModule('TextEditModule', function() {
                     receiver
                         .setBaseOffset()
                         .setContainerStyle();
-
                 }
             },
             'selectionclear': function() {
-                km.setStatus('normal');
-                receiver.clear();
+                var node = km.getSelectedNode();
+                if(node){
+                    inputStatusReady(node);
+                }else{
+                    km.setStatus('normal');
+                    receiver.clear();
+                }
+
+
             },
             'blur': function() {
                 receiver.clear();

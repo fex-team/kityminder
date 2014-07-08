@@ -20,7 +20,9 @@ Minder.Receiver = kity.createClass('Receiver', {
         var _div = document.createElement('div');
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
+
         this.container = _div;
+
         if(browser.ipad) {
             utils.listen(this.container, 'keydown keypress keyup input', function(e) {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
@@ -229,8 +231,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                    case keymap.Del:
-                    case keymap.Backspace:
+//                    case keymap.Del:
+//                    case keymap.Backspace:
                         if(this.selection.isHide()){
                             this.km.setStatus('normal');
                         }
@@ -323,9 +325,9 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     return;
                 }
-                setTimeout(function() {
+                //针对不能连续删除做处理
+                if(keymap.Del || keymap.Backspace)
                     setTextToContainer(keyCode);
-                });
                 break;
 
             case 'beforekeyup':
@@ -370,9 +372,13 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 if (this.isTypeText) {
                     setTextToContainer(keyCode);
+                    return;
                 }
-                if (browser.mac && browser.gecko)
+                if (browser.mac && browser.gecko){
                     setTextToContainer(keyCode);
+                    return;
+                }
+                setTextToContainer(keyCode);
                 return true;
         }
 
