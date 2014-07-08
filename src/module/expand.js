@@ -117,8 +117,7 @@ KityMinder.registerModule('Expand', function() {
     var ExpandNodeCommand = kity.createClass('ExpandNodeCommand', {
         base: Command,
         execute: function(km) {
-            var nodes = km.getSelectedNodes();
-            if (!nodes.length) nodes.push(km.getRoot());
+            var nodes = km.getRoot().getChildren();
             nodes.forEach(function(node) {
                 node.expand(EXPAND_POLICY.DEEP_TO_LEAF);
             });
@@ -218,10 +217,6 @@ KityMinder.registerModule('Expand', function() {
         }
     });
     return {
-        addShortcutKeys: {
-            'ExpandNode': 'ctrl+/', //expand
-            'CollapseNode': 'ctrl+.' //collapse
-        },
         commands: {
             'ExpandNode': ExpandNodeCommand,
             'CollapseNode': CollapseNodeCommand
@@ -241,6 +236,17 @@ KityMinder.registerModule('Expand', function() {
                 var visible = !node.parent || node.parent.isExpanded();
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
+            },
+            'beforekeydown': function(e) {
+                if (e.originEvent.keyCode == keymap['/']) {
+                    var expanded = this.getSelectedNode().isExpanded();
+                    this.getSelectedNodes().forEach(function(node) {
+                        if (expanded) node.collapse();
+                        else node.expand();
+                    });
+                    e.preventDefault();
+                    e.stopPropagationImmediately();
+                }
             }
         },
         renderers: {
