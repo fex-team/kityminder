@@ -160,6 +160,7 @@ KityMinder.registerModule('Select', function() {
                         selectedNodes.push(node);
                     });
                     this.select(selectedNodes,true);
+                    e.preventDefault();
                 }
             }
         }
