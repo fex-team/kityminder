@@ -5,7 +5,7 @@ html, body, div {
     margin-top: 0 !important;
 }
 html, body, #kityminder, div.kmui-editor-body {
-    /* overflow: hidden; */
+    overflow: hidden;
     -moz-user-select: none;
     width: 100%;
 }
