@@ -2,15 +2,23 @@
 html, body, div {
     margin: 0;
     padding: 0;
-    /* background: #FFFFFF; */
+    margin-top: 0 !important;
 }
 html, body, #kityminder, div.kmui-editor-body {
     overflow: hidden;
     -moz-user-select: none;
+    width: 100%;
 }
-
+#content-wrapper {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
 #title, #panel {
-    background: #393F4F;
+    background: hsl(224, 16%, 27%);
     font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
     /* -webkit-font-smoothing: antialiased; */
 }
@@ -26,6 +34,10 @@ html, body, #kityminder, div.kmui-editor-body {
     text-align: center;
     font-weight: 300;
     font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    white-space: nowrap;
 }
 
 #panel {
@@ -57,7 +69,6 @@ html, body, #kityminder, div.kmui-editor-body {
 
 #menu {
     float: left;
-    flo
 }
 
 #panel button:hover, #panel button.active {
@@ -114,6 +125,7 @@ button#tool-btn {
 #panel button#tool-btn {
     padding-right: 20px;
     position: relative;
+    overflow: visible;
 }
 
 #panel button#tool-btn.active:before {
@@ -253,7 +265,7 @@ svg, body {
     font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
 }
 #about {
-    position:absolute;
+    position: absolute;
     bottom: 0;
     right: 0;
     height: 40px;
@@ -261,21 +273,27 @@ svg, body {
     background: #5d697a;
     color: #eee;
     font-family:Arial;
-    font-size:13px;
+    font-size: 13px;
     font-weight:normal;
     margin:0;
     text-align: right;
     padding: 0 15px 0 60px;
     border-bottom: 5px solid #393F4F;
-    -webkit-font-smoothing: antialiased;
-    position: absolute;
     
     transition: all ease .3s 0.3s;
     
     -webkit-transform: translate(100%);
+    -moz-transform: translate(100%);
+    -ms-transform: translate(100%);
+    -o-transform: translate(100%);
+    transform: translate(100%);
 }
-#about:hover {
+#about:hover, #about:hover #km-cat {
     -webkit-transform: translate(0);
+    -moz-transform: translate(0);
+    -ms-transform: translate(0);
+    -o-transform: translate(0);
+    transform: translate(0);
 }
 #about a {
     color: #eee;
@@ -286,10 +304,11 @@ svg, body {
     top: 5px;
     transition: all ease 1.3s 0.3s;
     -webkit-transform: translate(-60px, 0);
+    -moz-transform: translate(-60px, 0);
+    -ms-transform: translate(-60px, 0);
+    -o-transform: translate(-60px, 0);
+    transform: translate(-60px, 0);
     cursor: pointer;
-}
-#about:hover #km-cat {
-    -webkit-transform: translate(0);
 }
 #about #cat-face {
     fill: #393F4F;

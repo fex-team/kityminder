@@ -5,7 +5,7 @@ Kity Minder
 
 KityMinder 是百度 FEX 团队的 f-cube 小组（原 UEditor 小组）的又一力作。作为一款在线的脑图编辑工具，它有着不亚于 native 脑图工具的交互体验。同时，它充分发挥了 Web 云存储的优势，可以直接将编辑中的脑图同步到云端。此外，借由独创的 “云盘分享”功能，用户可以一键将当前编辑的脑图直接生成在线链接共享给其他用户，实现无缝沟通。
 
-![KityMinder](summary.jpg "KityMinder 界面")
+![KityMinder](snap.png "KityMinder 界面")
 
 KityMinder 基于 SVG 技术实现，支持绝大多数的主流浏览器，包括：
 

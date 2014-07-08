@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-03
+ * kityminder - v1.1.3 - 2014-07-08
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -14,7 +14,7 @@ var KityMinder = window.KM = window.KityMinder = function() {
         instanceId = 0,
         uuidMap = {};
     return {
-        version: '1.1.3.1',
+        version: '1.2.0',
         uuid: function(name) {
             name = name || 'unknown';
             uuidMap[name] = uuidMap[name] || 0;
@@ -1048,6 +1048,65 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
 });
 
 Utils.extend(KityMinder, {
+    compatibility: function(json) {
+
+        var version = json.version || '1.1.3';
+
+        function traverse(node, fn) {
+            fn(node);
+            if (node.children) node.children.forEach(function(child) {
+                traverse(child, fn);
+            });
+        }
+
+        /**
+         * 脑图数据升级
+         * v1.1.3 => v1.2.0
+         * */
+        function c_113_120(json) {
+            // 原本的布局风格
+            var ocs = json.data.currentstyle;
+            delete json.data.currentstyle;
+
+            // 为 1.2 选择模板，同时保留老版本文件的皮肤
+            if (ocs == 'bottom') {
+                json.template = 'structure';
+                json.theme = 'snow';
+            } else if (ocs == 'default') {
+                json.template = 'default';
+                json.theme = 'classic';
+            }
+
+            traverse(json, function(node) {
+                var data = node.data;
+
+                // 升级优先级、进度图标
+                if ('PriorityIcon' in data) {
+                    data.priority = data.PriorityIcon;
+                    delete data.PriorityIcon;
+                }
+                if ('ProgressIcon' in data) {
+                    data.progress = 1 + ((data.ProgressIcon - 1) << 1);
+                    delete data.ProgressIcon;
+                }
+
+                // 删除过时属性
+                delete data.point;
+                delete data.layout;
+            });
+        }
+
+        switch (version) {
+            case '1.1.3':
+                c_113_120(json);
+            case '1.2.0':
+        }
+
+        return json;
+    }
+});
+
+Utils.extend(KityMinder, {
     _protocals: {},
     registerProtocal: function(name, protocalDeal) {
         KityMinder._protocals[name] = protocalDeal();
@@ -1102,6 +1161,7 @@ kity.extendClass(Minder, {
 
         json.template = this.getTemplate();
         json.theme = this.getTheme();
+        json.version = KityMinder.version;
 
         if (protocal) {
             return protocal.encode(json, this);
@@ -1140,13 +1200,19 @@ kity.extendClass(Minder, {
         var stoped = this._fire(new MinderEvent('beforeimport', params, true));
         if (stoped) return this;
 
-        json = params.json || (params.json = protocal.decode(local));
+        try {
+            json = params.json || (params.json = protocal.decode(local));
+        } catch (e) {
+            return this.fire('parseerror', { message: e.message });
+        }
 
         if (typeof json === 'object' && 'then' in json) {
             var self = this;
-            json.then(local, function(data) {
+            json.then(function(data) {
                 params.json = data;
                 self._doImport(data, params);
+            }).error(function() {
+                self.fire('parseerror');
             });
         } else {
             this._doImport(json, params);
@@ -1173,6 +1239,8 @@ kity.extendClass(Minder, {
             return node;
         }
 
+        if (!json) return;
+
         this._fire(new MinderEvent('preimport', params, false));
 
         // 删除当前所有节点
@@ -1180,19 +1248,9 @@ kity.extendClass(Minder, {
             this.removeNode(this._root.getChildren()[0]);
         }
 
-        // compality for v1.1.3
-        var ocs = json.data.currentstyle; // old current-style
-        delete json.data.currentstyle;
+        json = KityMinder.compatibility(json);
 
         importNode(this._root, json, this);
-
-        if (ocs == 'bottom') {
-            json.template = 'structure';
-            json.theme = 'snow';
-        } else if (ocs == 'default') {
-            json.template = 'default';
-            json.theme = 'classic';
-        }
 
         this.setTemplate(json.template || null);
         this.setTheme(json.theme || null);
@@ -1254,12 +1312,12 @@ kity.extendClass(Minder, {
         if (this._fire(beforeEvent)) {
             return;
         }
-        preEvent = new MinderEvent('pre' + e.type, e, false);
-        executeEvent = new MinderEvent(e.type, e, false);
+        preEvent = new MinderEvent('pre' + e.type, e, true);
+        executeEvent = new MinderEvent(e.type, e, true);
 
-        this._fire(preEvent);
-        this._fire(executeEvent);
-        this._fire(new MinderEvent('after' + e.type, e, false));
+        this._fire(preEvent) ||
+            this._fire(executeEvent) ||
+            this._fire(new MinderEvent('after' + e.type, e, false));
 
         if (~'mousedown mouseup keydown keyup'.indexOf(e.type)) {
             this._interactChange(e);
@@ -1765,11 +1823,18 @@ var keymap = KityMinder.keymap = (function(origin) {
     'End': 35,
     'Home': 36,
 
+
     'Left': 37,
     'Up': 38,
     'Right': 39,
     'Down': 40,
 
+    'direction':{
+        37:1,
+        38:1,
+        39:1,
+        40:1
+    },
     'Insert': 45,
 
     'Del': 46,
@@ -1828,7 +1893,8 @@ var keymap = KityMinder.keymap = (function(origin) {
         40: 1,
         13: 1,
         9: 1
-    }
+    },
+    'a':65
 });
 
 //添加多语言模块
@@ -2398,7 +2464,8 @@ kity.extendClass(Minder, {
                         .start(node, duration, 'ease')
                         .on('finish', function() {
                             // 可能性能低的时候会丢帧
-                            setTimeout(function() {
+                            clearTimeout(node._lastFixTimeout);
+                            node._lastFixTimeout = setTimeout(function() {
                                 applyMatrix(node, matrix);
                                 me.fire('layoutfinish', {
                                     node: node,
@@ -3211,7 +3278,7 @@ KityMinder.registerLayout('bottom', kity.createClass({
                 if (i > 0) {
                     x += children[i].getStyle('margin-left');
                 }
-                y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
+                y = nodeContentBox.bottom - childContentBox.top + node.getStyle('margin-bottom') + child.getStyle('margin-top');
                 children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
                 x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
             }
@@ -3372,7 +3439,7 @@ KityMinder.registerConnectProvider('filetree', function(node, parent, connection
 });
 
 KityMinder.registerTheme('classic', {
-    'background': 'url(themes/default/images/grid.png) repeat',
+    'background': '#3A4144 url(themes/default/images/grid.png) repeat',
 
     'root-color': '#430',
     'root-background': '#e9df98',
@@ -3422,11 +3489,13 @@ KityMinder.registerTheme('classic', {
 
     'order-hint-area-color': 'rgba(0, 255, 0, .5)',
     'order-hint-path-color': '#0f0',
-    'order-hint-path-width': 1
+    'order-hint-path-width': 1,
+
+    'text-selection-color': 'rgb(27,171,255)'
 });
 
 KityMinder.registerTheme('snow', {
-    'background': 'url(themes/default/images/grid.png) repeat',
+    'background': '#3A4144 url(themes/default/images/grid.png) repeat',
 
     'root-color': '#430',
     'root-background': '#e9df98',
@@ -3468,13 +3537,13 @@ KityMinder.registerTheme('snow', {
     'marquee-stroke': 'white',
 
     'drop-hint-color': 'yellow',
-    'sub-drop-hint-width': 2,
-    'main-drop-hint-width': 4,
-    'root-drop-hint-width': 4,
+    'drop-hint-width': 4,
 
     'order-hint-area-color': 'rgba(0, 255, 0, .5)',
     'order-hint-path-color': '#0f0',
-    'order-hint-path-width': 1
+    'order-hint-path-width': 1,
+
+    'text-selection-color': 'rgb(27,171,255)'
 });
 
 (function() {
@@ -3500,7 +3569,7 @@ KityMinder.registerTheme('snow', {
             'main-background': hsl(h, 33, 95),
             'main-stroke': hsl(h, 37, 60),
             'main-stroke-width': 1,
-            'main-font-size': 16,
+            'main-font-size': 14,
             'main-padding': [6, 20],
             'main-margin': 20,
             'main-radius': 3,
@@ -3529,9 +3598,11 @@ KityMinder.registerTheme('snow', {
             'drop-hint-color': hsl(h, 26, 35),
             'drop-hint-width': 5,
 
-            'order-hint-area-color': hsl(h, 100, 95).set('a', 0.5),
+            'order-hint-area-color': hsl(h, 100, 30).set('a', 0.5),
             'order-hint-path-color': hsl(h, 100, 25),
-            'order-hint-path-width': 1
+            'order-hint-path-width': 1,
+
+            'text-selection-color': hsl(h, 100, 20)
         };
     }
 
@@ -3695,6 +3766,9 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         this.setTextStyle(node, text.setContent(node.getText()));
         var box = text.getBoundaryBox();
         var r = Math.round;
+        if (kity.Browser.ie) {
+            box.y += 1;
+        }
         return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
     },
 
@@ -3844,8 +3918,7 @@ KityMinder.registerModule('Expand', function() {
     var ExpandNodeCommand = kity.createClass('ExpandNodeCommand', {
         base: Command,
         execute: function(km) {
-            var nodes = km.getSelectedNodes();
-            if (!nodes.length) nodes.push(km.getRoot());
+            var nodes = km.getRoot().getChildren();
             nodes.forEach(function(node) {
                 node.expand(EXPAND_POLICY.DEEP_TO_LEAF);
             });
@@ -3887,6 +3960,10 @@ KityMinder.registerModule('Expand', function() {
                 } else {
                     node.expand();
                 }
+                e.stopPropagation();
+                e.preventDefault();
+            });
+            this.on('dblclick click mouseup', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
             });
@@ -3941,10 +4018,6 @@ KityMinder.registerModule('Expand', function() {
         }
     });
     return {
-        addShortcutKeys: {
-            'ExpandNode': 'ctrl+/', //expand
-            'CollapseNode': 'ctrl+.' //collapse
-        },
         commands: {
             'ExpandNode': ExpandNodeCommand,
             'CollapseNode': CollapseNodeCommand
@@ -3956,14 +4029,22 @@ KityMinder.registerModule('Expand', function() {
                     r.update(r.getRenderShape(), e.node);
                 }
             },
-            'preimport': function(e) {
-                var json = e.json;
-            },
             'beforerender': function(e) {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
+            },
+            'beforekeydown': function(e) {
+                if (e.originEvent.keyCode == keymap['/']) {
+                    var expanded = this.getSelectedNode().isExpanded();
+                    this.getSelectedNodes().forEach(function(node) {
+                        if (expanded) node.collapse();
+                        else node.expand();
+                    });
+                    e.preventDefault();
+                    e.stopPropagationImmediately();
+                }
             }
         },
         renderers: {
@@ -4475,10 +4556,11 @@ KityMinder.registerModule('ProgressModule', function() {
 
             var check = new kity.Path()
                 .getDrawer()
-                    .moveTo(-3, 0)
-                    .lineTo(-1, 3)
-                    .lineTo(3, -2)
+                    .moveTo(-3, -1)
+                    .lineTo(-1, 2)
+                    .lineTo(3, -3)
                 .getPath()
+                .stroke('white', 2)
                 .setVisible(false);
 
             this.addShapes([circle, pie, check]);
@@ -4586,7 +4668,7 @@ KityMinder.registerModule('PriorityModule', function() {
 
             bg = new kity.Rect()
                 .setRadius(3)
-                .setPosition(0, 0)
+                .setPosition(0.5, 0.5)
                 .setSize(this.width, this.height);
 
             number = new kity.Text()
@@ -4702,8 +4784,8 @@ KityMinder.registerModule('image', function() {
         }
 
         return {
-            width: width,
-            height: height
+            width: width | 0,
+            height: height | 0
         };
     }
 
@@ -4796,14 +4878,17 @@ KityMinder.registerModule('image', function() {
 
             if (!size) return;
 
+            var x = box.cx - size.width / 2;
+            var y = box.y - size.height - spaceTop;
+
             image
                 .setUrl(url)
-                .setX(box.cx - size.width / 2)
-                .setY(box.y - size.height - spaceTop)
-                .setWidth(size.width)
-                .setHeight(size.height);
+                .setX(x | 0)
+                .setY(y | 0)
+                .setWidth(size.width | 0)
+                .setHeight(size.height | 0);
 
-            return new kity.Box(image.getX(), image.getY(), size.width, size.height);
+            return new kity.Box(x | 0, y | 0, size.width | 0, size.height | 0);
         }
     });
 
@@ -5026,9 +5111,9 @@ KityMinder.registerModule('Resource', function() {
 
             rect = this.rect;
             rect.setPosition(0, box.y - paddingY);
-            rect.setSize(
-                this.width = box.width + paddingX * 2,
-                this.height = box.height + paddingY * 2);
+            this.width = Math.round(box.width + paddingX * 2);
+            this.height = Math.round(box.height + paddingY * 2);
+            rect.setSize(this.width, this.height);
             rect.fill(color);
         }
     });
@@ -5068,7 +5153,7 @@ KityMinder.registerModule('Resource', function() {
                 }
                 overlay.setVisible(true);
                 overlay.setValue(resource[i], minder.getResourceColor(resource[i]));
-                overlay.setTranslate(x, 0);
+                overlay.setTranslate(x, -1);
 
                 x += overlay.width;
             }
@@ -5079,7 +5164,7 @@ KityMinder.registerModule('Resource', function() {
 
             return {
                 x: box.right,
-                y: -overlays[0].height / 2,
+                y: Math.round(-overlays[0].height / 2),
                 width: x,
                 height: overlays[0].height
             };
@@ -5123,31 +5208,35 @@ var ViewDragger = kity.createClass("ViewDragger", {
 
     _bind: function() {
         var dragger = this,
-            isRootDrag = false,
+            isTempDrag = false,
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown readonly.mousedown readonly.touchstart', function(e) {
+        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+
+            if (e.originEvent.button == 2) {
+                e.originEvent.preventDefault(); // 阻止中键拉动
+            }
             // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() &&
-                (!this.getRoot().isSelected() || !this.isSingleSelect())) {
+            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
                 lastPosition = e.getPosition();
-                isRootDrag = true;
+                isTempDrag = true;
             }
         })
 
-        .on('normal.mousemove normal.touchmove', function(e) {
-            if (!isRootDrag) return;
+        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
+            if (!isTempDrag) return;
             var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
             if (offset.length() > 3) this.setStatus('hand');
         })
 
-        .on('hand.beforemousedown hand.beforetouchend', function(e) {
+        .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
             if (dragger.isEnabled()) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
             }
+            console.log('touchstart');
         })
 
         .on('hand.beforemousemove hand.beforetouchmove', function(e) {
@@ -5164,13 +5253,13 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup', function(e) {
+        .on('mouseup touchend', function(e) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
-            if (isRootDrag) {
+            if (isTempDrag) {
                 dragger.setEnabled(false);
-                isRootDrag = false;
+                isTempDrag = false;
                 this.rollbackStatus();
             }
         });
@@ -5185,8 +5274,7 @@ KityMinder.registerModule('View', function() {
         base: Command,
         execute: function(minder) {
 
-            minder._viewDragger.setEnabled(!minder._viewDragger.isEnabled());
-            if (minder._viewDragger.isEnabled()) {
+            if (minder.getStatus() != 'hand') {
                 minder.setStatus('hand');
             } else {
                 minder.rollbackStatus();
@@ -5195,7 +5283,7 @@ KityMinder.registerModule('View', function() {
 
         },
         queryState: function(minder) {
-            return minder._viewDragger.isEnabled() ? 1 : 0;
+            return minder.getStatus() == 'hand' ? 1 : 0;
         },
         enableReadOnly: false
     });
@@ -5255,11 +5343,13 @@ KityMinder.registerModule('View', function() {
                     e.preventDefault();
                 }
             },
+            statuschange: function(e) {
+                this._viewDragger.setEnabled(e.currentStatus == 'hand');
+            },
             mousewheel: function(e) {
                 var dx, dy;
                 e = e.originEvent;
                 if (e.ctrlKey || e.shiftKey) return;
-
                 if ('wheelDeltaX' in e) {
 
                     dx = e.wheelDeltaX || 0;
@@ -5345,6 +5435,7 @@ var DropHinter = kity.createClass('DropHinter', {
                     target.getStyle('drop-hint-color') || 'yellow',
                     target.getStyle('drop-hint-width') || 2
             );
+            this.bringTop();
         }
     }
 });
@@ -5458,9 +5549,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
             this._minder.execCommand('arrange', this._dragSources, index);
             this._renderOrderHint(null);
+        } else {
+            this._minder.fire('savescene');
         }
         this._leaveDragMode();
-        this._minder.fire('treedragend');
+        this._minder.fire('contentchange');
     },
 
     // 进入拖放模式：
@@ -5604,7 +5697,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
             function area(box) {
                 return box.width * box.height;
             }
-            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox));
+            if (!intersectBox) return false;
+            // 面积判断
+            if (area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox))) return true;
+            if (intersectBox.width + 1 >= Math.min(sourceBox.width, targetBox.width)) return true;
+            if (intersectBox.height + 1 >= Math.min(sourceBox.height, targetBox.height)) return true;
+            return false;
         });
         this._renderDropHint(this._dropSucceedTarget);
         return !!this._dropSucceedTarget;
@@ -5625,7 +5723,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
     _renderOrderHint: function(hint) {
         this._orderHinter.render(hint);
     },
-    preventDragMove:function(){
+    preventDragMove: function() {
         this._startPosition = null;
     }
 });
@@ -5640,6 +5738,7 @@ KityMinder.registerModule('DragTree', function() {
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
                 // 单选中根节点也不触发拖拽
+                if (e.originEvent.button) return;
                 if (e.getTargetNode() && e.getTargetNode() != this.getRoot()) {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
@@ -5652,8 +5751,8 @@ KityMinder.registerModule('DragTree', function() {
                 e.stopPropagation();
                 this.fire('contentchange');
             },
-            'statuschange':function(e){
-                if(e.lastStatus == 'textedit' && e.currentStatus == 'normal'){
+            'statuschange': function(e) {
+                if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {
                     dragger.preventDragMove();
                 }
             }
@@ -5700,23 +5799,27 @@ KityMinder.registerModule('DropFile', function() {
         }
     }
 
-    function importMinderFile(minder, file) {
+    function importMinderFile(minder, file, encoding) {
         if (!file) return;
 
-        var ext = /(.)\w+$/.exec(file.name)[0];
+        var ext = /(.)\w+$/.exec(file.name);
+        
+        if (!ext) return alert('不支持导入此类文件！');
+        
+        ext = ext[0];
 
         if ((/xmind/g).test(ext)) { //xmind zip
             importSync(minder, file, 'xmind');
         } else if ((/mmap/g).test(ext)) { // mindmanager zip
             importSync(minder, file, 'mindmanager');
         } else if ((/mm/g).test(ext)) { //freemind xml
-            importAsync(minder, file, 'freemind');
+            importAsync(minder, file, 'freemind', encoding);
         } else if (/km/.test(ext)) { // txt json
-            importAsync(minder, file, 'json');
+            importAsync(minder, file, 'json', encoding);
         } else if (/txt/.test(ext)) {
-            importAsync(minder, file, 'plain');
+            importAsync(minder, file, 'plain', encoding);
         } else {
-            alert('不支持该文件!');
+            alert('不支持导入此类文件!');
         }
     }
 
@@ -5740,12 +5843,12 @@ KityMinder.registerModule('DropFile', function() {
     }
 
     // 异步加载文件
-    function importAsync(minder, file, protocal) {
+    function importAsync(minder, file, protocal, encoding) {
         var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             importSync(minder, e.target.result, protocal);
         };
-        reader.readAsText(file);
+        reader.readAsText(file, encoding || 'utf8');
     }
 
     function createDraft(minder) {
@@ -5754,8 +5857,8 @@ KityMinder.registerModule('DropFile', function() {
     }
 
     kity.extendClass(Minder, {
-        importFile: function(file) {
-            importMinderFile(this, file);
+        importFile: function(file, encoding) {
+            importMinderFile(this, file, encoding);
             return this;
         }
     });
@@ -5952,6 +6055,34 @@ KityMinder.registerModule("KeyboardModule", function() {
                         break;
                 }
 
+            },
+            'normal.keyup': function(e) {
+                if (browser.ipad) {
+                    var keys = KityMinder.keymap;
+                    var node = e.getTargetNode();
+                    var lang = this.getLang();
+
+                    if (this.receiver) this.receiver.keydownNode = node;
+
+                    var keyEvent = e.originEvent;
+
+                    if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+
+                    switch (keyEvent.keyCode) {
+                        case keys.Enter:
+                            this.execCommand('AppendSiblingNode', lang.topic);
+                            e.preventDefault();
+                            break;
+
+                        case keys.Backspace:
+                        case keys.Del:
+                            e.preventDefault();
+                            this.execCommand('RemoveNode');
+                            break;
+
+                    }
+                }
+
             }
         }
     };
@@ -6105,6 +6236,22 @@ KityMinder.registerModule('Select', function() {
 
                 // 清理一下选择状态
                 marqueeActivator.selectEnd(e);
+            },
+            //全选操作
+            'normal.keydown inputready.keydown':function(e){
+
+
+                var keyEvent = e.originEvent;
+
+                if ( (keyEvent.ctrlKey || keyEvent.metaKey) && keymap.a == keyEvent.keyCode){
+                    var selectedNodes = [];
+
+                    this.getRoot().traverse(function(node){
+                        selectedNodes.push(node);
+                    });
+                    this.select(selectedNodes,true);
+                    e.preventDefault();
+                }
             }
         }
     };
@@ -6131,16 +6278,24 @@ KityMinder.registerModule('TextEditModule', function() {
 
     function inputStatusReady(node){
         if (node && km.isSingleSelect() && node.isSelected()) {
+
+            var color = node.getStyle('text-selection-color');
+
             //准备输入状态
             var textShape = node.getTextShape();
 
             sel.setHide()
                 .setStartOffset(0)
-                .setEndOffset(textShape.getContent().length);
+                .setEndOffset(textShape.getContent().length)
+                .setColor(color);
+
+
 
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
+
+            receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
 
             km.setStatus('inputready');
 
@@ -6156,16 +6311,26 @@ KityMinder.registerModule('TextEditModule', function() {
     return {
         'events': {
             'ready': function() {
-                this._renderTarget.appendChild(receiver.container);
+                document.body.appendChild(receiver.container);
             },
 
             'normal.beforemousedown textedit.beforemousedown inputready.beforemousedown': function(e) {
                 //右键直接退出
                 if (e.isRightMB()) {
-                    e.stopPropagationImmediately();
                     return;
                 }
 
+
+                if(receiver.minderNode){
+                    var textShape = receiver.minderNode.getTextShape();
+                    if(textShape && textShape.getOpacity() === 0){
+                        receiver.minderNode.setText(receiver.minderNode.getTmpData('_lastTextContent'));
+                        receiver.minderNode.render();
+                        receiver.minderNode.getTextShape().setOpacity(1);
+                        km.layout(300);
+                    }
+
+                }
                 mouseDownStatus = true;
 
                 selectionReadyShow = sel.isShow();
@@ -6189,9 +6354,8 @@ KityMinder.registerModule('TextEditModule', function() {
                     var textShape = node.getTextShape();
                     textShape.setStyle('cursor', 'default');
                     if (this.isSingleSelect() && node.isSelected()) {
-                        sel.collapse();
-
-
+                        sel.collapse(true);
+                        sel.setColor(node.getStyle('text-selection-color'));
                         receiver
                             .setMinderNode(node)
                             .setCurrentIndex(e.getPosition(this.getRenderContainer()))
@@ -6201,9 +6365,13 @@ KityMinder.registerModule('TextEditModule', function() {
                         lastEvtPosition = e.getPosition(this.getRenderContainer());
 
                         if(selectionReadyShow){
-                            textShape.setStyle('cursor', 'text');
-                            receiver.updateSelection();
 
+                            textShape.setStyle('cursor', 'text');
+                            sel.clearBaseOffset();
+                            receiver.updateSelection();
+                            setTimeout(function() {
+                                sel.setShow();
+                            }, 200);
                             km.setStatus('textedit');
 
                         }
@@ -6241,6 +6409,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
             },
             'normal.mouseup textedit.mouseup inputready.mouseup': function(e) {
+
                 mouseDownStatus = false;
 
                 var node = e.getTargetNode();
@@ -6248,11 +6417,24 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 if (node && !selectionReadyShow && receiver.isReady()) {
 
-                    sel.collapse();
+                    sel.collapse(true);
+
+                    sel.setColor(node.getStyle('text-selection-color'));
+
+                    sel.clearBaseOffset();
 
                     node.getTextShape().setStyle('cursor', 'text');
 
                     receiver.updateSelection();
+
+                    //必须再次focus，要不不能呼出键盘
+                    if(browser.ipad){
+                        receiver.focus();
+                    }
+
+                    setTimeout(function() {
+                        sel.setShow();
+                    }, 200);
 
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
@@ -6265,7 +6447,16 @@ KityMinder.registerModule('TextEditModule', function() {
                 //当选中节点后，输入状态准备
                 if(sel.isHide()){
                     inputStatusReady(e.getTargetNode());
+                }else {
+                    //当有光标时，要同步选区
+                    if(!sel.collapsed){
+                        sel.clearBaseOffset();
+                        receiver.updateContainerRangeBySel();
+                    }
+
+
                 }
+
 
 
 
@@ -6329,9 +6520,12 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-                receiver.clear();
-                if (this.getStatus() == 'textedit') {
-                    this.setStatus('normal');
+//                receiver.clear();
+//                if (this.getStatus() == 'textedit') {
+//                    this.setStatus('normal');
+//                }
+                if(sel.isShow()){
+                    receiver.updateTextOffsetData().updateSelection()
                 }
             },
             'layoutfinish':function(e){
@@ -6339,17 +6533,23 @@ KityMinder.registerModule('TextEditModule', function() {
                     receiver
                         .setBaseOffset()
                         .setContainerStyle();
-
                 }
             },
             'selectionclear': function() {
-                km.setStatus('normal');
-                receiver.clear();
+                var node = km.getSelectedNode();
+                if(node){
+                    inputStatusReady(node);
+                }else{
+                    km.setStatus('normal');
+                    receiver.clear();
+                }
+
+
             },
             'blur': function() {
                 receiver.clear();
             },
-            'import': function() {
+            'textedit.import': function() {
                 km.setStatus('normal');
                 receiver.clear();
             },
@@ -6433,6 +6633,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         }
         this.index = 0;
         this.isTypeText = false;
+        this.lastMinderNode = null;
         return this;
     },
     constructor: function(km,sel,range) {
@@ -6442,13 +6643,22 @@ Minder.Receiver = kity.createClass('Receiver', {
         var _div = document.createElement('div');
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
+
         this.container = _div;
-        if (browser.ie && browser.version == 11 || browser.ipad) {
+
+        if(browser.ipad) {
             utils.listen(this.container, 'keydown keypress keyup input', function(e) {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
+                if(e.type == 'keyup'){
+                    if(me.km.getStatus() == 'normal'){
+                        me.km.fire( 'keyup', e);
+                    }
+
+                }
+
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug$/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
         this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -6463,6 +6673,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.range = range;
         range.setStart(text || this.container, this.index).collapse(true);
         var me = this;
+
         setTimeout(function() {
             me.container.focus();
             range.select();
@@ -6474,7 +6685,11 @@ Minder.Receiver = kity.createClass('Receiver', {
             textShape = new kity.Text();
         }
         this.textShape = textShape;
-        this.container.innerHTML = utils.unhtml(textShape.getContent());
+        // techird: add cache
+        if (textShape._lastContent != textShape.getContent()) {
+            this.container.innerHTML = utils.unhtml(textShape.getContent());
+            textShape._lastContent = textShape.getContent();
+        }
         return this;
     },
     setTextShapeSize: function(size) {
@@ -6516,12 +6731,13 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     keyboardEvents: function(e) {
 
-        clearTimeout(this.timer);
+
         var me = this;
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer() {
+        function setTextToContainer(keyCode) {
+            clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
@@ -6542,17 +6758,27 @@ Minder.Receiver = kity.createClass('Receiver', {
                 text += '\u200b';
             }
 
-            me.minderNode.setText(text);
             if (text.length === 0) {
+
+                me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
+            }else {
+                me.minderNode.setText(text);
             }
+
+
             me.setContainerStyle();
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
-            clearTimeout(me.inputTextTimer);
-            me.inputTextTimer = setTimeout(function(){
-                me.km.layout(300);
-            },250);
+            //移动光标不做layout
+            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && !orgEvt.ctrlKey){
+                clearTimeout(me.inputTextTimer);
+
+                me.inputTextTimer = setTimeout(function(){
+                    me.km.layout(300);
+                },250);
+            }
+
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
             if (text.length === 0) {
@@ -6564,12 +6790,24 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.updateSelection();
             me.timer = setTimeout(function() {
                 me.selection.setShow();
-            }, 300);
+            }, 200);
 
             me.km.setStatus('textedit');
+            me.selection.clearBaseOffset();
         }
 
+        function restoreTextContent(){
+            if(me.minderNode){
+                var textShape = me.minderNode.getTextShape();
+                if(textShape && textShape.getOpacity() === 0){
+                    me.minderNode.setText(me.minderNode.getTmpData('_lastTextContent'));
+                    me.minderNode.render();
+                    me.minderNode.getTextShape().setOpacity(1);
+                    me.km.layout(300);
+                }
 
+            }
+        }
         switch (e.type) {
 
             case 'input':
@@ -6582,13 +6820,10 @@ Minder.Receiver = kity.createClass('Receiver', {
 
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
+
                 switch (keyCode) {
                     case keymap.Enter:
                     case keymap.Tab:
-                    case keymap.left:
-                    case keymap.right:
-                    case keymap.up:
-                    case keymap.down:
                         if(this.selection.isShow()){
                             this.clear();
                             this.km.setStatus('inputready');
@@ -6598,20 +6833,104 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('normal');
                             this.km.fire('contentchange');
                         }
+                        restoreTextContent();
                         return;
-                    case keymap.Shift:
+                    case keymap.left:
+                    case keymap.right:
+                    case keymap.up:
+                    case keymap.down:
+                    case keymap.Backspace:
+                    case keymap.Del:
+                        if(this.selection.isHide()){
+                            restoreTextContent();
+                            this.km.setStatus('normal');
+                            return;
+                        }
+                        if(!orgEvt.shiftKey){
+                            this.selection.baseOffset =
+                            this.selection.currentEndOffset = null;
+                        }
+                        break;
+                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                    case keymap.Del:
-                    case keymap.Backspace:
+//                    case keymap.Del:
+//                    case keymap.Backspace:
+
                         if(this.selection.isHide()){
                             this.km.setStatus('normal');
+                            return;
                         }
-                        return;
+
+                }
+                //针对按住shift+方向键进行处理
+                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
+                    if(this.selection.baseOffset === null){
+                        this.selection.baseOffset = this.selection.startOffset;
+                        this.selection.currentEndOffset = this.selection.endOffset;
+                    }
+                    var textlength = this.textShape.getContent().length;
+                    if(keymap.right  == keyCode ){
+                        this.selection.currentEndOffset++;
+                        if(this.selection.currentEndOffset > textlength){
+                            this.selection.currentEndOffset = textlength;
+                        }
+
+                    }else if(keymap.left == keyCode){
+                        this.selection.currentEndOffset--;
+                        if(this.selection.currentEndOffset < 0){
+                            this.selection.currentEndOffset = 0;
+                        }
+
+                    }else if(keymap.up == keyCode){
+                        this.selection.currentEndOffset = 0;
+                        this.selection.baseOffset = this.selection.endOffset;
+                    }else{
+                        this.selection.currentEndOffset = textlength;
+                    }
+
+                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
+                        this.selection.setEndOffset(this.selection.currentEndOffset);
+                        if(this.selection.currentEndOffset == this.selection.baseOffset){
+                            this.selection.setStartOffset(this.selection.baseOffset);
+                        }
+                    }else{
+                        this.selection.setStartOffset(this.selection.currentEndOffset);
+                        this.selection.setEndOffset(this.selection.baseOffset);
+                    }
+
+                    this.updateContainerRangeBySel();
+
+                    this.updateSelectionShow();
+
+                    e.preventDefault();
+                    return;
+                }else if(keymap.direction[keyCode]){
+                    this.selection.baseOffset =
+                    this.selection.currentEndOffset = null;
                 }
 
+                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
+
+                    var textlength = this.textShape.getContent().length;
+                    if(keymap.right  == keyCode ){
+                        this.selection.setStartOffset(textlength).collapse(true);
+                    }else if(keymap.left == keyCode){
+                        this.selection.setStartOffset(0).collapse(true);
+                    }else{
+                        e.preventDefault();
+                        return;
+                    }
+
+                    this.selection.baseOffset =
+                    this.selection.currentEndOffset = null;
+                    this.updateContainerRangeBySel();
+                    this.updateSelectionShow();
+                    e.preventDefault();
+                    return;
+                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
@@ -6623,20 +6942,37 @@ Minder.Receiver = kity.createClass('Receiver', {
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
                             me.container.textContent = me.container.textContent.replace('$$_kityminder_bookmark_$$', '');
                             me.range.setStart(me.container.firstChild, index).collapse(true).select();
-                            setTextToContainer();
+                            setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
                     //剪切
                     if (keyCode == keymap.x) {
                         setTimeout(function() {
-                            setTextToContainer();
+                            setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
-                    return;
+                    //全选键位监控
+                    if (keymap.a == keyCode) {
+                        if(me.selection.isHide()){
+                            return;
+                        }else{
+                            me.selection
+                                .setStartOffset(0)
+                                .setEndOffset(me.textShape.getContent().length);
+                            me.updateContainerRangeBySel().updateSelectionShow();
+                            return;
+                        }
+                    }
+
+
                 }
-                setTimeout(function() {
-                    setTextToContainer();
-                });
+
+
+                //针对不能连续删除做处理
+                if(keymap.Del || keymap.Backspace)
+                    setTextToContainer(keyCode);
                 break;
 
             case 'beforekeyup':
@@ -6644,9 +6980,21 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Enter:
                     case keymap.Tab:
                     case keymap.F2:
+                        if(browser.ipad){
+                            if(this.selection.isShow()){
+                                this.clear();
+                                this.km.setStatus('inputready');
+                                clearTimeout(me.inputTextTimer);
+                                e.preventDefault();
+                            }else{
+                                this.km.setStatus('normal');
+                                this.km.fire('contentchange');
+                            }
+                            restoreTextContent();
+                            return;
+                        }
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
-                            setTextToContainer();
-
+                            setTextToContainer(keyCode);
                         }
                         if (this.keydownNode === this.minderNode) {
                             this.rollbackStatus();
@@ -6657,15 +7005,26 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap.Backspace:
                     case keymap.Spacebar:
+                        if(browser.ipad){
+                            if(this.selection.isHide()){
+                                this.km.setStatus('normal');
+                                return;
+                            }
 
-                        setTextToContainer();
+                        }
+                        setTextToContainer(keyCode);
                         return;
                 }
                 if (this.isTypeText) {
-                    setTextToContainer();
+                    setTextToContainer(keyCode);
+                    return;
                 }
-                if (browser.mac && browser.gecko)
-                    setTextToContainer();
+                if (browser.mac && browser.gecko){
+                    setTextToContainer(keyCode);
+                    return;
+                }
+                if(this.selection.baseOffset === null && this.selection.collapsed)
+                    setTextToContainer(keyCode);
                 return true;
         }
 
@@ -6712,24 +7071,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     setContainerStyle: function() {
-        var textShapeBox = this.getBaseOffset('paper');
+        var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + textShapeBox.height * 0.1) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug$/.test(location.href)?30:0)) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
-
-        if (!this.selection.isShow()) {
-            var paperContainer = this.km.getPaper();
-            var width = paperContainer.node.parentNode.clientWidth;
-            var height = paperContainer.node.parentNode.clientHeight;
-            if (width < this.container.offsetWidth + this.container.offsetLeft) {
-                this.km.getRenderContainer().translate(width / -3, 0);
-                this.setContainerStyle();
-            } else if (height < this.container.offsetTop + this.container.offsetHeight) {
-                this.km.getRenderContainer().translate(0, height / -3);
-                this.setContainerStyle();
-            }
-        }
-
 
         return this;
     },
@@ -6816,7 +7161,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                         me.selection.setStartOffset(i);
                     }
                     if (offset.x <= v.x + v.width / 2) {
-                        me.selection.collapse();
+                        me.selection.collapse(true);
                     } else {
                         me.selection.setEndOffset(i + ((me.selection.endOffset > i ||
                             dir == 1) && i != me.textData.length - 1 ? 1 : 0));
@@ -6846,7 +7191,14 @@ Minder.Receiver = kity.createClass('Receiver', {
             endOffset = this.textData[this.selection.endOffset],
             width = 0;
         if (this.selection.collapsed) {
-            this.selection.updateShow(startOffset || this.textData[this.textData.length - 1], 1);
+            if(startOffset === undefined){
+
+                var tmpOffset = this.textData[this.textData.length - 1];
+                tmpOffset = utils.clone(tmpOffset);
+                tmpOffset.x = tmpOffset.x + tmpOffset.width;
+                startOffset = tmpOffset;
+            }
+            this.selection.updateShow(startOffset, 2);
             return this;
         }
         if (!endOffset) {
@@ -6869,11 +7221,18 @@ Minder.Receiver = kity.createClass('Receiver', {
         var node = this.container.firstChild;
         range.setStart(node, this.selection.startOffset);
         range.setEnd(node, this.selection.endOffset);
-        range.select();
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                range.select();
+            });
+        }else{
+            range.select();
+        }
         return this;
     },
     updateContainerRangeBySel:function(){
-        this.updateRange(this.range);
+       return this.updateRange(this.range);
     },
     setIndex: function(index) {
         this.index = index;
@@ -6891,6 +7250,9 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     isReady:function(){
         return this._ready;
+    },
+    focus:function(){
+        this.container.focus();
     }
 });
 
@@ -6901,8 +7263,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.callBase();
         this.height = height || 20;
         this.setAttr('id','_kity_selection');
-        this.stroke( color || 'rgb(27,171,255)', width || 1 );
-        this.width = 0;
+        this.width = 2;
         this.fill('rgb(27,171,255)');
         this.setHide();
         this.timer = null;
@@ -6913,46 +7274,39 @@ Minder.Selection = kity.createClass( 'Selection', {
         this._show = false;
 
     },
-    collapse : function(toEnd){
-
-        this.stroke( 'rgb(27,171,255)', 1 );
+    setColor:function(color){
+        this.fill(color);
+    },
+    collapse : function(toStart){
         this.setOpacity(1);
-        this.width = 1;
+        this.width = 2;
         this.collapsed = true;
-        if(toEnd){
-            this.startOffset = this.endOffset;
-        }else{
+        if(toStart){
             this.endOffset = this.startOffset;
+
+        }else{
+            this.startOffset = this.endOffset;
         }
         return this;
     },
     setStartOffset:function(offset){
         this.startOffset = offset;
-        var tmpOffset = this.startOffset;
-        if(this.startOffset > this.endOffset){
-            this.startOffset = this.endOffset;
-            this.endOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.startOffset >= this.endOffset){
+            this.collapse(true);
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
     setEndOffset:function(offset){
         this.endOffset = offset;
-        var tmpOffset = this.endOffset;
-        if(this.endOffset < this.startOffset){
-            this.endOffset = this.startOffset;
-            this.startOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.endOffset <= this.startOffset){
+           this.startOffset = offset;
+           this.collapse(true);
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
@@ -6961,19 +7315,14 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.setShowHold();
         }
         this.setPosition(offset).setWidth(width);
-        //解决在框选内容时，出现很窄的光标
-        if(width === 0){
-            this.setOpacity(0);
-        }else{
-            this.setOpacity(0.5);
-        }
         this.bringTop();
         return this;
     },
     setPosition: function ( offset ) {
         try {
-            this.x = offset.x;
-            this.y = offset.y;
+            // 这两个是神奇的 0.5 —— SVG 要边缘锐利，你需要一些对齐
+            this.x = Math.round(offset.x) - 0.5;
+            this.y = Math.round(offset.y) - 1.5;
 
         } catch ( e ) {
            console.log(e);
@@ -6982,7 +7331,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         return this;
     },
     setHeight: function ( height ) {
-        this.height = height;
+        this.height = Math.round(height) + 2;
         return this;
     },
     setHide: function () {
@@ -7001,6 +7350,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         clearInterval( this.timer );
         var me = this,
             state = '';
+
         me.setStyle( 'display', '' );
         me._show = true;
         if(this.collapsed){
@@ -7017,6 +7367,9 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     isHide:function(){
         return !this._show;
+    },
+    clearBaseOffset:function(){
+        this.baseOffset = this.currentEndOffset = null;
     }
 } );
 
@@ -7247,36 +7600,54 @@ KityMinder.registerModule('Zoom', function() {
 
     var timeline;
 
-    me.setDefaultOptions('zoom', [50, 80, 100, 120, 150, 200]);
+    me.setDefaultOptions('zoom', [10, 20, 30, 50, 80, 100, 120, 150, 200]);
 
-    function zoomMinder(minder, zoom) {
+    function fixPaperCTM(paper) {
+        var node = paper.shapeNode;
+        var ctm = node.getCTM();
+        var matrix = new kity.Matrix(ctm.a, ctm.b, ctm.c, ctm.d, (ctm.e | 0) + 0.5, (ctm.f | 0) + 0.5);
+        node.setAttribute('transform', 'matrix(' + matrix.toString() + ')');
+    }
+
+    kity.extendClass(Minder, {
+        zoom: function(value) {
+            var paper = this.getPaper();
+            var viewport = paper.getViewPort();
+            viewport.zoom = value / 100;
+            viewport.center = {
+                x: viewport.center.x,
+                y: viewport.center.y
+            };
+            paper.setViewPort(viewport);
+            if (value == 100) fixPaperCTM(paper);
+        }
+    });
+
+    function zoomMinder(minder, value) {
         var paper = minder.getPaper();
         var viewport = paper.getViewPort();
 
-        if (!zoom) return;
+        if (!value) return;
 
         var animator = new kity.Animator({
-            beginValue: viewport.zoom,
-            finishValue: zoom / 100,
+            beginValue: minder._zoomValue,
+            finishValue: value,
             setter: function(target, value) {
-                viewport.zoom = value;
-                target.setViewPort(viewport);
+                target.zoom(value);
             }
         });
-        minder.zoom = zoom;
+        minder._zoomValue = value;
         if (timeline) {
             timeline.pause();
         }
-        timeline = animator.start(paper, 500, 'ease', function() {
-            minder.refresh(300);
-        });
+        timeline = animator.start(minder, 300, 'easeInOutSine');
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
         base: Command,
         execute: zoomMinder,
         queryValue: function(minder) {
-            return minder.zoom;
+            return minder._zoomValue;
         }
     });
 
@@ -7292,7 +7663,7 @@ KityMinder.registerModule('Zoom', function() {
             var stack = minder.getOptions('zoom'),
                 i;
             for (i = 0; i < stack.length; i++) {
-                if (stack[i] > minder.zoom) return stack[i];
+                if (stack[i] > minder._zoomValue) return stack[i];
             }
             return 0;
         },
@@ -7311,7 +7682,7 @@ KityMinder.registerModule('Zoom', function() {
             var stack = minder.getOptions('zoom'),
                 i;
             for (i = stack.length - 1; i >= 0; i--) {
-                if (stack[i] < minder.zoom) return stack[i];
+                if (stack[i] < minder._zoomValue) return stack[i];
             }
             return 0;
         },
@@ -7320,7 +7691,7 @@ KityMinder.registerModule('Zoom', function() {
 
     return {
         init: function() {
-            this.zoom = 100;
+            this._zoomValue = 100;
         },
         commands: {
             'zoom-in': ZoomInCommand,
@@ -7343,9 +7714,6 @@ KityMinder.registerModule('Zoom', function() {
                     e.preventDefault();
 
                 }
-            },
-            'ready': function() {
-                this._zoomValue = 1;
             },
             'normal.mousewheel readonly.mousewheel': function(e) {
                 if (!e.originEvent.ctrlKey) return;
@@ -7640,6 +8008,7 @@ KityMinder.registerModule( "pasteModule", function () {
                             break;
                         case keys.x:
                             getNodes(km.getSelectedAncestors(),true);
+                            km.layout(300);
                             _curstatus = true;
                             break;
                         case keys.v:
@@ -7648,7 +8017,7 @@ KityMinder.registerModule( "pasteModule", function () {
                                 if(node){
                                     km.fire('saveScene');
                                     for(var i= 0,ni;ni=_cacheNodes[i++];){
-                                        appendChildNode(node,ni);
+                                        appendChildNode(node,ni.clone());
                                     }
                                     km.layout(300);
                                     km.select(_selectedNodes,true);
@@ -9651,7 +10020,8 @@ KM.registerToolbarUI('forecolor', function (name) {
         var content = url.split(',')[1];
         var $form = $('<form></form>').attr({
             'action': 'download.php',
-            'method': 'POST'
+            'method': 'POST',
+            'accept-charset': 'utf-8'
         });
 
         var $content = $('<input />').attr({
@@ -9671,6 +10041,8 @@ KM.registerToolbarUI('forecolor', function (name) {
             type: 'hidden',
             value: filename
         }).appendTo($form);
+
+        $('<input name="iehack" value="&#9760;" />').appendTo($form);
 
         $form.appendTo('body').submit().remove();
     }
@@ -9810,17 +10182,23 @@ KM.registerToolbarUI('template theme', function(name) {
             $combox.appendTo(me.$container.find('.kmui-dialog-container'));
         }
     });
+    var lastState, lastValue;
     //状态反射
     me.on('interactchange', function() {
         var state = this.queryCommandState(name),
             value = this.queryCommandValue(name);
         //设置按钮状态
 
-        comboboxWidget.button().kmui().disabled(state == -1).active(state == 1);
+        if (lastState != state)
+            comboboxWidget.button().kmui().disabled(state == -1).active(state == 1);
 
-        if (value) {
+        if (value && value != lastValue) {
+            // 此处貌似性能很差，加入缓存
             comboboxWidget.selectItemByValue(value);
         }
+
+        lastState = state;
+        lastValue = value;
 
     });
 
@@ -9829,9 +10207,9 @@ KM.registerToolbarUI('template theme', function(name) {
 
 KM.registerToolbarUI('node', function(name) {
     var shortcutKeys = {
-        'appendsiblingnode': 'enter',
-        'appendchildnode': 'tab',
-        'removenode': 'del|backspace',
+        'appendsiblingnode': 'Enter',
+        'appendchildnode': 'Tab',
+        'removenode': 'Del',
         'editnode': 'F2'
     };
 
@@ -9896,8 +10274,6 @@ KM.registerToolbarUI('node', function(name) {
     //comboboxWidget.button().kmui().disabled(-1);
     return comboboxWidget.button().addClass('kmui-combobox');
 
-
-
     function transForInserttopic(options) {
 
         var tempItems = [];
@@ -9905,7 +10281,7 @@ KM.registerToolbarUI('node', function(name) {
         utils.each(options.items, function(k, v) {
             options.value.push(v);
 
-            tempItems.push((msg[k] || k) + '(' + shortcutKeys[v].toUpperCase() + ')');
+            tempItems.push((msg[k] || k) + ' (' + shortcutKeys[v] + ')');
             options.autowidthitem.push($.wordCountAdaptive(tempItems[tempItems.length - 1]));
         });
 
@@ -9945,7 +10321,14 @@ KM.registerUI( 'contextmenu', function () {
         }
     });
     me.$container.append($menu);
-    me.on('contextmenu',function(e){
+    me.on('contextmenu', function(e) {
+        e.preventDefault();
+    });
+    me.on('mouseup', function (e) {
+        //e.preventDefault();
+        
+        if (me.getStatus() == 'hand' || !e.isRightMB()) return;
+
         var node = e.getTargetNode();
         if(node){
             this.removeAllSelectedNodes();
@@ -9973,19 +10356,22 @@ KM.registerUI( 'contextmenu', function () {
             if(item.divider){
                 data.pop();
             }
+            var pos = e.getPosition('screen');
+            var offset = $(me.getPaper().container).offset();
+            pos.y -= offset.top;
+            pos.x -= offset.left;
             $menu.kmui().setData({
                 data:data
-            }).position(e.getPosition()).show();
+            }).position(pos).show();
         }
-        e.preventDefault()
 
     });
-    me.on('click',function(){
+    me.on('afterclick',function(){
         $menu.kmui().hide();
     });
     me.on('beforemousedown',function(e){
         if(e.isRightMB()){
-            e.stopPropagationImmediately();
+            //e.stopPropagationImmediately();
         }
     })
 } );
@@ -10212,17 +10598,23 @@ KM.registerToolbarUI( 'zoom', function ( name ) {
             $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
         }
     } );
+    var lastState, lastValue;
     //状态反射
     me.on( 'interactchange', function () {
 
         var state = this.queryCommandState( name ),
             value = this.queryCommandValue( name );
-        //设置按钮状态
-        comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
-        if ( value ) {
+
+        if (state != lastState) {
+            //设置按钮状态
+            comboboxWidget.button().kmui().disabled( state == -1 ).active( state == 1 );
+        }
+        if ( value && value != lastValue ) {
             //设置label
             comboboxWidget.selectItemByLabel( value + '%' );
         }
+        lastState = state;
+        lastValue = value;
 
     } );
     //comboboxWidget.button().kmui().disabled(-1);
@@ -10248,132 +10640,134 @@ KM.registerToolbarUI( 'zoom', function ( name ) {
 } );
 
 /*
-
     http://www.xmind.net/developer/
-
     Parsing XMind file
-
-    XMind files are generated in XMind Workbook (.xmind) format, an open format that is based on the principles of OpenDocument. It consists of a ZIP compressed archive containing separate XML documents for content and styles, a .jpg image file for thumbnails, and directories for related attachments.
+    XMind files are generated in XMind Workbook (.xmind) format, an open format
+    that is based on the principles of OpenDocument. It consists of a ZIP
+    compressed archive containing separate XML documents for content and styles,
+    a .jpg image file for thumbnails, and directories for related attachments.
  */
 
-KityMinder.registerProtocal( 'xmind', function () {
+KityMinder.registerProtocal('xmind', function() {
 
     // 标签 map
     var markerMap = {
-         'priority-1'   : ['PriorityIcon', 1]
-        ,'priority-2'   : ['PriorityIcon', 2]
-        ,'priority-3'   : ['PriorityIcon', 3]
-        ,'priority-4'   : ['PriorityIcon', 4]
-        ,'priority-5'   : ['PriorityIcon', 5]
+        'priority-1': ['priority', 1],
+        'priority-2': ['priority', 2],
+        'priority-3': ['priority', 3],
+        'priority-4': ['priority', 4],
+        'priority-5': ['priority', 5],
+        'priority-6': ['priority', 6],
+        'priority-7': ['priority', 7],
+        'priority-8': ['priority', 8],
 
-        ,'task-start'   : ['ProgressIcon', 1]
-        ,'task-quarter' : ['ProgressIcon', 2]
-        ,'task-half'    : ['ProgressIcon', 3]
-        ,'task-3quar'   : ['ProgressIcon', 4]
-        ,'task-done'    : ['ProgressIcon', 5]
-
-        ,'task-oct'     : null
-        ,'task-3oct'    : null
-        ,'task-5oct'    : null
-        ,'task-7oct'    : null
+        'task-start': ['progress', 1],
+        'task-oct': ['progress', 2],
+        'task-quarter': ['progress', 3],
+        'task-3oct': ['progress', 4],
+        'task-half': ['progress', 5],
+        'task-5oct': ['progress', 6],
+        'task-3quar': ['progress', 7],
+        'task-7oct': ['progress', 8],
+        'task-done': ['progress', 9]
     };
-
-    function getAttachedNode( arr ){
-        for (var i = 0; i < arr.length; i++) {
-            if( arr[ i ].type == "attached" )
-                return arr[ i ]
-        }
-    }
-
-    function processTopic(topic, obj){
-
-        //处理文本
-        obj.data =  { text : topic.title };
-
-        // 处理标签
-        if(topic.marker_refs && topic.marker_refs.marker_ref){
-            var markers = topic.marker_refs.marker_ref;
-            if( markers.length && markers.length > 0 ){
-                for (var i in markers) {
-                    var type = markerMap[ markers[i]['marker_id'] ];
-                    type && (obj.data[ type[0] ] = type[1]);
-                }
-            }else{
-                var type = markerMap[ markers['marker_id'] ];
-                type && (obj.data[ type[0] ] = type[1]);
-            }
-        }
-
-        // 处理超链接
-        if(topic['xlink:href']){
-            obj.data.hyperlink = topic['xlink:href'];
-        }
-
-        //处理子节点
-        var topics;
-        if( topic.children && (topics=topic.children.topics) && ( topics.topic || (utils.isArray( topics ) && topics.length>0) ) ){
-            var tmp = topics.topic || (getAttachedNode( topics )).topic;
-            if( tmp.length && tmp.length > 0 ){ //多个子节点
-                obj.children = [];
-
-                for(var i in tmp){
-                    obj.children.push({});
-                    processTopic(tmp[i], obj.children[i]);
-                }
-
-            }else{ //一个子节点
-                obj.children = [{}];
-                processTopic(tmp, obj.children[0]);
-            }
-        }
-    }
-
-    function xml2km(xml){
-        var json = $.xml2json(xml);
-        var result = {};
-        var sheet = json.sheet;
-        var topic = utils.isArray(sheet) ? sheet[0].topic : sheet.topic;
-        processTopic(topic, result);
-        return result;
-    }
-
-    function onerror(){
-        km.fire('unziperror');
-    }
-
-    function getEntries(file, onend) {
-        zip.createReader(new zip.BlobReader(file), function(zipReader) {
-            zipReader.getEntries(onend);
-        }, onerror);
-    }
 
     return {
         fileDescription: 'xmind格式文件',
         fileExtension: '.xmind',
-        
-        decode: function ( local ) {
 
+        decode: function(local) {
+            var successCall, errorCall;
+
+
+            function processTopic(topic, obj) {
+
+                //处理文本
+                obj.data = {
+                    text: topic.title
+                };
+
+                // 处理标签
+                if (topic.marker_refs && topic.marker_refs.marker_ref) {
+                    var markers = topic.marker_refs.marker_ref;
+                    if (markers.length && markers.length > 0) {
+                        for (var i in markers) {
+                            var type = markerMap[markers[i]['marker_id']];
+                            type && (obj.data[type[0]] = type[1]);
+                        }
+                    } else {
+                        var type = markerMap[markers['marker_id']];
+                        type && (obj.data[type[0]] = type[1]);
+                    }
+                }
+
+                // 处理超链接
+                if (topic['xlink:href']) {
+                    obj.data.hyperlink = topic['xlink:href'];
+                }
+                //处理子节点
+                var topics = topic.children && topic.children.topics;
+                var subTopics = topics && (topics.topic || topics[0] && topics[0].topic);
+                if (subTopics) {
+                    var tmp = subTopics;
+                    if (tmp.length && tmp.length > 0) { //多个子节点
+                        obj.children = [];
+
+                        for (var i in tmp) {
+                            obj.children.push({});
+                            processTopic(tmp[i], obj.children[i]);
+                        }
+
+                    } else { //一个子节点
+                        obj.children = [{}];
+                        processTopic(tmp, obj.children[0]);
+                    }
+                }
+            }
+
+            function xml2km(xml) {
+                var json = $.xml2json(xml);
+                var result = {};
+                var sheet = json.sheet;
+                var topic = utils.isArray(sheet) ? sheet[0].topic : sheet.topic;
+                processTopic(topic, result);
+                return result;
+            }
+
+            function onerror() {
+                errorCall('ziperror');
+            }
+
+            function getEntries(file, onend) {
+                zip.createReader(new zip.BlobReader(file), function(zipReader) {
+                    zipReader.getEntries(onend);
+                }, onerror);
+            }
             return {
-                then : function(local, callback){
+                then: function(callback) {
 
-                    getEntries( local, function( entries ) {
+                    getEntries(local, function(entries) {
                         var hasMainDoc = false;
-                        entries.forEach(function( entry ) {
-                            if(entry.filename == 'content.xml'){
+                        entries.forEach(function(entry) {
+                            if (entry.filename == 'content.xml') {
                                 hasMainDoc = true;
                                 entry.getData(new zip.TextWriter(), function(text) {
-                                    try{
+                                    try {
                                         var km = xml2km($.parseXML(text));
-                                        callback && callback( km );
-                                    }catch(e){
-                                        km.fire('parseerror');
-                                    }                                    
+                                        callback && callback(km);
+                                    } catch (e) {
+                                        errorCall && errorCall('parseerror');
+                                    }
                                 });
                             }
                         });
 
-                        !hasMainDoc && km.fire('parseerror');
+                        !hasMainDoc && errorCall && errorCall('parseerror');
                     });
+                    return this;
+                },
+                error: function(callback) {
+                    errorCall = callback;
                 }
             };
 
@@ -10381,11 +10775,8 @@ KityMinder.registerProtocal( 'xmind', function () {
         // recognize: recognize,
         recognizePriority: -1
     };
-    
-} );
 
-
-
+});
 
 /*
 
@@ -10395,66 +10786,68 @@ KityMinder.registerProtocal( 'xmind', function () {
 
 */
 
-KityMinder.registerProtocal( 'freemind', function () {
+KityMinder.registerProtocal('freemind', function() {
 
     // 标签 map
     var markerMap = {
-         'full-1'   : ['PriorityIcon', 1]
-        ,'full-2'   : ['PriorityIcon', 2]
-        ,'full-3'   : ['PriorityIcon', 3]
-        ,'full-4'   : ['PriorityIcon', 4]
-        ,'full-5'   : ['PriorityIcon', 5]
-        ,'full-6'   : null
-        ,'full-7'   : null
-        ,'full-8'   : null
-        ,'full-9'   : null
-        ,'full-0'   : null
+        'full-1': ['priority', 1],
+        'full-2': ['priority', 2],
+        'full-3': ['priority', 3],
+        'full-4': ['priority', 4],
+        'full-5': ['priority', 5],
+        'full-6': ['priority', 6],
+        'full-7': ['priority', 7],
+        'full-8': ['priority', 8]
     };
 
-    function processTopic(topic, obj){
+    function processTopic(topic, obj) {
 
         //处理文本
-        obj.data =  { text : topic.TEXT };
+        obj.data = {
+            text: topic.TEXT
+        };
+        var i;
 
         // 处理标签
-        if(topic.icon){
+        if (topic.icon) {
             var icons = topic.icon;
-            if(icons.length && icons.length > 0){
-                for (var i in icons) {
-                    var type = markerMap[ icons[i]['BUILTIN'] ];
-                    type && (obj.data[ type[0] ] = type[1]);
+            var type;
+            if (icons.length && icons.length > 0) {
+                for (i in icons) {
+                    type = markerMap[icons[i].BUILTIN];
+                    if (type) obj.data[type[0]] = type[1];
                 }
-            }else{
-                var type = markerMap[ icons['BUILTIN'] ];
-                type && (obj.data[ type[0] ] = type[1]);
+            } else {
+                type = markerMap[icons.BUILTIN];
+                if (type) obj.data[type[0]] = type[1];
             }
         }
-        
+
         // 处理超链接
-        if(topic.LINK){
+        if (topic.LINK) {
             obj.data.hyperlink = topic.LINK;
         }
 
         //处理子节点
-        if( topic.node ){
+        if (topic.node) {
 
             var tmp = topic.node;
-            if( tmp.length && tmp.length > 0 ){ //多个子节点
+            if (tmp.length && tmp.length > 0) { //多个子节点
                 obj.children = [];
 
-                for(var i in tmp){
+                for (i in tmp) {
                     obj.children.push({});
                     processTopic(tmp[i], obj.children[i]);
                 }
 
-            }else{ //一个子节点
+            } else { //一个子节点
                 obj.children = [{}];
                 processTopic(tmp, obj.children[0]);
             }
         }
     }
 
-    function xml2km(xml){
+    function xml2km(xml) {
         var json = $.xml2json(xml);
         var result = {};
         processTopic(json.node, result);
@@ -10465,272 +10858,264 @@ KityMinder.registerProtocal( 'freemind', function () {
         fileDescription: 'freemind格式文件',
         fileExtension: '.mm',
 
-        decode: function ( local ) {
-            try{
-                return xml2km( local );
-            }catch(e){
-                km.fire('parseerror');
-                return undefined;
-            }
+        decode: function(local) {
+            return xml2km(local);
         },
         // recognize: null,
         recognizePriority: -1
     };
-    
-} );
 
+});
 
-
-
+/* global zip:true */
 /*
-
     http://www.mindjet.com/mindmanager/
-
     mindmanager的后缀为.mmap，实际文件格式是zip，解压之后核心文件是Document.xml
-
 */
+KityMinder.registerProtocal('mindmanager', function() {
 
-KityMinder.registerProtocal( 'mindmanager', function () {
+    var successCall, errorCall;
 
     // 标签 map
     var markerMap = {
-        'urn:mindjet:Prio1': [ 'PriorityIcon', 1 ],
-        'urn:mindjet:Prio2': [ 'PriorityIcon', 2 ],
-        'urn:mindjet:Prio3': [ 'PriorityIcon', 3 ],
-        'urn:mindjet:Prio4': [ 'PriorityIcon', 4 ],
-        'urn:mindjet:Prio5': [ 'PriorityIcon', 5 ],
-        '0': [ 'ProgressIcon', 1 ],
-        '25': [ 'ProgressIcon', 2 ],
-        '50': [ 'ProgressIcon', 3 ],
-        '75': [ 'ProgressIcon', 4 ],
-        '100': [ 'ProgressIcon', 5 ]
+        'urn:mindjet:Prio1': ['PriorityIcon', 1],
+        'urn:mindjet:Prio2': ['PriorityIcon', 2],
+        'urn:mindjet:Prio3': ['PriorityIcon', 3],
+        'urn:mindjet:Prio4': ['PriorityIcon', 4],
+        'urn:mindjet:Prio5': ['PriorityIcon', 5],
+        '0': ['ProgressIcon', 1],
+        '25': ['ProgressIcon', 2],
+        '50': ['ProgressIcon', 3],
+        '75': ['ProgressIcon', 4],
+        '100': ['ProgressIcon', 5]
     };
 
-    function processTopic( topic, obj ) {
+    function processTopic(topic, obj) {
         //处理文本
         obj.data = {
             text: topic.Text && topic.Text.PlainText || ''
         }; // 节点默认的文本，没有Text属性
 
         // 处理标签
-        if ( topic.Task ) {
+        if (topic.Task) {
 
             var type;
-            if ( topic.Task.TaskPriority ) {
-                type = markerMap[ topic.Task.TaskPriority ];
-                type && ( obj.data[ type[ 0 ] ] = type[ 1 ] );
+            if (topic.Task.TaskPriority) {
+                type = markerMap[topic.Task.TaskPriority];
+                if (type) obj.data[type[0]] = type[1];
             }
 
-            if ( topic.Task.TaskPercentage ) {
-                type = markerMap[ topic.Task.TaskPercentage ];
-                type && ( obj.data[ type[ 0 ] ] = type[ 1 ] );
+            if (topic.Task.TaskPercentage) {
+                type = markerMap[topic.Task.TaskPercentage];
+                if (type) obj.data[type[0]] = type[1];
             }
         }
 
         // 处理超链接
-        if ( topic.Hyperlink ) {
+        if (topic.Hyperlink) {
             obj.data.hyperlink = topic.Hyperlink.Url;
         }
 
         //处理子节点
-        if ( topic.SubTopics && topic.SubTopics.Topic ) {
+        if (topic.SubTopics && topic.SubTopics.Topic) {
 
             var tmp = topic.SubTopics.Topic;
-            if ( tmp.length && tmp.length > 0 ) { //多个子节点
+            if (tmp.length && tmp.length > 0) { //多个子节点
                 obj.children = [];
 
-                for ( var i in tmp ) {
-                    obj.children.push( {} );
-                    processTopic( tmp[ i ], obj.children[ i ] );
+                for (var i in tmp) {
+                    obj.children.push({});
+                    processTopic(tmp[i], obj.children[i]);
                 }
 
             } else { //一个子节点
-                obj.children = [ {} ];
-                processTopic( tmp, obj.children[ 0 ] );
+                obj.children = [{}];
+                processTopic(tmp, obj.children[0]);
             }
         }
     }
 
-    function xml2km( xml ) {
-        var json = $.xml2json( xml );
+    function xml2km(xml) {
+        var json = $.xml2json(xml);
         var result = {};
-        processTopic( json.OneTopic.Topic, result );
+        processTopic(json.OneTopic.Topic, result);
         return result;
     }
 
-    function onerror(){
-        km.fire('unziperror');
+    function onerror() {
+        errorCall('ziperror');
     }
 
-    function getEntries( file, onend ) {
-        zip.createReader( new zip.BlobReader( file ), function ( zipReader ) {
-            zipReader.getEntries( onend );
-        }, onerror );
+    function getEntries(file, onend) {
+        zip.createReader(new zip.BlobReader(file), function(zipReader) {
+            zipReader.getEntries(onend);
+        }, onerror);
     }
 
     return {
         fileDescription: 'mindmanager格式文件',
         fileExtension: '.mmap',
-
-        decode: function ( local ) {
-
+        decode: function(local) {
             return {
-                then: function ( local, callback ) {
-
-                    getEntries( local, function ( entries ) {
+                then: function(callback) {
+                    successCall = callback;
+                    getEntries(local, function(entries) {
                         var hasMainDoc = false;
-                        entries.forEach( function ( entry ) {
-                            if ( entry.filename == 'Document.xml' ) {
+                        entries.forEach(function(entry) {
+                            if (entry.filename == 'Document.xml') {
                                 hasMainDoc = true;
-                                entry.getData( new zip.TextWriter(), function ( text ) {
-                                    try{
-                                        var km = xml2km( $.parseXML( text ) );
-                                        callback && callback( km );
-                                    }catch(e){
-                                        km.fire('parseerror');
+                                entry.getData(new zip.TextWriter(), function(text) {
+                                    try {
+                                        var km = xml2km($.parseXML(text));
+                                        if (successCall) successCall(km);
+                                    } catch (e) {
+                                        if (errorCall) errorCall('parseerror');
                                     }
-                                } );
+                                });
                             }
-                        } );
-                        !hasMainDoc && km.fire('parseerror');
-                    } );
+                        });
+                        if (!hasMainDoc && errorCall) errorCall('parseerror');
+                    });
+                    return this;
+                },
+                error: function(callback) {
+                    errorCall = callback;
                 }
             };
-
         },
-        // recognize: recognize,
         recognizePriority: -1
     };
+});
 
-} );
+KityMinder.registerProtocal('plain', function() {
+    var LINE_ENDING = '\r',
+        LINE_ENDING_SPLITER = /\r\n|\r|\n/,
+        TAB_CHAR = '\t';
 
-KityMinder.registerProtocal( "plain", function () {
-	var LINE_ENDING = '\n',
-		TAB_CHAR = '\t';
+    function repeat(s, n) {
+        var result = '';
+        while (n--) result += s;
+        return result;
+    }
 
-	function repeat( s, n ) {
-		var result = "";
-		while ( n-- ) result += s;
-		return result;
-	}
+    function encode(json, level) {
+        var local = '';
+        level = level || 0;
+        local += repeat(TAB_CHAR, level);
+        local += json.data.text + LINE_ENDING;
+        if (json.children) {
+            json.children.forEach(function(child) {
+                local += encode(child, level + 1);
+            });
+        }
+        return local;
+    }
 
-	function encode( json, level ) {
-		var local = "";
-		level = level || 0;
-		local += repeat( TAB_CHAR, level );
-		local += json.data.text + LINE_ENDING;
-		if ( json.children ) {
-			json.children.forEach( function ( child ) {
-				local += encode( child, level + 1 );
-			} );
-		}
-		return local;
-	}
+    function isEmpty(line) {
+        return !/\S/.test(line);
+    }
 
-	function isEmpty( line ) {
-		return !/\S/.test( line );
-	}
+    function getLevel(line) {
+        var level = 0;
+        while (line.charAt(level) === TAB_CHAR) level++;
+        return level;
+    }
 
-	function getLevel( line ) {
-		var level = 0;
-		while ( line.charAt( level ) === TAB_CHAR ) level++;
-		return level;
-	}
+    function getNode(line) {
+        return {
+            data: {
+                text: line.replace(new RegExp('^' + TAB_CHAR + '*'), '')
+            }
+        };
+    }
 
-	function getNode( line ) {
-		return {
-			data: {
-				text: line.replace( new RegExp( '^' + TAB_CHAR + '*' ), '' )
-			}
-		};
-	}
+    function decode(local) {
+        var json,
+            parentMap = {},
+            lines = local.split(LINE_ENDING_SPLITER),
+            line, level, node;
 
-	function decode( local ) {
-		var json,
-			parentMap = {},
-			lines = local.split( LINE_ENDING ),
-			line, level, node;
+        function addChild(parent, child) {
+            var children = parent.children || (parent.children = []);
+            children.push(child);
+        }
 
-		function addChild( parent, child ) {
-			var children = parent.children || ( parent.children = [] );
-			children.push( child );
-		}
+        for (var i = 0; i < lines.length; i++) {
+            line = lines[i];
+            if (isEmpty(line)) continue;
 
-		for ( var i = 0; i < lines.length; i++ ) {
-			line = lines[ i ];
-			if ( isEmpty( line ) ) continue;
+            level = getLevel(line);
+            node = getNode(line);
 
-			level = getLevel( line );
-			node = getNode( line );
+            if (level === 0) {
+                if (json) {
+                    throw new Error('Invalid local format');
+                }
+                json = node;
+            } else {
+                if (!parentMap[level - 1]) {
+                    throw new Error('Invalid local format');
+                }
+                addChild(parentMap[level - 1], node);
+            }
+            parentMap[level] = node;
+        }
+        return json;
+    }
+    var lastTry, lastResult;
 
-			if ( level === 0 ) {
-				if ( json ) {
-					throw new Error( 'Invalid local format' );
-				}
-				json = node;
-			} else {
-				if ( !parentMap[ level - 1 ] ) {
-					throw new Error( 'Invalid local format' );
-				}
-				addChild( parentMap[ level - 1 ], node );
-			}
-			parentMap[ level ] = node;
-		}
-		return json;
-	}
-	var lastTry, lastResult;
+    function recognize(local) {
+        if (!Utils.isString(local)) return false;
+        lastTry = local;
+        try {
+            lastResult = decode(local);
+        } catch (e) {
+            lastResult = null;
+        }
+        return !!lastResult;
+    }
 
-	function recognize( local ) {
-		if ( !Utils.isString( local ) ) return false;
-		lastTry = local;
-		try {
-			lastResult = decode( local );
-		} catch ( e ) {
-			lastResult = null;
-		}
-		return !!lastResult;
-	}
-	return {
-		fileDescription: '大纲文本',
-		fileExtension: '.txt',
+    return {
+        fileDescription: '大纲文本',
+        fileExtension: '.txt',
         mineType: 'text/plain',
-		encode: function ( json ) {
-			return encode( json, 0 );
-		},
-		decode: function ( local ) {
-			if ( lastTry == local && lastResult ) {
-				return lastResult;
-			}
-			return decode( local );
-		},
-		recognize: recognize,
-		recognizePriority: -1
-	};
-} );
+        encode: function(json) {
+            return encode(json, 0);
+        },
+        decode: function(local) {
+            if (lastTry == local && lastResult) {
+                return lastResult;
+            }
+            return decode(local);
+        },
+        recognize: recognize,
+        recognizePriority: -1
+    };
+});
 
-KityMinder.registerProtocal( 'json', function () {
-	function filter( key, value ) {
-		if ( key == 'layout' || key == 'shicon' ) {
-			return undefined;
-		}
-		return value;
-	}
-	return {
-		fileDescription: 'KityMinder',
-		fileExtension: '.km',
+KityMinder.registerProtocal('json', function() {
+    function filter(key, value) {
+        if (key == 'layout' || key == 'shicon') {
+            return undefined;
+        }
+        return value;
+    }
+    return {
+        fileDescription: 'KityMinder',
+        fileExtension: '.km',
         mineType: 'application/json',
-		encode: function ( json ) {
-			return JSON.stringify( json, filter );
-		},
-		decode: function ( local ) {
-			return JSON.parse( local );
-		},
-		recognize: function ( local ) {
-			return Utils.isString( local ) && local.charAt( 0 ) == '{' && local.charAt( local.length - 1 ) == '}';
-		},
-		recognizePriority: 0
-	};
-} );
+        encode: function(json) {
+            return JSON.stringify(json, filter);
+        },
+        decode: function(local) {
+            return JSON.parse(local);
+        },
+        recognize: function(local) {
+            return Utils.isString(local) && local.charAt(0) == '{' && local.charAt(local.length - 1) == '}';
+        },
+        recognizePriority: 0
+    };
+});
 
 if (!kity.Browser.ie) {
     KityMinder.registerProtocal('png', function() {
@@ -10744,14 +11129,11 @@ if (!kity.Browser.ie) {
             fileDescription: 'PNG 图片',
             fileExtension: '.png',
             encode: function(json, km) {
-                var paper = km.getPaper();
-                var viewport = paper.getViewPort();
-                var originZoom = viewport.zoom;
+                var originZoom = km._zoomValue;
 
-                viewport.zoom = 1;
-                paper.setViewPort(viewport);
-
-                var domContainer = km.getPaper().container,
+                var paper = km.getPaper(),
+                    paperTransform = paper.shapeNode.getAttribute('transform'),
+                    domContainer = paper.container,
                     svgXml,
                     $svg,
 
@@ -10761,27 +11143,27 @@ if (!kity.Browser.ie) {
 
                     renderContainer = km.getRenderContainer(),
                     renderBox = renderContainer.getRenderBox(),
-                    transform = renderContainer.getTransform(),
-                    width = renderBox.width,
-                    height = renderBox.height,
+                    width = renderBox.width + 1,
+                    height = renderBox.height + 1,
                     padding = 20,
 
                     canvas = document.createElement('canvas'),
                     ctx = canvas.getContext('2d'),
                     blob, DomURL, url, img, finishCallback;
 
+                paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
                 renderContainer.translate(-renderBox.x, -renderBox.y);
 
-                svgXml = km.getPaper().container.innerHTML;
+                svgXml = paper.container.innerHTML;
 
                 renderContainer.translate(renderBox.x, renderBox.y);
-                viewport.zoom = originZoom;
-                paper.setViewPort(viewport);
+
+                paper.shapeNode.setAttribute('transform', paperTransform);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
-                    width: renderBox.width,
-                    height: renderBox.height,
+                    width: renderBox.width + 1,
+                    height: renderBox.height + 1,
                     style: 'font-family: Arial, "Microsoft Yahei","Heiti SC";'
                 });
 
@@ -10860,14 +11242,9 @@ if (!kity.Browser.ie) {
             fileExtension: '.svg',
             mineType: 'image/svg+xml',
             encode: function(json, km) {
-                var paper = km.getPaper();
-                var viewport = paper.getViewPort();
-                var originZoom = viewport.zoom;
 
-                viewport.zoom = 1;
-                paper.setViewPort(viewport);
-
-                var domContainer = km.getPaper().container,
+                var paper = km.getPaper(),
+                    paperTransform = paper.shapeNode.getAttribute('transform'),
                     svgXml,
                     $svg,
 
@@ -10878,13 +11255,15 @@ if (!kity.Browser.ie) {
                     height = renderBox.height,
                     padding = 20;
 
+                paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
                 svgXml = km.getPaper().container.innerHTML;
+                paper.shapeNode.setAttribute('transform', paperTransform);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
                     width: width + padding * 2 | 0,
                     height: height + padding * 2 | 0,
-                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC";'
+                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC"; background: ' + km.getStyle('background')
                 });
                 $svg[0].setAttribute('viewBox', [renderBox.x - padding | 0,
                     renderBox.y - padding | 0,
@@ -10896,8 +11275,6 @@ if (!kity.Browser.ie) {
                 svgXml = $('<div></div>').append($svg).html();
 
                 svgXml = $('<div></div>').append($svg).html();
-                viewport.zoom = originZoom;
-                paper.setViewPort(viewport);
 
                 // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
                 svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');

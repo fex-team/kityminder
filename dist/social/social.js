@@ -86,7 +86,12 @@ $(function() {
 
         notice = (function() {
             return window.alert;
-        })();
+        })(),
+
+        wordLimit = function(word, limit) {
+            limit = limit || 15;
+            return word.length > limit ? (word.substr(0, limit - 3) + '...') : word;
+        };
 
     start();
 
@@ -105,7 +110,7 @@ $(function() {
 
     function createFileMenu() {
         var menus = [{
-            label: '新建 (Ctrl + N)',
+            label: '新建',
             click: newFile
         }, {
             divider: true
@@ -119,16 +124,24 @@ $(function() {
                 acceptFiles.push(p.fileExtension);
             }
         });
-        menus = menus.concat([{
-            label: '导入本地文件',
-            click: function() {
+
+        function importUseEncoding(encoding) {
+            return function() {
                 $('<input type="file" />')
                     .attr('accept', acceptFiles.join(','))
                     .on('change', function(e) {
                         e = e.originalEvent;
-                        minder.importFile(e.target.files[0]);
+                        minder.importFile(e.target.files[0], encoding);
                     }).click();
-            }
+            };
+        }
+
+        menus = menus.concat([{
+            label: '导入...',
+            click: importUseEncoding('utf8')
+        }, {
+            label: '以 GBK 编码导入...',
+            click: importUseEncoding('gbk')
         }, {
             divider: true
         }]);
@@ -150,7 +163,7 @@ $(function() {
         menus = menus.concat([{
             divider: true,
         }, {
-            label: '登陆',
+            label: '请登录',
             click: login,
             id: 'net-hint-buttom'
         }, {
@@ -174,7 +187,9 @@ $(function() {
 
         $file_btn = $('<button id="file-btn">文件</button>').addClass('dropdown').appendTo($menu);
 
-        $file_menu = $.kmuidropmenu({ data: createFileMenu() })
+        $file_menu = $.kmuidropmenu({
+            data: createFileMenu()
+        })
             .addClass('file-menu')
             .appendTo('body');
 
@@ -231,6 +246,10 @@ $(function() {
         $copy_url_btn = $('#copy-share-url');
 
         $share_dialog.mousedown(function(e) {
+            e.stopPropagation();
+        });
+
+        $('body').delegate('#global-zeroclipboard-html-bridge', 'mousedown', function(e) {
             e.stopPropagation();
         });
 
@@ -333,19 +352,14 @@ $(function() {
     function setRemotePath(path, saved) {
         var filename;
         remotePath = path;
-        if (remotePath) {
-            filename = getFileName(remotePath);
-            if (!saved) {
-                filename = '* ' + filename;
-            }
-            $title.text(filename);
-        } else if (currentAccount) {
-            $title.text('* ' + minder.getMinderTitle());
-        } else {
-            $title.text(filename || minder.getMinderTitle());
-        }
 
-        document.title = [filename || minder.getMinderTitle(), titleSuffix].join(' - ');
+        filename = remotePath ? getFileName(remotePath) : minder.getMinderTitle();
+
+        if (!saved) filename = '* ' + filename;
+
+        $title.text(filename)
+
+        document.title = [filename, titleSuffix].join(' - ');
     }
 
     // 检查是否在 Cookie 中登录过了
@@ -432,7 +446,7 @@ $(function() {
                     addToRecentMenu(result.list.filter(function(file) {
                         return getFileFormat(file.path) in fileLoader;
                     }));
-                    syncPreference(result.list);
+                    //syncPreference(result.list);
                 }
             },
             error: loadUserFiles
@@ -712,13 +726,26 @@ $(function() {
         minder.execCommand('camera', minder.getRoot(), 300);
     }
 
-    function generateRemotePath() {
-        var filename = window.prompt("请输入文件名: ", minder.getMinderTitle()) || minder.getMinderTitle();
+    function generateRemotePath(filename) {
         return '/apps/kityminder/' + filename + '.km';
     }
 
     function save() {
-        if (!currentAccount || save.busy) return;
+        if (!currentAccount) return alert('请先登录！');
+        if (save.busy) {
+            return;
+        }
+
+        var uploadPath, filename;
+
+        // 确定上传文件名
+        if (!remotePath) {
+            filename = window.prompt('请输入文件名: ', minder.getMinderTitle());
+            if (!filename) return;
+            uploadPath = generateRemotePath(filename);
+        } else {
+            uploadPath = remotePath;
+        }
 
         save.busy = true;
 
@@ -745,7 +772,7 @@ $(function() {
                 upload.tryCount = 0;
                 return;
             }
-            var uploadPath = remotePath || generateRemotePath();
+
             $title.loading('正在保存 “' + getFileName(uploadPath) + '” ...');
             sto.uploadTextFile(data, uploadPath, {
                 ondup: remotePath ? sto.constant.ONDUP_OVERWRITE : sto.constant.ONDUP_NEWCOPY,
@@ -840,16 +867,20 @@ $(function() {
                 switch (keyCode) {
                     //保存
                     case KM.keymap.s:
+                        e.preventDefault();
                         if (e.shiftKey) {
                             share();
                         } else {
-                            save();
+                            setTimeout(function() {
+                                save();
+                            });
                         }
-                        e.preventDefault();
                         break;
                     case KM.keymap.n:
-                        newFile();
                         e.preventDefault();
+                        setTimeout(function() {
+                            newFile();
+                        });
                         break;
                 }
             }
@@ -861,9 +892,7 @@ $(function() {
         minder.on('contentchange', function() {
             if (!watchingChanges || lastContent == minder.exportData('json')) return;
             var current = draftManager.save();
-            if (currentAccount) {
-                setRemotePath(remotePath, current.sync);
-            }
+            setRemotePath(remotePath, current.sync);
             lastContent = minder.exportData('json');
         });
     }
@@ -882,7 +911,7 @@ $(function() {
             $draft_menu.append('<li disabled="disabled" class="current-draft kmui-combobox-item kmui-combobox-item-disabled kmui-combobox-checked">' +
                 '<span class="kmui-combobox-icon"></span>' +
                 '<label class="kmui-combobox-item-label">' +
-                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name +
+                '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + wordLimit(draft.name) +
                 '</label>' +
                 '</li>');
             $draft_menu.append('<li class="kmui-divider"></li>');
@@ -894,7 +923,7 @@ $(function() {
         while (list.length) {
             draft = list.shift();
             $draft = $('<li class="draft-item">' +
-                '<a href="#">' + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + draft.name + '</a><a class="delete" title="删除该草稿"></a></li>');
+                '<a href="#">' + '<span class="update-time">' + getFriendlyTimeSpan(+new Date(draft.update), +new Date()) + '</span>' + wordLimit(draft.name) + '</a><a class="delete" title="删除该草稿"></a></li>');
             $draft.data('draft-index', index++);
             $draft.appendTo($draft_menu);
         }
