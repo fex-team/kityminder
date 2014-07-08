@@ -10,6 +10,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         }
         this.index = 0;
         this.isTypeText = false;
+        this.lastMinderNode = null;
         return this;
     },
     constructor: function(km,sel,range) {
@@ -20,12 +21,19 @@ Minder.Receiver = kity.createClass('Receiver', {
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
         this.container = _div;
-        if (browser.ie && browser.version == 11 || browser.ipad) {
+        if(browser.ipad) {
             utils.listen(this.container, 'keydown keypress keyup input', function(e) {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
+                if(e.type == 'keyup'){
+                    if(me.km.getStatus() == 'normal'){
+                        me.km.fire( 'keyup', e);
+                    }
+
+                }
+
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;clip:rect(1em 1em 1em 1em);'); //
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug$/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
         this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -124,7 +132,9 @@ Minder.Receiver = kity.createClass('Receiver', {
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
+
             if (text.length === 0) {
+
                 me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
             }else {
@@ -348,6 +358,13 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap.Backspace:
                     case keymap.Spacebar:
+                        if(browser.ipad){
+                            if(this.selection.isHide()){
+                                this.km.setStatus('normal');
+                                return;
+                            }
+
+                        }
                         setTextToContainer(keyCode);
                         return;
                 }
@@ -404,7 +421,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug$/.test(location.href)?30:0)) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;
@@ -581,5 +598,8 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     isReady:function(){
         return this._ready;
+    },
+    focus:function(){
+        this.container.focus();
     }
 });

@@ -106,6 +106,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         lastEvtPosition = e.getPosition(this.getRenderContainer());
 
                         if(selectionReadyShow){
+
                             textShape.setStyle('cursor', 'text');
                             sel.clearBaseOffset();
                             receiver.updateSelection();
@@ -156,7 +157,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
 
                 if (node && !selectionReadyShow && receiver.isReady()) {
-                    sel.collapse();
+
+                    sel.collapse(true);
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
@@ -165,6 +167,12 @@ KityMinder.registerModule('TextEditModule', function() {
                     node.getTextShape().setStyle('cursor', 'text');
 
                     receiver.updateSelection();
+
+                    //必须再次focus，要不不能呼出键盘
+                    if(browser.ipad){
+                        receiver.focus();
+                    }
+
                     setTimeout(function() {
                         sel.setShow();
                     }, 200);

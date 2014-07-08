@@ -182,6 +182,34 @@ KityMinder.registerModule("KeyboardModule", function() {
                         break;
                 }
 
+            },
+            'normal.keyup':function(e){
+                if(browser.ipad){
+                    var keys = KityMinder.keymap;
+                    var node = e.getTargetNode();
+                    var lang = this.getLang();
+
+                    if (this.receiver) this.receiver.keydownNode = node;
+
+                    var keyEvent = e.originEvent;
+
+                    if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+
+                    switch (keyEvent.keyCode) {
+                        case keys.Enter:
+                            this.execCommand('AppendSiblingNode', lang.topic);
+                            e.preventDefault();
+                            break;
+
+                        case keys.Backspace:
+                        case keys.Del:
+                            e.preventDefault();
+                            this.execCommand('RemoveNode');
+                            break;
+
+                    }
+                }
+
             }
         }
     };
