@@ -277,6 +277,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     this.updateContainerRangeBySel();
 
                     this.updateSelectionShow();
+
                     e.preventDefault();
                     return;
                 }else if(keymap.direction[keyCode]){
@@ -378,7 +379,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     setTextToContainer(keyCode);
                     return;
                 }
-                setTextToContainer(keyCode);
+                if(this.selection.baseOffset === null)
+                    setTextToContainer(keyCode);
                 return true;
         }
 
