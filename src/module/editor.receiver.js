@@ -20,7 +20,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
         this.container = _div;
-        if (browser.ie && browser.version == 11 || browser.ipad) {
+        if(browser.ipad) {
             utils.listen(this.container, 'keydown keypress keyup input', function(e) {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
                 if(e.type == 'keyup'){
@@ -131,7 +131,9 @@ Minder.Receiver = kity.createClass('Receiver', {
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
+
             if (text.length === 0) {
+
                 me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
             }else {
