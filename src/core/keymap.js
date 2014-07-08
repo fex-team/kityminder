@@ -96,5 +96,6 @@ var keymap = KityMinder.keymap = (function(origin) {
         40: 1,
         13: 1,
         9: 1
-    }
+    },
+    'a':65
 });
