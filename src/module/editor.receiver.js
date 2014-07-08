@@ -233,10 +233,12 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.F2:
 //                    case keymap.Del:
 //                    case keymap.Backspace:
+
                         if(this.selection.isHide()){
                             this.km.setStatus('normal');
+                            return;
                         }
-                        return;
+
                 }
                 //针对按住shift+方向键进行处理
                 if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
@@ -317,15 +319,32 @@ Minder.Receiver = kity.createClass('Receiver', {
                             me.range.setStart(me.container.firstChild, index).collapse(true).select();
                             setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
                     //剪切
                     if (keyCode == keymap.x) {
                         setTimeout(function() {
                             setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
-                    return;
+                    //全选键位监控
+                    if (keymap.a == keyCode) {
+                        if(me.selection.isHide()){
+                            return;
+                        }else{
+                            me.selection
+                                .setStartOffset(0)
+                                .setEndOffset(me.textShape.getContent().length);
+                            me.updateContainerRangeBySel().updateSelectionShow();
+                            return;
+                        }
+                    }
+
+
                 }
+
+
                 //针对不能连续删除做处理
                 if(keymap.Del || keymap.Backspace)
                     setTextToContainer(keyCode);
@@ -379,7 +398,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     setTextToContainer(keyCode);
                     return;
                 }
-                if(this.selection.baseOffset === null)
+                if(this.selection.baseOffset === null && this.selection.collapsed)
                     setTextToContainer(keyCode);
                 return true;
         }
@@ -588,7 +607,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateContainerRangeBySel:function(){
-        this.updateRange(this.range);
+       return this.updateRange(this.range);
     },
     setIndex: function(index) {
         this.index = index;

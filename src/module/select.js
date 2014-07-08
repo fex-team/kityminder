@@ -146,6 +146,21 @@ KityMinder.registerModule('Select', function() {
 
                 // 清理一下选择状态
                 marqueeActivator.selectEnd(e);
+            },
+            //全选操作
+            'normal.keydown inputready.keydown':function(e){
+
+
+                var keyEvent = e.originEvent;
+
+                if ( (keyEvent.ctrlKey || keyEvent.metaKey) && keymap.a == keyEvent.keyCode){
+                    var selectedNodes = [];
+
+                    this.getRoot().traverse(function(node){
+                        selectedNodes.push(node);
+                    });
+                    this.select(selectedNodes,true);
+                }
             }
         }
     };
