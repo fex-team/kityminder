@@ -300,7 +300,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
             function area(box) {
                 return box.width * box.height;
             }
-            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox));
+            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox), 1e4);
         });
         this._renderDropHint(this._dropSucceedTarget);
         return !!this._dropSucceedTarget;
@@ -321,7 +321,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
     _renderOrderHint: function(hint) {
         this._orderHinter.render(hint);
     },
-    preventDragMove:function(){
+    preventDragMove: function() {
         this._startPosition = null;
     }
 });
@@ -349,8 +349,8 @@ KityMinder.registerModule('DragTree', function() {
                 e.stopPropagation();
                 this.fire('contentchange');
             },
-            'statuschange':function(e){
-                if(e.lastStatus == 'textedit' && e.currentStatus == 'normal'){
+            'statuschange': function(e) {
+                if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {
                     dragger.preventDragMove();
                 }
             }
