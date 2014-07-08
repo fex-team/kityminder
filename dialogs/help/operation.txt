@@ -1,0 +1,14 @@
+## 节点操作
+
+`Enter`: 插入兄弟节点
+`Tab` or `Insert`: 插入子节点
+`Delete` or `BackSpace`: 删除节点
+`F2`: 编辑节点
+`Alt` + `Up`: 向上排序
+`Alt` + `Down`: 向下排序
+`/`: 展开/收起节点
+
+## 视野控制
+
+`RMouseDown` + `Drag`: 拖动视野
+`DoubleClick`: 居中根节点
