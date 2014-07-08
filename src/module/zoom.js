@@ -22,7 +22,7 @@ KityMinder.registerModule('Zoom', function() {
                 y: viewport.center.y
             };
             paper.setViewPort(viewport);
-            fixPaperCTM(paper);
+            if (value == 100) fixPaperCTM(paper);
         }
     });
 
@@ -43,9 +43,7 @@ KityMinder.registerModule('Zoom', function() {
         if (timeline) {
             timeline.pause();
         }
-        timeline = animator.start(minder, 100, 'ease', function() {
-            minder.refresh(100);
-        });
+        timeline = animator.start(minder, 300, 'easeInOutSine');
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
