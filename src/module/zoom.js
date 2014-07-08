@@ -3,7 +3,7 @@ KityMinder.registerModule('Zoom', function() {
 
     var timeline;
 
-    me.setDefaultOptions('zoom', [50, 80, 100, 120, 150, 200]);
+    me.setDefaultOptions('zoom', [10, 20, 30, 50, 80, 100, 120, 150, 200]);
 
     function fixPaperCTM(paper) {
         var node = paper.shapeNode;

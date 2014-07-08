@@ -49,7 +49,7 @@ KityMinder.registerLayout('bottom', kity.createClass({
                 if (i > 0) {
                     x += children[i].getStyle('margin-left');
                 }
-                y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
+                y = nodeContentBox.bottom - childContentBox.top + node.getStyle('margin-bottom') + child.getStyle('margin-top');
                 children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
                 x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
             }

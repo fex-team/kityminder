@@ -24,8 +24,8 @@ KityMinder.registerModule('image', function() {
         }
 
         return {
-            width: width,
-            height: height
+            width: width | 0,
+            height: height | 0
         };
     }
 
@@ -118,14 +118,17 @@ KityMinder.registerModule('image', function() {
 
             if (!size) return;
 
+            var x = box.cx - size.width / 2;
+            var y = box.y - size.height - spaceTop;
+
             image
                 .setUrl(url)
-                .setX(box.cx - size.width / 2)
-                .setY(box.y - size.height - spaceTop)
-                .setWidth(size.width)
-                .setHeight(size.height);
+                .setX(x | 0)
+                .setY(y | 0)
+                .setWidth(size.width | 0)
+                .setHeight(size.height | 0);
 
-            return new kity.Box(image.getX(), image.getY(), size.width, size.height);
+            return new kity.Box(x | 0, y | 0, size.width | 0, size.height | 0);
         }
     });
 

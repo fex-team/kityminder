@@ -228,9 +228,6 @@ KityMinder.registerModule('Expand', function() {
                     r.update(r.getRenderShape(), e.node);
                 }
             },
-            'preimport': function(e) {
-                var json = e.json;
-            },
             'beforerender': function(e) {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
