@@ -50,7 +50,7 @@
             'drop-hint-color': hsl(h, 26, 35),
             'drop-hint-width': 5,
 
-            'order-hint-area-color': hsl(h, 100, 95).set('a', 0.5),
+            'order-hint-area-color': hsl(h, 100, 30).set('a', 0.5),
             'order-hint-path-color': hsl(h, 100, 25),
             'order-hint-path-width': 1,
 

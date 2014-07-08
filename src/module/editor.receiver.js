@@ -216,6 +216,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.right:
                     case keymap.up:
                     case keymap.down:
+                    case keymap.Backspace:
+                    case keymap.Del:
                         if(this.selection.isHide()){
                             restoreTextContent();
                             this.km.setStatus('normal');
