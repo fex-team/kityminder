@@ -215,7 +215,8 @@ KityMinder.registerModule('TextEditModule', function() {
                     var offset = e.getPosition(this.getRenderContainer());
                     dir = offset.x > lastEvtPosition.x ? 1 : (offset.x < lastEvtPosition.x ? -1 : dir);
                     receiver.updateSelectionByMousePosition(offset, dir)
-                        .updateSelectionShow(dir);
+                        .updateSelectionShow(dir)
+                        .updateContainerRangeBySel();
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
 
