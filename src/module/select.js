@@ -98,6 +98,11 @@ KityMinder.registerModule('Select', function() {
 
     var lastDownNode = null, lastDownPosition = null;
     return {
+        'init': function() {
+            window.addEventListener('mouseup', function() {
+                marqueeActivator.selectEnd();
+            });
+        },
         'events': {
             'normal.mousedown textedit.mousedown inputready.mousedown': function(e) {
 
