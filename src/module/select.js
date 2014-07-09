@@ -81,6 +81,9 @@ KityMinder.registerModule('Select', function() {
 
                 // 应用选中范围
                 minder.select(selectedNodes, true);
+
+                // 清除多余的东西
+                window.getSelection().removeAllRanges()
             },
             selectEnd: function(e) {
                 if (startPosition) {
@@ -92,6 +95,8 @@ KityMinder.registerModule('Select', function() {
                     });
                     marqueeMode = false;
                 }
+                // 清除多余的东西
+                window.getSelection().removeAllRanges()
             }
         };
     })();
