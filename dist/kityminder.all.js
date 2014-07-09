@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-09
+ * kityminder - v1.1.3 - 2014-07-10
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -4437,8 +4437,9 @@ KityMinder.registerModule("HistoryModule", function() {
 
                 if (compareNode(srcNode, tagNode) === false) {
                     srcNode.setValue(tagNode);
-                    srcNode.render();
                 }
+                //todo，这里有性能问题，变成全部render了
+                srcNode.render();
                 if (srcNode.isSelected()) {
                     selectedNodes.push(srcNode);
                 }
@@ -4850,6 +4851,7 @@ KityMinder.registerModule('image', function() {
                     n.setData('imageSize', size);
                     n.render();
                 });
+                km.fire("saveScene");
                 km.layout(300);
             });
 
@@ -6215,6 +6217,9 @@ KityMinder.registerModule('Select', function() {
 
                 // 应用选中范围
                 minder.select(selectedNodes, true);
+
+                // 清除多余的东西
+                window.getSelection().removeAllRanges()
             },
             selectEnd: function(e) {
                 if (startPosition) {
@@ -6232,6 +6237,11 @@ KityMinder.registerModule('Select', function() {
 
     var lastDownNode = null, lastDownPosition = null;
     return {
+        'init': function() {
+            window.addEventListener('mouseup', function() {
+                marqueeActivator.selectEnd();
+            });
+        },
         'events': {
             'normal.mousedown textedit.mousedown inputready.mousedown': function(e) {
 
@@ -6426,7 +6436,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
                 //模拟光标没有准备好
                 receiver.clearReady();
-
+                //当点击空白处时，光标需要消失
+                receiver.clear();
 
             },
             'inputready.keyup':function(e){
@@ -6565,12 +6576,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-//                receiver.clear();
-//                if (this.getStatus() == 'textedit') {
-//                    this.setStatus('normal');
-//                }
                 if(sel.isShow()){
-                    receiver.updateTextOffsetData().updateSelection()
+                    receiver.updateTextOffsetData().updateSelection();
                 }
             },
             'layoutfinish':function(e){
@@ -6839,7 +6846,8 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.updateIndex();
             me.updateSelection();
             me.timer = setTimeout(function() {
-                me.selection.setShow();
+                if(me.selection.isShow())
+                    me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');

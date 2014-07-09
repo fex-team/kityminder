@@ -95,8 +95,6 @@ KityMinder.registerModule('Select', function() {
                     });
                     marqueeMode = false;
                 }
-                // 清除多余的东西
-                window.getSelection().removeAllRanges()
             }
         };
     })();
