@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-08
+ * kityminder - v1.1.3 - 2014-07-09
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -2367,6 +2367,30 @@ kity.extendClass(MinderNode, {
         return this;
     },
 
+    setVertexIn: function(p) {
+        this._vertexIn = p;
+    },
+
+    setVertexOut: function(p) {
+        this._vertexOut = p;
+    },
+
+    getVertexIn: function() {
+        return this._vertexIn || new kity.Point();
+    },
+
+    getVertexOut: function() {
+        return this._vertexOut || new kity.Point();
+    },
+
+    getLayoutVertexIn: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexIn());
+    },
+
+    getLayoutVertexOut: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexOut());
+    },
+
     getLayoutRoot: function() {
         if (this.isLayoutRoot()) {
             return this;
@@ -2547,21 +2571,27 @@ var Layout = kity.createClass('Layout', {
     },
 
     /**
-     * 工具方法：计算给点节点的子树所占的布局区域
+     * 工具方法：计算给定的节点的子树所占的布局区域
      *
      * @param  {MinderNode} nodes 需要计算的节点
      *
      * @return {Box} 计算的结果
      */
     getTreeBox: function(nodes) {
+
+        var i, node, matrix, treeBox;
+
+        var g = KityMinder.Geometry;
+
         var box = {
             x: 0,
             y: 0,
             height: 0,
             width: 0
         };
-        var g = KityMinder.Geometry;
-        var i, node, matrix, treeBox;
+
+        if (!(nodes instanceof Array)) nodes = [nodes];
+
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             matrix = node.getLayoutTransform();
@@ -2574,6 +2604,7 @@ var Layout = kity.createClass('Layout', {
 
             box = g.mergeBox(box, matrix.transformBox(treeBox));
         }
+
         return box;
     },
 
@@ -3073,9 +3104,11 @@ KityMinder.registerLayout('default', kity.createClass({
         y = -totalTreeHeight / 2;
 
         if (side != 'left') {
-            parent.setLayoutVector(new kity.Vector(nodeContentBox.right, nodeContentBox.cy));
+            parent.setVertexOut(new kity.Point(nodeContentBox.right, nodeContentBox.cy));
+            parent.setLayoutVector(new kity.Vector(1, 0));
         } else {
-            parent.setLayoutVector(new kity.Vector(nodeContentBox.left, nodeContentBox.cy));
+            parent.setVertexOut(new kity.Point(nodeContentBox.left, nodeContentBox.cy));
+            parent.setLayoutVector(new kity.Vector(-1, 0));
         }
 
         for (i = 0; i < children.length; i++) {
@@ -3230,68 +3263,77 @@ KityMinder.registerConnectProvider('default', function(node, parent, connection,
 /* global Layout:true */
 window.layoutSwitch = true;
 KityMinder.registerLayout('bottom', kity.createClass({
+
     base: Layout,
 
     doLayout: function(node) {
-        var layout = this;
 
-        if (node.isLayoutRoot()) {
-            this.doLayoutRoot(node);
-        } else {
-            this.arrange(node);
-        }
-    },
-    doLayoutRoot: function(root) {
-        this.arrange(root);
-    },
-    arrange: function(node) {
         var children = node.getChildren();
-        var _this = this;
+
         if (!children.length) {
             return false;
-        } else {
-            var totalTreeWidth = 0;
-            // 计算每个 child 的树所占的矩形区域
-            var childTreeBoxes = children.map(function(node, index, children) {
-                var box = _this.getTreeBox([node]);
-                totalTreeWidth += box.width;
-                if (index > 0) {
-                    totalTreeWidth += children[index - 1].getStyle('margin-left');
-                    totalTreeWidth += node.getStyle('margin-right');
-                }
-                return box;
-            });
-            var nodeContentBox = node.getContentBox();
-            node.setLayoutVector(new kity.Vector(nodeContentBox.cx, nodeContentBox.bottom));
-            var i, x, y, child, childTreeBox, childContentBox;
-            var transform = new kity.Matrix();
-
-            x = -totalTreeWidth / 2;
-
-            for (i = 0; i < children.length; i++) {
-                child = children[i];
-                childTreeBox = childTreeBoxes[i];
-                childContentBox = child.getContentBox();
-                if (!childContentBox.width) continue;
-                //水平方向上的布局
-                x += childTreeBox.width / 2;
-                if (i > 0) {
-                    x += children[i].getStyle('margin-left');
-                }
-                y = nodeContentBox.bottom - childContentBox.top + node.getStyle('margin-bottom') + child.getStyle('margin-top');
-                children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
-                x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
-            }
-
-            if (node.isRoot()) {
-                var branchBox = this.getBranchBox(children);
-                var dx = branchBox.cx - nodeContentBox.cx;
-
-                children.forEach(function(child) {
-                    child.getLayoutTransform().translate(-dx, 0);
-                });
-            }
         }
+
+        var me = this;
+
+        // 子树的总宽度（包含间距）
+        var totalTreeWidth = 0;
+
+        // 父亲所占的区域
+        var nodeContentBox = node.getContentBox();
+
+        // 为每一颗子树准备的迭代变量
+        var i, x0, x, y, child, childTreeBox, childContentBox, matrix;
+
+        // 先最左对齐
+        x0 = x = nodeContentBox.left;
+
+        for (i = 0; i < children.length; i++) {
+
+            child = children[i];
+            childContentBox = child.getContentBox();
+            childTreeBox = this.getTreeBox(child);
+            matrix = new kity.Matrix();
+
+            // 忽略无宽度的节点（收起的）
+            if (!childContentBox.width) continue;
+
+            if (i > 0) {
+                x += child.getStyle('margin-left');
+            }
+
+            x -= childTreeBox.left;
+
+            // arrange x
+            matrix.translate(x, 0);
+
+            // 为下个位置准备
+            x += childTreeBox.right;
+
+            if (i < children.length - 1) x += child.getStyle('margin-right');
+
+            y = nodeContentBox.bottom - childTreeBox.top +
+                node.getStyle('margin-bottom') + child.getStyle('margin-top');
+
+            matrix.translate(0, y);
+
+            // 设置结果
+            child.setLayoutTransform(matrix);
+            child.setVertexIn(new kity.Point(childContentBox.cx, childContentBox.top));
+
+        }
+
+        // 设置布局矢量为向下
+        node.setLayoutVector(new kity.Vector(0, 1));
+
+        // 设置流出顶点
+        node.setVertexOut(new kity.Point(nodeContentBox.cx, nodeContentBox.bottom));
+
+        var dx = (x - x0 - nodeContentBox.width) / 2;
+
+        children.forEach(function(child) {
+            child.getLayoutTransform().translate(-dx, 0);
+        });
     },
 
     getOrderHint: function(node) {
@@ -3327,13 +3369,14 @@ KityMinder.registerLayout('bottom', kity.createClass({
 }));
 
 KityMinder.registerConnectProvider('bottom', function(node, parent, connection) {
-    var box = node.getLayoutBox(),
-        pBox = parent.getLayoutBox();
+    var pout = parent.getLayoutVertexOut(),
+        pin = node.getLayoutVertexIn();
     var pathData = [];
-    pathData.push('M', new kity.Point(pBox.cx, pBox.bottom));
-    pathData.push('L', new kity.Point(pBox.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, box.top));
+    var r = Math.round;
+    pathData.push('M', new kity.Point(r(pout.x), pout.y));
+    pathData.push('L', new kity.Point(r(pout.x), pout.y + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(r(pin.x), pout.y + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(r(pin.x), pin.y));
     connection.setMarker(null);
     connection.setPathData(pathData);
 });
@@ -3367,9 +3410,11 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 return box;
             });
             var nodeContentBox = node.getContentBox();
-            node.setLayoutVector(new kity.Vector(0, nodeContentBox.bottom));
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
+
+            node.setVertexOut(new kity.Point(0, nodeContentBox.bottom));
+            node.setLayoutVector(new kity.Vector(0, 1));
 
             y = nodeContentBox.bottom + node.getStyle('margin-bottom');
 
@@ -3623,10 +3668,14 @@ KityMinder.registerTheme('snow', {
 
 KityMinder.registerTemplate('structure', {
 
-    name: '组织结构图',
+    getLayout: function(node) {
+        return 'bottom';
+    }
+});
+
+KityMinder.registerTemplate('filetree', {
 
     getLayout: function(node) {
-
         if (node.getData('layout')) return node.getData('layout');
         if (node.isRoot()) return 'bottom';
 
@@ -4006,15 +4055,10 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var x, y;
+            var vector = node.getLayoutVector().normalize(expander.radius + node.getStyle('stroke-width'));
+            var position = node.getVertexOut().offset(vector);
 
-            var pos = node.getLayoutVector();
-
-            pos = new kity.Vector(pos.x, pos.y);
-
-            pos = pos.normalize(pos.length() + expander.radius + 1);
-
-            this.expander.setTranslate(pos);
+            this.expander.setTranslate(position);
         }
     });
     return {
@@ -6474,7 +6518,8 @@ KityMinder.registerModule('TextEditModule', function() {
                     var offset = e.getPosition(this.getRenderContainer());
                     dir = offset.x > lastEvtPosition.x ? 1 : (offset.x < lastEvtPosition.x ? -1 : dir);
                     receiver.updateSelectionByMousePosition(offset, dir)
-                        .updateSelectionShow(dir);
+                        .updateSelectionShow(dir)
+                        .updateContainerRangeBySel();
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
 
@@ -6658,7 +6703,7 @@ Minder.Receiver = kity.createClass('Receiver', {
 
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug$/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug#?/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
         this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
@@ -6750,20 +6795,25 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             var text = me.container.textContent.replace(/[\u200b\t\r\n]/g, '');
 
-            if (me.textShape.getOpacity() === 0) {
-                me.textShape.setOpacity(1);
-            }
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
 
-            if (text.length === 0) {
 
+            //如果接受框已经空了，并且已经添加了占位的a了就什么都不做了
+            if(text.length === 0 && me.textShape.getOpacity() === 0){
+                return;
+            }
+
+            if (text.length === 0) {
                 me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
             }else {
                 me.minderNode.setText(text);
+                if (me.textShape.getOpacity() === 0) {
+                    me.textShape.setOpacity(1);
+                }
             }
 
 
@@ -7073,7 +7123,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug$/.test(location.href)?30:0)) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug#?/.test(location.href)?30:0)) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;

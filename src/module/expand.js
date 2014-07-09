@@ -205,15 +205,10 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var x, y;
+            var vector = node.getLayoutVector().normalize(expander.radius + node.getStyle('stroke-width'));
+            var position = node.getVertexOut().offset(vector);
 
-            var pos = node.getLayoutVector();
-
-            pos = new kity.Vector(pos.x, pos.y);
-
-            pos = pos.normalize(pos.length() + expander.radius + 1);
-
-            this.expander.setTranslate(pos);
+            this.expander.setTranslate(position);
         }
     });
     return {

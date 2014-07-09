@@ -1,7 +1,8 @@
 KityMinder.LANG['zh-cn'] = {
     'template': {
         'default': '思维导图',
-        'structure': '组织结构图'
+        'structure': '组织结构图',
+        'filetree': '文件夹'
     },
     'theme': {
         'classic': '脑图经典',
