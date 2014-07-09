@@ -46,6 +46,7 @@ KityMinder.registerModule('image', function() {
                     n.setData('imageSize', size);
                     n.render();
                 });
+                km.fire("saveScene");
                 km.layout(300);
             });
 
