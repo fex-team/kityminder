@@ -102,8 +102,9 @@ KityMinder.registerModule("HistoryModule", function() {
 
                 if (compareNode(srcNode, tagNode) === false) {
                     srcNode.setValue(tagNode);
-                    srcNode.render();
                 }
+                //todo，这里有性能问题，变成全部render了
+                srcNode.render();
                 if (srcNode.isSelected()) {
                     selectedNodes.push(srcNode);
                 }
