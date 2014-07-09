@@ -123,7 +123,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
                 //模拟光标没有准备好
                 receiver.clearReady();
-
+                //当点击空白处时，光标需要消失
+                receiver.clear();
 
             },
             'inputready.keyup':function(e){
@@ -262,12 +263,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-//                receiver.clear();
-//                if (this.getStatus() == 'textedit') {
-//                    this.setStatus('normal');
-//                }
                 if(sel.isShow()){
-                    receiver.updateTextOffsetData().updateSelection()
+                    receiver.updateTextOffsetData().updateSelection();
                 }
             },
             'layoutfinish':function(e){

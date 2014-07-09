@@ -171,7 +171,8 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.updateIndex();
             me.updateSelection();
             me.timer = setTimeout(function() {
-                me.selection.setShow();
+                if(me.selection.isShow())
+                    me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');
