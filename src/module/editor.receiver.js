@@ -127,20 +127,25 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             var text = me.container.textContent.replace(/[\u200b\t\r\n]/g, '');
 
-            if (me.textShape.getOpacity() === 0) {
-                me.textShape.setOpacity(1);
-            }
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
 
-            if (text.length === 0) {
 
+            //如果接受框已经空了，并且已经添加了占位的a了就什么都不做了
+            if(text.length === 0 && me.textShape.getOpacity() === 0){
+                return;
+            }
+
+            if (text.length === 0) {
                 me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
             }else {
                 me.minderNode.setText(text);
+                if (me.textShape.getOpacity() === 0) {
+                    me.textShape.setOpacity(1);
+                }
             }
 
 
