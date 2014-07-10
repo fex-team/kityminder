@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kity - v2.0.0 - 2014-07-01
+ * kity - v2.0.0 - 2014-07-08
  * https://github.com/fex-team/kity
  * GitHub: https://github.com/fex-team/kity.git 
  * Copyright (c) 2014 Baidu FEX; Licensed BSD
@@ -2984,7 +2984,7 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
      *     转换后的 PathSegment，每一段都是 'C'
      */
     g.pathToCurve = cacher(function(path) {
-        var i, command, param;
+        var i, j, command, param;
         var initPoint, currentPoint, endPoint, shouldClose, lastControlPoint, aussumedControlPoint;
         var controlPoint1, controlPoint2;
         var res = [];
@@ -3054,12 +3054,21 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
 
               case "A":
                 param = a2c.apply(null, currentPoint.concat(param));
-                controlPoint1 = param.slice(0, 2);
-                controlPoint2 = param.slice(2, 4);
+                j = 0;
+                while (j in param) {
+                    controlPoint1 = param.slice(j, j + 2);
+                    controlPoint2 = param.slice(j + 2, j + 4);
+                    endPoint = param.slice(j + 4, j + 6);
+                    // 写入当前一段曲线
+                    res.push([ "C" ].concat(controlPoint1).concat(controlPoint2).concat(endPoint));
+                    j += 6;
+                }
                 break;
             }
-            // 写入当前一段曲线
-            res.push([ "C" ].concat(controlPoint1).concat(controlPoint2).concat(endPoint));
+            if (command != "A") {
+                // 写入当前一段曲线
+                res.push([ "C" ].concat(controlPoint1).concat(controlPoint2).concat(endPoint));
+            }
             // 为下次循环准备当前位置
             currentPoint = endPoint;
             // 二次贝塞尔曲线自己已经记录了上个控制点的位置，其它的记录控制点 2 的位置
@@ -5931,6 +5940,7 @@ define("graphic/textcontent", [ "graphic/shape", "graphic/svg", "core/utils", "g
             // call shape constructor
             this.callBase(nodeType);
             this.shapeNode = this.shapeNode || this.node;
+            this.shapeNode.setAttribute("text-rendering", "geometricPrecision");
         },
         clearContent: function() {
             while (this.shapeNode.firstChild) {

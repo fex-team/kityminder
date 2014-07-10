@@ -81,6 +81,9 @@ KityMinder.registerModule('Select', function() {
 
                 // 应用选中范围
                 minder.select(selectedNodes, true);
+
+                // 清除多余的东西
+                window.getSelection().removeAllRanges()
             },
             selectEnd: function(e) {
                 if (startPosition) {
@@ -98,6 +101,11 @@ KityMinder.registerModule('Select', function() {
 
     var lastDownNode = null, lastDownPosition = null;
     return {
+        'init': function() {
+            window.addEventListener('mouseup', function() {
+                marqueeActivator.selectEnd();
+            });
+        },
         'events': {
             'normal.mousedown textedit.mousedown inputready.mousedown': function(e) {
 
@@ -146,6 +154,22 @@ KityMinder.registerModule('Select', function() {
 
                 // 清理一下选择状态
                 marqueeActivator.selectEnd(e);
+            },
+            //全选操作
+            'normal.keydown inputready.keydown':function(e){
+
+
+                var keyEvent = e.originEvent;
+
+                if ( (keyEvent.ctrlKey || keyEvent.metaKey) && keymap.a == keyEvent.keyCode){
+                    var selectedNodes = [];
+
+                    this.getRoot().traverse(function(node){
+                        selectedNodes.push(node);
+                    });
+                    this.select(selectedNodes,true);
+                    e.preventDefault();
+                }
             }
         }
     };

@@ -117,8 +117,7 @@ KityMinder.registerModule('Expand', function() {
     var ExpandNodeCommand = kity.createClass('ExpandNodeCommand', {
         base: Command,
         execute: function(km) {
-            var nodes = km.getSelectedNodes();
-            if (!nodes.length) nodes.push(km.getRoot());
+            var nodes = km.getRoot().getChildren();
             nodes.forEach(function(node) {
                 node.expand(EXPAND_POLICY.DEEP_TO_LEAF);
             });
@@ -163,6 +162,10 @@ KityMinder.registerModule('Expand', function() {
                 e.stopPropagation();
                 e.preventDefault();
             });
+            this.on('dblclick click mouseup', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
         },
 
         setState: function(state) {
@@ -202,22 +205,13 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var x, y;
+            var vector = node.getLayoutVector().normalize(expander.radius + node.getStyle('stroke-width'));
+            var position = node.getVertexOut().offset(vector);
 
-            var pos = node.getLayoutVector();
-
-            pos = new kity.Vector(pos.x, pos.y);
-
-            pos = pos.normalize(pos.length() + expander.radius + 1);
-
-            this.expander.setTranslate(pos);
+            this.expander.setTranslate(position);
         }
     });
     return {
-        addShortcutKeys: {
-            'ExpandNode': 'ctrl+/', //expand
-            'CollapseNode': 'ctrl+.' //collapse
-        },
         commands: {
             'ExpandNode': ExpandNodeCommand,
             'CollapseNode': CollapseNodeCommand
@@ -229,14 +223,23 @@ KityMinder.registerModule('Expand', function() {
                     r.update(r.getRenderShape(), e.node);
                 }
             },
-            'preimport': function(e) {
-                var json = e.json;
-            },
             'beforerender': function(e) {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
+            },
+            'normal.keydown': function(e) {
+                if (this.getStatus() == 'textedit') return;
+                if (e.originEvent.keyCode == keymap['/']) {
+                    var expanded = this.getSelectedNode().isExpanded();
+                    this.getSelectedNodes().forEach(function(node) {
+                        if (expanded) node.collapse();
+                        else node.expand();
+                    });
+                    e.preventDefault();
+                    e.stopPropagationImmediately();
+                }
             }
         },
         renderers: {

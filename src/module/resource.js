@@ -202,9 +202,9 @@ KityMinder.registerModule('Resource', function() {
 
             rect = this.rect;
             rect.setPosition(0, box.y - paddingY);
-            rect.setSize(
-                this.width = box.width + paddingX * 2,
-                this.height = box.height + paddingY * 2);
+            this.width = Math.round(box.width + paddingX * 2);
+            this.height = Math.round(box.height + paddingY * 2);
+            rect.setSize(this.width, this.height);
             rect.fill(color);
         }
     });
@@ -244,7 +244,7 @@ KityMinder.registerModule('Resource', function() {
                 }
                 overlay.setVisible(true);
                 overlay.setValue(resource[i], minder.getResourceColor(resource[i]));
-                overlay.setTranslate(x, 0);
+                overlay.setTranslate(x, -1);
 
                 x += overlay.width;
             }
@@ -255,7 +255,7 @@ KityMinder.registerModule('Resource', function() {
 
             return {
                 x: box.right,
-                y: -overlays[0].height / 2,
+                y: Math.round(-overlays[0].height / 2),
                 width: x,
                 height: overlays[0].height
             };

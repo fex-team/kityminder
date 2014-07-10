@@ -1,68 +1,77 @@
 /* global Layout:true */
 window.layoutSwitch = true;
 KityMinder.registerLayout('bottom', kity.createClass({
+
     base: Layout,
 
     doLayout: function(node) {
-        var layout = this;
 
-        if (node.isLayoutRoot()) {
-            this.doLayoutRoot(node);
-        } else {
-            this.arrange(node);
-        }
-    },
-    doLayoutRoot: function(root) {
-        this.arrange(root);
-    },
-    arrange: function(node) {
         var children = node.getChildren();
-        var _this = this;
+
         if (!children.length) {
             return false;
-        } else {
-            var totalTreeWidth = 0;
-            // 计算每个 child 的树所占的矩形区域
-            var childTreeBoxes = children.map(function(node, index, children) {
-                var box = _this.getTreeBox([node]);
-                totalTreeWidth += box.width;
-                if (index > 0) {
-                    totalTreeWidth += children[index - 1].getStyle('margin-left');
-                    totalTreeWidth += node.getStyle('margin-right');
-                }
-                return box;
-            });
-            var nodeContentBox = node.getContentBox();
-            node.setLayoutVector(new kity.Vector(nodeContentBox.cx, nodeContentBox.bottom));
-            var i, x, y, child, childTreeBox, childContentBox;
-            var transform = new kity.Matrix();
-
-            x = -totalTreeWidth / 2;
-
-            for (i = 0; i < children.length; i++) {
-                child = children[i];
-                childTreeBox = childTreeBoxes[i];
-                childContentBox = child.getContentBox();
-                if (!childContentBox.width) continue;
-                //水平方向上的布局
-                x += childTreeBox.width / 2;
-                if (i > 0) {
-                    x += children[i].getStyle('margin-left');
-                }
-                y = nodeContentBox.height + node.getStyle('margin-bottom') + children[i].getStyle('margin-top');
-                children[i].setLayoutTransform(new kity.Matrix().translate(x, y));
-                x += childTreeBox.width / 2 + children[i].getStyle('margin-right');
-            }
-
-            if (node.isRoot()) {
-                var branchBox = this.getBranchBox(children);
-                var dx = branchBox.cx - nodeContentBox.cx;
-
-                children.forEach(function(child) {
-                    child.getLayoutTransform().translate(-dx, 0);
-                });
-            }
         }
+
+        var me = this;
+
+        // 子树的总宽度（包含间距）
+        var totalTreeWidth = 0;
+
+        // 父亲所占的区域
+        var nodeContentBox = node.getContentBox();
+
+        // 为每一颗子树准备的迭代变量
+        var i, x0, x, y, child, childTreeBox, childContentBox, matrix;
+
+        // 先最左对齐
+        x0 = x = nodeContentBox.left;
+
+        for (i = 0; i < children.length; i++) {
+
+            child = children[i];
+            childContentBox = child.getContentBox();
+            childTreeBox = this.getTreeBox(child);
+            matrix = new kity.Matrix();
+
+            // 忽略无宽度的节点（收起的）
+            if (!childContentBox.width) continue;
+
+            if (i > 0) {
+                x += child.getStyle('margin-left');
+            }
+
+            x -= childTreeBox.left;
+
+            // arrange x
+            matrix.translate(x, 0);
+
+            // 为下个位置准备
+            x += childTreeBox.right;
+
+            if (i < children.length - 1) x += child.getStyle('margin-right');
+
+            y = nodeContentBox.bottom - childTreeBox.top +
+                node.getStyle('margin-bottom') + child.getStyle('margin-top');
+
+            matrix.translate(0, y);
+
+            // 设置结果
+            child.setLayoutTransform(matrix);
+            child.setVertexIn(new kity.Point(childContentBox.cx, childContentBox.top));
+
+        }
+
+        // 设置布局矢量为向下
+        node.setLayoutVector(new kity.Vector(0, 1));
+
+        // 设置流出顶点
+        node.setVertexOut(new kity.Point(nodeContentBox.cx, nodeContentBox.bottom));
+
+        var dx = (x - x0 - nodeContentBox.width) / 2;
+
+        children.forEach(function(child) {
+            child.getLayoutTransform().translate(-dx, 0);
+        });
     },
 
     getOrderHint: function(node) {
@@ -98,13 +107,14 @@ KityMinder.registerLayout('bottom', kity.createClass({
 }));
 
 KityMinder.registerConnectProvider('bottom', function(node, parent, connection) {
-    var box = node.getLayoutBox(),
-        pBox = parent.getLayoutBox();
+    var pout = parent.getLayoutVertexOut(),
+        pin = node.getLayoutVertexIn();
     var pathData = [];
-    pathData.push('M', new kity.Point(pBox.cx, pBox.bottom));
-    pathData.push('L', new kity.Point(pBox.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, pBox.bottom + parent.getStyle('margin-bottom')));
-    pathData.push('L', new kity.Point(box.cx, box.top));
+    var r = Math.round;
+    pathData.push('M', new kity.Point(r(pout.x), pout.y));
+    pathData.push('L', new kity.Point(r(pout.x), pout.y + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(r(pin.x), pout.y + parent.getStyle('margin-bottom')));
+    pathData.push('L', new kity.Point(r(pin.x), pin.y));
     connection.setMarker(null);
     connection.setPathData(pathData);
 });

@@ -27,9 +27,11 @@ KityMinder.registerLayout('filetree', kity.createClass({
                 return box;
             });
             var nodeContentBox = node.getContentBox();
-            node.setLayoutVector(new kity.Vector(0, nodeContentBox.bottom));
             var i, x, y, child, childTreeBox, childContentBox;
             var transform = new kity.Matrix();
+
+            node.setVertexOut(new kity.Point(0, nodeContentBox.bottom));
+            node.setLayoutVector(new kity.Vector(0, 1));
 
             y = nodeContentBox.bottom + node.getStyle('margin-bottom');
 

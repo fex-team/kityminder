@@ -112,6 +112,30 @@ kity.extendClass(MinderNode, {
         return this;
     },
 
+    setVertexIn: function(p) {
+        this._vertexIn = p;
+    },
+
+    setVertexOut: function(p) {
+        this._vertexOut = p;
+    },
+
+    getVertexIn: function() {
+        return this._vertexIn || new kity.Point();
+    },
+
+    getVertexOut: function() {
+        return this._vertexOut || new kity.Point();
+    },
+
+    getLayoutVertexIn: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexIn());
+    },
+
+    getLayoutVertexOut: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexOut());
+    },
+
     getLayoutRoot: function() {
         if (this.isLayoutRoot()) {
             return this;
@@ -292,21 +316,27 @@ var Layout = kity.createClass('Layout', {
     },
 
     /**
-     * 工具方法：计算给点节点的子树所占的布局区域
+     * 工具方法：计算给定的节点的子树所占的布局区域
      *
      * @param  {MinderNode} nodes 需要计算的节点
      *
      * @return {Box} 计算的结果
      */
     getTreeBox: function(nodes) {
+
+        var i, node, matrix, treeBox;
+
+        var g = KityMinder.Geometry;
+
         var box = {
             x: 0,
             y: 0,
             height: 0,
             width: 0
         };
-        var g = KityMinder.Geometry;
-        var i, node, matrix, treeBox;
+
+        if (!(nodes instanceof Array)) nodes = [nodes];
+
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             matrix = node.getLayoutTransform();
@@ -319,6 +349,7 @@ var Layout = kity.createClass('Layout', {
 
             box = g.mergeBox(box, matrix.transformBox(treeBox));
         }
+
         return box;
     },
 

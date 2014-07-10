@@ -67,9 +67,11 @@ KityMinder.registerLayout('default', kity.createClass({
         y = -totalTreeHeight / 2;
 
         if (side != 'left') {
-            parent.setLayoutVector(new kity.Vector(nodeContentBox.right, nodeContentBox.cy));
+            parent.setVertexOut(new kity.Point(nodeContentBox.right, nodeContentBox.cy));
+            parent.setLayoutVector(new kity.Vector(1, 0));
         } else {
-            parent.setLayoutVector(new kity.Vector(nodeContentBox.left, nodeContentBox.cy));
+            parent.setVertexOut(new kity.Point(nodeContentBox.left, nodeContentBox.cy));
+            parent.setLayoutVector(new kity.Vector(-1, 0));
         }
 
         for (i = 0; i < children.length; i++) {

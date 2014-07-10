@@ -1,7 +1,8 @@
 KityMinder.LANG['zh-cn'] = {
     'template': {
         'default': '思维导图',
-        'structure': '组织结构图'
+        'structure': '组织结构图',
+        'filetree': '文件夹'
     },
     'theme': {
         'classic': '脑图经典',
@@ -35,8 +36,8 @@ KityMinder.LANG['zh-cn'] = {
         'image': '插入图片',
         'hyperlink': '插入链接',
         'unhyperlink': '删除链接',
-        'expandnode': '展开节点',
-        'collapsenode': '收起节点',
+        'expandnode': '展开到叶子',
+        'collapsenode': '收起到一级节点',
         'template': '模板',
         'theme': '皮肤'
     },

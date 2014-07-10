@@ -38,6 +38,7 @@ var DropHinter = kity.createClass('DropHinter', {
                     target.getStyle('drop-hint-color') || 'yellow',
                     target.getStyle('drop-hint-width') || 2
             );
+            this.bringTop();
         }
     }
 });
@@ -299,7 +300,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
             function area(box) {
                 return box.width * box.height;
             }
-            return intersectBox && area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox));
+            if (!intersectBox) return false;
+            // 面积判断
+            if (area(intersectBox) > 0.5 * Math.min(area(sourceBox), area(targetBox))) return true;
+            if (intersectBox.width + 1 >= Math.min(sourceBox.width, targetBox.width)) return true;
+            if (intersectBox.height + 1 >= Math.min(sourceBox.height, targetBox.height)) return true;
+            return false;
         });
         this._renderDropHint(this._dropSucceedTarget);
         return !!this._dropSucceedTarget;
@@ -320,7 +326,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
     _renderOrderHint: function(hint) {
         this._orderHinter.render(hint);
     },
-    preventDragMove:function(){
+    preventDragMove: function() {
         this._startPosition = null;
     }
 });
@@ -348,8 +354,8 @@ KityMinder.registerModule('DragTree', function() {
                 e.stopPropagation();
                 this.fire('contentchange');
             },
-            'statuschange':function(e){
-                if(e.lastStatus == 'textedit' && e.currentStatus == 'normal'){
+            'statuschange': function(e) {
+                if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {
                     dragger.preventDragMove();
                 }
             }

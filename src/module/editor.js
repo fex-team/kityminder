@@ -31,10 +31,21 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setColor(color);
 
 
-
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
+
+            if(browser.ie ){
+                var timer = setInterval(function(){
+                    var nativeRange = range.nativeSel.getRangeAt(0);
+                    if(!nativeRange || nativeRange.collapsed){
+                        range.select();
+                    }else {
+                        clearInterval(timer);
+                    }
+                });
+            }
+
 
             receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
 
@@ -108,7 +119,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         if(selectionReadyShow){
 
                             textShape.setStyle('cursor', 'text');
-                            sel.clearBaseOffset();
+
                             receiver.updateSelection();
                             setTimeout(function() {
                                 sel.setShow();
@@ -123,7 +134,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
                 //模拟光标没有准备好
                 receiver.clearReady();
-
+                //当点击空白处时，光标需要消失
+                receiver.clear();
 
             },
             'inputready.keyup':function(e){
@@ -162,7 +174,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
-                    sel.clearBaseOffset();
+
 
                     node.getTextShape().setStyle('cursor', 'text');
 
@@ -191,7 +203,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }else {
                     //当有光标时，要同步选区
                     if(!sel.collapsed){
-                        sel.clearBaseOffset();
+
                         receiver.updateContainerRangeBySel();
                     }
 
@@ -215,7 +227,8 @@ KityMinder.registerModule('TextEditModule', function() {
                     var offset = e.getPosition(this.getRenderContainer());
                     dir = offset.x > lastEvtPosition.x ? 1 : (offset.x < lastEvtPosition.x ? -1 : dir);
                     receiver.updateSelectionByMousePosition(offset, dir)
-                        .updateSelectionShow(dir);
+                        .updateSelectionShow(dir)
+                        .updateContainerRangeBySel();
 
                     lastEvtPosition = e.getPosition(this.getRenderContainer());
 
@@ -261,9 +274,8 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 }
 
-                receiver.clear();
-                if (this.getStatus() == 'textedit') {
-                    this.setStatus('normal');
+                if(sel.isShow()){
+                    receiver.updateTextOffsetData().updateSelection();
                 }
             },
             'layoutfinish':function(e){
@@ -271,12 +283,18 @@ KityMinder.registerModule('TextEditModule', function() {
                     receiver
                         .setBaseOffset()
                         .setContainerStyle();
-
                 }
             },
             'selectionclear': function() {
-                km.setStatus('normal');
-                receiver.clear();
+                var node = km.getSelectedNode();
+                if(node){
+                    inputStatusReady(node);
+                }else{
+                    km.setStatus('normal');
+                    receiver.clear();
+                }
+
+
             },
             'blur': function() {
                 receiver.clear();
@@ -288,6 +306,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
+
         }
     };
 });

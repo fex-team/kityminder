@@ -10,6 +10,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         }
         this.index = 0;
         this.isTypeText = false;
+        this.lastMinderNode = null;
         return this;
     },
     constructor: function(km,sel,range) {
@@ -19,7 +20,9 @@ Minder.Receiver = kity.createClass('Receiver', {
         var _div = document.createElement('div');
         _div.setAttribute('contenteditable', true);
         _div.className = 'km_receiver';
+
         this.container = _div;
+
         if(browser.ipad) {
             utils.listen(this.container, 'keydown keypress keyup input', function(e) {
                 me.keyboardEvents.call(me, new MinderEvent(e.type == 'keyup' ? 'beforekeyup' : e.type, e));
@@ -32,8 +35,8 @@ Minder.Receiver = kity.createClass('Receiver', {
 
             });
         }
-        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug$/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
-        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug#?/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
+        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup normal.keydown normal.keyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
         this.selection = sel;
@@ -45,7 +48,8 @@ Minder.Receiver = kity.createClass('Receiver', {
 
         var text = this.container.firstChild;
         this.range = range;
-        range.setStart(text || this.container, this.index).collapse(true);
+        range.setStart(text || this.container, this.index)
+        range.collapse(true);
         var me = this;
 
         setTimeout(function() {
@@ -110,13 +114,19 @@ Minder.Receiver = kity.createClass('Receiver', {
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer(keyCode) {
+        function setTextToContainer() {
+
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
+
+
+            if(keymap.controlKeys[keyCode]){
+                return;
+            }
             //当第一次输入内容时进行保存
-            if(me.lastMinderNode !== me.minderNode){
+            if(me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]){
                 me.km.fire('saveScene',{
                     inputStatus:true
                 });
@@ -124,20 +134,25 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             var text = me.container.textContent.replace(/[\u200b\t\r\n]/g, '');
 
-            if (me.textShape.getOpacity() === 0) {
-                me.textShape.setOpacity(1);
-            }
             //#46 修复在ff下定位到文字后方空格光标不移动问题
             if (browser.gecko && /\s$/.test(text)) {
                 text += '\u200b';
             }
 
-            if (text.length === 0) {
 
+            //如果接受框已经空了，并且已经添加了占位的a了就什么都不做了
+            if(text.length === 0 && me.textShape.getOpacity() === 0){
+                return;
+            }
+
+            if (text.length === 0) {
                 me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
                 me.minderNode.setText('a');
             }else {
                 me.minderNode.setText(text);
+                if (me.textShape.getOpacity() === 0) {
+                    me.textShape.setOpacity(1);
+                }
             }
 
 
@@ -145,7 +160,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
             //移动光标不做layout
-            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && orgEvt.ctrlKey){
+            if(!keymap.notContentChange[keyCode]){
                 clearTimeout(me.inputTextTimer);
 
                 me.inputTextTimer = setTimeout(function(){
@@ -160,14 +175,16 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             me.setBaseOffset();
             me.updateTextOffsetData();
-            me.updateIndex();
-            me.updateSelection();
+            me.updateRange();
+            me.updateSelectionByRange();
+
+            me.updateSelectionShow();
             me.timer = setTimeout(function() {
-                me.selection.setShow();
+                if(me.selection.isShow())
+                    me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');
-            me.selection.clearBaseOffset();
         }
 
         function restoreTextContent(){
@@ -191,7 +208,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     });
                 }
                 break;
-
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
 
@@ -213,99 +229,43 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.right:
                     case keymap.up:
                     case keymap.down:
+                    case keymap.Backspace:
+                    case keymap.Del:
+                    case keymap['/']:
                         if(this.selection.isHide()){
                             restoreTextContent();
                             this.km.setStatus('normal');
                             return;
                         }
-                        if(!orgEvt.shiftKey){
-                            this.selection.baseOffset =
-                            this.selection.currentEndOffset = null;
-                        }
                         break;
-                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                    case keymap.Del:
-                    case keymap.Backspace:
-                        if(this.selection.isHide()){
+                        if(this.selection.isHide() && this.km.getStatus() != 'inputready'){
                             this.km.setStatus('normal');
-                        }
-                        return;
-                }
-                //针对按住shift+方向键进行处理
-                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
-                    if(this.selection.baseOffset === null){
-                        this.selection.baseOffset = this.selection.startOffset;
-                        this.selection.currentEndOffset = this.selection.endOffset;
-                    }
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.currentEndOffset++;
-                        if(this.selection.currentEndOffset > textlength){
-                            this.selection.currentEndOffset = textlength;
+                            return;
                         }
 
-                    }else if(keymap.left == keyCode){
-                        this.selection.currentEndOffset--;
-                        if(this.selection.currentEndOffset < 0){
-                            this.selection.currentEndOffset = 0;
-                        }
-
-                    }else if(keymap.up == keyCode){
-                        this.selection.currentEndOffset = 0;
-                        this.selection.baseOffset = this.selection.endOffset;
-                    }else{
-                        this.selection.currentEndOffset = textlength;
-                    }
-
-                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
-                        this.selection.setEndOffset(this.selection.currentEndOffset);
-                        if(this.selection.currentEndOffset == this.selection.baseOffset){
-                            this.selection.setStartOffset(this.selection.baseOffset);
-                        }
-                    }else{
-                        this.selection.setStartOffset(this.selection.currentEndOffset);
-                        this.selection.setEndOffset(this.selection.baseOffset);
-                    }
-
-                    this.updateContainerRangeBySel();
-
-                    this.updateSelectionShow();
-                    e.preventDefault();
-                    return;
-                }else if(keymap.direction[keyCode]){
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
                 }
 
-                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
-
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.setStartOffset(textlength).collapse(true);
-                    }else if(keymap.left == keyCode){
-                        this.selection.setStartOffset(0).collapse(true);
-                    }else{
-                        e.preventDefault();
-                        return;
-                    }
-
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                    this.updateContainerRangeBySel();
-                    this.updateSelectionShow();
-                    e.preventDefault();
-                    return;
-                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
+
+                    //选中节点时的复制粘贴，要变成normal
+                    if(this.selection.isHide() && {
+                        86:1,
+                        88:1,
+                        67:1
+                    }[keyCode]){
+                        restoreTextContent();
+                        this.km.setStatus('normal');
+                        return;
+                    }
 
                     //粘贴
                     if (keyCode == keymap.v) {
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
                             me.container.innerHTML = utils.unhtml(me.container.textContent.replace(/[\u200b\t\r\n]/g, ''));
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
@@ -313,18 +273,21 @@ Minder.Receiver = kity.createClass('Receiver', {
                             me.range.setStart(me.container.firstChild, index).collapse(true).select();
                             setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
                     //剪切
                     if (keyCode == keymap.x) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             setTextToContainer(keyCode);
                         }, 100);
+                        return;
                     }
-                    return;
+
+
                 }
-                setTimeout(function() {
+                //针对不能连续删除做处理
+                if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                     setTextToContainer(keyCode);
-                });
                 break;
 
             case 'beforekeyup':
@@ -369,10 +332,55 @@ Minder.Receiver = kity.createClass('Receiver', {
                 }
                 if (this.isTypeText) {
                     setTextToContainer(keyCode);
+                    return;
                 }
-                if (browser.mac && browser.gecko)
+                if (browser.mac && browser.gecko){
                     setTextToContainer(keyCode);
+                    return;
+                }
+                setTextToContainer(keyCode);
+
                 return true;
+
+            case 'keyup':
+                var node = this.km.getSelectedNode();
+                if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
+                    if (node && this.km.isSingleSelect() && node.isSelected()) {
+
+                        var color = node.getStyle('text-selection-color');
+
+                        //准备输入状态
+                        var textShape = node.getTextShape();
+
+                        this.selection.setHide()
+                            .setStartOffset(0)
+                            .setEndOffset(textShape.getContent().length)
+                            .setColor(color);
+
+
+                        this
+                            .setMinderNode(node)
+                            .updateContainerRangeBySel();
+
+                        if(browser.ie ){
+                            var timer = setInterval(function(){
+                                var nativeRange = this.range.nativeSel.getRangeAt(0);
+                                if(!nativeRange || nativeRange.collapsed){
+                                    this.range.select();
+                                }else {
+                                    clearInterval(timer);
+                                }
+                            });
+                        }
+
+
+                        this.minderNode.setTmpData('_lastTextContent',this.textShape.getContent());
+
+                        this.km.setStatus('inputready');
+
+                    }
+                }
+
         }
 
     },
@@ -420,7 +428,7 @@ Minder.Receiver = kity.createClass('Receiver', {
     setContainerStyle: function() {
         var textShapeBox = this.getBaseOffset('screen');
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
-            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug$/.test(location.href)?30:0)) +
+            textShapeBox.x + 'px;top:' + (textShapeBox.y + (/\?debug#?/.test(location.href)?30:0)) +
             'px;width:' + textShapeBox.width + 'px;height:' + textShapeBox.height + 'px;';
 
         return this;
@@ -563,23 +571,29 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.updateShow(startOffset, width);
         return this;
     },
-    updateRange: function(range) {
-        range = range || this.range;
-        var node = this.container.firstChild;
-        range.setStart(node, this.selection.startOffset);
-        range.setEnd(node, this.selection.endOffset);
-        if(browser.gecko){
-            this.container.focus();
-            setTimeout(function(){
-                range.select();
-            });
-        }else{
-            range.select();
-        }
+    updateRange: function() {
+        this.range.updateNativeRange();
         return this;
     },
     updateContainerRangeBySel:function(){
-        this.updateRange(this.range);
+        var me = this;
+        var node = this.container.firstChild;
+        this.range.setStart(node, this.selection.startOffset);
+        this.range.setEnd(node, this.selection.endOffset);
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                me.range.select();
+            });
+        }else{
+            this.range.select();
+        }
+        return this;
+    },
+    updateSelectionByRange:function(){
+        this.selection.setStartOffset(this.range.getStartOffset());
+        this.selection.setEndOffset(this.range.getEndOffset());
+        return this;
     },
     setIndex: function(index) {
         this.index = index;

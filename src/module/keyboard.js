@@ -183,8 +183,8 @@ KityMinder.registerModule("KeyboardModule", function() {
                 }
 
             },
-            'normal.keyup':function(e){
-                if(browser.ipad){
+            'normal.keyup': function(e) {
+                if (browser.ipad) {
                     var keys = KityMinder.keymap;
                     var node = e.getTargetNode();
                     var lang = this.getLang();
