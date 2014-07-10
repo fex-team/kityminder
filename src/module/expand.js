@@ -229,7 +229,7 @@ KityMinder.registerModule('Expand', function() {
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
             },
-            'beforekeydown': function(e) {
+            'normal.keydown': function(e) {
                 if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
                     var expanded = this.getSelectedNode().isExpanded();

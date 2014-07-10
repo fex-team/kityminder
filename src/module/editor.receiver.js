@@ -36,7 +36,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             });
         }
         utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug#?/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
-        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup normal.keydown normal.keyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
         this.selection = sel;
@@ -120,6 +120,10 @@ Minder.Receiver = kity.createClass('Receiver', {
                 return;
             }
 
+
+            if(keymap.controlKeys[keyCode]){
+                return;
+            }
             //当第一次输入内容时进行保存
             if(me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]){
                 me.km.fire('saveScene',{
@@ -227,6 +231,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.down:
                     case keymap.Backspace:
                     case keymap.Del:
+                    case keymap['/']:
                         if(this.selection.isHide()){
                             restoreTextContent();
                             this.km.setStatus('normal');
@@ -244,23 +249,6 @@ Minder.Receiver = kity.createClass('Receiver', {
 
                 }
 
-//                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
-//
-//                    var textlength = this.textShape.getContent().length;
-//                    if(keymap.right  == keyCode ){
-//                        this.selection.setStartOffset(textlength).collapse(true);
-//                    }else if(keymap.left == keyCode){
-//                        this.selection.setStartOffset(0).collapse(true);
-//                    }else{
-//                        e.preventDefault();
-//                        return;
-//                    }
-//
-//                    this.updateContainerRangeBySel();
-//                    this.updateSelectionShow();
-//                    e.preventDefault();
-//                    return;
-//                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
@@ -356,6 +344,12 @@ Minder.Receiver = kity.createClass('Receiver', {
                 setTextToContainer(keyCode);
 
                 return true;
+
+            case 'keydown':
+
+                if(this.km.getStatus() == 'normal' && this.km.getSelectedNode() && this.selection.isHide()){
+                    this.km.setStatus('inputready');
+                }
         }
 
     },

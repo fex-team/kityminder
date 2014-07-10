@@ -69,6 +69,13 @@ var keymap = KityMinder.keymap = (function(origin) {
     'n': 78,
     '/': 191,
     '.': 190,
+    controlKeys:{
+        16:1,
+        17:1,
+        18:1,
+        20:1,
+        91:1
+    },
     'notContentChange': {
         13: 1,
         9: 1,
