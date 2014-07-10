@@ -230,6 +230,7 @@ KityMinder.registerModule('Expand', function() {
                 if (!visible) e.stopPropagation();
             },
             'beforekeydown': function(e) {
+                if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
                     var expanded = this.getSelectedNode().isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
