@@ -254,7 +254,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     //粘贴
                     if (keyCode == keymap.v) {
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
                             me.container.innerHTML = utils.unhtml(me.container.textContent.replace(/[\u200b\t\r\n]/g, ''));
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
@@ -266,28 +266,12 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     //剪切
                     if (keyCode == keymap.x) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             setTextToContainer(keyCode);
                         }, 100);
                         return;
                     }
-//                    //全选键位监控
-//                    if (keymap.a == keyCode) {
-//                        if(me.selection.isHide()){
-//                            return;
-//                        }else{
-//                            me.selection
-//                                .setStartOffset(0)
-//                                .setEndOffset(me.textShape.getContent().length);
-//                            me.updateContainerRangeBySel().updateSelectionShow();
-//                            return;
-//                        }
-//                    }
-
-
                 }
-
-
                 //针对不能连续删除做处理
                 if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                     setTextToContainer(keyCode);
@@ -545,7 +529,6 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateContainerRangeBySel:function(){
-
         var node = this.container.firstChild;
         this.range.setStart(node, this.selection.startOffset);
         this.range.setEnd(node, this.selection.endOffset);

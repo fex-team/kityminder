@@ -30,11 +30,12 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setEndOffset(textShape.getContent().length)
                 .setColor(color);
 
+
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
 
-            if(browser.ie){
+            if(browser.ie || browser.gecko){
                 var timer = setInterval(function(){
                     var nativeRange = range.nativeSel.getRangeAt(0);
                     if(!nativeRange || nativeRange.collapsed){
