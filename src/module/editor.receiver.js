@@ -329,7 +329,7 @@ Minder.Receiver = kity.createClass('Receiver', {
 
                 return true;
 
-            case 'keydown':
+            case 'keyup':
 
                 if(this.km.getStatus() == 'normal' && this.km.getSelectedNode() && this.selection.isHide()){
                     this.km.setStatus('inputready');
