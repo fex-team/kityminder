@@ -330,9 +330,42 @@ Minder.Receiver = kity.createClass('Receiver', {
                 return true;
 
             case 'keyup':
+                var node = this.km.getSelectedNode();
+                if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
+                    if (node && this.km.isSingleSelect() && node.isSelected()) {
 
-                if(this.km.getStatus() == 'normal' && this.km.getSelectedNode() && this.selection.isHide()){
-                    this.km.setStatus('inputready');
+                        var color = node.getStyle('text-selection-color');
+
+                        //准备输入状态
+                        var textShape = node.getTextShape();
+
+                        this.selection.setHide()
+                            .setStartOffset(0)
+                            .setEndOffset(textShape.getContent().length)
+                            .setColor(color);
+
+
+                        this
+                            .setMinderNode(node)
+                            .updateContainerRangeBySel();
+
+                        if(browser.ie ){
+                            var timer = setInterval(function(){
+                                var nativeRange = this.range.nativeSel.getRangeAt(0);
+                                if(!nativeRange || nativeRange.collapsed){
+                                    this.range.select();
+                                }else {
+                                    clearInterval(timer);
+                                }
+                            });
+                        }
+
+
+                        this.minderNode.setTmpData('_lastTextContent',this.textShape.getContent());
+
+                        this.km.setStatus('inputready');
+
+                    }
                 }
 
         }
