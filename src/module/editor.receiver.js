@@ -251,6 +251,17 @@ Minder.Receiver = kity.createClass('Receiver', {
 
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
+                    //选中节点时的复制粘贴，要变成normal
+                    if(this.selection.isHide() && {
+                        86:1,
+                        88:1,
+                        67:1
+                    }[keyCode]){
+                        restoreTextContent();
+                        this.km.setStatus('normal');
+                        return;
+                    }
+
                     //粘贴
                     if (keyCode == keymap.v) {
 
@@ -271,6 +282,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                         }, 100);
                         return;
                     }
+
+
                 }
                 //针对不能连续删除做处理
                 if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
