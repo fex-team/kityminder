@@ -115,6 +115,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         var keyCode = orgEvt.keyCode;
 
         function setTextToContainer() {
+
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;

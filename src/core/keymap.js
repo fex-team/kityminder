@@ -45,7 +45,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'NumLock': 144,
 
     'Cmd': 91,
-
+    'CmdFF':224,
     'F2': 113,
     'F3': 114,
     'F4': 115,
@@ -74,7 +74,8 @@ var keymap = KityMinder.keymap = (function(origin) {
         17:1,
         18:1,
         20:1,
-        91:1
+        91:1,
+        224:1
     },
     'notContentChange': {
         13: 1,
