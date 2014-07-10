@@ -1,50 +1,50 @@
-var MinderEvent = kity.createClass( 'MindEvent', {
-    constructor: function ( type, params, canstop ) {
+var MinderEvent = kity.createClass('MindEvent', {
+    constructor: function(type, params, canstop) {
         params = params || {};
-        if ( params.getType && params.getType() == 'ShapeEvent' ) {
+        if (params.getType && params.getType() == 'ShapeEvent') {
             this.kityEvent = params;
             this.originEvent = params.originEvent;
-            this.getPosition = params.getPosition.bind( params );
-        } else if ( params.target && params.preventDefault ) {
+            this.getPosition = params.getPosition.bind(params);
+        } else if (params.target && params.preventDefault) {
             this.originEvent = params;
         } else {
-            kity.Utils.extend( this, params );
+            kity.Utils.extend(this, params);
         }
         this.type = type;
         this._canstop = canstop || false;
     },
 
-    getTargetNode: function () {
+    getTargetNode: function() {
         var findShape = this.kityEvent && this.kityEvent.targetShape;
-        if ( !findShape ) return null;
-        while ( !findShape.minderNode && findShape.container ) {
+        if (!findShape) return null;
+        while (!findShape.minderNode && findShape.container) {
             findShape = findShape.container;
         }
         return findShape.minderNode || null;
     },
 
-    stopPropagation: function () {
+    stopPropagation: function() {
         this._stoped = true;
     },
 
-    stopPropagationImmediately: function () {
+    stopPropagationImmediately: function() {
         this._immediatelyStoped = true;
         this._stoped = true;
     },
 
-    shouldStopPropagation: function () {
+    shouldStopPropagation: function() {
         return this._canstop && this._stoped;
     },
 
-    shouldStopPropagationImmediately: function () {
+    shouldStopPropagationImmediately: function() {
         return this._canstop && this._immediatelyStoped;
     },
-    preventDefault:function(){
+    preventDefault: function() {
         this.originEvent.preventDefault();
     },
-    isRightMB:function(){
+    isRightMB: function() {
         var isRightMB = false;
-        if(!this.originEvent){
+        if (!this.originEvent) {
             return false;
         }
         if ("which" in this.originEvent)
@@ -53,4 +53,4 @@ var MinderEvent = kity.createClass( 'MindEvent', {
             isRightMB = this.originEvent.button == 2;
         return isRightMB;
     }
-} );
+});

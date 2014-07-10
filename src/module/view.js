@@ -1,133 +1,171 @@
-var ViewDragger = kity.createClass( "ViewDragger", {
-    constructor: function ( minder ) {
+var ViewDragger = kity.createClass("ViewDragger", {
+    constructor: function(minder) {
         this._minder = minder;
         this._enabled = false;
-        this._offset = {
-            x: 0,
-            y: 0
-        };
         this._bind();
     },
-    isEnabled: function () {
+    isEnabled: function() {
         return this._enabled;
     },
-    setEnabled: function ( value ) {
+    setEnabled: function(value) {
         var paper = this._minder.getPaper();
-        paper.setStyle( 'cursor', value ? 'pointer' : 'default' );
-        paper.setStyle( 'cursor', value ? '-webkit-grab' : 'default' );
+        paper.setStyle('cursor', value ? 'pointer' : 'default');
+        paper.setStyle('cursor', value ? '-webkit-grab' : 'default');
         this._enabled = value;
     },
-    move: function ( offset ) {
-        this._minder.getRenderContainer().translate( offset.x, offset.y );
+    move: function(offset, duration) {
+        if (!duration) {
+            this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
+        }
+        else {
+            this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
+        }
     },
 
-    _bind: function () {
+    _bind: function() {
         var dragger = this,
-            isRootDrag = false,
+            isTempDrag = false,
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on( 'normal.beforemousedown', function ( e ) {
-            // 点击未选中的根节点临时开启
-            if ( e.getTargetNode() == this.getRoot() &&
-                ( !this.getRoot().isSelected() || !this.isSingleSelect() ) ) {
-                lastPosition = e.getPosition();
-                dragger.setEnabled( true );
-                isRootDrag = true;
-                var me = this;
-                setTimeout( function () {
-                    me.setStatus( 'hand' );
-                }, 1 );
-            }
-        } )
+        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
 
-        .on( 'hand.beforemousedown', function ( e ) {
+            if (e.originEvent.button == 2) {
+                e.originEvent.preventDefault(); // 阻止中键拉动
+            }
+            // 点击未选中的根节点临时开启
+            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                lastPosition = e.getPosition();
+                isTempDrag = true;
+            }
+        })
+
+        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
+            if (!isTempDrag) return;
+            var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
+            if (offset.length() > 3) this.setStatus('hand');
+        })
+
+        .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
-            if ( dragger.isEnabled() ) {
+            if (dragger.isEnabled()) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
-                e.originEvent.preventDefault();
             }
-        } )
+        })
 
-        .on( 'hand.beforemousemove', function ( e ) {
-            if ( lastPosition ) {
+        .on('hand.beforemousemove hand.beforetouchmove', function(e) {
+            if (lastPosition) {
                 currentPosition = e.getPosition();
 
                 // 当前偏移加上历史偏移
-                var offset = kity.Vector.fromPoints( lastPosition, currentPosition );
-                dragger.move( offset );
+                var offset = kity.Vector.fromPoints(lastPosition, currentPosition);
+                dragger.move(offset);
                 e.stopPropagation();
+                e.preventDefault();
+                e.originEvent.preventDefault();
                 lastPosition = currentPosition;
             }
-        } )
+        })
 
-        .on( 'hand.mouseup', function ( e ) {
+        .on('mouseup touchend', function(e) {
             lastPosition = null;
 
             // 临时拖动需要还原状态
-            if ( isRootDrag ) {
-                dragger.setEnabled( false );
-                isRootDrag = false;
+            if (isTempDrag) {
+                dragger.setEnabled(false);
+                isTempDrag = false;
                 this.rollbackStatus();
             }
-        } );
+        });
     }
-} );
+});
 
-KityMinder.registerModule( 'View', function () {
+KityMinder.registerModule('View', function() {
 
     var km = this;
 
-    var ToggleHandCommand = kity.createClass( "ToggleHandCommand", {
+    var ToggleHandCommand = kity.createClass('ToggleHandCommand', {
         base: Command,
-        execute: function ( minder ) {
+        execute: function(minder) {
 
-            minder._viewDragger.setEnabled( !minder._viewDragger.isEnabled() );
-            if ( minder._viewDragger.isEnabled() ) {
-                minder.setStatus( 'hand' );
+            if (minder.getStatus() != 'hand') {
+                minder.setStatus('hand');
             } else {
                 minder.rollbackStatus();
             }
+            this.setContentChanged(false);
 
         },
-        queryState: function ( minder ) {
-            return minder._viewDragger.isEnabled() ? 1 : 0;
-        }
-    } );
+        queryState: function(minder) {
+            return minder.getStatus() == 'hand' ? 1 : 0;
+        },
+        enableReadOnly: false
+    });
 
-    var CameraCommand = kity.createClass( "CameraCommand", {
+    var CameraCommand = kity.createClass('CameraCommand', {
         base: Command,
-        execute: function ( km, focusNode ) {
+        execute: function(km, focusNode, duration) {
+            focusNode = focusNode || km.getRoot();
             var viewport = km.getPaper().getViewPort();
-            var offset = focusNode.getRenderContainer().getRenderBox( km.getRenderContainer() );
+            var offset = focusNode.getRenderContainer().getRenderBox('view');
             var dx = viewport.center.x - offset.x - offset.width / 2,
                 dy = viewport.center.y - offset.y;
-            km.getRenderContainer().fxTranslate( dx, dy, 1000, "easeOutQuint" );
+            var dragger = km._viewDragger;
+
+            dragger.move(new kity.Point(dx, dy), duration);
+            this.setContentChanged(false);
+        },
+        enableReadOnly: false
+    });
+
+    var MoveCommand = kity.createClass('MoveCommand', {
+        base: Command,
+
+        execute: function(km, dir) {
+            var dragger = this._viewDragger;
+            var size = km._lastClientSize;
+            switch (dir) {
+                case 'up':
+                    dragger.move(new kity.Point(0, -size.height / 2));
+                    break;
+                case 'down':
+                    dragger.move(new kity.Point(0, size.height / 2));
+                    break;
+                case 'left':
+                    dragger.move(new kity.Point(-size.width / 2, 0));
+                    break;
+                case 'right':
+                    dragger.move(new kity.Point(size.width / 2, 0));
+                    break;
+            }
         }
-    } );
+    });
 
     return {
-        init: function () {
-            this._viewDragger = new ViewDragger( this );
+        init: function() {
+            this._viewDragger = new ViewDragger(this);
         },
         commands: {
             'hand': ToggleHandCommand,
-            'camera': CameraCommand
+            'camera': CameraCommand,
+            'move': MoveCommand
         },
         events: {
-            keyup: function ( e ) {
-                if ( e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0 ) {
-                    this.execCommand( 'hand' );
+            keyup: function(e) {
+                if (e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0) {
+                    this.execCommand('hand');
                     e.preventDefault();
                 }
             },
-            mousewheel: function ( e ) {
+            statuschange: function(e) {
+                this._viewDragger.setEnabled(e.currentStatus == 'hand');
+            },
+            mousewheel: function(e) {
                 var dx, dy;
                 e = e.originEvent;
-                if ( e.ctrlKey || e.shiftKey ) return;
-
-                if ( 'wheelDeltaX' in e ) {
+                if (e.ctrlKey || e.shiftKey) return;
+                if ('wheelDeltaX' in e) {
 
                     dx = e.wheelDeltaX || 0;
                     dy = e.wheelDeltaY || 0;
@@ -139,17 +177,35 @@ KityMinder.registerModule( 'View', function () {
 
                 }
 
-                this._viewDragger.move( {
+                this._viewDragger.move({
                     x: dx / 2.5,
                     y: dy / 2.5
-                } );
+                });
 
                 e.preventDefault();
             },
-            'normal.dblclick': function ( e ) {
-                if ( e.getTargetNode() ) return;
-                this.execCommand( 'camera', this.getRoot() );
+            'normal.dblclick readonly.dblclick': function(e) {
+                if (e.kityEvent.targetShape instanceof kity.Paper) {
+                    this.execCommand('camera', this.getRoot(), 800);
+                }
+            },
+            ready: function() {
+                this.execCommand('camera', null, 0);
+                this._lastClientSize = {
+                    width: this.getRenderTarget().clientWidth,
+                    height: this.getRenderTarget().clientHeight
+                };
+            },
+            resize: function(e) {
+                var a = {
+                        width: this.getRenderTarget().clientWidth,
+                        height: this.getRenderTarget().clientHeight
+                    },
+                    b = this._lastClientSize;
+                this.getRenderContainer().translate(
+                    (a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0);
+                this._lastClientSize = a;
             }
         }
     };
-} );
+});

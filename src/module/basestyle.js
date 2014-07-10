@@ -1,94 +1,87 @@
-KityMinder.registerModule( "basestylemodule", function () {
+KityMinder.registerModule('basestylemodule', function() {
     var km = this;
+
+    function getNodeDataOrStyle(node, name) {
+        return node.getData(name) || node.getStyle(name);
+    }
+
+    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
+        text.setFont({
+            weight: getNodeDataOrStyle(node, 'font-weight'),
+            style: getNodeDataOrStyle(node, 'font-style')
+        });
+    });
     return {
-
-        "commands": {
-            "bold": kity.createClass( "boldCommand", {
+        'commands': {
+            'bold': kity.createClass('boldCommand', {
                 base: Command,
 
-                execute: function (  ) {
+                execute: function(km) {
 
                     var nodes = km.getSelectedNodes();
-                    if(this.queryState('bold') == 1){
-                        utils.each(nodes,function(i,n){
-                            n.setData('bold');
-                            n.getTextShape().setAttr('font-weight');
-                            km.updateLayout(n)
-                        })
-                    }else{
-                        utils.each(nodes,function(i,n){
-                            n.setData('bold',true);
-                            n.getTextShape().setAttr('font-weight','bold');
-                            km.updateLayout(n)
-                        })
+                    if (this.queryState('bold') == 1) {
+                        utils.each(nodes, function(i, n) {
+                            n.setData('font-weight').render();
+                        });
+                    } else {
+                        utils.each(nodes, function(i, n) {
+                            n.setData('font-weight', 'bold').render();
+                        });
                     }
+                    km.layout();
                 },
-                queryState: function (  ) {
+                queryState: function() {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if(nodes.length == 0){
+                    if (nodes.length === 0) {
                         return -1;
                     }
-                    utils.each(nodes,function(i,n){
-                        if(n.getData('bold')){
+                    utils.each(nodes, function(i, n) {
+                        if (n && n.getData('font-weight')) {
                             result = 1;
                             return false;
                         }
                     });
                     return result;
                 }
-            } ),
-            "italic": kity.createClass( "italicCommand", {
+            }),
+            'italic': kity.createClass('italicCommand', {
                 base: Command,
 
-                execute: function (  ) {
+                execute: function(km) {
 
                     var nodes = km.getSelectedNodes();
-                    if(this.queryState('italic') == 1){
-                        utils.each(nodes,function(i,n){
-                            n.setData('italic');
-                            n.getTextShape().setAttr('font-style');
-                            km.updateLayout(n)
-                        })
-                    }else{
-                        utils.each(nodes,function(i,n){
-                            n.setData('italic',true);
-                            n.getTextShape().setAttr('font-style','italic');
-                            km.updateLayout(n)
-                        })
+                    if (this.queryState('italic') == 1) {
+                        utils.each(nodes, function(i, n) {
+                            n.setData('font-style').render();
+                        });
+                    } else {
+                        utils.each(nodes, function(i, n) {
+                            n.setData('font-style', 'italic').render();
+                        });
                     }
+
+                    km.layout();
                 },
-                queryState: function (  ) {
+                queryState: function() {
                     var nodes = km.getSelectedNodes(),
                         result = 0;
-                    if(nodes.length == 0){
+                    if (nodes.length === 0) {
                         return -1;
                     }
-                    utils.each(nodes,function(i,n){
-                        if(n.getData('italic')){
+                    utils.each(nodes, function(i, n) {
+                        if (n && n.getData('font-style')) {
                             result = 1;
                             return false;
                         }
                     });
                     return result;
                 }
-            } )
+            })
         },
         addShortcutKeys: {
-            "bold": "ctrl+b", //bold
-            "italic": "ctrl+i" //italic
-        },
-        "events": {
-            "beforeRenderNode": function ( e ) {
-                //加粗
-                if(e.node.getData('bold')){
-                    e.node.getTextShape().setAttr('font-weight','bold');
-                }
-
-                if(e.node.getData('italic')){
-                    e.node.getTextShape().setAttr('font-style','italic');
-                }
-            }
+            'bold': 'ctrl+b', //bold
+            'italic': 'ctrl+i' //italic
         }
     };
-} );
+});

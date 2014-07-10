@@ -4,9 +4,8 @@ Minder.Selection = kity.createClass( 'Selection', {
     constructor: function ( height, color, width ) {
         this.callBase();
         this.height = height || 20;
-
-        this.stroke( color || 'rgb(27,171,255)', width || 1 );
-        this.width = 0;
+        this.setAttr('id','_kity_selection');
+        this.width = 2;
         this.fill('rgb(27,171,255)');
         this.setHide();
         this.timer = null;
@@ -14,47 +13,42 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.startOffset = this.endOffset = 0;
         this.setOpacity(0.5);
         this.setStyle('cursor','text');
-    },
-    collapse : function(toEnd){
+        this._show = false;
 
-        this.stroke( 'rgb(27,171,255)', 1 );
+    },
+    setColor:function(color){
+        this.fill(color);
+    },
+    collapse : function(toStart){
         this.setOpacity(1);
-        this.width = 1;
+        this.width = 2;
         this.collapsed = true;
-        if(toEnd){
-            this.startOffset = this.endOffset
-        }else{
+        if(toStart){
             this.endOffset = this.startOffset;
+
+        }else{
+            this.startOffset = this.endOffset;
         }
         return this;
     },
     setStartOffset:function(offset){
         this.startOffset = offset;
-        var tmpOffset = this.startOffset;
-        if(this.startOffset > this.endOffset){
-            this.startOffset = this.endOffset;
-            this.endOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.startOffset >= this.endOffset){
+            this.collapse(true);
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
     setEndOffset:function(offset){
         this.endOffset = offset;
-        var tmpOffset = this.endOffset;
-        if(this.endOffset < this.startOffset){
-            this.endOffset = this.startOffset;
-            this.startOffset = tmpOffset;
-        }else if(this.startOffset == this.endOffset){
-            this.collapse();
+        if(this.endOffset <= this.startOffset){
+           this.startOffset = offset;
+           this.collapse(true);
             return this;
         }
         this.collapsed = false;
-        this.stroke('none',0);
         this.setOpacity(0.5);
         return this;
     },
@@ -63,62 +57,57 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.setShowHold();
         }
         this.setPosition(offset).setWidth(width);
+        this.bringTop();
         return this;
     },
     setPosition: function ( offset ) {
         try {
-            this.x = offset.x;
-            this.y = offset.y;
+            // 这两个是神奇的 0.5 —— SVG 要边缘锐利，你需要一些对齐
+            this.x = Math.round(offset.x) - 0.5;
+            this.y = Math.round(offset.y) - 1.5;
 
         } catch ( e ) {
-           console.log(e)
+           console.log(e);
         }
-
-        return this.update();
+        this.update();
+        return this;
     },
     setHeight: function ( height ) {
-        this.height = height;
+        this.height = Math.round(height) + 2;
+        return this;
     },
     setHide: function () {
         clearInterval( this.timer );
         this.setStyle( 'display', 'none' );
+        this._show = false;
         return this;
     },
     setShowHold: function () {
         clearInterval( this.timer );
         this.setStyle( 'display', '' );
+        this._show = true;
         return this;
     },
     setShow: function () {
         clearInterval( this.timer );
         var me = this,
             state = '';
+
+        me.setStyle( 'display', '' );
+        me._show = true;
         if(this.collapsed){
+            me.setOpacity(1);
             this.timer = setInterval( function () {
                 me.setStyle( 'display', state );
                 state = state ? '' : 'none';
-            }, 300 );
-        }else{
-            me.setStyle( 'display', '' );
+            }, 400 );
         }
-
         return this;
     },
-    setTextShape: function ( text ) {
-        if ( !text ) {
-            this.text = new kity.Text();
-        } else {
-            this.text = text;
-        }
-        return this
+    isShow:function(){
+        return this._show;
     },
-    getTextShape: function () {
-        return this.text
-    },
-    setTxtContent: function ( text ) {
-        this.text.setContent( text )
-    },
-    updatePosition: function ( index ) {
-
+    isHide:function(){
+        return !this._show;
     }
 } );

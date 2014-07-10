@@ -11,3 +11,6 @@
 ## 解析和生成目标
 
 只解析 KityMinder 支持部分的文件内容；只生成 KityMinder 和 XMind 都支持的文件内容
+
+使用zip.js解开xmind文件，根目录下的content.xml，描述脑图的结构，其中节点属性只有title对kityminder有用，以及children下面的topic(即节点)
+将content.xml的结构和属性解析为xmind的km格式即可渲染

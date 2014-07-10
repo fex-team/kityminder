@@ -1,347 +1,366 @@
-var MinderNode = KityMinder.MinderNode = kity.createClass( "MinderNode", {
-    constructor: function ( options ) {
+var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
+
+    /**
+     * 创建一个节点
+     *
+     * @param {KityMinder}    minder
+     *     节点绑定的脑图的实例
+     *
+     * @param {String|Object} unknown
+     *     节点的初始数据或文本
+     */
+    constructor: function(unknown) {
         this.parent = null;
+        this.root = this;
         this.children = [];
         this.data = {};
         this.tmpData = {};
-        if ( Utils.isString( options ) ) {
-            this.setData( 'text', options );
-        } else {
-            this.setData( options );
-        }
-        this._createShapeDom();
-        this.setData( "layout", {} );
-    },
-    _createShapeDom: function () {
-        this.rc = new kity.Group();
-        this.rc.addClass( 'km-minderNode' );
-        this.rc.minderNode = this;
 
-        this._createBgGroup();
-        this._createContGroup();
-        this._createIconShape();
-        this._createTextShape();
-    },
-    _createGroup: function ( type ) {
-        var g = new kity.Group();
-        g.setData( 'rctype', type );
-        this.rc.appendShape( g );
-    },
-    _createBgGroup: function () {
-        this._createGroup( 'bgrc' );
-    },
-    _createContGroup: function () {
-        this._createGroup( 'contrc' );
-    },
-    _createTextShape: function () {
-        var textShape = new kity.Text( this.getData( 'text' ) || '' );
-        textShape.setAttr( '_nodeTextShape', true );
-        this.getContRc().appendShape( textShape );
-    },
-    _createIconShape: function () {
-        var g = new kity.Group();
-        this.getContRc().appendShape( g );
-        this._iconRc = g;
-    },
-    getContRc: function () {
-        var groups = this.rc.getShapesByType( 'group' ),
-            result;
-        Utils.each( groups, function ( i, p ) {
-            if ( p.getData( 'rctype' ) == 'contrc' ) {
-                result = p;
-                return false;
-            }
-        } );
-        return result;
-    },
-    getBgRc: function () {
-        var groups = this.rc.getShapesByType( 'group' ),
-            result;
-        Utils.each( groups, function ( i, p ) {
-            if ( p.getData( 'rctype' ) == 'bgrc' ) {
-                result = p;
-                return false;
-            }
-        } );
-        return result;
-    },
-    getIconRc: function () {
-        return this._iconRc;
-    },
-    setPoint: function ( x, y ) {
-        if ( arguments.length < 2 ) {
-            this.setData( "point", x );
+        this.initContainers();
+
+        if (Utils.isString(unknown)) {
+            this.setText(unknown);
         } else {
-            this.setData( 'point', {
-                x: x,
-                y: y
-            } );
+            this.setData(unknown);
         }
     },
-    getPoint: function () {
-        return this.getData( 'point' );
+
+    initContainers: function() {
+        this.rc = new kity.Group().setId(KityMinder.uuid('minder_node'));
+        this.rc.minderNode = this;
     },
-    setType: function ( type ) {
-        this.setData( 'type', type );
+
+    /**
+     * 判断节点是否根节点
+     */
+    isRoot: function() {
+        return this.root === this;
     },
-    getLevel: function () {
+
+    /**
+     * 判断节点是否叶子
+     */
+    isLeaf: function() {
+        return this.children.length === 0;
+    },
+
+    /**
+     * 获取节点的根节点
+     */
+    getRoot: function() {
+        return this.root || this;
+    },
+
+    /**
+     * 获得节点的父节点
+     */
+    getParent: function() {
+        return this.parent;
+    },
+
+    /**
+     * 获得节点的深度
+     */
+    getLevel: function() {
         var level = 0,
             parent = this.parent;
-        while ( parent ) {
+        while (parent) {
             level++;
             parent = parent.parent;
         }
         return level;
     },
-    getType: function ( type ) {
-        var cached = this.getData( 'type' );
-        if ( cached ) {
-            return cached;
-        }
-        var level = Math.min( this.getLevel(), 2 );
-        cached = [ 'root', 'main', 'sub' ][ level ];
-        this.setData( 'type', cached );
-        return cached;
-    },
-    setText: function ( text ) {
-        this.setData( 'text', text );
-        this.getTextShape().setContent( text );
-    },
-    getText: function () {
-        return this.getData( 'text' );
-    },
-    isRoot: function () {
-        return this.getParent() === null ? true : false;
-    },
-    getParent: function () {
-        return this.parent;
+
+    /**
+     * 获得节点的复杂度（即子树中节点的数量）
+     */
+    getComplex: function() {
+        var complex = 0;
+        this.traverse(function() {
+            complex++;
+        });
+        return complex;
     },
 
-    getDepth: function () {
-        var depth = 0,
-            p = this.parent;
-        while ( p ) {
-            p = p.parent;
-            depth++;
-        }
-        return depth;
+    /**
+     * 获得节点的类型（root|main|sub）
+     */
+    getType: function(type) {
+        this.type = ['root', 'main', 'sub'][Math.min(this.getLevel(), 2)];
+        return this.type;
     },
 
-    getRoot: function () {
-        var root = this;
-        while ( root.parent ) {
-            root = root.parent;
-        }
-        return root;
-    },
-
-    isAncestorOf: function ( test ) {
+    /**
+     * 判断当前节点是否被测试节点的祖先
+     * @param  {MinderNode}  test 被测试的节点
+     */
+    isAncestorOf: function(test) {
         var p = test.parent;
-        while ( p ) {
-            if ( p == this ) return true;
+        while (p) {
+            if (p == this) return true;
             p = p.parent;
         }
         return false;
     },
 
-    preTraverse: function ( fn ) {
+    /**
+     * 设置节点的文本数据
+     * @param {String} text 文本数据
+     */
+    setText: function(text) {
+        return this.setData('text', text);
+    },
+
+    /**
+     * 获取节点的文本数据
+     * @return {String}
+     */
+    getText: function() {
+        return this.getData('text');
+    },
+
+    /**
+     * 先序遍历当前节点树
+     * @param  {Function} fn 遍历函数
+     */
+    preTraverse: function(fn, excludeThis) {
         var children = this.getChildren();
-        fn( this );
-        for ( var i = 0; i < children.length; i++ ) {
-            children[ i ].preTraverse( fn );
+        if (!excludeThis) fn(this);
+        for (var i = 0; i < children.length; i++) {
+            children[i].preTraverse(fn);
         }
     },
 
-    postTraverse: function ( fn ) {
+    /**
+     * 后序遍历当前节点树
+     * @param  {Function} fn 遍历函数
+     */
+    postTraverse: function(fn, excludeThis) {
         var children = this.getChildren();
-        for ( var i = 0; i < children.length; i++ ) {
-            children[ i ].postTraverse( fn );
+        for (var i = 0; i < children.length; i++) {
+            children[i].postTraverse(fn);
         }
-        fn( this );
+        if (!excludeThis) fn(this);
     },
 
-    traverse: function ( fn ) {
-        return this.postTraverse( fn );
+    traverse: function(fn, excludeThis) {
+        return this.postTraverse(fn, excludeThis);
     },
 
-    getChildren: function () {
+    getChildren: function() {
         return this.children;
     },
 
-    getIndex: function () {
-        return this.parent ? this.parent.children.indexOf( this ) : -1;
+    getIndex: function() {
+        return this.parent ? this.parent.children.indexOf(this) : -1;
     },
 
-    insertChild: function ( node, index ) {
-        if ( index === undefined ) {
+    insertChild: function(node, index) {
+        if (index === undefined) {
             index = this.children.length;
         }
-        if ( node.parent ) {
-            node.parent.removeChild( node );
+        if (node.parent) {
+            node.parent.removeChild(node);
         }
         node.parent = this;
-        node.root = node.parent.root;
+        node.root = this.root;
 
-        this.children.splice( index, 0, node );
+        this.children.splice(index, 0, node);
     },
 
-    appendChild: function ( node ) {
-        return this.insertChild( node );
+    appendChild: function(node) {
+        return this.insertChild(node);
     },
 
-    prependChild: function ( node ) {
-        return this.insertChild( node, 0 );
+    prependChild: function(node) {
+        return this.insertChild(node, 0);
     },
 
-    removeChild: function ( elem ) {
+    removeChild: function(elem) {
         var index = elem,
             removed;
-        if ( elem instanceof MinderNode ) {
-            index = this.children.indexOf( elem );
+        if (elem instanceof MinderNode) {
+            index = this.children.indexOf(elem);
         }
-        if ( index >= 0 ) {
-            removed = this.children.splice( index, 1 )[ 0 ];
+        if (index >= 0) {
+            removed = this.children.splice(index, 1)[0];
             removed.parent = null;
-            //            this.handelRemove( removed );
+            removed.root = removed;
         }
     },
 
-    //    handelRemove: function ( node ) {
-    //        var root = this.getRoot();
-    //        if ( root.tnh ) {
-    //            root.tnh.handelNodeRemove.call( root.tnh, node );
-    //        }
-    //    },
+    getChild: function(index) {
+        return this.children[index];
+    },
 
-    getChild: function ( index ) {
-        return this.children[ index ];
+    getFirstChild: function() {
+        return this.children[0];
     },
-    getFirstChild: function () {
-        return this.children[ 0 ];
+
+    getLastChild: function() {
+        return this.children[this.children.length - 1];
     },
-    getLastChild: function () {
-        return this.children[ this.children.length - 1 ];
-    },
-    getData: function ( name ) {
-        if ( name === undefined ) {
+
+    getData: function(name) {
+        if (name === undefined) {
             return this.data;
         }
-        return this.data[ name ];
+        return this.data[name];
     },
 
-    setData: function ( name, value ) {
-        if ( name === undefined ) {
+    setData: function(name, value) {
+        if (name === undefined) {
             this.data = {};
 
-        } else if ( utils.isObject( name ) ) {
-            Utils.extend( this.data, name );
+        } else if (utils.isObject(name)) {
+            Utils.extend(this.data, name);
         } else {
-            if ( value === undefined ) {
-                this.data[ name ] = null;
-                delete this.data[ name ];
+            if (value === undefined) {
+                this.data[name] = null;
+                delete this.data[name];
             } else {
-                this.data[ name ] = value;
+                this.data[name] = value;
             }
         }
+        return this;
     },
-    getRenderContainer: function () {
+
+    getRenderContainer: function() {
         return this.rc;
     },
-    getCommonAncestor: function ( node ) {
-        return Utils.getNodeCommonAncestor( this, node );
+
+    getCommonAncestor: function(node) {
+        return Utils.getNodeCommonAncestor(this, node);
     },
-    contains: function ( node ) {
-        if ( this === node ) {
-            return true;
+
+    contains: function(node) {
+        return this == node || this.isAncestorOf(node);
+    },
+
+    clone: function() {
+        function cloneNode(parent, isClonedNode) {
+            var cloned = new KM.MinderNode();
+
+            cloned.data = Utils.clonePlainObject(isClonedNode.getData());
+            cloned.tmpData = Utils.clonePlainObject(isClonedNode.getTmpData());
+
+            if (parent) {
+                parent.appendChild(cloned);
+            }
+            for (var i = 0, ci;
+                (ci = isClonedNode.children[i++]);) {
+                cloneNode(cloned, ci);
+            }
+            return cloned;
         }
-        if ( this === node.parent ) {
-            return true;
+        return cloneNode(null, this);
+    },
+
+    equals: function(node,ignoreSelected) {
+        var me = this;
+        function restoreSelected(){
+            if(isSelectedA){
+                me.setSelectedFlag();
+            }
+            if(isSelectedB){
+                node.setSelectedFlag();
+            }
         }
-        var isContain = false;
-        Utils.each( this.getChildren(), function ( i, n ) {
-            isContain = n.contains( node );
-            if ( isContain === true ) {
+        if(ignoreSelected){
+            var isSelectedA = false;
+            var isSelectedB = false;
+            if(me.isSelected()){
+                isSelectedA = true;
+                me.clearSelectedFlag();
+            }
+
+            if(node.isSelected()){
+                isSelectedB = true;
+                node.clearSelectedFlag();
+            }
+        }
+        if (node.children.length != this.children.length) {
+            restoreSelected();
+            return false;
+        }
+        if (utils.compareObject(node.getData(), me.getData()) === false) {
+            restoreSelected();
+            return false;
+        }
+        if (utils.compareObject(node.getTmpData(), me.getTmpData()) === false) {
+            restoreSelected();
+            return false;
+        }
+        for (var i = 0, ci;
+            (ci = me.children[i]); i++) {
+            if (ci.equals(node.children[i],ignoreSelected) === false) {
+                restoreSelected();
                 return false;
             }
-        } );
-        return isContain;
-
-    },
-    clone: function () {
-        function cloneNode( parent, isClonedNode ) {
-            var _tmp = new KM.MinderNode( isClonedNode.getText() );
-
-            _tmp.data = Utils.clonePlainObject( isClonedNode.getData() );
-            _tmp.tmpData = Utils.clonePlainObject( isClonedNode.getTmpData() )
-            _tmp.parent = parent;
-            if ( parent ) {
-                parent.children.push( _tmp );
-            }
-            for ( var i = 0, ci;
-                ( ci = isClonedNode.children[ i++ ] ); ) {
-                cloneNode( _tmp, ci );
-            }
-            return _tmp;
         }
-        return function () {
-            return cloneNode( null, this );
-        };
-    }(),
-    equals: function ( node ) {
-        if ( node.children.length != this.children.length ) {
-            return false;
-        }
-        if ( utils.compareObject( node.getData(), this.getData() ) === false ) {
-            return false;
-        }
-        if ( utils.compareObject( node.getTmpData(), this.getTmpData() ) === false ) {
-            return false;
-        }
-        for ( var i = 0, ci;
-            ( ci = this.children[ i ] ); i++ ) {
-            if ( ci.equals( node.children[ i ] ) === false ) {
-                return false;
-            }
-        }
+        restoreSelected();
         return true;
 
     },
-    getTextShape: function () {
-        var textShape;
-        utils.each( this.getContRc().getShapesByType( 'text' ), function ( i, t ) {
-            if ( t.getAttr( '_nodeTextShape' ) ) {
-                textShape = t;
-                return false;
-            }
-        } );
-        return textShape;
-    },
-    isSelected: function () {
-        return this.getTmpData( 'highlight' ) === true;
-    },
-    clearChildren: function () {
+
+    clearChildren: function() {
         this.children = [];
     },
-    isHighlight: function () {
-        return this.getTmpData( 'highlight' )
-    },
-    setTmpData: function ( a, v ) {
+
+    setTmpData: function(a, v) {
         var me = this;
-        if ( utils.isObject( a ) ) {
-            utils.each( a, function ( val, key ) {
-                me.setTmpData( key, val )
-            } )
+        if (utils.isObject(a)) {
+            utils.each(a, function(key, val) {
+                me.setTmpData(key, val);
+            });
         }
-        if ( v === undefined || v === null || v === '' ) {
-            delete this.tmpData[ a ];
+        if (v === undefined || v === null || v === '') {
+            delete this.tmpData[a];
         } else {
-            this.tmpData[ a ] = v;
+            this.tmpData[a] = v;
         }
     },
-    getTmpData: function ( a ) {
-        if ( a === undefined ) {
+
+    getTmpData: function(a) {
+        if (a === undefined) {
             return this.tmpData;
         }
-        return this.tmpData[ a ]
+        return this.tmpData[a];
+    },
+
+    setValue: function(node) {
+        this.data = {};
+        this.setData(utils.clonePlainObject(node.getData()));
+        this.tmpData = {};
+        this.setTmpData(utils.clonePlainObject(node.getTmpData()));
+        return this;
     }
-} );
+});
+
+MinderNode.getCommonAncestor = function(nodeA, nodeB) {
+    if (nodeA instanceof Array) {
+        return MinderNode.getCommonAncestor.apply(this, nodeA);
+    }
+    switch (arguments.length) {
+        case 1:
+            return nodeA.parent;
+
+        case 2:
+            if (nodeA.isAncestorOf(nodeB)) {
+                return nodeA;
+            }
+            if (nodeB.isAncestorOf(nodeA)) {
+                return nodeB;
+            }
+            var ancestor = nodeA.parent;
+            while (ancestor && !ancestor.isAncestorOf(nodeB)) {
+                ancestor = ancestor.parent;
+            }
+            return ancestor;
+
+        default:
+            return Array.prototype.reduce.call(arguments, function(prev, current) {
+                return MinderNode.getCommonAncestor(prev, current);
+            }, nodeA);
+    }
+};

@@ -27,20 +27,33 @@ KM.registerUI( 'contextmenu', function () {
         }
     });
     me.$container.append($menu);
-    me.on('contextmenu',function(e){
+    me.on('contextmenu', function(e) {
+        e.preventDefault();
+    });
+    me.on('mouseup', function (e) {
+        //e.preventDefault();
+        
+        if (me.getStatus() == 'hand' || !e.isRightMB()) return;
+
+        var node = e.getTargetNode();
+        if(node){
+            this.removeAllSelectedNodes();
+            this.select(node);
+        }
+
+
         var items = me.getContextmenu();
         var data = [];
 
         utils.each(items,function(i,item){
             if(item.divider){
-                data.push(item)
+                data.length &&  data.push(item);
                 return;
             }
             if(me.queryCommandState(item.cmdName)!=-1){
                 data.push({
                     label:item.label,
                     value:item.cmdName
-
                 })
             }
         });
@@ -49,21 +62,22 @@ KM.registerUI( 'contextmenu', function () {
             if(item.divider){
                 data.pop();
             }
+            var pos = e.getPosition('screen');
+            var offset = $(me.getPaper().container).offset();
+            pos.y -= offset.top;
+            pos.x -= offset.left;
             $menu.kmui().setData({
                 data:data
-            }).position(e.getPosition()).show();
-
-
-            e.preventDefault()
+            }).position(pos).show();
         }
 
     });
-    me.on('click',function(){
+    me.on('afterclick',function(){
         $menu.kmui().hide();
     });
     me.on('beforemousedown',function(e){
         if(e.isRightMB()){
-            e.stopPropagationImmediately();
+            //e.stopPropagationImmediately();
         }
     })
 } );

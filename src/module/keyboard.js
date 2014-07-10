@@ -1,111 +1,216 @@
-KityMinder.registerModule( "KeyboardModule", function () {
+KityMinder.registerModule("KeyboardModule", function() {
+    var min = Math.min,
+        max = Math.max,
+        abs = Math.abs,
+        sqrt = Math.sqrt,
+        exp = Math.exp;
 
-    function buildPositionNetwork( root ) {
+    function buildPositionNetwork(root) {
         var pointIndexes = [],
             p;
-        root.traverse( function ( node ) {
-            p = node.getData( 'point' );
-            pointIndexes.push( {
-                x: p.x,
-                y: p.y,
-                node: node
-            } );
-        } );
-        for ( var i = 0; i < pointIndexes.length; i++ ) {
-            findClosestPointsFor( pointIndexes, i );
+        root.traverse(function(node) {
+            p = node.getLayoutBox();
+
+            // bugfix: 不应导航到收起的节点（判断其尺寸是否存在）
+            if (p.width && p.height) {
+                pointIndexes.push({
+                    left: p.x,
+                    top: p.y,
+                    right: p.x + p.width,
+                    bottom: p.y + p.height,
+                    width: p.width,
+                    height: p.height,
+                    node: node,
+                    text: node.getText()
+                });
+            }
+        });
+        for (var i = 0; i < pointIndexes.length; i++) {
+            findClosestPointsFor(pointIndexes, i);
         }
     }
 
-    function quadOf( p ) {
-        return p.x > 0 ?
-            ( p.y > 0 ? 1 : 2 ) :
-            ( p.y < 0 ? 3 : 4 );
+
+    // 这是金泉的点子，赞！
+    // 求两个不相交矩形的最近距离
+    function getCoefedDistance(box1, box2) {
+        var xMin, xMax, yMin, yMax, xDist, yDist, dist, cx, cy;
+        xMin = min(box1.left, box2.left);
+        xMax = max(box1.right, box2.right);
+        yMin = min(box1.top, box2.top);
+        yMax = max(box1.bottom, box2.bottom);
+
+        xDist = xMax - xMin - box1.width - box2.width;
+        yDist = yMax - yMin - box1.height - box2.height;
+
+        if (xDist < 0) dist = yDist;
+        else if (yDist < 0) dist = xDist;
+        else dist = sqrt(xDist * xDist + yDist * yDist);
+
+        return {
+            cx: dist,
+            cy: dist
+        };
     }
 
-    function findClosestPointsFor( pointIndexes, iFind ) {
-        var find = pointIndexes[ iFind ];
-        var matrix = new kity.Matrix().translate( -find.x, -find.y ).rotate( 45 );
-        var most = {}, quad;
-        var current;
+    function findClosestPointsFor(pointIndexes, iFind) {
+        var find = pointIndexes[iFind];
+        var most = {},
+            quad;
+        var current, dist;
 
-        for ( var i = 0; i < pointIndexes.length; i++ ) {
-            if ( i == iFind ) continue;
-            current = matrix.transformPoint( pointIndexes[ i ].x, pointIndexes[ i ].y );
-            quad = quadOf( current );
-            if ( !most[ quad ] || current.length() < most[ quad ].point.length() ) {
-                most[ quad ] = {
-                    point: current,
-                    node: pointIndexes[ i ].node
-                };
+        for (var i = 0; i < pointIndexes.length; i++) {
+
+            if (i == iFind) continue;
+            current = pointIndexes[i];
+
+            dist = getCoefedDistance(current, find);
+
+            // left check
+            if (current.right < find.left) {
+                if (!most.left || dist.cx < most.left.dist) {
+                    most.left = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // right check
+            if (current.left > find.right) {
+                if (!most.right || dist.cx < most.right.dist) {
+                    most.right = {
+                        dist: dist.cx,
+                        node: current.node
+                    };
+                }
+            }
+
+            // top check
+            if (current.bottom < find.top) {
+                if (!most.top || dist.cy < most.top.dist) {
+                    most.top = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
+            }
+
+            // bottom check
+            if (current.top > find.bottom) {
+                if (!most.down || dist.cy < most.down.dist) {
+                    most.down = {
+                        dist: dist.cy,
+                        node: current.node
+                    };
+                }
             }
         }
         find.node._nearestNodes = {
-            right: most[ 1 ] && most[ 1 ].node || null,
-            top: most[ 2 ] && most[ 2 ].node || null,
-            left: most[ 3 ] && most[ 3 ].node || null,
-            down: most[ 4 ] && most[ 4 ].node || null
+            right: most.right && most.right.node || null,
+            top: most.top && most.top.node || null,
+            left: most.left && most.left.node || null,
+            down: most.down && most.down.node || null
         };
     }
 
 
-    function navigateTo( km, direction ) {
+    function navigateTo(km, direction) {
         var referNode = km.getSelectedNode();
-        if ( !referNode ) {
-            km.select( km.getRoot() );
-            buildPositionNetwork( km.getRoot() );
+        if (!referNode) {
+            km.select(km.getRoot());
+            buildPositionNetwork(km.getRoot());
             return;
         }
-        var nextNode = referNode._nearestNodes[ direction ];
-        if ( nextNode ) {
-            km.select( nextNode, true );
+        var nextNode = referNode._nearestNodes[direction];
+        if (nextNode) {
+            km.select(nextNode, true);
         }
     }
     return {
 
-        "events": {
-            contentchange: function () {
-                buildPositionNetwork( this.getRoot() );
+        'events': {
+            'contentchange layoutfinish': function() {
+                buildPositionNetwork(this.getRoot());
             },
-            "normal.keydown": function ( e ) {
+            'normal.keydown': function(e) {
 
                 var keys = KityMinder.keymap;
-
                 var node = e.getTargetNode();
-                this.receiver.keydownNode = node;
-                switch ( e.originEvent.keyCode ) {
-                case keys.Enter:
-                    this.execCommand( 'appendSiblingNode', new MinderNode( this.getLang().topic ) );
-                    e.preventDefault();
-                    break;
-                case keys.Tab:
-                    this.execCommand( 'appendChildNode', new MinderNode( this.getLang().topic ) );
-                    e.preventDefault();
-                    break;
-                case keys.Backspace:
-                case keys.Del:
-                    this.execCommand( 'removenode' );
-                    e.preventDefault();
-                    break;
+                var lang = this.getLang();
 
-                case keys.Left:
-                    navigateTo( this, 'left' );
-                    e.preventDefault();
-                    break;
-                case keys.Up:
-                    navigateTo( this, 'top' );
-                    e.preventDefault();
-                    break;
-                case keys.Right:
-                    navigateTo( this, 'right' );
-                    e.preventDefault();
-                    break;
-                case keys.Down:
-                    navigateTo( this, 'down' );
-                    e.preventDefault();
-                    break;
+                if (this.receiver) this.receiver.keydownNode = node;
+
+                var keyEvent = e.originEvent;
+
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+
+                switch (keyEvent.keyCode) {
+                    case keys.Enter:
+                        this.execCommand('AppendSiblingNode', lang.topic);
+                        e.preventDefault();
+                        break;
+                    case keys.Tab:
+                        this.execCommand('AppendChildNode', lang.topic);
+                        e.preventDefault();
+                        break;
+                    case keys.Backspace:
+                    case keys.Del:
+                        e.preventDefault();
+                        this.execCommand('RemoveNode');
+                        break;
+                    case keys.F2:
+                        e.preventDefault();
+                        this.execCommand('EditNode');
+                        break;
+
+                    case keys.Left:
+                        navigateTo(this, 'left');
+                        e.preventDefault();
+                        break;
+                    case keys.Up:
+                        navigateTo(this, 'top');
+                        e.preventDefault();
+                        break;
+                    case keys.Right:
+                        navigateTo(this, 'right');
+                        e.preventDefault();
+                        break;
+                    case keys.Down:
+                        navigateTo(this, 'down');
+                        e.preventDefault();
+                        break;
+                }
+
+            },
+            'normal.keyup': function(e) {
+                if (browser.ipad) {
+                    var keys = KityMinder.keymap;
+                    var node = e.getTargetNode();
+                    var lang = this.getLang();
+
+                    if (this.receiver) this.receiver.keydownNode = node;
+
+                    var keyEvent = e.originEvent;
+
+                    if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+
+                    switch (keyEvent.keyCode) {
+                        case keys.Enter:
+                            this.execCommand('AppendSiblingNode', lang.topic);
+                            e.preventDefault();
+                            break;
+
+                        case keys.Backspace:
+                        case keys.Del:
+                            e.preventDefault();
+                            this.execCommand('RemoveNode');
+                            break;
+
+                    }
                 }
 
             }
         }
     };
-} );
+});

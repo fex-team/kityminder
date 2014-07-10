@@ -1,63 +1,111 @@
-KM.registerToolbarUI( 'saveto', function ( name ) {
+(function() {
 
-    var me = this,
-        label = me.getLang( 'tooltips.' + name ),
-        options = {
-            label: label,
-            title: label,
-            comboboxName: name,
-            items: [],
-            itemStyles: [],
-            value: [],
-            autowidthitem: [],
-            enabledRecord: false
-        },
-        $combox = null,
-        comboboxWidget = null;
+    function doDownload(url, filename, type) {
+        var content = url.split(',')[1];
+        var $form = $('<form></form>').attr({
+            'action': 'download.php',
+            'method': 'POST',
+            'accept-charset': 'utf-8'
+        });
 
-    utils.each( KityMinder.getAllRegisteredProtocals(), function ( k ) {
-        var p = KityMinder.findProtocal( k );
-        var text = p.fileDescription + '（' + p.fileExtension + '）';
-        options.value.push( k );
-        options.items.push( text );
-        options.autowidthitem.push( $.wordCountAdaptive( text ), true );
-    } );
+        var $content = $('<input />').attr({
+            name: 'content',
+            type: 'hidden',
+            value: decodeURIComponent(content)
+        }).appendTo($form);
 
+        var $type = $('<input />').attr({
+            name: 'type',
+            type: 'hidden',
+            value: type
+        }).appendTo($form);
 
-    //实例化
-    $combox = $.kmuibuttoncombobox( options ).css( 'zIndex', me.getOptions( 'zIndex' ) + 1 );
-    comboboxWidget = $combox.kmui();
+        var $filename = $('<input />').attr({
+            name: 'filename',
+            type: 'hidden',
+            value: filename
+        }).appendTo($form);
 
-    function doDownload( url, filename ) {
-        var a = document.createElement( 'a' );
-        a.setAttribute( 'download', filename );
-        a.setAttribute( 'href', url );
-        a.dispatchEvent( new MouseEvent( 'click' ) );
+        $('<input name="iehack" value="&#9760;" />').appendTo($form);
+
+        $form.appendTo('body').submit().remove();
     }
 
-    comboboxWidget.on( 'comboboxselect', function ( evt, res ) {
-        var data = me.exportData( res.value );
-        var p = KityMinder.findProtocal( res.value );
-        var filename = me.getMinderTitle() + p.fileExtension;
+    function buildDataUrl(mineType, data) {
+        return 'data:' + mineType + '; utf-8,' + encodeURIComponent(data);
+    }
 
-        if ( typeof ( data ) == 'string' ) {
-            var url = 'data:text/plain; utf-8,' + encodeURI( data );
-            doDownload( url, filename );
-        } else if ( data && data.then ) {
-            data.then( function ( url ) {
-                doDownload( url, filename );
-            } );
+    function doExport(minder, type) {
+        var data = minder.exportData(type);
+        var protocal = KityMinder.findProtocal(type);
+        var filename = minder.getMinderTitle() + protocal.fileExtension;
+        var mineType = protocal.mineType || 'text/plain';
+
+        if (typeof(data) == 'string') {
+
+            doDownload(buildDataUrl(mineType, data), filename, 'text');
+
+        } else if (data && data.then) {
+
+            data.then(function(url) {
+                doDownload(url, filename, 'base64');
+            });
+
         }
-    } ).on( "beforeshow", function () {
-        if ( $combox.parent().length === 0 ) {
-            $combox.appendTo( me.$container.find( '.kmui-dialog-container' ) );
+    }
+
+    kity.extendClass(Minder, {
+        exportFile: function(type) {
+            doExport(this, type);
+            return this;
         }
-    } ).on( 'aftercomboboxselect', function () {
-        this.setLabelWithDefaultValue();
-    } );
+    });
+
+    KM.registerToolbarUI('saveto', function(name) {
+
+        var me = this,
+            label = me.getLang('tooltips.' + name),
+            options = {
+                label: label,
+                title: label,
+                comboboxName: name,
+                items: [],
+                itemStyles: [],
+                value: [],
+                autowidthitem: [],
+                enabledRecord: false,
+                enabledSelected: false
+            },
+            $combox = null,
+            comboboxWidget = null;
+
+        utils.each(KityMinder.getAllRegisteredProtocals(), function(k) {
+            var p = KityMinder.findProtocal(k);
+            if (p.encode) {
+                var text = p.fileDescription + '（' + p.fileExtension + '）';
+                options.value.push(k);
+                options.items.push(text);
+                options.autowidthitem.push($.wordCountAdaptive(text), true);
+            }
+        });
 
 
+        //实例化
+        $combox = $.kmuibuttoncombobox(options).css('zIndex', me.getOptions('zIndex') + 1);
+        comboboxWidget = $combox.kmui();
 
-    return comboboxWidget.button().addClass( 'kmui-combobox' );
+        comboboxWidget.on('comboboxselect', function(evt, res) {
+            doExport(me, res.value);
+        }).on('beforeshow', function() {
+            if ($combox.parent().length === 0) {
+                $combox.appendTo(me.$container.find('.kmui-dialog-container'));
+            }
+        }).on('aftercomboboxselect', function() {
+            this.setLabelWithDefaultValue();
+        });
 
-} );
+        return comboboxWidget.button().addClass('kmui-combobox');
+
+    });
+
+})();
