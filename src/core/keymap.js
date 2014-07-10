@@ -69,25 +69,34 @@ var keymap = KityMinder.keymap = (function(origin) {
     'n': 78,
     '/': 191,
     '.': 190,
-    'notContentInput': {
-        8: 1,
-        46: 1,
+    'notContentChange': {
         13: 1,
         9: 1,
+
         33: 1,
         34: 1,
         35: 1,
         36: 1,
+
         16: 1,
         17: 1,
         18: 1,
+        20: 1,
+        91: 1,
+
         //上下左右
         37: 1,
         38: 1,
         39: 1,
         40: 1,
-        113: 1
+
+        113: 1,
+        114: 1,
+        115: 1,
+        144: 1,
+        27: 1
     },
+
     'isSelectedNodeKey': {
         //上下左右
         37: 1,
@@ -98,4 +107,5 @@ var keymap = KityMinder.keymap = (function(origin) {
         9: 1
     },
     'a':65
+
 });

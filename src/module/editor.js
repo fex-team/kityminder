@@ -30,11 +30,21 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setEndOffset(textShape.getContent().length)
                 .setColor(color);
 
-
-
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
+
+            if(browser.ie){
+                var timer = setInterval(function(){
+                    var nativeRange = range.nativeSel.getRangeAt(0);
+                    if(!nativeRange || nativeRange.collapsed){
+                        range.select();
+                    }else {
+                        clearInterval(timer);
+                    }
+                });
+            }
+
 
             receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
 
@@ -108,7 +118,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         if(selectionReadyShow){
 
                             textShape.setStyle('cursor', 'text');
-                            sel.clearBaseOffset();
+
                             receiver.updateSelection();
                             setTimeout(function() {
                                 sel.setShow();
@@ -163,7 +173,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
-                    sel.clearBaseOffset();
+
 
                     node.getTextShape().setStyle('cursor', 'text');
 
@@ -192,7 +202,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }else {
                     //当有光标时，要同步选区
                     if(!sel.collapsed){
-                        sel.clearBaseOffset();
+
                         receiver.updateContainerRangeBySel();
                     }
 

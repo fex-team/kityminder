@@ -48,7 +48,8 @@ Minder.Receiver = kity.createClass('Receiver', {
 
         var text = this.container.firstChild;
         this.range = range;
-        range.setStart(text || this.container, this.index).collapse(true);
+        range.setStart(text || this.container, this.index)
+        range.collapse(true);
         var me = this;
 
         setTimeout(function() {
@@ -113,13 +114,14 @@ Minder.Receiver = kity.createClass('Receiver', {
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer(keyCode) {
+        function setTextToContainer() {
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
+
             //当第一次输入内容时进行保存
-            if(me.lastMinderNode !== me.minderNode){
+            if(me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]){
                 me.km.fire('saveScene',{
                     inputStatus:true
                 });
@@ -153,7 +155,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
             //移动光标不做layout
-            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && !orgEvt.ctrlKey){
+            if(!keymap.notContentChange[keyCode]){
                 clearTimeout(me.inputTextTimer);
 
                 me.inputTextTimer = setTimeout(function(){
@@ -168,15 +170,16 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             me.setBaseOffset();
             me.updateTextOffsetData();
-            me.updateIndex();
-            me.updateSelection();
+            me.updateRange();
+            me.updateSelectionByRange();
+
+            me.updateSelectionShow();
             me.timer = setTimeout(function() {
                 if(me.selection.isShow())
                     me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');
-            me.selection.clearBaseOffset();
         }
 
         function restoreTextContent(){
@@ -229,91 +232,35 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('normal');
                             return;
                         }
-                        if(!orgEvt.shiftKey){
-                            this.selection.baseOffset =
-                            this.selection.currentEndOffset = null;
-                        }
                         break;
-                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-//                    case keymap.Del:
-//                    case keymap.Backspace:
-
-                        if(this.selection.isHide()){
+                        if(this.selection.isHide() && this.km.getStatus() != 'inputready'){
                             this.km.setStatus('normal');
                             return;
                         }
 
                 }
-                //针对按住shift+方向键进行处理
-                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
-                    if(this.selection.baseOffset === null){
-                        this.selection.baseOffset = this.selection.startOffset;
-                        this.selection.currentEndOffset = this.selection.endOffset;
-                    }
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.currentEndOffset++;
-                        if(this.selection.currentEndOffset > textlength){
-                            this.selection.currentEndOffset = textlength;
-                        }
 
-                    }else if(keymap.left == keyCode){
-                        this.selection.currentEndOffset--;
-                        if(this.selection.currentEndOffset < 0){
-                            this.selection.currentEndOffset = 0;
-                        }
-
-                    }else if(keymap.up == keyCode){
-                        this.selection.currentEndOffset = 0;
-                        this.selection.baseOffset = this.selection.endOffset;
-                    }else{
-                        this.selection.currentEndOffset = textlength;
-                    }
-
-                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
-                        this.selection.setEndOffset(this.selection.currentEndOffset);
-                        if(this.selection.currentEndOffset == this.selection.baseOffset){
-                            this.selection.setStartOffset(this.selection.baseOffset);
-                        }
-                    }else{
-                        this.selection.setStartOffset(this.selection.currentEndOffset);
-                        this.selection.setEndOffset(this.selection.baseOffset);
-                    }
-
-                    this.updateContainerRangeBySel();
-
-                    this.updateSelectionShow();
-
-                    e.preventDefault();
-                    return;
-                }else if(keymap.direction[keyCode]){
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                }
-
-                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
-
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.setStartOffset(textlength).collapse(true);
-                    }else if(keymap.left == keyCode){
-                        this.selection.setStartOffset(0).collapse(true);
-                    }else{
-                        e.preventDefault();
-                        return;
-                    }
-
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                    this.updateContainerRangeBySel();
-                    this.updateSelectionShow();
-                    e.preventDefault();
-                    return;
-                }
+//                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
+//
+//                    var textlength = this.textShape.getContent().length;
+//                    if(keymap.right  == keyCode ){
+//                        this.selection.setStartOffset(textlength).collapse(true);
+//                    }else if(keymap.left == keyCode){
+//                        this.selection.setStartOffset(0).collapse(true);
+//                    }else{
+//                        e.preventDefault();
+//                        return;
+//                    }
+//
+//                    this.updateContainerRangeBySel();
+//                    this.updateSelectionShow();
+//                    e.preventDefault();
+//                    return;
+//                }
                 if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
@@ -336,25 +283,25 @@ Minder.Receiver = kity.createClass('Receiver', {
                         }, 100);
                         return;
                     }
-                    //全选键位监控
-                    if (keymap.a == keyCode) {
-                        if(me.selection.isHide()){
-                            return;
-                        }else{
-                            me.selection
-                                .setStartOffset(0)
-                                .setEndOffset(me.textShape.getContent().length);
-                            me.updateContainerRangeBySel().updateSelectionShow();
-                            return;
-                        }
-                    }
+//                    //全选键位监控
+//                    if (keymap.a == keyCode) {
+//                        if(me.selection.isHide()){
+//                            return;
+//                        }else{
+//                            me.selection
+//                                .setStartOffset(0)
+//                                .setEndOffset(me.textShape.getContent().length);
+//                            me.updateContainerRangeBySel().updateSelectionShow();
+//                            return;
+//                        }
+//                    }
 
 
                 }
 
 
                 //针对不能连续删除做处理
-                if(keymap.Del || keymap.Backspace)
+                if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                     setTextToContainer(keyCode);
                 break;
 
@@ -406,8 +353,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                     setTextToContainer(keyCode);
                     return;
                 }
-                if(this.selection.baseOffset === null && this.selection.collapsed)
-                    setTextToContainer(keyCode);
+                setTextToContainer(keyCode);
+
                 return true;
         }
 
@@ -599,23 +546,29 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.updateShow(startOffset, width);
         return this;
     },
-    updateRange: function(range) {
-        range = range || this.range;
-        var node = this.container.firstChild;
-        range.setStart(node, this.selection.startOffset);
-        range.setEnd(node, this.selection.endOffset);
-        if(browser.gecko){
-            this.container.focus();
-            setTimeout(function(){
-                range.select();
-            });
-        }else{
-            range.select();
-        }
+    updateRange: function() {
+        this.range.updateNativeRange();
         return this;
     },
     updateContainerRangeBySel:function(){
-       return this.updateRange(this.range);
+
+        var node = this.container.firstChild;
+        this.range.setStart(node, this.selection.startOffset);
+        this.range.setEnd(node, this.selection.endOffset);
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                this.range.select();
+            });
+        }else{
+            this.range.select();
+        }
+        return this;
+    },
+    updateSelectionByRange:function(){
+        this.selection.setStartOffset(this.range.getStartOffset());
+        this.selection.setEndOffset(this.range.getEndOffset());
+        return this;
     },
     setIndex: function(index) {
         this.index = index;
