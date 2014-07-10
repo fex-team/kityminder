@@ -322,6 +322,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     return;
                 }
                 if (browser.mac && browser.gecko){
+                    console.log('sdf')
                     setTextToContainer(keyCode);
                     return;
                 }
@@ -529,13 +530,14 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateContainerRangeBySel:function(){
+        var me = this;
         var node = this.container.firstChild;
         this.range.setStart(node, this.selection.startOffset);
         this.range.setEnd(node, this.selection.endOffset);
         if(browser.gecko){
             this.container.focus();
             setTimeout(function(){
-                this.range.select();
+                me.range.select();
             });
         }else{
             this.range.select();

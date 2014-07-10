@@ -35,7 +35,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
 
-            if(browser.ie || browser.gecko){
+            if(browser.ie ){
                 var timer = setInterval(function(){
                     var nativeRange = range.nativeSel.getRangeAt(0);
                     if(!nativeRange || nativeRange.collapsed){
