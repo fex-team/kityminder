@@ -1,14 +1,25 @@
 ## 节点操作
 
 `Enter`: 插入兄弟节点
-`Tab` or `Insert`: 插入子节点
-`Delete` or `BackSpace`: 删除节点
+`Tab`: 插入子节点
+`Delete`: 删除节点
 `F2`: 编辑节点
-`Alt` + `Up`: 向上排序
-`Alt` + `Down`: 向下排序
+`Up`, `Down`, `Left`, `Right`: 节点导航
+`Alt + Up`, `Alt + Down`: 向上/向下排序
 `/`: 展开/收起节点
+`Ctrl + B`: 加粗
+`Ctrl + I`: 斜体
+`Ctrl + C`: 复制节点
+`Ctrl + X`: 剪切节点
+`Ctrl + V`: 粘贴节点
 
 ## 视野控制
 
-`RMouseDown` + `Drag`: 拖动视野
-`DoubleClick`: 居中根节点
+`右键拖动`: 拖动视野
+`空白处双击`: 居中根节点
+`+`, '-': 放大/缩小视野
+
+## 文件操作
+
+`Ctrl + N`: 新建
+`Ctrl + S`: 保存
