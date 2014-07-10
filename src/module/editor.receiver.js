@@ -207,7 +207,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     });
                 }
                 break;
-
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
 

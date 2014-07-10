@@ -306,6 +306,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
+
         }
     };
 });

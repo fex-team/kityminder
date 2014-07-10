@@ -52,7 +52,6 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
             }
-            console.log('touchstart');
         })
 
         .on('hand.beforemousemove hand.beforetouchmove', function(e) {
