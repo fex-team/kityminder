@@ -322,7 +322,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     return;
                 }
                 if (browser.mac && browser.gecko){
-                    console.log('sdf')
                     setTextToContainer(keyCode);
                     return;
                 }
@@ -335,6 +334,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 if(this.km.getStatus() == 'normal' && this.km.getSelectedNode() && this.selection.isHide()){
                     this.km.setStatus('inputready');
                 }
+
         }
 
     },
