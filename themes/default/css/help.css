@@ -26,7 +26,8 @@
 }
 .shortcuts-group {
 	padding-right: 15px;
-    width: 220px;
+    
+	width: 200px;
 	text-shadow: none;
 }
 .shortcuts-thead {
