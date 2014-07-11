@@ -1,25 +1,35 @@
 
 .shortcuts-opt {
-    margin: 0px 5px;
-    background-color: #D4D4D4 !important;
+    margin: 0px 7px;
+    background-color: #fff;
+    font-size: 14px;
 }
 .shortcuts-group {
 	padding-right: 15px;
+    width: 220px;
 }
 .shortcuts-thead {
-	background-color: black !important;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 14px;
 }
 #div1 {
 	display: none;
 }
-.help-container {
+/*.help-container {
 	width: 586px;
 	float: left;
+}*/
+.shortcuts-use {
+    width: 160px;
+    font-size: 14px;
+    font-weight: lighter;
 }
 .help-header {
 	padding-bottom: 9px;
 	margin: 20px 20px 30px;
 	border-bottom: 1px solid #EEE;
+    display: none;
 }
 table {
     max-width: 100%;
@@ -27,13 +37,14 @@ table {
     border-collapse: collapse;
     border-spacing: 0px;
     float: left;
-    margin-left: 20px;
-    margin-bottom: 30px;
+    margin-left: 10px;
+    margin-top: 30px;
 }
 td {
     display: table-cell;
     float: none;
     margin-left: 0px;
+    padding-bottom: 6px;
 }
 h2 {
 	font-size: 31.5px;
@@ -48,15 +59,16 @@ body {
 .label {
     display: inline-block;
     padding: 2px 4px;
-    font-size: 11.844px;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: normal;
     line-height: 14px;
-    color: #FFF;
+    color: #000;
     text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25);
     white-space: nowrap;
     vertical-align: baseline;
-    background-color: #999;
+    background-color: #fff;
     border-radius: 3px;
+    border: 1px inset #999;
 }
 .right {
     float: right;
