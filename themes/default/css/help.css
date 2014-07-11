@@ -1,17 +1,63 @@
-.help-content{
-	line-height: 20px;
-	font-size: 12px;
+
+.shortcuts-opt {
+    margin: 0px 5px;
+    background-color: #D4D4D4 !important;
 }
-.help-content ul{ 
-	list-style: none;
-	padding:0;
+.shortcuts-group {
+	padding-right: 15px;
 }
-.help-content ul li{
-	color:#666;
+.shortcuts-thead {
+	background-color: black !important;
 }
-.help-content h2{color:#333;font-size: 18px;}
-.help-content h3{
-	color:#333;
-	display: inline;
-	font-size: 14px;
+#div1 {
+	display: none;
+}
+.help-container {
+	width: 586px;
+	float: left;
+}
+.help-header {
+	padding-bottom: 9px;
+	margin: 20px 20px 30px;
+	border-bottom: 1px solid #EEE;
+}
+table {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 30px;
+}
+td {
+    display: table-cell;
+    float: none;
+    margin-left: 0px;
+}
+h2 {
+	font-size: 31.5px;
+	line-height: 40px;
+}
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+}
+.label {
+    display: inline-block;
+    padding: 2px 4px;
+    font-size: 11.844px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #FFF;
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #999;
+    border-radius: 3px;
+}
+.right {
+    float: right;
 }
