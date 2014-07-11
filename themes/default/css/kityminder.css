@@ -3,6 +3,7 @@ html, body, div {
     margin: 0;
     padding: 0;
     /* background: #FFFFFF; */
+    /* overflow: hidden; */
 }
 html, body, #kityminder, div.kmui-editor-body {
     overflow: hidden;
@@ -226,10 +227,17 @@ button#share-btn:hover {
 .km-minderNode{
     cursor:default;
 }
-.kmui-container, .kmui-editor-body {
+.kmui-container {
     position: absolute;
     left: 0;
     top: 0;
+    right: 0;
+    bottom: 0;
+}
+.kmui-editor-body {
+    position: absolute;
+    left: 0;
+    top: 37px;
     right: 0;
     bottom: 0;
 }

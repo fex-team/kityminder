@@ -1,4 +1,24 @@
+.blur {
+	-webkit-filter: blur(5px);
+	-moz-filter: blur(5px);
+	-mz-filter: blur(5px);
+	-o-filter: blur(5px);
+	filter: blur(5px);
+	/* transition: all ease 0.5s; */
+}
 
+.kmui-modal.kmui-dialog-help .kmui-modal-header {
+	display: none;
+}
+.kmui-modal.kmui-dialog-help .kmui-modal-body {
+	position: fixed;
+	left: 0;
+	top: 85px;
+	right: 0;
+	bottom: 0;
+	max-height: 1000000px;
+	background: hsla(222, 14%, 41%, 0.8);
+}
 .shortcuts-opt {
     margin: 0px 7px;
     background-color: #fff;
@@ -7,6 +27,7 @@
 .shortcuts-group {
 	padding-right: 15px;
     width: 220px;
+	text-shadow: none;
 }
 .shortcuts-thead {
     font-size: 14px;
@@ -31,7 +52,7 @@
 	border-bottom: 1px solid #EEE;
     display: none;
 }
-table {
+.shortcuts-table  {
     max-width: 100%;
     background-color: transparent;
     border-collapse: collapse;
@@ -40,36 +61,103 @@ table {
     margin-left: 10px;
     margin-top: 30px;
 }
-td {
+.shortcuts-table tr:first-child td span{
+	padding: 10px 0;
+	font-size: 18px;
+	display: block;
+	color: white;
+}
+.shortcuts-table td {
     display: table-cell;
     float: none;
     margin-left: 0px;
-    padding-bottom: 6px;
+    padding-bottom: 7px;
 }
-h2 {
+.shortcuts-table td[colspan] {
+	text-align: center;
+}
+.shortcuts-table h2 {
 	font-size: 31.5px;
 	line-height: 40px;
 }
-body {
+.help-container {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
     line-height: 20px;
-    color: #333;
+    color: hsl(0, 100%, 100%);
+	
+    text-shadow: 0 1px black;
+    margin: 30px;
 }
-.label {
+.shortcuts-key {
     display: inline-block;
-    padding: 2px 4px;
+    padding: 3px 8px 5px;
     font-size: 14px;
     font-weight: normal;
     line-height: 14px;
-    color: #000;
-    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25);
+    color: hsl(0, 0%, 43%);
+    /* text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25); */
     white-space: nowrap;
     vertical-align: baseline;
-    background-color: #fff;
+    background-color: hsl(0, 0%, 99%);
     border-radius: 3px;
-    border: 1px inset #999;
+    border: 1px solid hsl(0, 0%, 60%);
+	text-transform: capitalize;
+    box-shadow: inset 0 -2px hsl(0, 0%, 92%), inset 0 -3px hsl(0, 100%, 100%);
 }
-.right {
+.mac .shortcuts-key.ctrl,
+.mac .shortcuts-key.shift,
+.mac .shortcuts-key.alt,
+.shortcuts-key.up,
+.shortcuts-key.down,
+.shortcuts-key.left,
+.shortcuts-key.right {
+	text-indent: -1000px;
+	position: relative;
+	width: 9px;
+}
+.mac .shortcuts-key.ctrl:after,
+.mac .shortcuts-key.shift:after,
+.mac .shortcuts-key.alt:after,
+.shortcuts-key.up:after,
+.shortcuts-key.down:after,
+.shortcuts-key.left:after,
+.shortcuts-key.right:after {
+	display: block;
+	position: absolute;
+	text-align: center;
+	left: 5px;
+	top: 4px;
+	width: 16px;
+	height: 16px;
+	text-indent: 0;
+}
+
+.mac .shortcuts-key.ctrl:after {
+    content: '⌘';
+}
+.mac .shortcuts-key.shift:after {
+    content: '⇧';
+}
+.mac .shortcuts-key.alt:after {
+    content: '⌥';
+}
+.shortcuts-key.up:after {
+    content: '↑';
+	top: 2px;
+}
+.shortcuts-key.down:after {
+    content: '↓';
+	top: 2px;
+}
+.shortcuts-key.left:after {
+    content: '←';
+	top: 2px;
+}
+.shortcuts-key.right:after {
+    content: '→';
+	top: 2px;
+}
+div.right {
     float: right;
 }
