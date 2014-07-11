@@ -33,6 +33,16 @@ KM.registerToolbarUI('markers help preference resource', function(name) {
             }
             KM.setWidgetBody(name, $dialog, me);
         }).attachTo($btn);
+
+        if (name == 'help') {
+            $dialog.kmui().on('beforeshow', function() {
+                $btn.kmui().active(true);
+                $('.kmui-editor-body').addClass('blur');
+            }).on('beforehide', function() {
+                $btn.kmui().active(false);
+                $('.kmui-editor-body').removeClass('blur');
+            });
+        }
     });
 
     me.on('interactchange', function() {
