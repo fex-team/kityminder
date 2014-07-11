@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-10
+ * kityminder - v1.1.3 - 2014-07-11
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -1842,7 +1842,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'NumLock': 144,
 
     'Cmd': 91,
-
+    'CmdFF':224,
     'F2': 113,
     'F3': 114,
     'F4': 115,
@@ -1866,25 +1866,42 @@ var keymap = KityMinder.keymap = (function(origin) {
     'n': 78,
     '/': 191,
     '.': 190,
-    'notContentInput': {
-        8: 1,
-        46: 1,
+    controlKeys:{
+        16:1,
+        17:1,
+        18:1,
+        20:1,
+        91:1,
+        224:1
+    },
+    'notContentChange': {
         13: 1,
         9: 1,
+
         33: 1,
         34: 1,
         35: 1,
         36: 1,
+
         16: 1,
         17: 1,
         18: 1,
+        20: 1,
+        91: 1,
+
         //上下左右
         37: 1,
         38: 1,
         39: 1,
         40: 1,
-        113: 1
+
+        113: 1,
+        114: 1,
+        115: 1,
+        144: 1,
+        27: 1
     },
+
     'isSelectedNodeKey': {
         //上下左右
         37: 1,
@@ -1895,6 +1912,7 @@ var keymap = KityMinder.keymap = (function(origin) {
         9: 1
     },
     'a':65
+
 });
 
 //添加多语言模块
@@ -4079,7 +4097,8 @@ KityMinder.registerModule('Expand', function() {
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
             },
-            'beforekeydown': function(e) {
+            'normal.keydown': function(e) {
+                if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
                     var expanded = this.getSelectedNode().isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
@@ -5282,7 +5301,6 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
             }
-            console.log('touchstart');
         })
 
         .on('hand.beforemousemove hand.beforetouchmove', function(e) {
@@ -6344,10 +6362,21 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setColor(color);
 
 
-
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
+
+            if(browser.ie ){
+                var timer = setInterval(function(){
+                    var nativeRange = range.nativeSel.getRangeAt(0);
+                    if(!nativeRange || nativeRange.collapsed){
+                        range.select();
+                    }else {
+                        clearInterval(timer);
+                    }
+                });
+            }
+
 
             receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
 
@@ -6421,7 +6450,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         if(selectionReadyShow){
 
                             textShape.setStyle('cursor', 'text');
-                            sel.clearBaseOffset();
+
                             receiver.updateSelection();
                             setTimeout(function() {
                                 sel.setShow();
@@ -6476,7 +6505,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
-                    sel.clearBaseOffset();
+
 
                     node.getTextShape().setStyle('cursor', 'text');
 
@@ -6505,7 +6534,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }else {
                     //当有光标时，要同步选区
                     if(!sel.collapsed){
-                        sel.clearBaseOffset();
+
                         receiver.updateContainerRangeBySel();
                     }
 
@@ -6608,6 +6637,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
+
         }
     };
 });
@@ -6657,10 +6687,18 @@ Minder.Range = kity.createClass('Range',{
             startOffset:range.startOffset
         };
     },
-
+    getStartOffset:function(){
+        return this.nativeRange.startOffset;
+    },
+    getEndOffset:function(){
+        return this.nativeRange.endOffset;
+    },
     collapse:function(toStart){
         this.nativeRange.collapse(toStart === true);
         return this;
+    },
+    isCollapsed:function(){
+        return this.nativeRange.collapsed;
     },
     insertNode:function(node){
         this.nativeRange.insertNode(node);
@@ -6671,6 +6709,7 @@ Minder.Range = kity.createClass('Range',{
         this.nativeRange = this.nativeSel.getRangeAt(0);
         return this;
     }
+
 });
 
 //接收者
@@ -6711,7 +6750,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             });
         }
         utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug#?/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
-        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup normal.keydown normal.keyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
         this.selection = sel;
@@ -6723,7 +6762,8 @@ Minder.Receiver = kity.createClass('Receiver', {
 
         var text = this.container.firstChild;
         this.range = range;
-        range.setStart(text || this.container, this.index).collapse(true);
+        range.setStart(text || this.container, this.index)
+        range.collapse(true);
         var me = this;
 
         setTimeout(function() {
@@ -6788,13 +6828,19 @@ Minder.Receiver = kity.createClass('Receiver', {
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer(keyCode) {
+        function setTextToContainer() {
+
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
+
+
+            if(keymap.controlKeys[keyCode]){
+                return;
+            }
             //当第一次输入内容时进行保存
-            if(me.lastMinderNode !== me.minderNode){
+            if(me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]){
                 me.km.fire('saveScene',{
                     inputStatus:true
                 });
@@ -6828,7 +6874,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
             //移动光标不做layout
-            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && !orgEvt.ctrlKey){
+            if(!keymap.notContentChange[keyCode]){
                 clearTimeout(me.inputTextTimer);
 
                 me.inputTextTimer = setTimeout(function(){
@@ -6843,15 +6889,16 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             me.setBaseOffset();
             me.updateTextOffsetData();
-            me.updateIndex();
-            me.updateSelection();
+            me.updateRange();
+            me.updateSelectionByRange();
+
+            me.updateSelectionShow();
             me.timer = setTimeout(function() {
                 if(me.selection.isShow())
                     me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');
-            me.selection.clearBaseOffset();
         }
 
         function restoreTextContent(){
@@ -6875,7 +6922,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     });
                 }
                 break;
-
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
 
@@ -6899,102 +6945,41 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.down:
                     case keymap.Backspace:
                     case keymap.Del:
+                    case keymap['/']:
                         if(this.selection.isHide()){
                             restoreTextContent();
                             this.km.setStatus('normal');
                             return;
                         }
-                        if(!orgEvt.shiftKey){
-                            this.selection.baseOffset =
-                            this.selection.currentEndOffset = null;
-                        }
                         break;
-                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-//                    case keymap.Del:
-//                    case keymap.Backspace:
-
-                        if(this.selection.isHide()){
+                        if(this.selection.isHide() && this.km.getStatus() != 'inputready'){
                             this.km.setStatus('normal');
                             return;
                         }
 
                 }
-                //针对按住shift+方向键进行处理
-                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
-                    if(this.selection.baseOffset === null){
-                        this.selection.baseOffset = this.selection.startOffset;
-                        this.selection.currentEndOffset = this.selection.endOffset;
-                    }
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.currentEndOffset++;
-                        if(this.selection.currentEndOffset > textlength){
-                            this.selection.currentEndOffset = textlength;
-                        }
 
-                    }else if(keymap.left == keyCode){
-                        this.selection.currentEndOffset--;
-                        if(this.selection.currentEndOffset < 0){
-                            this.selection.currentEndOffset = 0;
-                        }
+                if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
-                    }else if(keymap.up == keyCode){
-                        this.selection.currentEndOffset = 0;
-                        this.selection.baseOffset = this.selection.endOffset;
-                    }else{
-                        this.selection.currentEndOffset = textlength;
-                    }
-
-                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
-                        this.selection.setEndOffset(this.selection.currentEndOffset);
-                        if(this.selection.currentEndOffset == this.selection.baseOffset){
-                            this.selection.setStartOffset(this.selection.baseOffset);
-                        }
-                    }else{
-                        this.selection.setStartOffset(this.selection.currentEndOffset);
-                        this.selection.setEndOffset(this.selection.baseOffset);
-                    }
-
-                    this.updateContainerRangeBySel();
-
-                    this.updateSelectionShow();
-
-                    e.preventDefault();
-                    return;
-                }else if(keymap.direction[keyCode]){
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                }
-
-                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
-
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.setStartOffset(textlength).collapse(true);
-                    }else if(keymap.left == keyCode){
-                        this.selection.setStartOffset(0).collapse(true);
-                    }else{
-                        e.preventDefault();
+                    //选中节点时的复制粘贴，要变成normal
+                    if(this.selection.isHide() && {
+                        86:1,
+                        88:1,
+                        67:1
+                    }[keyCode]){
+                        restoreTextContent();
+                        this.km.setStatus('normal');
                         return;
                     }
-
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                    this.updateContainerRangeBySel();
-                    this.updateSelectionShow();
-                    e.preventDefault();
-                    return;
-                }
-                if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
                     if (keyCode == keymap.v) {
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
                             me.container.innerHTML = utils.unhtml(me.container.textContent.replace(/[\u200b\t\r\n]/g, ''));
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
@@ -7006,30 +6991,16 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     //剪切
                     if (keyCode == keymap.x) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             setTextToContainer(keyCode);
                         }, 100);
                         return;
                     }
-                    //全选键位监控
-                    if (keymap.a == keyCode) {
-                        if(me.selection.isHide()){
-                            return;
-                        }else{
-                            me.selection
-                                .setStartOffset(0)
-                                .setEndOffset(me.textShape.getContent().length);
-                            me.updateContainerRangeBySel().updateSelectionShow();
-                            return;
-                        }
-                    }
 
 
                 }
-
-
                 //针对不能连续删除做处理
-                if(keymap.Del || keymap.Backspace)
+                if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                     setTextToContainer(keyCode);
                 break;
 
@@ -7081,9 +7052,49 @@ Minder.Receiver = kity.createClass('Receiver', {
                     setTextToContainer(keyCode);
                     return;
                 }
-                if(this.selection.baseOffset === null && this.selection.collapsed)
-                    setTextToContainer(keyCode);
+                setTextToContainer(keyCode);
+
                 return true;
+
+            case 'keyup':
+                var node = this.km.getSelectedNode();
+                if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
+                    if (node && this.km.isSingleSelect() && node.isSelected()) {
+
+                        var color = node.getStyle('text-selection-color');
+
+                        //准备输入状态
+                        var textShape = node.getTextShape();
+
+                        this.selection.setHide()
+                            .setStartOffset(0)
+                            .setEndOffset(textShape.getContent().length)
+                            .setColor(color);
+
+
+                        this
+                            .setMinderNode(node)
+                            .updateContainerRangeBySel();
+
+                        if(browser.ie ){
+                            var timer = setInterval(function(){
+                                var nativeRange = this.range.nativeSel.getRangeAt(0);
+                                if(!nativeRange || nativeRange.collapsed){
+                                    this.range.select();
+                                }else {
+                                    clearInterval(timer);
+                                }
+                            });
+                        }
+
+
+                        this.minderNode.setTmpData('_lastTextContent',this.textShape.getContent());
+
+                        this.km.setStatus('inputready');
+
+                    }
+                }
+
         }
 
     },
@@ -7274,23 +7285,29 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.updateShow(startOffset, width);
         return this;
     },
-    updateRange: function(range) {
-        range = range || this.range;
-        var node = this.container.firstChild;
-        range.setStart(node, this.selection.startOffset);
-        range.setEnd(node, this.selection.endOffset);
-        if(browser.gecko){
-            this.container.focus();
-            setTimeout(function(){
-                range.select();
-            });
-        }else{
-            range.select();
-        }
+    updateRange: function() {
+        this.range.updateNativeRange();
         return this;
     },
     updateContainerRangeBySel:function(){
-       return this.updateRange(this.range);
+        var me = this;
+        var node = this.container.firstChild;
+        this.range.setStart(node, this.selection.startOffset);
+        this.range.setEnd(node, this.selection.endOffset);
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                me.range.select();
+            });
+        }else{
+            this.range.select();
+        }
+        return this;
+    },
+    updateSelectionByRange:function(){
+        this.selection.setStartOffset(this.range.getStartOffset());
+        this.selection.setEndOffset(this.range.getEndOffset());
+        return this;
     },
     setIndex: function(index) {
         this.index = index;
@@ -7425,9 +7442,6 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     isHide:function(){
         return !this._show;
-    },
-    clearBaseOffset:function(){
-        this.baseOffset = this.currentEndOffset = null;
     }
 } );
 
@@ -10471,6 +10485,16 @@ KM.registerToolbarUI('markers help preference resource', function(name) {
             }
             KM.setWidgetBody(name, $dialog, me);
         }).attachTo($btn);
+
+        if (name == 'help') {
+            $dialog.kmui().on('beforeshow', function() {
+                $btn.kmui().active(true);
+                $('.kmui-editor-body').addClass('blur');
+            }).on('beforehide', function() {
+                $btn.kmui().active(false);
+                $('.kmui-editor-body').removeClass('blur');
+            });
+        }
     });
 
     me.on('interactchange', function() {
