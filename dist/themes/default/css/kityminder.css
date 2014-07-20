@@ -242,7 +242,7 @@ button#share-btn:hover {
 .kmui-editor-body {
     position: absolute;
     left: 0;
-    top: 37px;
+    top: 0;
     right: 0;
     bottom: 0;
 }

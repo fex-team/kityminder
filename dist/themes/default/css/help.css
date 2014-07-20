@@ -4,6 +4,7 @@
 	-mz-filter: blur(5px);
 	-o-filter: blur(5px);
 	filter: blur(5px);
+    filter: url(../images/blur.svg#blur);
 	/* transition: all ease 0.5s; */
 }
 
@@ -26,7 +27,8 @@
 }
 .shortcuts-group {
 	padding-right: 15px;
-    width: 220px;
+    
+	width: 200px;
 	text-shadow: none;
 }
 .shortcuts-thead {
@@ -101,9 +103,9 @@
     vertical-align: baseline;
     background-color: hsl(0, 0%, 99%);
     border-radius: 3px;
-    border: 1px solid hsl(0, 0%, 60%);
+    /* border: 1px solid hsl(0, 0%, 60%); */
 	text-transform: capitalize;
-    box-shadow: inset 0 -2px hsl(0, 0%, 92%), inset 0 -3px hsl(0, 100%, 100%);
+    box-shadow: inset 0 -2px hsl(0, 0%, 92%), inset 0 -3px hsl(0, 100%, 100%), 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 .mac .shortcuts-key.ctrl,
 .mac .shortcuts-key.shift,

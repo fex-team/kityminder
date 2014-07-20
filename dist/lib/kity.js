@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kity - v2.0.0 - 2014-07-08
+ * kity - v2.0.0 - 2014-07-11
  * https://github.com/fex-team/kity
  * GitHub: https://github.com/fex-team/kity.git 
  * Copyright (c) 2014 Baidu FEX; Licensed BSD
@@ -6025,9 +6025,15 @@ define("graphic/use", [ "graphic/svg", "core/class", "graphic/shape", "core/util
     var Use = Class.createClass("Use", {
         base: require("graphic/shape"),
         constructor: function(shape) {
-            var shapeId = null;
             this.callBase("use");
-            shapeId = shape.getId();
+            this.ref(shape);
+        },
+        ref: function(shape) {
+            if (!shape) {
+                this.node.removeAttributeNS(Svg.xlink, "xlink:href");
+                return this;
+            }
+            var shapeId = shape.getId();
             if (shapeId) {
                 this.node.setAttributeNS(Svg.xlink, "xlink:href", "#" + shapeId);
             }
@@ -6039,6 +6045,7 @@ define("graphic/use", [ "graphic/svg", "core/class", "graphic/shape", "core/util
             if (shape.node.getAttribute("stroke") === "none") {
                 shape.node.removeAttribute("stroke");
             }
+            return this;
         }
     });
     var Shape = require("graphic/shape");
