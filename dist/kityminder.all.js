@@ -6174,7 +6174,7 @@ KityMinder.registerModule('KeyboardModule', function() {
     var lastFrame;
     return {
         'events': {
-            'contentchange': function() {
+            'layoutfinish': function() {
                 var root = this.getRoot();
                 function build() {
                     buildPositionNetwork(root);
