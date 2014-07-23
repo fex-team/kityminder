@@ -16,8 +16,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
     move: function(offset, duration) {
         if (!duration) {
             this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        }
-        else {
+        } else {
             this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
         }
     },
@@ -42,23 +41,26 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         }
 
-        this._minder.on('normal.mousedown normal.touchstart inputready.mousedown readonly.mousedown readonly.touchstart', function(e) {
+        this._minder.on('normal.mousedown normal.touchstart ' +
+            'inputready.mousedown inputready.touchstart ' +
+            'readonly.mousedown readonly.touchstart', function(e) {
+                if (e.originEvent.button == 2) {
+                    e.originEvent.preventDefault(); // 阻止中键拉动
+                }
+                // 点击未选中的根节点临时开启
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                    lastPosition = e.getPosition();
+                    isTempDrag = true;
+                }
+            })
 
-            if (e.originEvent.button == 2) {
-                e.originEvent.preventDefault(); // 阻止中键拉动
-            }
-            // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
-                lastPosition = e.getPosition();
-                isTempDrag = true;
-            }
-        })
-
-        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove inputready.mousemove', function(e) {
-            if (!isTempDrag) return;
-            var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-            if (offset.length() > 3) this.setStatus('hand');
-        })
+        .on('normal.mousemove normal.touchmove ' +
+            'readonly.touchmove readonly.mousemove ' +
+            'inputready.mousemove inputready.touchmove', function(e) {
+                if (!isTempDrag) return;
+                var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
+                if (offset.length() > 3) this.setStatus('hand');
+            })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
