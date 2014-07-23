@@ -7,7 +7,7 @@ kity.extendClass(Minder, {
         this._commands = {};
         this._query = {};
         this._modules = {};
-        this._renderers = {};
+        this._rendererClasses = {};
 
         var i, name, type, module, moduleDeals,
             dealCommands, dealEvents, dealRenderers;
@@ -51,12 +51,12 @@ kity.extendClass(Minder, {
             if (dealRenderers) {
 
                 for (type in dealRenderers) {
-                    this._renderers[type] = this._renderers[type] || [];
+                    this._rendererClasses[type] = this._rendererClasses[type] || [];
 
                     if (Utils.isArray(dealRenderers[type])) {
-                        this._renderers[type] = this._renderers[type].concat(dealRenderers[type]);
+                        this._rendererClasses[type] = this._rendererClasses[type].concat(dealRenderers[type]);
                     } else {
-                        this._renderers[type].push(dealRenderers[type]);
+                        this._rendererClasses[type].push(dealRenderers[type]);
                     }
                 }
             }

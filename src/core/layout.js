@@ -192,7 +192,7 @@ kity.extendClass(Minder, {
     },
 
     refresh: function(duration) {
-        this.getRoot().preTraverse(function(node) { node.render(); });
+        this.getRoot().renderTree();
         this.layout(duration).fire('contentchange').fire('interactchange');
         return this;
     },
@@ -200,6 +200,9 @@ kity.extendClass(Minder, {
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+
+        // 节点复杂度大于 100，关闭动画
+        // if (root.getComplex() > 100) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
@@ -219,22 +222,21 @@ kity.extendClass(Minder, {
             matrix.m.e = Math.round(matrix.m.e);
             matrix.m.f = Math.round(matrix.m.f);
 
-            if (!matrix.equals(lastMatrix) || true) {
+            if (!matrix.equals(lastMatrix)) {
 
                 // 如果当前有动画，停止动画
                 if (node._layoutTimeline) {
                     node._layoutTimeline.stop();
-                    delete node._layoutTimeline;
+                    node._layoutTimeline = null;
                 }
 
                 // 如果要求以动画形式来更新，创建动画
-                if (duration > 0) {
+                if (duration) {
                     node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
-                        .start(node, duration, 'ease')
+                        .start(node, duration + 300, 'ease')
                         .on('finish', function() {
-                            // 可能性能低的时候会丢帧
-                            clearTimeout(node._lastFixTimeout);
-                            node._lastFixTimeout = setTimeout(function() {
+                            //可能性能低的时候会丢帧，手动添加一帧
+                            kity.Timeline.requestFrame(function() {
                                 applyMatrix(node, matrix);
                                 me.fire('layoutfinish', {
                                     node: node,

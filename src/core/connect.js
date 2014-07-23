@@ -72,7 +72,7 @@ KityMinder.registerModule('Connect', {
         'nodeattach': function(e) {
             this.createConnect(e.node);
         },
-        'noderemove': function(e) {
+        'nodedetach': function(e) {
             this.removeConnect(e.node);
         },
         'layoutapply noderender': function(e) {

@@ -43,7 +43,14 @@ KityMinder.registerModule('Zoom', function() {
         if (timeline) {
             timeline.pause();
         }
-        timeline = animator.start(minder, 300, 'easeInOutSine');
+        function setTextRendering(value) {
+            minder.getRoot().traverse(function(node) {
+                node.getTextShape().setAttr('text-rendering', value);
+            });
+        }
+        setTextRendering(value >= 100 ? 'optimize-speed' : 'geometricPrecision');
+        timeline = animator.start(minder, 300, 'easeInOutSine', function() {
+        });
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
