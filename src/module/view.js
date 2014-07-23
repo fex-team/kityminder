@@ -28,6 +28,20 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
+        function dragEnd(e) {
+            lastPosition = null;
+
+            e.stopPropagation();
+
+            // 临时拖动需要还原状态
+            if (isTempDrag) {
+                dragger.setEnabled(false);
+                isTempDrag = false;
+                if (dragger._minder.getStatus() == 'hand')
+                    dragger._minder.rollbackStatus();
+            }
+        }
+
         this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
 
             if (e.originEvent.button == 2) {
@@ -68,16 +82,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup touchend', function(e) {
-            lastPosition = null;
+        .on('mouseup touchend', dragEnd);
 
-            // 临时拖动需要还原状态
-            if (isTempDrag) {
-                dragger.setEnabled(false);
-                isTempDrag = false;
-                this.rollbackStatus();
-            }
-        });
+        window.addEventListener('mouseup', dragEnd);
     }
 });
 

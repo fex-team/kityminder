@@ -123,8 +123,8 @@ kity.extendClass(Minder, (function() {
             }
 
             for (j = 0; j < nodes.length; j++) {
-                this.fire('afterrender', {
-                    node: node
+                this.fire('noderender', {
+                    node: nodes[j]
                 });
             }
         },
