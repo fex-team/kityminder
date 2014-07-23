@@ -42,7 +42,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         }
 
-        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+        this._minder.on('normal.mousedown normal.touchstart inputready.mousedown readonly.mousedown readonly.touchstart', function(e) {
 
             if (e.originEvent.button == 2) {
                 e.originEvent.preventDefault(); // 阻止中键拉动
@@ -54,7 +54,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
+        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove inputready.mousemove', function(e) {
             if (!isTempDrag) return;
             var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
             if (offset.length() > 3) this.setStatus('hand');
