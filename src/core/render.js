@@ -216,6 +216,6 @@ kity.extendClass(MinderNode, {
     },
     getContentBox: function() {
         //if (!this._contentBox) this.render();
-        return this.parent && this.parent.isCollapsed() ? new kity.Box() : this._contentBox;
+        return this.parent && this.parent.isCollapsed() ? new kity.Box() : (this._contentBox || new kity.Box());
     }
 });

@@ -181,8 +181,8 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
                 lastStatus:this._status,
                 currentStatus:status
             });
-            console.log(window.event.type, this._status, '->', status);
-            console.trace();
+            // console.log(window.event.type, this._status, '->', status);
+            // console.trace();
             this._rollbackStatus = this._status;
             this._status = status;
         }

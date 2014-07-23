@@ -34,6 +34,7 @@ kity.extendClass(Minder, {
         }
 
         this._connectContainer.addShape(connection);
+        this.updateConnect(node);
     },
 
     removeConnect: function(node) {
