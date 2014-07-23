@@ -1,4 +1,4 @@
-KityMinder.registerModule("KeyboardModule", function() {
+KityMinder.registerModule('KeyboardModule', function() {
     var min = Math.min,
         max = Math.max,
         abs = Math.abs,
@@ -127,11 +127,16 @@ KityMinder.registerModule("KeyboardModule", function() {
             km.select(nextNode, true);
         }
     }
+    var lastFrame;
     return {
-
         'events': {
-            'contentchange layoutfinish': function() {
-                buildPositionNetwork(this.getRoot());
+            'contentchange': function() {
+                var root = this.getRoot();
+                function build() {
+                    buildPositionNetwork(root);
+                }
+                kity.Timeline.releaseFrame(lastFrame);
+                lastFrame = kity.Timeline.requestFrame(build);
             },
             'normal.keydown': function(e) {
 

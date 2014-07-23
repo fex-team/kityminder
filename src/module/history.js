@@ -89,7 +89,8 @@ KityMinder.registerModule("HistoryModule", function() {
                 if (child.isSelected()) {
                     selectedNodes.push(child);
                 }
-                km.appendNode(child,parent);
+                km.appendNode(child, parent);
+                child._lastLayoutTransform = parent._lastLayoutTransform;
                 child.render();
 
                 var children = utils.cloneArr(child.children);
@@ -123,7 +124,7 @@ KityMinder.registerModule("HistoryModule", function() {
             }
 
             traverseNode(km.getRoot(), target);
-            km.layout();
+            km.layout(200);
 
             km.select(selectedNodes,true);
 
