@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-23
+ * kityminder - v1.2.1 - 2014-07-24
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -14,7 +14,7 @@ var KityMinder = window.KM = window.KityMinder = function() {
         instanceId = 0,
         uuidMap = {};
     return {
-        version: '1.2.0',
+        version: '1.2.1',
         uuid: function(name) {
             name = name || 'unknown';
             uuidMap[name] = uuidMap[name] || 0;
@@ -2472,9 +2472,14 @@ kity.extendClass(Minder, {
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+        var complex = root.getComplex();
+
+        function consume() {
+            if (!--complex) me.fire('layoutallfinish');
+        }
 
         // 节点复杂度大于 100，关闭动画
-        // if (root.getComplex() > 100) duration = 0;
+        if (complex > 300) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
@@ -2514,6 +2519,7 @@ kity.extendClass(Minder, {
                                     node: node,
                                     matrix: matrix
                                 });
+                                consume();
                             });
                         });
                 }
@@ -2525,7 +2531,19 @@ kity.extendClass(Minder, {
                         node: node,
                         matrix: matrix
                     });
+                    consume();
                 }
+            } else {
+                // 可能位置没有改变，但是相关布局变量变了
+                me.fire('layoutapply', {
+                    node: node,
+                    matrix: matrix
+                });
+                me.fire('layoutfinish', {
+                    node: node,
+                    matrix: matrix
+                });
+                consume();
             }
 
             for (var i = 0; i < node.children.length; i++) {
@@ -2710,7 +2728,7 @@ KityMinder.registerModule('Connect', {
         'nodedetach': function(e) {
             this.removeConnect(e.node);
         },
-        'layoutapply noderender': function(e) {
+        'layoutapply layoutfinish noderender': function(e) {
             this.updateConnect(e.node);
         }
     }
@@ -2841,8 +2859,8 @@ kity.extendClass(Minder, (function() {
             }
 
             for (j = 0; j < nodes.length; j++) {
-                this.fire('afterrender', {
-                    node: node
+                this.fire('noderender', {
+                    node: nodes[j]
                 });
             }
         },
@@ -3140,6 +3158,7 @@ KityMinder.registerModule('TemplateModule', {
 
             execute: function(minder, name) {
                 minder.useTemplate(name);
+                minder.execCommand('camera');
             },
 
             queryValue: function(minder) {
@@ -3923,7 +3942,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         return new kity.Text()
             .setId(KityMinder.uuid('node_text'))
             .setVerticalAlign('middle')
-            .setAttr('text-rendering', 'default');
+            .setAttr('text-rendering', 'inherit');
     },
 
     update: function(text, node) {
@@ -4039,9 +4058,7 @@ KityMinder.registerModule('Expand', function() {
     function setExpandState(node, state, policy) {
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        node.traverse(function(node) {
-            node.render();
-        });
+        node.renderTree();
         node.getMinder().layout(100);
     }
 
@@ -4144,7 +4161,7 @@ KityMinder.registerModule('Expand', function() {
             var pathData = ['M', 1.5 - this.radius, 0, 'L', this.radius - 1.5, 0];
             if (state == STATE_COLLAPSE) {
                 pathData.push(['M', 0, 1.5 - this.radius, 'L', 0, this.radius - 1.5]);
-            }
+            }       
             this.sign.setPathData(pathData);
         }
     });
@@ -4201,7 +4218,9 @@ KityMinder.registerModule('Expand', function() {
             'normal.keydown': function(e) {
                 if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
-                    var expanded = this.getSelectedNode().isExpanded();
+                    var node = this.getSelectedNode();
+                    if (!node) return;
+                    var expanded = node.isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
                         else node.expand();
@@ -5367,8 +5386,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
     move: function(offset, duration) {
         if (!duration) {
             this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        }
-        else {
+        } else {
             this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
         }
     },
@@ -5379,23 +5397,40 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+        function dragEnd(e) {
+            lastPosition = null;
 
-            if (e.originEvent.button == 2) {
-                e.originEvent.preventDefault(); // 阻止中键拉动
-            }
-            // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
-                lastPosition = e.getPosition();
-                isTempDrag = true;
-            }
-        })
+            e.stopPropagation();
 
-        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
-            if (!isTempDrag) return;
-            var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-            if (offset.length() > 3) this.setStatus('hand');
-        })
+            // 临时拖动需要还原状态
+            if (isTempDrag) {
+                dragger.setEnabled(false);
+                isTempDrag = false;
+                if (dragger._minder.getStatus() == 'hand')
+                    dragger._minder.rollbackStatus();
+            }
+        }
+
+        this._minder.on('normal.mousedown normal.touchstart ' +
+            'inputready.mousedown inputready.touchstart ' +
+            'readonly.mousedown readonly.touchstart', function(e) {
+                if (e.originEvent.button == 2) {
+                    e.originEvent.preventDefault(); // 阻止中键拉动
+                }
+                // 点击未选中的根节点临时开启
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                    lastPosition = e.getPosition();
+                    isTempDrag = true;
+                }
+            })
+
+        .on('normal.mousemove normal.touchmove ' +
+            'readonly.touchmove readonly.mousemove ' +
+            'inputready.mousemove inputready.touchmove', function(e) {
+                if (!isTempDrag) return;
+                var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
+                if (offset.length() > 3) this.setStatus('hand');
+            })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
@@ -5419,16 +5454,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup touchend', function(e) {
-            lastPosition = null;
+        .on('mouseup touchend', dragEnd);
 
-            // 临时拖动需要还原状态
-            if (isTempDrag) {
-                dragger.setEnabled(false);
-                isTempDrag = false;
-                this.rollbackStatus();
-            }
-        });
+        window.addEventListener('mouseup', dragEnd);
     }
 });
 
@@ -5761,6 +5789,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
                 if (opacity < 1) minder.detachNode(node);
                 else minder.attachNode(node);
             }, true);
+            if (opacity < 1) {
+                minder.removeConnect(source);
+            } else {
+                minder.createConnect(source);
+            }
         });
     },
 
@@ -6174,13 +6207,17 @@ KityMinder.registerModule('KeyboardModule', function() {
     var lastFrame;
     return {
         'events': {
-            'layoutfinish': function() {
+            'layoutallfinish': function() {
                 var root = this.getRoot();
                 function build() {
                     buildPositionNetwork(root);
                 }
                 kity.Timeline.releaseFrame(lastFrame);
                 lastFrame = kity.Timeline.requestFrame(build);
+            },
+            'inputready.beforekeydown': function(e) {
+                var keyEvent = e.originEvent;
+                if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
             },
             'normal.keydown': function(e) {
 
@@ -6192,7 +6229,10 @@ KityMinder.registerModule('KeyboardModule', function() {
 
                 var keyEvent = e.originEvent;
 
-                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
+                    if ([keys.Tab].indexOf(keyEvent.keyCode)) e.preventDefault;
+                    return;
+                }
 
                 switch (keyEvent.keyCode) {
                     case keys.Enter:
@@ -7068,7 +7108,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                        if(this.selection.isHide() && this.km.getStatus() != 'inputready'){
+                        if(this.selection.isHide() && this.km.getStatus() != 'textedit'){
                             this.km.setStatus('normal');
                             return;
                         }
@@ -7786,6 +7826,11 @@ KityMinder.registerModule('Zoom', function() {
 
     me.setDefaultOptions('zoom', [10, 20, 30, 50, 80, 100, 120, 150, 200]);
 
+    function setTextRendering() {
+        var value = me._zoomValue >= 100 ? 'optimize-speed' : 'geometricPrecision';
+        me.getRenderContainer().setAttr('text-rendering', value);
+    }
+
     function fixPaperCTM(paper) {
         var node = paper.shapeNode;
         var ctm = node.getCTM();
@@ -7804,6 +7849,9 @@ KityMinder.registerModule('Zoom', function() {
             };
             paper.setViewPort(viewport);
             if (value == 100) fixPaperCTM(paper);
+        },
+        getZoomValue: function() {
+            return this._zoomValue;
         }
     });
 
@@ -7813,6 +7861,12 @@ KityMinder.registerModule('Zoom', function() {
 
         if (!value) return;
 
+        setTextRendering();
+
+        if (minder.getRoot().getComplex() > 200) {
+            minder._zoomValue = value;
+            return minder.zoom(value);
+        }
         var animator = new kity.Animator({
             beginValue: minder._zoomValue,
             finishValue: value,
@@ -7824,14 +7878,7 @@ KityMinder.registerModule('Zoom', function() {
         if (timeline) {
             timeline.pause();
         }
-        function setTextRendering(value) {
-            minder.getRoot().traverse(function(node) {
-                node.getTextShape().setAttr('text-rendering', value);
-            });
-        }
-        setTextRendering(value >= 100 ? 'optimize-speed' : 'geometricPrecision');
-        timeline = animator.start(minder, 300, 'easeInOutSine', function() {
-        });
+        timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
@@ -7883,6 +7930,7 @@ KityMinder.registerModule('Zoom', function() {
     return {
         init: function() {
             this._zoomValue = 100;
+            setTextRendering();
         },
         commands: {
             'zoom-in': ZoomInCommand,

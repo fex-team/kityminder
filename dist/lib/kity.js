@@ -372,6 +372,8 @@ define("animate/frame", [], function(require, exports) {
     var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(fn) {
         return setTimeout(fn, 1e3 / 60);
     };
+    var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || window.clearTimeout;
+    var frameRequestId;
     // 等待执行的帧的集合，这些帧的方法将在下个动画帧同步执行
     var pendingFrames = [];
     /**
@@ -381,7 +383,7 @@ define("animate/frame", [], function(require, exports) {
      */
     function pushFrame(frame) {
         if (pendingFrames.push(frame) === 1) {
-            requestAnimationFrame(executePendingFrames);
+            frameRequestId = requestAnimationFrame(executePendingFrames);
         }
     }
     /**
@@ -393,6 +395,7 @@ define("animate/frame", [], function(require, exports) {
         while (frames.length) {
             executeFrame(frames.pop());
         }
+        frameRequestId = 0;
     }
     /**
      * 请求一个帧，执行指定的动作。动作回调提供一些有用的信息
@@ -432,6 +435,9 @@ define("animate/frame", [], function(require, exports) {
         var index = pendingFrames.indexOf(frame);
         if (~index) {
             pendingFrames.splice(index, 1);
+        }
+        if (pendingFrames.length === 0) {
+            cancelAnimationFrame(frameRequestId);
         }
     }
     /**
