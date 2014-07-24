@@ -200,9 +200,14 @@ kity.extendClass(Minder, {
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+        var complex = root.getComplex();
+
+        function consume() {
+            if (!--complex) me.fire('layoutallfinish');
+        }
 
         // 节点复杂度大于 100，关闭动画
-        if (root.getComplex() > 300) duration = 0;
+        if (complex > 300) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
@@ -242,6 +247,7 @@ kity.extendClass(Minder, {
                                     node: node,
                                     matrix: matrix
                                 });
+                                consume();
                             });
                         });
                 }
@@ -253,6 +259,7 @@ kity.extendClass(Minder, {
                         node: node,
                         matrix: matrix
                     });
+                    consume();
                 }
             } else {
                 // 可能位置没有改变，但是相关布局变量变了
@@ -264,6 +271,7 @@ kity.extendClass(Minder, {
                     node: node,
                     matrix: matrix
                 });
+                consume();
             }
 
             for (var i = 0; i < node.children.length; i++) {

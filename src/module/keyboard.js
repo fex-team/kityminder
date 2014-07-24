@@ -130,13 +130,17 @@ KityMinder.registerModule('KeyboardModule', function() {
     var lastFrame;
     return {
         'events': {
-            'layoutfinish': function() {
+            'layoutallfinish': function() {
                 var root = this.getRoot();
                 function build() {
                     buildPositionNetwork(root);
                 }
                 kity.Timeline.releaseFrame(lastFrame);
                 lastFrame = kity.Timeline.requestFrame(build);
+            },
+            'inputready.beforekeydown': function(e) {
+                var keyEvent = e.originEvent;
+                if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
             },
             'normal.keydown': function(e) {
 
@@ -148,7 +152,10 @@ KityMinder.registerModule('KeyboardModule', function() {
 
                 var keyEvent = e.originEvent;
 
-                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
+                    if ([keys.Tab].indexOf(keyEvent.keyCode)) e.preventDefault;
+                    return;
+                }
 
                 switch (keyEvent.keyCode) {
                     case keys.Enter:

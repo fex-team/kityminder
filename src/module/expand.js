@@ -72,9 +72,7 @@ KityMinder.registerModule('Expand', function() {
     function setExpandState(node, state, policy) {
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        node.traverse(function(node) {
-            node.render();
-        });
+        node.renderTree();
         node.getMinder().layout(100);
     }
 
