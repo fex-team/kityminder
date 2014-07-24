@@ -123,6 +123,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
         if (!this._dragMode) {
             return;
         }
+
+        this._fadeDragSources(1);
+
         if (this._dropSucceedTarget) {
 
             this._dragSources.forEach(function(source) {
@@ -195,8 +198,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._dragSources.forEach(function(source) {
             source.getRenderContainer().fxOpacity(opacity, 200);
             source.traverse(function(node) {
-                if (opacity < 1) minder.detachNode(node);
-                else minder.attachNode(node);
+                if (opacity < 1) {
+                    minder.detachNode(node);
+                } else {
+                    minder.attachNode(node);
+                }
             }, true);
             if (opacity < 1) {
                 minder.removeConnect(source);
@@ -260,7 +266,6 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _leaveDragMode: function() {
-        this._fadeDragSources(1);
         this._dragMode = false;
         this._dropSucceedTarget = null;
         this._orderSucceedHint = null;
