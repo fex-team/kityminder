@@ -988,19 +988,28 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._status = 'normal';
         this._rollbackStatus = 'normal';
     },
-    setStatus: function(status) {
-        if (status != this._status) {
-            this.fire('statuschange',{
-                lastStatus:this._status,
-                currentStatus:status
-            });
-            // console.log(window.event.type, this._status, '->', status);
-            // console.trace();
-            this._rollbackStatus = this._status;
-            this._status = status;
-        }
-        return this;
-    },
+    setStatus: (function() {
+        var sf = ~window.location.href.indexOf('status');
+        var tf = ~window.location.href.indexOf('trace');
+
+        return function(status) {
+            if (status != this._status) {
+                this._rollbackStatus = this._status;
+                this._status = status;
+                this.fire('statuschange', {
+                    lastStatus: this._rollbackStatus,
+                    currentStatus: this._status
+                });
+                if (sf) {
+                    console.log(window.event.type, this._rollbackStatus, '->', this._status);
+                    if (tf) {
+                        console.trace();
+                    }
+                }
+            }
+            return this;
+        };
+    })(),
     rollbackStatus: function() {
         this.setStatus(this._rollbackStatus);
     },
@@ -4219,7 +4228,7 @@ KityMinder.registerModule('Expand', function() {
                 if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
                     var node = this.getSelectedNode();
-                    if (!node) return;
+                    if (!node || node == this.getRoot()) return;
                     var expanded = node.isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
@@ -5714,6 +5723,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
         if (!this._dragMode) {
             return;
         }
+
+        this._fadeDragSources(1);
+
         if (this._dropSucceedTarget) {
 
             this._dragSources.forEach(function(source) {
@@ -5763,6 +5775,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._calcDropTargets();
         this._calcOrderHints();
         this._dragMode = true;
+        this._minder.setStatus('dragtree');
         return true;
     },
 
@@ -5786,14 +5799,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._dragSources.forEach(function(source) {
             source.getRenderContainer().fxOpacity(opacity, 200);
             source.traverse(function(node) {
-                if (opacity < 1) minder.detachNode(node);
-                else minder.attachNode(node);
+                if (opacity < 1) {
+                    minder.detachNode(node);
+                } else {
+                    minder.attachNode(node);
+                }
             }, true);
-            if (opacity < 1) {
-                minder.removeConnect(source);
-            } else {
-                minder.createConnect(source);
-            }
         });
     },
 
@@ -5851,12 +5862,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _leaveDragMode: function() {
-        this._fadeDragSources(1);
         this._dragMode = false;
         this._dropSucceedTarget = null;
         this._orderSucceedHint = null;
         this._renderDropHint(null);
         this._renderOrderHint(null);
+        this._minder.rollbackStatus();
     },
 
     _drawForDragMode: function() {
@@ -5938,6 +5949,9 @@ KityMinder.registerModule('DragTree', function() {
     return {
         init: function() {
             dragger = new TreeDragger(this);
+            window.addEventListener('mouseup', function() {
+                dragger.dragEnd();
+            });
         },
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
@@ -5947,12 +5961,13 @@ KityMinder.registerModule('DragTree', function() {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
-            'normal.mousemove': function(e) {
+            'normal.mousemove dragtree.mousemove': function(e) {
                 dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
-            'normal.mouseup': function(e) {
-                dragger.dragEnd(e.getPosition(this.getRenderContainer()));
-                e.stopPropagation();
+            'normal.mouseup dragtree.beforemouseup': function(e) {
+                dragger.dragEnd();
+                //e.stopPropagation();
+                e.preventDefault();
                 this.fire('contentchange');
             },
             'statuschange': function(e) {

@@ -175,6 +175,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._calcDropTargets();
         this._calcOrderHints();
         this._dragMode = true;
+        this._minder.setStatus('dragtree');
         return true;
     },
 
@@ -204,11 +205,6 @@ var TreeDragger = kity.createClass('TreeDragger', {
                     minder.attachNode(node);
                 }
             }, true);
-            if (opacity < 1) {
-                minder.removeConnect(source);
-            } else {
-                minder.createConnect(source);
-            }
         });
     },
 
@@ -271,6 +267,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._orderSucceedHint = null;
         this._renderDropHint(null);
         this._renderOrderHint(null);
+        this._minder.rollbackStatus();
     },
 
     _drawForDragMode: function() {
@@ -352,6 +349,9 @@ KityMinder.registerModule('DragTree', function() {
     return {
         init: function() {
             dragger = new TreeDragger(this);
+            window.addEventListener('mouseup', function() {
+                dragger.dragEnd();
+            });
         },
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
@@ -361,12 +361,13 @@ KityMinder.registerModule('DragTree', function() {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
-            'normal.mousemove': function(e) {
+            'normal.mousemove dragtree.mousemove': function(e) {
                 dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
-            'normal.mouseup': function(e) {
-                dragger.dragEnd(e.getPosition(this.getRenderContainer()));
-                e.stopPropagation();
+            'normal.mouseup dragtree.beforemouseup': function(e) {
+                dragger.dragEnd();
+                //e.stopPropagation();
+                e.preventDefault();
                 this.fire('contentchange');
             },
             'statuschange': function(e) {

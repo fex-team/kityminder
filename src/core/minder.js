@@ -175,19 +175,28 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._status = 'normal';
         this._rollbackStatus = 'normal';
     },
-    setStatus: function(status) {
-        if (status != this._status) {
-            this.fire('statuschange',{
-                lastStatus:this._status,
-                currentStatus:status
-            });
-            // console.log(window.event.type, this._status, '->', status);
-            // console.trace();
-            this._rollbackStatus = this._status;
-            this._status = status;
-        }
-        return this;
-    },
+    setStatus: (function() {
+        var sf = ~window.location.href.indexOf('status');
+        var tf = ~window.location.href.indexOf('trace');
+
+        return function(status) {
+            if (status != this._status) {
+                this._rollbackStatus = this._status;
+                this._status = status;
+                this.fire('statuschange', {
+                    lastStatus: this._rollbackStatus,
+                    currentStatus: this._status
+                });
+                if (sf) {
+                    console.log(window.event.type, this._rollbackStatus, '->', this._status);
+                    if (tf) {
+                        console.trace();
+                    }
+                }
+            }
+            return this;
+        };
+    })(),
     rollbackStatus: function() {
         this.setStatus(this._rollbackStatus);
     },
