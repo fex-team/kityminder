@@ -232,7 +232,9 @@ KityMinder.registerModule('Expand', function() {
             'normal.keydown': function(e) {
                 if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
-                    var expanded = this.getSelectedNode().isExpanded();
+                    var node = this.getSelectedNode();
+                    if (!node) return;
+                    var expanded = node.isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
                         else node.expand();
