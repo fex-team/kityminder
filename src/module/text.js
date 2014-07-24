@@ -7,7 +7,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         return new kity.Text()
             .setId(KityMinder.uuid('node_text'))
             .setVerticalAlign('middle')
-            .setAttr('text-rendering', 'default');
+            .setAttr('text-rendering', 'inherit');
     },
 
     update: function(text, node) {
