@@ -198,6 +198,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
                 if (opacity < 1) minder.detachNode(node);
                 else minder.attachNode(node);
             }, true);
+            if (opacity < 1) {
+                minder.removeConnect(source);
+            } else {
+                minder.createConnect(source);
+            }
         });
     },
 

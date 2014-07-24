@@ -40,10 +40,10 @@ KityMinder.registerModule('Zoom', function() {
 
         if (!value) return;
 
-        minder._zoomValue = value;
         setTextRendering();
 
         if (minder.getRoot().getComplex() > 200) {
+            minder._zoomValue = value;
             return minder.zoom(value);
         }
         var animator = new kity.Animator({
@@ -53,6 +53,7 @@ KityMinder.registerModule('Zoom', function() {
                 target.zoom(value);
             }
         });
+        minder._zoomValue = value;
         if (timeline) {
             timeline.pause();
         }
