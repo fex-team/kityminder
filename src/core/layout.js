@@ -254,6 +254,16 @@ kity.extendClass(Minder, {
                         matrix: matrix
                     });
                 }
+            } else {
+                // 可能位置没有改变，但是相关布局变量变了
+                me.fire('layoutapply', {
+                    node: node,
+                    matrix: matrix
+                });
+                me.fire('layoutfinish', {
+                    node: node,
+                    matrix: matrix
+                });
             }
 
             for (var i = 0; i < node.children.length; i++) {
