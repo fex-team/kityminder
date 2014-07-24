@@ -61,6 +61,7 @@ KityMinder.registerModule('TemplateModule', {
 
             execute: function(minder, name) {
                 minder.useTemplate(name);
+                minder.execCommand('camera');
             },
 
             queryValue: function(minder) {

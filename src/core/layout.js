@@ -202,7 +202,7 @@ kity.extendClass(Minder, {
         var me = this;
 
         // 节点复杂度大于 100，关闭动画
-        // if (root.getComplex() > 100) duration = 0;
+        if (root.getComplex() > 300) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
