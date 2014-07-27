@@ -227,46 +227,33 @@ kity.extendClass(Minder, {
             matrix.m.e = Math.round(matrix.m.e);
             matrix.m.f = Math.round(matrix.m.f);
 
-            if (!matrix.equals(lastMatrix)) {
 
-                // 如果当前有动画，停止动画
-                if (node._layoutTimeline) {
-                    node._layoutTimeline.stop();
-                    node._layoutTimeline = null;
-                }
+            // 如果当前有动画，停止动画
+            if (node._layoutTimeline) {
+                node._layoutTimeline.stop();
+                node._layoutTimeline = null;
+            }
 
-                // 如果要求以动画形式来更新，创建动画
-                if (duration) {
-                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
-                        .start(node, duration + 300, 'ease')
-                        .on('finish', function() {
-                            //可能性能低的时候会丢帧，手动添加一帧
-                            kity.Timeline.requestFrame(function() {
-                                applyMatrix(node, matrix);
-                                me.fire('layoutfinish', {
-                                    node: node,
-                                    matrix: matrix
-                                });
-                                consume();
+            // 如果要求以动画形式来更新，创建动画
+            if (duration) {
+                node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
+                    .start(node, duration + 300, 'ease')
+                    .on('finish', function() {
+                        //可能性能低的时候会丢帧，手动添加一帧
+                        kity.Timeline.requestFrame(function() {
+                            applyMatrix(node, matrix);
+                            me.fire('layoutfinish', {
+                                node: node,
+                                matrix: matrix
                             });
+                            consume();
                         });
-                }
-
-                // 否则直接更新
-                else {
-                    applyMatrix(node, matrix);
-                    me.fire('layoutfinish', {
-                        node: node,
-                        matrix: matrix
                     });
-                    consume();
-                }
-            } else {
-                // 可能位置没有改变，但是相关布局变量变了
-                me.fire('layoutapply', {
-                    node: node,
-                    matrix: matrix
-                });
+            }
+
+            // 否则直接更新
+            else {
+                applyMatrix(node, matrix);
                 me.fire('layoutfinish', {
                     node: node,
                     matrix: matrix

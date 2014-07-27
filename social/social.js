@@ -740,9 +740,9 @@ $(function() {
 
         // 确定上传文件名
         if (!remotePath) {
-            filename = window.prompt('请输入文件名: ', minder.getMinderTitle().replace(/[\/\\\:\?\|\<\>\*]/g, ''));
+            filename = window.prompt('请输入文件名: ', minder.getMinderTitle().replace(/[\/\\\:\?\|\<\>\"\'\*]/g, ''));
             if (!filename) return;
-            filename = filename.replace(/[\/\\\:\?\|\<\>\*]/g, '');
+            filename = filename.replace(/[\/\\\:\?\|\<\>\"\'\*]/g, '');
             uploadPath = generateRemotePath(filename);
         } else {
             uploadPath = remotePath;
