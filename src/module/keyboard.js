@@ -1,4 +1,4 @@
-KityMinder.registerModule("KeyboardModule", function() {
+KityMinder.registerModule('KeyboardModule', function() {
     var min = Math.min,
         max = Math.max,
         abs = Math.abs,
@@ -127,11 +127,20 @@ KityMinder.registerModule("KeyboardModule", function() {
             km.select(nextNode, true);
         }
     }
+    var lastFrame;
     return {
-
         'events': {
-            'contentchange layoutfinish': function() {
-                buildPositionNetwork(this.getRoot());
+            'layoutallfinish': function() {
+                var root = this.getRoot();
+                function build() {
+                    buildPositionNetwork(root);
+                }
+                kity.Timeline.releaseFrame(lastFrame);
+                lastFrame = kity.Timeline.requestFrame(build);
+            },
+            'inputready.beforekeydown': function(e) {
+                var keyEvent = e.originEvent;
+                if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
             },
             'normal.keydown': function(e) {
 
@@ -143,7 +152,10 @@ KityMinder.registerModule("KeyboardModule", function() {
 
                 var keyEvent = e.originEvent;
 
-                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
+                    if ([keys.Tab].indexOf(keyEvent.keyCode)) e.preventDefault;
+                    return;
+                }
 
                 switch (keyEvent.keyCode) {
                     case keys.Enter:

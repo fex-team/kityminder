@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kity - v2.0.0 - 2014-07-08
+ * kity - v2.0.0 - 2014-07-23
  * https://github.com/fex-team/kity
  * GitHub: https://github.com/fex-team/kity.git 
  * Copyright (c) 2014 Baidu FEX; Licensed BSD
@@ -372,6 +372,8 @@ define("animate/frame", [], function(require, exports) {
     var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(fn) {
         return setTimeout(fn, 1e3 / 60);
     };
+    var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || window.clearTimeout;
+    var frameRequestId;
     // 等待执行的帧的集合，这些帧的方法将在下个动画帧同步执行
     var pendingFrames = [];
     /**
@@ -381,7 +383,7 @@ define("animate/frame", [], function(require, exports) {
      */
     function pushFrame(frame) {
         if (pendingFrames.push(frame) === 1) {
-            requestAnimationFrame(executePendingFrames);
+            frameRequestId = requestAnimationFrame(executePendingFrames);
         }
     }
     /**
@@ -393,6 +395,7 @@ define("animate/frame", [], function(require, exports) {
         while (frames.length) {
             executeFrame(frames.pop());
         }
+        frameRequestId = 0;
     }
     /**
      * 请求一个帧，执行指定的动作。动作回调提供一些有用的信息
@@ -432,6 +435,9 @@ define("animate/frame", [], function(require, exports) {
         var index = pendingFrames.indexOf(frame);
         if (~index) {
             pendingFrames.splice(index, 1);
+        }
+        if (pendingFrames.length === 0) {
+            cancelAnimationFrame(frameRequestId);
         }
     }
     /**
@@ -1661,12 +1667,12 @@ define("graphic/box", [ "core/class" ], function(require, exports, module) {
             this.y = y || 0;
             this.width = width || 0;
             this.height = height || 0;
-            this.left = x;
+            this.left = this.x;
             this.right = this.x + this.width;
             this.top = this.y;
             this.bottom = this.y + this.height;
-            this.cx = x + this.width / 2;
-            this.cy = y + this.height / 2;
+            this.cx = this.x + this.width / 2;
+            this.cy = this.y + this.height / 2;
         },
         getRangeX: function() {
             return [ this.left, this.right ];
@@ -3174,22 +3180,37 @@ define("graphic/geometry", [ "core/utils", "graphic/point", "core/class", "graph
      *
      * @return {Number} 贝塞尔曲线的长度
      */
-    g.bezierLength = cacher(function bezierLength(bezierArray, tolerate) {
-        // 切割成多少段来计算
-        tolerate = Math.max(tolerate || .001, 1e-9);
-        function len(p, q) {
-            var dx = p[0] - q[0], dy = p[1] - q[1];
-            return Math.sqrt(dx * dx + dy * dy);
+    g.bezierLength = cacher(function bezierLength(bezierArray) {
+        // 表示（c[0]*t^4 + c[1]*t^3 + c[2]*t^2 + c[3]*t^1 + c[4])^(1/2)的函数
+        function f(x) {
+            var m = c0 * Math.pow(x, 4) + c1 * Math.pow(x, 3) + c2 * Math.pow(x, 2) + c3 * x + c4;
+            if (m < 0) {
+                m = 0;
+            }
+            return Math.pow(m, .5);
         }
-        var cutted, p, q, m, cuttedLength;
-        cutted = cutBezier(bezierArray);
-        p = bezierArray.slice(0, 2);
-        q = bezierArray.slice(6);
-        m = cutted[1].slice(0, 2);
-        cuttedLength = len(p, m) + len(m, q);
-        if (cuttedLength - len(p, q) < tolerate) return cuttedLength;
-        // 递归计算
-        return bezierLength(cutted[0], tolerate / 2) + bezierLength(cutted[1], tolerate / 3);
+        // 用Newton-Cotes型求积公式
+        var arr = bezierArray;
+        // 三次贝塞尔曲线函数求导后，求出对应的方程系数，用cx[],cy[]表示x`(t)和y`(t)的系数
+        var cx0, cx1, cx2;
+        var cy0, cy1, cy2;
+        // 用c[]表示x`(t)^2 + y`(t)^2的结果的系数
+        var c0, c1, c2, c3, c4;
+        // 求x`(t) 和 y`(t)的系数
+        cx0 = -3 * arr[0] + 9 * arr[2] - 9 * arr[4] + 3 * arr[6];
+        cx1 = 6 * arr[0] - 12 * arr[2] + 6 * arr[4];
+        cx2 = -3 * arr[0] + 3 * arr[2];
+        cy0 = -3 * arr[1] + 9 * arr[3] - 9 * arr[5] + 3 * arr[7];
+        cy1 = 6 * arr[1] - 12 * arr[3] + 6 * arr[5];
+        cy2 = -3 * arr[1] + 3 * arr[3];
+        // 求x`(t)^2 + y`(t)^2的结果的系数 c[]
+        c0 = Math.pow(cx0, 2) + Math.pow(cy0, 2);
+        c1 = 2 * (cx0 * cx1 + cy0 * cy1);
+        c2 = 2 * (cx0 * cx2 + cy0 * cy2) + Math.pow(cx1, 2) + Math.pow(cy1, 2);
+        c3 = 2 * (cx1 * cx2 + cy1 * cy2);
+        c4 = Math.pow(cx2, 2) + Math.pow(cy2, 2);
+        // 用cotes积分公式求值
+        return (f(0) + f(1) + 4 * (f(.125) + f(.375) + f(.625) + f(.875)) + 2 * (f(.25) + f(.5) + f(.75))) / 24;
     });
     // 计算一个 pathSegment 中每一段的在整体中所占的长度范围，以及总长度
     // 方法要求每一段都是贝塞尔曲线
@@ -5171,6 +5192,7 @@ define("graphic/shape", [ "graphic/svg", "core/utils", "graphic/eventhandler", "
             } else {
                 this.node.setAttribute(a, v);
             }
+            return this;
         },
         getAttr: function(a) {
             return this.node.getAttribute(a);
@@ -6025,9 +6047,15 @@ define("graphic/use", [ "graphic/svg", "core/class", "graphic/shape", "core/util
     var Use = Class.createClass("Use", {
         base: require("graphic/shape"),
         constructor: function(shape) {
-            var shapeId = null;
             this.callBase("use");
-            shapeId = shape.getId();
+            this.ref(shape);
+        },
+        ref: function(shape) {
+            if (!shape) {
+                this.node.removeAttributeNS(Svg.xlink, "xlink:href");
+                return this;
+            }
+            var shapeId = shape.getId();
             if (shapeId) {
                 this.node.setAttributeNS(Svg.xlink, "xlink:href", "#" + shapeId);
             }
@@ -6039,6 +6067,7 @@ define("graphic/use", [ "graphic/svg", "core/class", "graphic/shape", "core/util
             if (shape.node.getAttribute("stroke") === "none") {
                 shape.node.removeAttribute("stroke");
             }
+            return this;
         }
     });
     var Shape = require("graphic/shape");

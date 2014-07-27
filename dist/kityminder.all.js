@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.1.3 - 2014-07-10
+ * kityminder - v1.2.1 - 2014-07-24
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -14,7 +14,7 @@ var KityMinder = window.KM = window.KityMinder = function() {
         instanceId = 0,
         uuidMap = {};
     return {
-        version: '1.2.0',
+        version: '1.2.1',
         uuid: function(name) {
             name = name || 'unknown';
             uuidMap[name] = uuidMap[name] || 0;
@@ -988,21 +988,30 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._status = 'normal';
         this._rollbackStatus = 'normal';
     },
-    setStatus: function(status) {
-        if (status) {
-            this.fire('statuschange',{
-                lastStatus:this._status,
-                currentStatus:status
-            });
-            this._rollbackStatus = this._status;
-            this._status = status;
-        } else {
-            this._status = '';
-        }
-        return this;
-    },
+    setStatus: (function() {
+        var sf = ~window.location.href.indexOf('status');
+        var tf = ~window.location.href.indexOf('trace');
+
+        return function(status) {
+            if (status != this._status) {
+                this._rollbackStatus = this._status;
+                this._status = status;
+                this.fire('statuschange', {
+                    lastStatus: this._rollbackStatus,
+                    currentStatus: this._status
+                });
+                if (sf) {
+                    console.log(window.event.type, this._rollbackStatus, '->', this._status);
+                    if (tf) {
+                        console.trace();
+                    }
+                }
+            }
+            return this;
+        };
+    })(),
     rollbackStatus: function() {
-        this._status = this._rollbackStatus;
+        this.setStatus(this._rollbackStatus);
     },
     getStatus: function() {
         return this._status;
@@ -1413,7 +1422,7 @@ kity.extendClass(Minder, {
         this._commands = {};
         this._query = {};
         this._modules = {};
-        this._renderers = {};
+        this._rendererClasses = {};
 
         var i, name, type, module, moduleDeals,
             dealCommands, dealEvents, dealRenderers;
@@ -1457,12 +1466,12 @@ kity.extendClass(Minder, {
             if (dealRenderers) {
 
                 for (type in dealRenderers) {
-                    this._renderers[type] = this._renderers[type] || [];
+                    this._rendererClasses[type] = this._rendererClasses[type] || [];
 
                     if (Utils.isArray(dealRenderers[type])) {
-                        this._renderers[type] = this._renderers[type].concat(dealRenderers[type]);
+                        this._rendererClasses[type] = this._rendererClasses[type].concat(dealRenderers[type]);
                     } else {
-                        this._renderers[type].push(dealRenderers[type]);
+                        this._rendererClasses[type].push(dealRenderers[type]);
                     }
                 }
             }
@@ -1610,46 +1619,45 @@ kity.extendClass(Minder, {
 
     createNode: function(unknown, parent, index) {
         var node = new MinderNode(unknown);
-        this.fire('nodecreate', {
-            node: node
-        });
+        this.fire('nodecreate', { node: node });
         this.appendNode(node,parent, index);
         return node;
     },
 
     appendNode: function(node, parent, index) {
         if (parent) parent.insertChild(node, index);
-        this.handelNodeCreate(node);
-        this.fire('nodeattach', {
-            node: node
-        });
+        this.attachNode(node);
         return this;
     },
 
     removeNode: function(node) {
         if (node.parent) {
             node.parent.removeChild(node);
-            this.handelNodeRemove(node);
-            this.fire('noderemove', {
-                node: node
-            });
+            this.detachNode(node);
+            this.fire('noderemove', { node: node });
         }
     },
 
-    handelNodeCreate: function(node) {
+    attachNode: function(node) {
         var rc = this._rc;
         node.traverse(function(current) {
             current.attached = true;
             rc.addShape(current.getRenderContainer());
         });
         rc.addShape(node.getRenderContainer());
+        this.fire('nodeattach', {
+            node: node
+        });
     },
 
-    handelNodeRemove: function(node) {
+    detachNode: function(node) {
         var rc = this._rc;
         node.traverse(function(current) {
             current.attached = false;
             rc.removeShape(current.getRenderContainer());
+        });
+        this.fire('nodedetach', {
+            node: node
         });
     },
 
@@ -1842,7 +1850,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'NumLock': 144,
 
     'Cmd': 91,
-
+    'CmdFF':224,
     'F2': 113,
     'F3': 114,
     'F4': 115,
@@ -1866,25 +1874,42 @@ var keymap = KityMinder.keymap = (function(origin) {
     'n': 78,
     '/': 191,
     '.': 190,
-    'notContentInput': {
-        8: 1,
-        46: 1,
+    controlKeys:{
+        16:1,
+        17:1,
+        18:1,
+        20:1,
+        91:1,
+        224:1
+    },
+    'notContentChange': {
         13: 1,
         9: 1,
+
         33: 1,
         34: 1,
         35: 1,
         36: 1,
+
         16: 1,
         17: 1,
         18: 1,
+        20: 1,
+        91: 1,
+
         //上下左右
         37: 1,
         38: 1,
         39: 1,
         40: 1,
-        113: 1
+
+        113: 1,
+        114: 1,
+        115: 1,
+        144: 1,
+        27: 1
     },
+
     'isSelectedNodeKey': {
         //上下左右
         37: 1,
@@ -1895,6 +1920,7 @@ var keymap = KityMinder.keymap = (function(origin) {
         9: 1
     },
     'a':65
+
 });
 
 //添加多语言模块
@@ -2447,7 +2473,7 @@ kity.extendClass(Minder, {
     },
 
     refresh: function(duration) {
-        this.getRoot().preTraverse(function(node) { node.render(); });
+        this.getRoot().renderTree();
         this.layout(duration).fire('contentchange').fire('interactchange');
         return this;
     },
@@ -2455,6 +2481,14 @@ kity.extendClass(Minder, {
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+        var complex = root.getComplex();
+
+        function consume() {
+            if (!--complex) me.fire('layoutallfinish');
+        }
+
+        // 节点复杂度大于 100，关闭动画
+        if (complex > 300) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
@@ -2474,39 +2508,38 @@ kity.extendClass(Minder, {
             matrix.m.e = Math.round(matrix.m.e);
             matrix.m.f = Math.round(matrix.m.f);
 
-            if (!matrix.equals(lastMatrix) || true) {
 
-                // 如果当前有动画，停止动画
-                if (node._layoutTimeline) {
-                    node._layoutTimeline.stop();
-                    delete node._layoutTimeline;
-                }
+            // 如果当前有动画，停止动画
+            if (node._layoutTimeline) {
+                node._layoutTimeline.stop();
+                node._layoutTimeline = null;
+            }
 
-                // 如果要求以动画形式来更新，创建动画
-                if (duration > 0) {
-                    node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
-                        .start(node, duration, 'ease')
-                        .on('finish', function() {
-                            // 可能性能低的时候会丢帧
-                            clearTimeout(node._lastFixTimeout);
-                            node._lastFixTimeout = setTimeout(function() {
-                                applyMatrix(node, matrix);
-                                me.fire('layoutfinish', {
-                                    node: node,
-                                    matrix: matrix
-                                });
+            // 如果要求以动画形式来更新，创建动画
+            if (duration) {
+                node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
+                    .start(node, duration + 300, 'ease')
+                    .on('finish', function() {
+                        //可能性能低的时候会丢帧，手动添加一帧
+                        kity.Timeline.requestFrame(function() {
+                            applyMatrix(node, matrix);
+                            me.fire('layoutfinish', {
+                                node: node,
+                                matrix: matrix
                             });
+                            consume();
                         });
-                }
-
-                // 否则直接更新
-                else {
-                    applyMatrix(node, matrix);
-                    me.fire('layoutfinish', {
-                        node: node,
-                        matrix: matrix
                     });
-                }
+            }
+
+            // 否则直接更新
+            else {
+                applyMatrix(node, matrix);
+                me.fire('layoutfinish', {
+                    node: node,
+                    matrix: matrix
+                });
+                consume();
             }
 
             for (var i = 0; i < node.children.length; i++) {
@@ -2649,6 +2682,7 @@ kity.extendClass(Minder, {
         }
 
         this._connectContainer.addShape(connection);
+        this.updateConnect(node);
     },
 
     removeConnect: function(node) {
@@ -2687,10 +2721,10 @@ KityMinder.registerModule('Connect', {
         'nodeattach': function(e) {
             this.createConnect(e.node);
         },
-        'noderemove': function(e) {
+        'nodedetach': function(e) {
             this.removeConnect(e.node);
         },
-        'layoutapply noderender': function(e) {
+        'layoutapply layoutfinish noderender': function(e) {
             this.updateConnect(e.node);
         }
     }
@@ -2722,93 +2756,187 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
     }
 });
 
-kity.extendClass(Minder, {
+kity.extendClass(Minder, (function() {
 
-    _createRendererForNode: function(node) {
-
-        var registered = this._renderers;
+    function createRendererForNode(node, registered) {
         var renderers = [];
 
         ['center', 'left', 'right', 'top', 'bottom', 'outline', 'outside'].forEach(function(section) {
-            if (registered['before' + section]) {
-                renderers = renderers.concat(registered['before' + section]);
+            var before = 'before' + section;
+            var after = 'after' + section;
+
+            if (registered[before]) {
+                renderers = renderers.concat(registered[before]);
             }
             if (registered[section]) {
                 renderers = renderers.concat(registered[section]);
             }
-            if (registered['after' + section]) {
-                renderers = renderers.concat(registered['after' + section]);
+            if (registered[after]) {
+                renderers = renderers.concat(registered[after]);
             }
         });
 
         node._renderers = renderers.map(function(Renderer) {
             return new Renderer(node);
         });
-    },
+    }
 
-    renderNode: function(node) {
+    return {
 
-        var rendererClasses = this._renderers;
-        var g = KityMinder.Geometry;
-        var i, latestBox, renderer;
+        renderNodeBatch: function(nodes) {
+            var rendererClasses = this._rendererClasses;
+            var lastBoxes = [];
+            var rendererCount = 0;
+            var i, j, renderer, node;
 
-        if (!node._renderers) {
-            this._createRendererForNode(node);
-        }
+            if (!nodes.length) return;
 
-        this.fire('beforerender', {node: node});
+            for (j = 0; j < nodes.length; j++) {
+                node = nodes[j];
+                if (!node._renderers) {
+                    createRendererForNode(node, rendererClasses);
+                }
+                node._contentBox = new kity.Box();
+                this.fire('beforerender', {
+                    node: node
+                });
+            }
 
-        node._contentBox = g.wrapBox({
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-        });
+            // 所有节点渲染器数量是一致的
+            rendererCount = nodes[0]._renderers.length;
 
-        node._renderers.forEach(function(renderer) {
+            for (i = 0; i < rendererCount; i++) {
 
-            // 判断当前上下文是否应该渲染
-            if (renderer.shouldRender(node)) {
-
-                // 应该渲染，但是渲染图形没创建过，需要创建
-                if (!renderer.getRenderShape()) {
-                    renderer.setRenderShape(renderer.create(node));
-                    if (renderer.bringToBack) {
-                        node.getRenderContainer().prependShape(renderer.getRenderShape());
-                    } else {
-                        node.getRenderContainer().appendShape(renderer.getRenderShape());
+                // 获取延迟盒子数据
+                for (j = 0; j < nodes.length; j++) {
+                    if (typeof(lastBoxes[j]) == 'function') {
+                        lastBoxes[j] = lastBoxes[j]();
+                    }
+                    if (!(lastBoxes[j] instanceof kity.Box)) {
+                        lastBoxes[j] = new kity.Box(lastBoxes[j]);
                     }
                 }
 
-                // 强制让渲染图形显示
-                renderer.getRenderShape().setVisible(true);
+                for (j = 0; j < nodes.length; j++) {
+                    node = nodes[j];
+                    renderer = node._renderers[i];
 
-                // 更新渲染图形
-                latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+                    // 合并盒子
+                    if (lastBoxes[j]) {
+                        node._contentBox = node._contentBox.merge(lastBoxes[j]);
+                    }
 
-                // 合并渲染区域
-                if (latestBox) {
-                    node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                    // 判断当前上下文是否应该渲染
+                    if (renderer.shouldRender(node)) {
+
+                        // 应该渲染，但是渲染图形没创建过，需要创建
+                        if (!renderer.getRenderShape()) {
+                            renderer.setRenderShape(renderer.create(node));
+                            if (renderer.bringToBack) {
+                                node.getRenderContainer().prependShape(renderer.getRenderShape());
+                            } else {
+                                node.getRenderContainer().appendShape(renderer.getRenderShape());
+                            }
+                        }
+
+                        // 强制让渲染图形显示
+                        renderer.getRenderShape().setVisible(true);
+
+                        // 更新渲染图形
+                        lastBoxes[j] = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+                    }
+
+                    // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                    else if (renderer.getRenderShape()) {
+                        renderer.getRenderShape().setVisible(false);
+                        lastBoxes[j] = null;
+                    }
                 }
             }
 
-            // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
-            else if (renderer.getRenderShape()) {
-                renderer.getRenderShape().setVisible(false);
+            for (j = 0; j < nodes.length; j++) {
+                this.fire('noderender', {
+                    node: nodes[j]
+                });
+            }
+        },
+
+        renderNode: function(node) {
+            var rendererClasses = this._rendererClasses;
+            var g = KityMinder.Geometry;
+            var i, latestBox, renderer;
+
+            if (!node._renderers) {
+                createRendererForNode(node, rendererClasses);
             }
 
-        });
+            this.fire('beforerender', {
+                node: node
+            });
 
-        this.fire('noderender', {
-            node: node
-        });
-    }
-});
+            node._contentBox = g.wrapBox({
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
+            });
+
+            node._renderers.forEach(function(renderer) {
+
+                // 判断当前上下文是否应该渲染
+                if (renderer.shouldRender(node)) {
+
+                    // 应该渲染，但是渲染图形没创建过，需要创建
+                    if (!renderer.getRenderShape()) {
+                        renderer.setRenderShape(renderer.create(node));
+                        if (renderer.bringToBack) {
+                            node.getRenderContainer().prependShape(renderer.getRenderShape());
+                        } else {
+                            node.getRenderContainer().appendShape(renderer.getRenderShape());
+                        }
+                    }
+
+                    // 强制让渲染图形显示
+                    renderer.getRenderShape().setVisible(true);
+
+                    // 更新渲染图形
+                    latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+
+                    if (typeof(latestBox) == 'function') latestBox = latestBox();
+
+                    // 合并渲染区域
+                    if (latestBox) {
+                        node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                    }
+                }
+
+                // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                else if (renderer.getRenderShape()) {
+                    renderer.getRenderShape().setVisible(false);
+                }
+
+            });
+
+            this.fire('noderender', {
+                node: node
+            });
+        }
+    };
+})());
 
 kity.extendClass(MinderNode, {
     render: function() {
         if (!this.attached) return;
         this.getMinder().renderNode(this);
+        return this;
+    },
+    renderTree: function() {
+        if (!this.attached) return;
+        var list = [];
+        this.traverse(function(node) {
+            list.push(node);
+        });
+        this.getMinder().renderNodeBatch(list);
         return this;
     },
     getRenderer: function(type) {
@@ -2820,7 +2948,7 @@ kity.extendClass(MinderNode, {
     },
     getContentBox: function() {
         //if (!this._contentBox) this.render();
-        return this.parent && this.parent.isCollapsed() ? new kity.Box() : this._contentBox;
+        return this.parent && this.parent.isCollapsed() ? new kity.Box() : (this._contentBox || new kity.Box());
     }
 });
 
@@ -3026,6 +3154,7 @@ KityMinder.registerModule('TemplateModule', {
 
             execute: function(minder, name) {
                 minder.useTemplate(name);
+                minder.execCommand('camera');
             },
 
             queryValue: function(minder) {
@@ -3808,7 +3937,8 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
     create: function() {
         return new kity.Text()
             .setId(KityMinder.uuid('node_text'))
-            .setVerticalAlign('middle');
+            .setVerticalAlign('middle')
+            .setAttr('text-rendering', 'inherit');
     },
 
     update: function(text, node) {
@@ -3818,7 +3948,9 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         if (kity.Browser.ie) {
             box.y += 1;
         }
-        return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
+        return function() {
+            return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
+        };
     },
 
     setTextStyle: function(node, text) {
@@ -3922,10 +4054,8 @@ KityMinder.registerModule('Expand', function() {
     function setExpandState(node, state, policy) {
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        node.traverse(function(node) {
-            node.render();
-        });
-        node.getMinder().layout(200);
+        node.renderTree();
+        node.getMinder().layout(100);
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
@@ -4027,7 +4157,7 @@ KityMinder.registerModule('Expand', function() {
             var pathData = ['M', 1.5 - this.radius, 0, 'L', this.radius - 1.5, 0];
             if (state == STATE_COLLAPSE) {
                 pathData.push(['M', 0, 1.5 - this.radius, 'L', 0, this.radius - 1.5]);
-            }
+            }       
             this.sign.setPathData(pathData);
         }
     });
@@ -4076,12 +4206,17 @@ KityMinder.registerModule('Expand', function() {
             'beforerender': function(e) {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
+                var minder = this;
+
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
             },
-            'beforekeydown': function(e) {
+            'normal.keydown': function(e) {
+                if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
-                    var expanded = this.getSelectedNode().isExpanded();
+                    var node = this.getSelectedNode();
+                    if (!node || node == this.getRoot()) return;
+                    var expanded = node.isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
                         else node.expand();
@@ -4424,7 +4559,8 @@ KityMinder.registerModule("HistoryModule", function() {
                 if (child.isSelected()) {
                     selectedNodes.push(child);
                 }
-                km.appendNode(child,parent);
+                km.appendNode(child, parent);
+                child._lastLayoutTransform = parent._lastLayoutTransform;
                 child.render();
 
                 var children = utils.cloneArr(child.children);
@@ -4458,7 +4594,7 @@ KityMinder.registerModule("HistoryModule", function() {
             }
 
             traverseNode(km.getRoot(), target);
-            km.layout();
+            km.layout(200);
 
             km.select(selectedNodes,true);
 
@@ -5246,8 +5382,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
     move: function(offset, duration) {
         if (!duration) {
             this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        }
-        else {
+        } else {
             this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
         }
     },
@@ -5258,23 +5393,40 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+        function dragEnd(e) {
+            lastPosition = null;
 
-            if (e.originEvent.button == 2) {
-                e.originEvent.preventDefault(); // 阻止中键拉动
-            }
-            // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
-                lastPosition = e.getPosition();
-                isTempDrag = true;
-            }
-        })
+            e.stopPropagation();
 
-        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
-            if (!isTempDrag) return;
-            var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-            if (offset.length() > 3) this.setStatus('hand');
-        })
+            // 临时拖动需要还原状态
+            if (isTempDrag) {
+                dragger.setEnabled(false);
+                isTempDrag = false;
+                if (dragger._minder.getStatus() == 'hand')
+                    dragger._minder.rollbackStatus();
+            }
+        }
+
+        this._minder.on('normal.mousedown normal.touchstart ' +
+            'inputready.mousedown inputready.touchstart ' +
+            'readonly.mousedown readonly.touchstart', function(e) {
+                if (e.originEvent.button == 2) {
+                    e.originEvent.preventDefault(); // 阻止中键拉动
+                }
+                // 点击未选中的根节点临时开启
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                    lastPosition = e.getPosition();
+                    isTempDrag = true;
+                }
+            })
+
+        .on('normal.mousemove normal.touchmove ' +
+            'readonly.touchmove readonly.mousemove ' +
+            'inputready.mousemove inputready.touchmove', function(e) {
+                if (!isTempDrag) return;
+                var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
+                if (offset.length() > 3) this.setStatus('hand');
+            })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
@@ -5282,7 +5434,6 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
             }
-            console.log('touchstart');
         })
 
         .on('hand.beforemousemove hand.beforetouchmove', function(e) {
@@ -5299,16 +5450,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup touchend', function(e) {
-            lastPosition = null;
+        .on('mouseup touchend', dragEnd);
 
-            // 临时拖动需要还原状态
-            if (isTempDrag) {
-                dragger.setEnabled(false);
-                isTempDrag = false;
-                this.rollbackStatus();
-            }
-        });
+        window.addEventListener('mouseup', dragEnd);
     }
 });
 
@@ -5566,6 +5710,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
         if (!this._dragMode) {
             return;
         }
+
+        this._fadeDragSources(1);
+
         if (this._dropSucceedTarget) {
 
             this._dragSources.forEach(function(source) {
@@ -5615,6 +5762,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._calcDropTargets();
         this._calcOrderHints();
         this._dragMode = true;
+        this._minder.setStatus('dragtree');
         return true;
     },
 
@@ -5634,8 +5782,16 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _fadeDragSources: function(opacity) {
+        var minder = this._minder;
         this._dragSources.forEach(function(source) {
             source.getRenderContainer().fxOpacity(opacity, 200);
+            source.traverse(function(node) {
+                if (opacity < 1) {
+                    minder.detachNode(node);
+                } else {
+                    minder.attachNode(node);
+                }
+            }, true);
         });
     },
 
@@ -5693,12 +5849,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _leaveDragMode: function() {
-        this._fadeDragSources(1);
         this._dragMode = false;
         this._dropSucceedTarget = null;
         this._orderSucceedHint = null;
         this._renderDropHint(null);
         this._renderOrderHint(null);
+        this._minder.rollbackStatus();
     },
 
     _drawForDragMode: function() {
@@ -5780,6 +5936,9 @@ KityMinder.registerModule('DragTree', function() {
     return {
         init: function() {
             dragger = new TreeDragger(this);
+            window.addEventListener('mouseup', function() {
+                dragger.dragEnd();
+            });
         },
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
@@ -5789,12 +5948,13 @@ KityMinder.registerModule('DragTree', function() {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
-            'normal.mousemove': function(e) {
+            'normal.mousemove dragtree.mousemove': function(e) {
                 dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
-            'normal.mouseup': function(e) {
-                dragger.dragEnd(e.getPosition(this.getRenderContainer()));
-                e.stopPropagation();
+            'normal.mouseup dragtree.beforemouseup': function(e) {
+                dragger.dragEnd();
+                //e.stopPropagation();
+                e.preventDefault();
                 this.fire('contentchange');
             },
             'statuschange': function(e) {
@@ -5917,7 +6077,7 @@ KityMinder.registerModule('DropFile', function() {
     };
 });
 
-KityMinder.registerModule("KeyboardModule", function() {
+KityMinder.registerModule('KeyboardModule', function() {
     var min = Math.min,
         max = Math.max,
         abs = Math.abs,
@@ -6046,11 +6206,20 @@ KityMinder.registerModule("KeyboardModule", function() {
             km.select(nextNode, true);
         }
     }
+    var lastFrame;
     return {
-
         'events': {
-            'contentchange layoutfinish': function() {
-                buildPositionNetwork(this.getRoot());
+            'layoutallfinish': function() {
+                var root = this.getRoot();
+                function build() {
+                    buildPositionNetwork(root);
+                }
+                kity.Timeline.releaseFrame(lastFrame);
+                lastFrame = kity.Timeline.requestFrame(build);
+            },
+            'inputready.beforekeydown': function(e) {
+                var keyEvent = e.originEvent;
+                if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
             },
             'normal.keydown': function(e) {
 
@@ -6062,7 +6231,10 @@ KityMinder.registerModule("KeyboardModule", function() {
 
                 var keyEvent = e.originEvent;
 
-                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) return;
+                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
+                    if ([keys.Tab].indexOf(keyEvent.keyCode)) e.preventDefault;
+                    return;
+                }
 
                 switch (keyEvent.keyCode) {
                     case keys.Enter:
@@ -6344,10 +6516,21 @@ KityMinder.registerModule('TextEditModule', function() {
                 .setColor(color);
 
 
-
             receiver
                 .setMinderNode(node)
                 .updateContainerRangeBySel();
+
+            if(browser.ie ){
+                var timer = setInterval(function(){
+                    var nativeRange = range.nativeSel.getRangeAt(0);
+                    if(!nativeRange || nativeRange.collapsed){
+                        range.select();
+                    }else {
+                        clearInterval(timer);
+                    }
+                });
+            }
+
 
             receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
 
@@ -6421,7 +6604,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         if(selectionReadyShow){
 
                             textShape.setStyle('cursor', 'text');
-                            sel.clearBaseOffset();
+
                             receiver.updateSelection();
                             setTimeout(function() {
                                 sel.setShow();
@@ -6476,7 +6659,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
-                    sel.clearBaseOffset();
+
 
                     node.getTextShape().setStyle('cursor', 'text');
 
@@ -6505,7 +6688,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 }else {
                     //当有光标时，要同步选区
                     if(!sel.collapsed){
-                        sel.clearBaseOffset();
+
                         receiver.updateContainerRangeBySel();
                     }
 
@@ -6608,6 +6791,7 @@ KityMinder.registerModule('TextEditModule', function() {
             'textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
+
         }
     };
 });
@@ -6657,10 +6841,18 @@ Minder.Range = kity.createClass('Range',{
             startOffset:range.startOffset
         };
     },
-
+    getStartOffset:function(){
+        return this.nativeRange.startOffset;
+    },
+    getEndOffset:function(){
+        return this.nativeRange.endOffset;
+    },
     collapse:function(toStart){
         this.nativeRange.collapse(toStart === true);
         return this;
+    },
+    isCollapsed:function(){
+        return this.nativeRange.collapsed;
     },
     insertNode:function(node){
         this.nativeRange.insertNode(node);
@@ -6671,6 +6863,7 @@ Minder.Range = kity.createClass('Range',{
         this.nativeRange = this.nativeSel.getRangeAt(0);
         return this;
     }
+
 });
 
 //接收者
@@ -6711,7 +6904,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             });
         }
         utils.addCssRule('km_receiver_css', ' .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;' + (/\?debug#?/.test(location.href)?'':'clip:rect(1em 1em 1em 1em);'));
-        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
+        this.km.on('inputready.beforekeyup inputready.beforekeydown textedit.beforekeyup normal.keydown normal.keyup textedit.beforekeydown textedit.keypress textedit.paste', utils.proxy(this.keyboardEvents, this));
         this.timer = null;
         this.index = 0;
         this.selection = sel;
@@ -6723,7 +6916,8 @@ Minder.Receiver = kity.createClass('Receiver', {
 
         var text = this.container.firstChild;
         this.range = range;
-        range.setStart(text || this.container, this.index).collapse(true);
+        range.setStart(text || this.container, this.index)
+        range.collapse(true);
         var me = this;
 
         setTimeout(function() {
@@ -6788,13 +6982,19 @@ Minder.Receiver = kity.createClass('Receiver', {
         var orgEvt = e.originEvent;
         var keyCode = orgEvt.keyCode;
 
-        function setTextToContainer(keyCode) {
+        function setTextToContainer() {
+
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
             }
+
+
+            if(keymap.controlKeys[keyCode]){
+                return;
+            }
             //当第一次输入内容时进行保存
-            if(me.lastMinderNode !== me.minderNode){
+            if(me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]){
                 me.km.fire('saveScene',{
                     inputStatus:true
                 });
@@ -6828,7 +7028,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
             //移动光标不做layout
-            if(!keymap.direction[keyCode] && !orgEvt.shiftKey && !orgEvt.metaKey && !orgEvt.ctrlKey){
+            if(!keymap.notContentChange[keyCode]){
                 clearTimeout(me.inputTextTimer);
 
                 me.inputTextTimer = setTimeout(function(){
@@ -6843,15 +7043,16 @@ Minder.Receiver = kity.createClass('Receiver', {
             }
             me.setBaseOffset();
             me.updateTextOffsetData();
-            me.updateIndex();
-            me.updateSelection();
+            me.updateRange();
+            me.updateSelectionByRange();
+
+            me.updateSelectionShow();
             me.timer = setTimeout(function() {
                 if(me.selection.isShow())
                     me.selection.setShow();
             }, 200);
 
             me.km.setStatus('textedit');
-            me.selection.clearBaseOffset();
         }
 
         function restoreTextContent(){
@@ -6875,7 +7076,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     });
                 }
                 break;
-
             case 'beforekeydown':
                 this.isTypeText = keyCode == 229 || keyCode === 0;
 
@@ -6899,102 +7099,41 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.down:
                     case keymap.Backspace:
                     case keymap.Del:
+                    case keymap['/']:
                         if(this.selection.isHide()){
                             restoreTextContent();
                             this.km.setStatus('normal');
                             return;
                         }
-                        if(!orgEvt.shiftKey){
-                            this.selection.baseOffset =
-                            this.selection.currentEndOffset = null;
-                        }
                         break;
-                   // case keymap.Shift:
                     case keymap.Control:
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-//                    case keymap.Del:
-//                    case keymap.Backspace:
-
-                        if(this.selection.isHide()){
+                        if(this.selection.isHide() && this.km.getStatus() != 'textedit'){
                             this.km.setStatus('normal');
                             return;
                         }
 
                 }
-                //针对按住shift+方向键进行处理
-                if(orgEvt.shiftKey && keymap.direction[keyCode] && this.selection.isShow()){
-                    if(this.selection.baseOffset === null){
-                        this.selection.baseOffset = this.selection.startOffset;
-                        this.selection.currentEndOffset = this.selection.endOffset;
-                    }
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.currentEndOffset++;
-                        if(this.selection.currentEndOffset > textlength){
-                            this.selection.currentEndOffset = textlength;
-                        }
 
-                    }else if(keymap.left == keyCode){
-                        this.selection.currentEndOffset--;
-                        if(this.selection.currentEndOffset < 0){
-                            this.selection.currentEndOffset = 0;
-                        }
+                if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
-                    }else if(keymap.up == keyCode){
-                        this.selection.currentEndOffset = 0;
-                        this.selection.baseOffset = this.selection.endOffset;
-                    }else{
-                        this.selection.currentEndOffset = textlength;
-                    }
-
-                    if(this.selection.currentEndOffset >= this.selection.baseOffset){
-                        this.selection.setEndOffset(this.selection.currentEndOffset);
-                        if(this.selection.currentEndOffset == this.selection.baseOffset){
-                            this.selection.setStartOffset(this.selection.baseOffset);
-                        }
-                    }else{
-                        this.selection.setStartOffset(this.selection.currentEndOffset);
-                        this.selection.setEndOffset(this.selection.baseOffset);
-                    }
-
-                    this.updateContainerRangeBySel();
-
-                    this.updateSelectionShow();
-
-                    e.preventDefault();
-                    return;
-                }else if(keymap.direction[keyCode]){
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                }
-
-                if((e.originEvent.ctrlKey || e.originEvent.metaKey) && keymap.direction[keyCode] && this.selection.isShow()){
-
-                    var textlength = this.textShape.getContent().length;
-                    if(keymap.right  == keyCode ){
-                        this.selection.setStartOffset(textlength).collapse(true);
-                    }else if(keymap.left == keyCode){
-                        this.selection.setStartOffset(0).collapse(true);
-                    }else{
-                        e.preventDefault();
+                    //选中节点时的复制粘贴，要变成normal
+                    if(this.selection.isHide() && {
+                        86:1,
+                        88:1,
+                        67:1
+                    }[keyCode]){
+                        restoreTextContent();
+                        this.km.setStatus('normal');
                         return;
                     }
-
-                    this.selection.baseOffset =
-                    this.selection.currentEndOffset = null;
-                    this.updateContainerRangeBySel();
-                    this.updateSelectionShow();
-                    e.preventDefault();
-                    return;
-                }
-                if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
 
                     //粘贴
                     if (keyCode == keymap.v) {
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
                             me.container.innerHTML = utils.unhtml(me.container.textContent.replace(/[\u200b\t\r\n]/g, ''));
                             var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
@@ -7006,30 +7145,16 @@ Minder.Receiver = kity.createClass('Receiver', {
                     }
                     //剪切
                     if (keyCode == keymap.x) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             setTextToContainer(keyCode);
                         }, 100);
                         return;
                     }
-                    //全选键位监控
-                    if (keymap.a == keyCode) {
-                        if(me.selection.isHide()){
-                            return;
-                        }else{
-                            me.selection
-                                .setStartOffset(0)
-                                .setEndOffset(me.textShape.getContent().length);
-                            me.updateContainerRangeBySel().updateSelectionShow();
-                            return;
-                        }
-                    }
 
 
                 }
-
-
                 //针对不能连续删除做处理
-                if(keymap.Del || keymap.Backspace)
+                if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                     setTextToContainer(keyCode);
                 break;
 
@@ -7081,9 +7206,49 @@ Minder.Receiver = kity.createClass('Receiver', {
                     setTextToContainer(keyCode);
                     return;
                 }
-                if(this.selection.baseOffset === null && this.selection.collapsed)
-                    setTextToContainer(keyCode);
+                setTextToContainer(keyCode);
+
                 return true;
+
+            case 'keyup':
+                var node = this.km.getSelectedNode();
+                if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
+                    if (node && this.km.isSingleSelect() && node.isSelected()) {
+
+                        var color = node.getStyle('text-selection-color');
+
+                        //准备输入状态
+                        var textShape = node.getTextShape();
+
+                        this.selection.setHide()
+                            .setStartOffset(0)
+                            .setEndOffset(textShape.getContent().length)
+                            .setColor(color);
+
+
+                        this
+                            .setMinderNode(node)
+                            .updateContainerRangeBySel();
+
+                        if(browser.ie ){
+                            var timer = setInterval(function(){
+                                var nativeRange = this.range.nativeSel.getRangeAt(0);
+                                if(!nativeRange || nativeRange.collapsed){
+                                    this.range.select();
+                                }else {
+                                    clearInterval(timer);
+                                }
+                            });
+                        }
+
+
+                        this.minderNode.setTmpData('_lastTextContent',this.textShape.getContent());
+
+                        this.km.setStatus('inputready');
+
+                    }
+                }
+
         }
 
     },
@@ -7274,23 +7439,29 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.updateShow(startOffset, width);
         return this;
     },
-    updateRange: function(range) {
-        range = range || this.range;
-        var node = this.container.firstChild;
-        range.setStart(node, this.selection.startOffset);
-        range.setEnd(node, this.selection.endOffset);
-        if(browser.gecko){
-            this.container.focus();
-            setTimeout(function(){
-                range.select();
-            });
-        }else{
-            range.select();
-        }
+    updateRange: function() {
+        this.range.updateNativeRange();
         return this;
     },
     updateContainerRangeBySel:function(){
-       return this.updateRange(this.range);
+        var me = this;
+        var node = this.container.firstChild;
+        this.range.setStart(node, this.selection.startOffset);
+        this.range.setEnd(node, this.selection.endOffset);
+        if(browser.gecko){
+            this.container.focus();
+            setTimeout(function(){
+                me.range.select();
+            });
+        }else{
+            this.range.select();
+        }
+        return this;
+    },
+    updateSelectionByRange:function(){
+        this.selection.setStartOffset(this.range.getStartOffset());
+        this.selection.setEndOffset(this.range.getEndOffset());
+        return this;
     },
     setIndex: function(index) {
         this.index = index;
@@ -7425,9 +7596,6 @@ Minder.Selection = kity.createClass( 'Selection', {
     },
     isHide:function(){
         return !this._show;
-    },
-    clearBaseOffset:function(){
-        this.baseOffset = this.currentEndOffset = null;
     }
 } );
 
@@ -7660,6 +7828,11 @@ KityMinder.registerModule('Zoom', function() {
 
     me.setDefaultOptions('zoom', [10, 20, 30, 50, 80, 100, 120, 150, 200]);
 
+    function setTextRendering() {
+        var value = me._zoomValue >= 100 ? 'optimize-speed' : 'geometricPrecision';
+        me.getRenderContainer().setAttr('text-rendering', value);
+    }
+
     function fixPaperCTM(paper) {
         var node = paper.shapeNode;
         var ctm = node.getCTM();
@@ -7678,6 +7851,9 @@ KityMinder.registerModule('Zoom', function() {
             };
             paper.setViewPort(viewport);
             if (value == 100) fixPaperCTM(paper);
+        },
+        getZoomValue: function() {
+            return this._zoomValue;
         }
     });
 
@@ -7687,6 +7863,12 @@ KityMinder.registerModule('Zoom', function() {
 
         if (!value) return;
 
+        setTextRendering();
+
+        if (minder.getRoot().getComplex() > 200) {
+            minder._zoomValue = value;
+            return minder.zoom(value);
+        }
         var animator = new kity.Animator({
             beginValue: minder._zoomValue,
             finishValue: value,
@@ -7698,7 +7880,7 @@ KityMinder.registerModule('Zoom', function() {
         if (timeline) {
             timeline.pause();
         }
-        timeline = animator.start(minder, 300, 'easeInOutSine');
+        timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
@@ -7750,6 +7932,7 @@ KityMinder.registerModule('Zoom', function() {
     return {
         init: function() {
             this._zoomValue = 100;
+            setTextRendering();
         },
         commands: {
             'zoom-in': ZoomInCommand,
@@ -10471,6 +10654,16 @@ KM.registerToolbarUI('markers help preference resource', function(name) {
             }
             KM.setWidgetBody(name, $dialog, me);
         }).attachTo($btn);
+
+        if (name == 'help') {
+            $dialog.kmui().on('beforeshow', function() {
+                $btn.kmui().active(true);
+                $('.kmui-editor-body').addClass('blur');
+            }).on('beforehide', function() {
+                $btn.kmui().active(false);
+                $('.kmui-editor-body').removeClass('blur');
+            });
+        }
     });
 
     me.on('interactchange', function() {

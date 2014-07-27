@@ -24,93 +24,187 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
     }
 });
 
-kity.extendClass(Minder, {
+kity.extendClass(Minder, (function() {
 
-    _createRendererForNode: function(node) {
-
-        var registered = this._renderers;
+    function createRendererForNode(node, registered) {
         var renderers = [];
 
         ['center', 'left', 'right', 'top', 'bottom', 'outline', 'outside'].forEach(function(section) {
-            if (registered['before' + section]) {
-                renderers = renderers.concat(registered['before' + section]);
+            var before = 'before' + section;
+            var after = 'after' + section;
+
+            if (registered[before]) {
+                renderers = renderers.concat(registered[before]);
             }
             if (registered[section]) {
                 renderers = renderers.concat(registered[section]);
             }
-            if (registered['after' + section]) {
-                renderers = renderers.concat(registered['after' + section]);
+            if (registered[after]) {
+                renderers = renderers.concat(registered[after]);
             }
         });
 
         node._renderers = renderers.map(function(Renderer) {
             return new Renderer(node);
         });
-    },
+    }
 
-    renderNode: function(node) {
+    return {
 
-        var rendererClasses = this._renderers;
-        var g = KityMinder.Geometry;
-        var i, latestBox, renderer;
+        renderNodeBatch: function(nodes) {
+            var rendererClasses = this._rendererClasses;
+            var lastBoxes = [];
+            var rendererCount = 0;
+            var i, j, renderer, node;
 
-        if (!node._renderers) {
-            this._createRendererForNode(node);
-        }
+            if (!nodes.length) return;
 
-        this.fire('beforerender', {node: node});
+            for (j = 0; j < nodes.length; j++) {
+                node = nodes[j];
+                if (!node._renderers) {
+                    createRendererForNode(node, rendererClasses);
+                }
+                node._contentBox = new kity.Box();
+                this.fire('beforerender', {
+                    node: node
+                });
+            }
 
-        node._contentBox = g.wrapBox({
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-        });
+            // 所有节点渲染器数量是一致的
+            rendererCount = nodes[0]._renderers.length;
 
-        node._renderers.forEach(function(renderer) {
+            for (i = 0; i < rendererCount; i++) {
 
-            // 判断当前上下文是否应该渲染
-            if (renderer.shouldRender(node)) {
-
-                // 应该渲染，但是渲染图形没创建过，需要创建
-                if (!renderer.getRenderShape()) {
-                    renderer.setRenderShape(renderer.create(node));
-                    if (renderer.bringToBack) {
-                        node.getRenderContainer().prependShape(renderer.getRenderShape());
-                    } else {
-                        node.getRenderContainer().appendShape(renderer.getRenderShape());
+                // 获取延迟盒子数据
+                for (j = 0; j < nodes.length; j++) {
+                    if (typeof(lastBoxes[j]) == 'function') {
+                        lastBoxes[j] = lastBoxes[j]();
+                    }
+                    if (!(lastBoxes[j] instanceof kity.Box)) {
+                        lastBoxes[j] = new kity.Box(lastBoxes[j]);
                     }
                 }
 
-                // 强制让渲染图形显示
-                renderer.getRenderShape().setVisible(true);
+                for (j = 0; j < nodes.length; j++) {
+                    node = nodes[j];
+                    renderer = node._renderers[i];
 
-                // 更新渲染图形
-                latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+                    // 合并盒子
+                    if (lastBoxes[j]) {
+                        node._contentBox = node._contentBox.merge(lastBoxes[j]);
+                    }
 
-                // 合并渲染区域
-                if (latestBox) {
-                    node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                    // 判断当前上下文是否应该渲染
+                    if (renderer.shouldRender(node)) {
+
+                        // 应该渲染，但是渲染图形没创建过，需要创建
+                        if (!renderer.getRenderShape()) {
+                            renderer.setRenderShape(renderer.create(node));
+                            if (renderer.bringToBack) {
+                                node.getRenderContainer().prependShape(renderer.getRenderShape());
+                            } else {
+                                node.getRenderContainer().appendShape(renderer.getRenderShape());
+                            }
+                        }
+
+                        // 强制让渲染图形显示
+                        renderer.getRenderShape().setVisible(true);
+
+                        // 更新渲染图形
+                        lastBoxes[j] = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+                    }
+
+                    // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                    else if (renderer.getRenderShape()) {
+                        renderer.getRenderShape().setVisible(false);
+                        lastBoxes[j] = null;
+                    }
                 }
             }
 
-            // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
-            else if (renderer.getRenderShape()) {
-                renderer.getRenderShape().setVisible(false);
+            for (j = 0; j < nodes.length; j++) {
+                this.fire('noderender', {
+                    node: nodes[j]
+                });
+            }
+        },
+
+        renderNode: function(node) {
+            var rendererClasses = this._rendererClasses;
+            var g = KityMinder.Geometry;
+            var i, latestBox, renderer;
+
+            if (!node._renderers) {
+                createRendererForNode(node, rendererClasses);
             }
 
-        });
+            this.fire('beforerender', {
+                node: node
+            });
 
-        this.fire('noderender', {
-            node: node
-        });
-    }
-});
+            node._contentBox = g.wrapBox({
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
+            });
+
+            node._renderers.forEach(function(renderer) {
+
+                // 判断当前上下文是否应该渲染
+                if (renderer.shouldRender(node)) {
+
+                    // 应该渲染，但是渲染图形没创建过，需要创建
+                    if (!renderer.getRenderShape()) {
+                        renderer.setRenderShape(renderer.create(node));
+                        if (renderer.bringToBack) {
+                            node.getRenderContainer().prependShape(renderer.getRenderShape());
+                        } else {
+                            node.getRenderContainer().appendShape(renderer.getRenderShape());
+                        }
+                    }
+
+                    // 强制让渲染图形显示
+                    renderer.getRenderShape().setVisible(true);
+
+                    // 更新渲染图形
+                    latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
+
+                    if (typeof(latestBox) == 'function') latestBox = latestBox();
+
+                    // 合并渲染区域
+                    if (latestBox) {
+                        node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                    }
+                }
+
+                // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                else if (renderer.getRenderShape()) {
+                    renderer.getRenderShape().setVisible(false);
+                }
+
+            });
+
+            this.fire('noderender', {
+                node: node
+            });
+        }
+    };
+})());
 
 kity.extendClass(MinderNode, {
     render: function() {
         if (!this.attached) return;
         this.getMinder().renderNode(this);
+        return this;
+    },
+    renderTree: function() {
+        if (!this.attached) return;
+        var list = [];
+        this.traverse(function(node) {
+            list.push(node);
+        });
+        this.getMinder().renderNodeBatch(list);
         return this;
     },
     getRenderer: function(type) {
@@ -122,6 +216,6 @@ kity.extendClass(MinderNode, {
     },
     getContentBox: function() {
         //if (!this._contentBox) this.render();
-        return this.parent && this.parent.isCollapsed() ? new kity.Box() : this._contentBox;
+        return this.parent && this.parent.isCollapsed() ? new kity.Box() : (this._contentBox || new kity.Box());
     }
 });

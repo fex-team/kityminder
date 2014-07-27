@@ -1,20 +1,17 @@
 echo -e "\033[0;33;1mPublish start."
-echo -e "\033[0;33;1m> Checking out gh-pages\033[0m"
-git checkout -q gh-pages
+echo -e "\033[0;33;1m> Checking out gh-pages...\033[0m"
+git branch -D gh-pages -q
+git checkout -q -b gh-pages
 
-echo -e "\033[0;33;1m> Merging server changes\033[0m"
-git pull origin gh-pages
+echo -e "\033[0;33;1m> Delete server branch...\033[0m"
+git push origin :gh-pages -q
 
-echo -e "\033[0;33;1m> Merging dev commits\033[0m"
-git merge dev -qm "merge from dev"
-
-echo -e "\033[0;33;1m> Building dist js files\033[0m"
+echo -e "\033[0;33;1m> Building dist js files...\033[0m"
 grunt -q > GRUNT_OUTPUT
 rm -f GRUNT_OUTPUT
 
+echo -e "\033[0;33;1m> Commit dist js files...\033[0m"
 git add dist
-
-echo -e "\033[0;33;1m> Commit dist js files\033[0m"
 git commit -qm "publish"
 
 echo -e "\033[0;33;1m> Pusing to git...\033[0m"

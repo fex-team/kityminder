@@ -72,10 +72,8 @@ KityMinder.registerModule('Expand', function() {
     function setExpandState(node, state, policy) {
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        node.traverse(function(node) {
-            node.render();
-        });
-        node.getMinder().layout(200);
+        node.renderTree();
+        node.getMinder().layout(100);
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
@@ -177,7 +175,7 @@ KityMinder.registerModule('Expand', function() {
             var pathData = ['M', 1.5 - this.radius, 0, 'L', this.radius - 1.5, 0];
             if (state == STATE_COLLAPSE) {
                 pathData.push(['M', 0, 1.5 - this.radius, 'L', 0, this.radius - 1.5]);
-            }
+            }       
             this.sign.setPathData(pathData);
         }
     });
@@ -226,13 +224,17 @@ KityMinder.registerModule('Expand', function() {
             'beforerender': function(e) {
                 var node = e.node;
                 var visible = !node.parent || node.parent.isExpanded();
+                var minder = this;
+
                 node.getRenderContainer().setVisible(visible);
                 if (!visible) e.stopPropagation();
             },
             'normal.keydown': function(e) {
                 if (this.getStatus() == 'textedit') return;
                 if (e.originEvent.keyCode == keymap['/']) {
-                    var expanded = this.getSelectedNode().isExpanded();
+                    var node = this.getSelectedNode();
+                    if (!node || node == this.getRoot()) return;
+                    var expanded = node.isExpanded();
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
                         else node.expand();

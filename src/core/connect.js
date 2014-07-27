@@ -34,6 +34,7 @@ kity.extendClass(Minder, {
         }
 
         this._connectContainer.addShape(connection);
+        this.updateConnect(node);
     },
 
     removeConnect: function(node) {
@@ -72,10 +73,10 @@ KityMinder.registerModule('Connect', {
         'nodeattach': function(e) {
             this.createConnect(e.node);
         },
-        'noderemove': function(e) {
+        'nodedetach': function(e) {
             this.removeConnect(e.node);
         },
-        'layoutapply noderender': function(e) {
+        'layoutapply layoutfinish noderender': function(e) {
             this.updateConnect(e.node);
         }
     }

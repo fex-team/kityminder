@@ -242,7 +242,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Alt:
                     case keymap.Cmd:
                     case keymap.F2:
-                        if(this.selection.isHide() && this.km.getStatus() != 'inputready'){
+                        if(this.selection.isHide() && this.km.getStatus() != 'textedit'){
                             this.km.setStatus('normal');
                             return;
                         }

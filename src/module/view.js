@@ -16,8 +16,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
     move: function(offset, duration) {
         if (!duration) {
             this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        }
-        else {
+        } else {
             this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
         }
     },
@@ -28,23 +27,40 @@ var ViewDragger = kity.createClass("ViewDragger", {
             lastPosition = null,
             currentPosition = null;
 
-        this._minder.on('normal.mousedown normal.touchstart readonly.mousedown readonly.touchstart', function(e) {
+        function dragEnd(e) {
+            lastPosition = null;
 
-            if (e.originEvent.button == 2) {
-                e.originEvent.preventDefault(); // 阻止中键拉动
-            }
-            // 点击未选中的根节点临时开启
-            if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
-                lastPosition = e.getPosition();
-                isTempDrag = true;
-            }
-        })
+            e.stopPropagation();
 
-        .on('normal.mousemove normal.touchmove readonly.touchmove readonly.mousemove', function(e) {
-            if (!isTempDrag) return;
-            var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-            if (offset.length() > 3) this.setStatus('hand');
-        })
+            // 临时拖动需要还原状态
+            if (isTempDrag) {
+                dragger.setEnabled(false);
+                isTempDrag = false;
+                if (dragger._minder.getStatus() == 'hand')
+                    dragger._minder.rollbackStatus();
+            }
+        }
+
+        this._minder.on('normal.mousedown normal.touchstart ' +
+            'inputready.mousedown inputready.touchstart ' +
+            'readonly.mousedown readonly.touchstart', function(e) {
+                if (e.originEvent.button == 2) {
+                    e.originEvent.preventDefault(); // 阻止中键拉动
+                }
+                // 点击未选中的根节点临时开启
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                    lastPosition = e.getPosition();
+                    isTempDrag = true;
+                }
+            })
+
+        .on('normal.mousemove normal.touchmove ' +
+            'readonly.touchmove readonly.mousemove ' +
+            'inputready.mousemove inputready.touchmove', function(e) {
+                if (!isTempDrag) return;
+                var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
+                if (offset.length() > 3) this.setStatus('hand');
+            })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
             // 已经被用户打开拖放模式
@@ -68,16 +84,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
             }
         })
 
-        .on('mouseup touchend', function(e) {
-            lastPosition = null;
+        .on('mouseup touchend', dragEnd);
 
-            // 临时拖动需要还原状态
-            if (isTempDrag) {
-                dragger.setEnabled(false);
-                isTempDrag = false;
-                this.rollbackStatus();
-            }
-        });
+        window.addEventListener('mouseup', dragEnd);
     }
 });
 

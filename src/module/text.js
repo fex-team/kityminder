@@ -6,7 +6,8 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
     create: function() {
         return new kity.Text()
             .setId(KityMinder.uuid('node_text'))
-            .setVerticalAlign('middle');
+            .setVerticalAlign('middle')
+            .setAttr('text-rendering', 'inherit');
     },
 
     update: function(text, node) {
@@ -16,7 +17,9 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         if (kity.Browser.ie) {
             box.y += 1;
         }
-        return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
+        return function() {
+            return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
+        };
     },
 
     setTextStyle: function(node, text) {

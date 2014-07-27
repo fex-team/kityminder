@@ -5,6 +5,11 @@ KityMinder.registerModule('Zoom', function() {
 
     me.setDefaultOptions('zoom', [10, 20, 30, 50, 80, 100, 120, 150, 200]);
 
+    function setTextRendering() {
+        var value = me._zoomValue >= 100 ? 'optimize-speed' : 'geometricPrecision';
+        me.getRenderContainer().setAttr('text-rendering', value);
+    }
+
     function fixPaperCTM(paper) {
         var node = paper.shapeNode;
         var ctm = node.getCTM();
@@ -23,6 +28,9 @@ KityMinder.registerModule('Zoom', function() {
             };
             paper.setViewPort(viewport);
             if (value == 100) fixPaperCTM(paper);
+        },
+        getZoomValue: function() {
+            return this._zoomValue;
         }
     });
 
@@ -32,6 +40,12 @@ KityMinder.registerModule('Zoom', function() {
 
         if (!value) return;
 
+        setTextRendering();
+
+        if (minder.getRoot().getComplex() > 200) {
+            minder._zoomValue = value;
+            return minder.zoom(value);
+        }
         var animator = new kity.Animator({
             beginValue: minder._zoomValue,
             finishValue: value,
@@ -43,7 +57,7 @@ KityMinder.registerModule('Zoom', function() {
         if (timeline) {
             timeline.pause();
         }
-        timeline = animator.start(minder, 300, 'easeInOutSine');
+        timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
@@ -95,6 +109,7 @@ KityMinder.registerModule('Zoom', function() {
     return {
         init: function() {
             this._zoomValue = 100;
+            setTextRendering();
         },
         commands: {
             'zoom-in': ZoomInCommand,

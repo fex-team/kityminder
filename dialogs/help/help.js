@@ -1,59 +1,116 @@
-( function () {
-    var helpContent = '<div class="help-content" style="padding:20px;width:360px;">';
+(function() {
 
-    helpContent += '<h2>基本操作</h2>';
-    helpContent += '<p>编辑脑图的时候，最基本的操作是插入节点、编辑节点、删除节点、设置节点样式</p>';
-    helpContent += '<ul>';
-    helpContent += '    <li><h3>插入子节点：</h3>在选中的节点中按 Tab 键</li>';
-    helpContent += '    <li><h3>插入同级节点：</h3>在选中的节点中按 Enter/Return 键</li>';
-    helpContent += '    <li><h3>编辑节点：</h3>选中节点直接输入文字、双击节点或选中节点按F2键均可进入编辑模式</li>';
-    helpContent += '    <li><h3>设置节点文本格式：</h3>你可以选中一个或多个节点后，在工具栏中改变选中节点的文本格式。也可以使用快捷键来使用这些功能：撤销（Ctrl+Z）、重做（Ctrl+Y）、加粗（Ctrl+B）、斜体（Ctrl+I）</li>';
-    helpContent += '    <li><h3>添加标签：</h3>选中节点，点击工具栏上的‘添加标签’按钮可以为节点添加/删除标签</li>';
-    helpContent += '    <li><h3>添加/删除超链接：</h3>选中节点，点击工具栏上的‘添加超链接’/‘删除超链接’按钮可以为节点添加、删除超链接</li>';
-    helpContent += '</ul>';
+    // 用于存储整个快捷菜单的机构信息的字符串
+    var helpInfo = '';
 
-    helpContent += '<h2>导入导出</h2>';
-    helpContent += '<p>您可以导出你的脑图到本地，方法是点击工具栏上的导出按钮，然后选择要导出的格式。下面列出支持的格式列表：</p>';
-    helpContent += '<ul>';
-    helpContent += '    <li><h3>大纲文本：</h3>导出成以制表符界定大纲的文本，此格式可以被导入</li>';
-    helpContent += '    <li><h3>KityMinder格式：</h3>KityMinder自身的保存格式（JSON），此格式可以被导入</li>';
-    helpContent += '    <li><h3>PNG 图片：</h3>导出成 PNG 位图格式，此格式不可被导入</li>';
-    helpContent += '    <li><h3>SVG 矢量图：</h3>导出成 SVG 矢量图格式，可以被矢量工具二次加工，此格式不可被导入</li>';
-    helpContent += '</ul>';
+    $.ajax({
+        type: 'get',
+        dataType: 'text',
+        url: 'dialogs/help/operation.txt',
+        success: function(text) {
+            createHelpHtml(text);
+        }
+    });
 
-    helpContent += '<p>导出的文件可以直接拖放到 KityMinder 上直接打开</p>';
+    function createHelpHtml(text) {
+        var txt = text;
 
-    helpContent += '<h2>云盘功能</h2>';
-    helpContent += '<p>使用百度账号登录后，您可以使用云存储和分享功能</p>';
-    helpContent += '<ul>';
-    helpContent += '    <li><h3>登录：</h3>点击登录按钮</li>';
-    helpContent += '    <li><h3>保存(CTRL+S)：</h3>点击保存按钮，将会把文件保存到你的云盘里</li>';
-    helpContent += '    <li><h3>分享(CTRL+SHIFT+S)：</h3>点击分享按钮，会生成分享链接，该链接可以打开您分享的脑图</li>';
-    helpContent += '    <li><h3>打开：</h3>点击您账号的下拉按钮，会列出最近保存的脑图文件，点击即可打开</li>';
-    helpContent += '</ul>';
+        // 用于存储获取的某一行数据
+        var line = '';
+        // 用于临时存储处理一条line字符串之后的结果
+        var result = '';
+        // 判断是否为第一个份菜单，用于控制div.shortcuts-table标签前是否添加</div>。
+        var isFirstTable = true;
+        // // 判断是否为每份菜单的第一项
+        // var isFirstTr = true;
 
-    helpContent += '<h2>视野导航</h2>';
-    helpContent += '<p>视野导航包括以下几个功能：</p>';
-    helpContent += '<ul>';
-    helpContent += '    <li><h3>视野拖动：</h3>根节点未被选中的情况下，拖动根节点可以拖动视野；或者使用空格键切换拖动状态</li>';
-    helpContent += '    <li><h3>视野缩放：</h3>点击工具栏中的“放大”和“缩小”按钮可以缩放视野，或者按着 Ctrl 键使用滚轮缩放</li>';
-    helpContent += '    <li><h3>视野复位：</h3>双击空白处，可以将视野复位</li>';
-    helpContent += '    <li><h3>展开／收起节点：</h3>选中单个节点，点击工具栏中的“展开节点”和“收起节点”按钮可以展开／收起节点下的全部子节点</li>';
-    helpContent += '</ul>';
+        // 正则表达式 start
+        // 1、匹配菜单分类标题
+        var reg_thead = /^##/g;
+        // 2、匹配菜单项
+        var reg_tcell = /\:/g;
+        // 3、匹配键值
+        var reg_key = /\`(.+?)\`/g;
+        // var 4、匹配快捷键组合选择
+        var reg_opt = /or|\+|,/gi;
+        // 菜单分类标题1
+        var temp = '';
+        var xmlhttp;
+        var arr, keys, info;
 
-    helpContent += '</div>';
 
-    KM.registerWidget( 'help', {
-        tpl: helpContent,
-        initContent: function ( km ) {
-            var lang = km.getLang( 'dialogs.help' ),
-                html;
-            if ( lang ) {
-                html = $.parseTmpl( this.tpl, lang );
+        // help-container start
+        helpInfo += '<div class="help-container' + (kity.Browser.mac ? ' mac' : '') + '">';
+        // help-header start
+        helpInfo += '<h2 class="help-header">操作说明</h2>';
+        // help-header end
+        // help-article start
+        helpInfo += '<div class="help-article row">';
+        // 开始读取operation.txt文件信息
+
+        txt.split('\n').forEach(function(line) {
+            result = '';
+
+            // 如果line以##开头，表明是菜单分类标题
+            if (reg_thead.test(line)) {
+
+                // isFirstTr = true;
+                // 如果不是第一个分类菜单，那么就需要在添加下一个开始标签之前，为上一个菜单添加结束标签
+                if (!isFirstTable) {
+                    result += '</table>';
+                }
+                // 处理第一个分类菜单后，就需要把标示第一个分类菜单的变量改变
+                else {
+                    isFirstTable = false;
+                }
+                temp = line.substring(line.lastIndexOf(' '));
+                result += '<table class="shortcuts-table "><tr><td></td><td><span class="shortcuts-thead">' + temp + '</span></td>';
+            } else if (/\S/.test(line)) {
+                // else if(reg_tcell.test(line)) {
+
+                result += '<tr class="shortcuts-tbody"><td class="shortcuts-group"><div class="right">';
+
+                arr = line.split(':');
+                keys = arr[0];
+                info = arr[1];
+
+                keys = keys.toLowerCase().replace(reg_key, '<span class="shortcuts-key label $1">$1</span>');
+
+                result += keys;
+
+                result += '</div></td><td class="shortcuts-use">' + info + '</td>';
+                // 加最后一项的结尾标签
+                result += '</tr>';
             }
-            this.root().html( html );
-        },
-        initEvent: function ( km, $w ) {},
-        width: 400
-    } );
-} )();
+
+            // 处理完每一行之后，将result添加到helpInfo之后
+            helpInfo += result;
+            result = '';
+        });
+
+        // 要在处理完最后一个分类菜单后，为这个菜单添加结束标签
+        helpInfo += '<table>';
+
+        // 读取operation.txt文件信息完毕
+        helpInfo += '</div>';
+        // help-article end
+        helpInfo += '</div>';
+        // // help-container end
+        // $("#help").html(helpInfo);
+
+        KM.registerWidget('help', {
+            tpl: helpInfo,
+            initContent: function(km) {
+                var lang = km.getLang('dialogs.help'),
+                    html;
+                if (lang) {
+                    html = $.parseTmpl(this.tpl, lang);
+                }
+                this.root().html(html);
+            },
+            initEvent: function(km, $w) {
+            }
+        });
+
+    }
+})();

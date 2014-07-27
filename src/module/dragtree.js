@@ -123,6 +123,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
         if (!this._dragMode) {
             return;
         }
+
+        this._fadeDragSources(1);
+
         if (this._dropSucceedTarget) {
 
             this._dragSources.forEach(function(source) {
@@ -172,6 +175,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         this._calcDropTargets();
         this._calcOrderHints();
         this._dragMode = true;
+        this._minder.setStatus('dragtree');
         return true;
     },
 
@@ -191,8 +195,16 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _fadeDragSources: function(opacity) {
+        var minder = this._minder;
         this._dragSources.forEach(function(source) {
             source.getRenderContainer().fxOpacity(opacity, 200);
+            source.traverse(function(node) {
+                if (opacity < 1) {
+                    minder.detachNode(node);
+                } else {
+                    minder.attachNode(node);
+                }
+            }, true);
         });
     },
 
@@ -250,12 +262,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
     },
 
     _leaveDragMode: function() {
-        this._fadeDragSources(1);
         this._dragMode = false;
         this._dropSucceedTarget = null;
         this._orderSucceedHint = null;
         this._renderDropHint(null);
         this._renderOrderHint(null);
+        this._minder.rollbackStatus();
     },
 
     _drawForDragMode: function() {
@@ -337,6 +349,9 @@ KityMinder.registerModule('DragTree', function() {
     return {
         init: function() {
             dragger = new TreeDragger(this);
+            window.addEventListener('mouseup', function() {
+                dragger.dragEnd();
+            });
         },
         events: {
             'normal.mousedown inputready.mousedown': function(e) {
@@ -346,12 +361,13 @@ KityMinder.registerModule('DragTree', function() {
                     dragger.dragStart(e.getPosition(this.getRenderContainer()));
                 }
             },
-            'normal.mousemove': function(e) {
+            'normal.mousemove dragtree.mousemove': function(e) {
                 dragger.dragMove(e.getPosition(this.getRenderContainer()));
             },
-            'normal.mouseup': function(e) {
-                dragger.dragEnd(e.getPosition(this.getRenderContainer()));
-                e.stopPropagation();
+            'normal.mouseup dragtree.beforemouseup': function(e) {
+                dragger.dragEnd();
+                //e.stopPropagation();
+                e.preventDefault();
                 this.fire('contentchange');
             },
             'statuschange': function(e) {
