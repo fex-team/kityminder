@@ -425,6 +425,7 @@ $(function() {
         if (loadUserFiles.tryCount > 3) {
             notice('加载最近脑图失败！');
             loadUserFiles.tryCount = 0;
+            return;
         }
 
         var sto = baidu.frontia.personalStorage;
@@ -568,6 +569,7 @@ $(function() {
         if (loadRemote.tryCount > 3) {
             notice('加载脑图失败！');
             loadRemote.tryCount = 0;
+            return;
         }
 
         var sto = baidu.frontia.personalStorage;
