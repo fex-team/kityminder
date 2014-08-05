@@ -1,3 +1,6 @@
 [submodule "kity"]
 	path = kity
 	url = https://github.com/fex-team/kity.git
+[submodule "fui"]
+	path = fui
+	url = https://github.com/fex-team/fui
