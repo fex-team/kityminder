@@ -14,7 +14,7 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         if (this.getOptions('readOnly') === true) {
             this.setDisabled();
         }
-        this.getRoot().render().layout();
+        this.refresh();
         this.fire('ready');
     },
 

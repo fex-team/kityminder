@@ -24,12 +24,8 @@
     </script>
 
     <script src="lib/jquery.xml2json.js" charset="utf-8"></script>
-    <script src="lib/baidu-frontia-js-full-1.0.0.js" charset="utf-8"></script>
-    <script src="social/draftmanager.js" charset="utf-8"></script>
-    <script src="social/social.js" charset="utf-8"></script>
-    <link href="social/social.css" rel="stylesheet">
    
-    <link href="themes/default/css/import.css" type="text/css" rel="stylesheet" />
+    <link href="ui/themes/default/css/default.all.css" type="text/css" rel="stylesheet" />
     <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link href="favicon.ico" type="image/x-icon" rel="apple-touch-icon-precomposed">
 </head>
@@ -108,7 +104,7 @@
 <!--脑图启动代码-->
 <script>
     // create km instance
-    km = KM.getKityMinder('kityminder');
+    km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
 
     // New Version Notify
     $(function() {
@@ -134,9 +130,6 @@
         alert('不支持的文件格式！');
     });
 
-    document.body.ontouchmove = function(e) {
-        //e.preventDefault();
-    }
 </script>
 
 <!--社会分享代码-->

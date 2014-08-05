@@ -8,7 +8,7 @@ var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 /*-----------------------------------------------------
  * Module Setting
  *-----------------------------------------------------*/
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var banner = '/*!\n' +
         ' * ====================================================\n' +
@@ -24,13 +24,13 @@ module.exports = function (grunt) {
         srcPath = 'src/',
         distPath = 'dist/';
 
-    var getPath = function (readFile) {
+    var getPath = function(readFile) {
 
         var sources = require("fs").readFileSync(readFile);
         sources = /paths\s=\s\[([\s\S]*?)\]/ig.exec(sources);
         sources = sources[1].replace(/\/\/.*\n/g, '\n').replace(/'|"|\n|\t|\s/g, '');
         sources = sources.split(",");
-        sources.forEach(function (filepath, index) {
+        sources.forEach(function(filepath, index) {
             sources[index] = srcPath + filepath;
         });
 
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                 options: {
                     banner: banner + '(function(kity, window) {\n\n',
                     footer: '\n\n})(kity, window)',
-                    process: function (src, filepath) {
+                    process: function(src, filepath) {
                         return src + "\n";
                     }
                 },
@@ -57,18 +57,20 @@ module.exports = function (grunt) {
                 dest: distPath + 'kityminder.all.js'
             }
         },
+
         uglify: {
             minimize: {
                 options: {
                     banner: banner
                 },
-                files: (function () {
+                files: (function() {
                     var files = {};
                     files[distPath + 'kityminder.all.min.js'] = distPath + 'kityminder.all.js';
                     return files;
                 })()
             }
         },
+
         copy: {
             dir: {
                 files: [{
@@ -94,6 +96,7 @@ module.exports = function (grunt) {
                 }]
             }
         },
+
         replace: {
             online: {
                 src: distPath + 'index.html',
@@ -117,33 +120,22 @@ module.exports = function (grunt) {
             }
         },
 
-        /* Start [Task liverload] ------------------------------------*/
-        livereload: {
-            port: 35729 // Default livereload listening port.
+        watch: {
+            less: {
+                files: ["ui/themes/**/*.less"],
+                tasks: ['less:compile']
+            }
         },
-        connect: {
-            livereload: {
-                options: {
-                    hostname: '*',
-                    port: 9001,
-                    base: '.',
-                    middleware: function (connect, options, middlewares) {
-                        return [
-                            lrSnippet,
-                            connect.static(options.base.toString()),
-                            connect.directory(options.base.toString())
-                        ];
-                    }
+
+        less: {
+            compile: {
+                files: {
+                    'ui/themes/default/css/default.all.css': [
+                        "ui/themes/default/css/import.less"
+                    ]
                 }
             }
         },
-        regarde: {
-            js: {
-                files: 'src/**/*.js',
-                tasks: ['default', 'livereload']
-            }
-        }
-        /* End [Task liverload] ------------------------------------*/
 
     });
 
@@ -153,15 +145,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-text-replace');
-
-
-    /* [liverload plugin & task ] ------------------------------------*/
-    grunt.loadNpmTasks('grunt-regarde');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-livereload');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     // Build task(s).
     grunt.registerTask('default', ['concat', 'uglify', 'copy', 'replace']);
-    grunt.registerTask('live', ['livereload-start', 'connect', 'regarde']);
+    grunt.registerTask('dev', ['less', 'watch']);
 
 };
