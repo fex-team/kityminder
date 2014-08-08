@@ -111,6 +111,16 @@ KityMinder.registerModule('NodeModule', function() {
             cmdName: 'RemoveNode'
         }, {
             divider: 1
+        },{
+            label: this.getLang('insert.topic'),
+            exec: function() {
+                this.select(this.getRoot());
+                this.execCommand('AppendSiblingNode', this.getLang('topic'));
+            },
+            query:function(){
+                var nodes = this.getSelectedNodes();
+                return nodes.length === 0 ? 0 : -1;
+            }
         }]
     };
 });

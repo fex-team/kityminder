@@ -18,7 +18,7 @@ KM.registerUI( 'contextmenu', function () {
 
             if(item.exec){
 
-                item.exec.apply(km)
+                item.exec.apply(me);
             }else{
                 me.execCommand(item.cmdName);
             }
@@ -50,11 +50,19 @@ KM.registerUI( 'contextmenu', function () {
                 data.length &&  data.push(item);
                 return;
             }
+            if(item.query){
+                if(item.query.apply(me) != -1)
+                    data.push({
+                        label:item.label,
+                        value:item.cmdName
+                    });
+                return;
+            }
             if(me.queryCommandState(item.cmdName)!=-1){
                 data.push({
                     label:item.label,
                     value:item.cmdName
-                })
+                });
             }
         });
         if(data.length){
@@ -79,6 +87,6 @@ KM.registerUI( 'contextmenu', function () {
         if(e.isRightMB()){
             //e.stopPropagationImmediately();
         }
-    })
+    });
 } );
 

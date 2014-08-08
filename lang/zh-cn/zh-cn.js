@@ -14,6 +14,10 @@ KityMinder.LANG['zh-cn'] = {
         'fresh-purple': '浪漫紫',
         'fresh-pink': '脑残粉'
     },
+    'insert':{
+        //'maintopic':'插入中心主题',
+        'topic':'插入分支主题'
+    },
     'maintopic': '中心主题',
     'topic': '分支主题',
     'tooltips': {
