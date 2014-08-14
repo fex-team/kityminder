@@ -41,36 +41,4 @@
         }
     });
 
-    var uiModule = [
-        'fuix',
-        'mainmenu',
-        'commandbutton',
-        'commandbuttonset',
-        'commandinputmenu',
-        'history',
-        'tabs',
-        'title',
-        'account',
-        'template',
-        'theme',
-        'layout',
-        'style',
-        'font',
-        'color',
-        'insertnode',
-        'arrange',
-        'nodeop',
-        'priority',
-        'progress',
-        'resource',
-        'attachment',
-        'link',
-        'image'
-    ];
-
-    /* jshint evil: true */
-    uiModule.forEach(function(module) {
-        document.write('<script src="ui/' + module + '.js"></script>');
-    });
-
 })();

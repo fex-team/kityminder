@@ -18,24 +18,13 @@ module.exports = function(grunt) {
         ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
-        ' */\n\n',
-        buildPath = 'import.js',
-        srcPath = 'src/',
+        ' */\n\n';
+
+    var sources = require('./import.js');
+    var srcPath = 'src/',
         distPath = 'dist/';
 
-    var getPath = function(readFile) {
-
-        var sources = require('fs').readFileSync(readFile);
-        sources = /paths\s=\s\[([\s\S]*?)\]/ig.exec(sources);
-        sources = sources[1].replace(/\/\/.*\n/g, '\n').replace(/'|"|\n|\t|\s/g, '');
-        sources = sources.split(',');
-        sources.forEach(function(filepath, index) {
-            sources[index] = srcPath + filepath;
-        });
-
-        return sources;
-
-    };
+    console.log(sources);
 
     // Project configuration.
     grunt.initConfig({
@@ -52,7 +41,7 @@ module.exports = function(grunt) {
                         return src + '\n';
                     }
                 },
-                src: getPath(buildPath),
+                src: sources,
                 dest: distPath + 'kityminder.all.js'
             }
         },
@@ -73,7 +62,7 @@ module.exports = function(grunt) {
         copy: {
             dir: {
                 files: [{
-                    src: ['dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**', 'index.html', 'download.php'],
+                    src: ['ui/theme/**', 'index.html', 'download.php'],
                     dest: distPath
                 }]
             },
@@ -90,7 +79,7 @@ module.exports = function(grunt) {
             },
             mise: {
                 files: [{
-                    src: ['LICENSE', 'favicon.ico', 'README.md'],
+                    src: ['LICENSE', 'favicon.ico', 'README.md', 'CHANGELOG.md'],
                     dest: distPath
                 }]
             }

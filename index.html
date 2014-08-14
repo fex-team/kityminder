@@ -9,31 +9,13 @@
 
     <title>百度脑图 - 便捷的思维导图工具</title>
 
-    <script src="lib/jquery-2.1.0.min.js" charset="utf-8"></script>
-    <script src="lib/ZeroClipboard.min.js" charset="utf-8"></script>
-    <script type="text/javascript">
-        /* global ZeroClipboard: true */
-        ZeroClipboard.setDefaults({ moviePath: 'lib/ZeroClipboard.swf' });
-    </script>
-
-    <script src="kity/dist/kity.js" charset="utf-8"></script>
     <script src="import.js" charset="utf-8"></script>
     <script src="kityminder.config.js" charset="utf-8"></script>
     <script src="lang/zh-cn/zh-cn.js" charset="utf-8"></script>
-    <script src="fui/dev-lib/jhtmls.min.js"></script>
-    <script src="fui/dist/fui.all.js"></script>
-    <script src="ui/ui.js" charset="utf-8"></script>
     
-    <script src="lib/zip.js" charset="utf-8"></script>
-    <script>
-        /* global zip: true */
-        zip.inflateJSPath = 'lib/inflate.js';
-    </script>
-
-    <script src="lib/jquery.xml2json.js" charset="utf-8"></script>
-    
-    <link rel="stylesheet" href="fui/theme/default/fui.all.css" />
+    <link rel="stylesheet" href="lib/fui/theme/default/fui.all.css" />
     <link href="ui/theme/default/css/default.all.css" type="text/css" rel="stylesheet" />
+
     <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link href="favicon.ico" type="image/x-icon" rel="apple-touch-icon-precomposed">
 </head>
@@ -113,37 +95,45 @@
 
 <!--脑图启动代码-->
 <script>
-    /* global km:true */
-    /* jshint browser:true */
-    // create km instance
-    km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
 
-    // init ui for instance
-    km.initUI();
+/* global km:true, ZeroClipboard:true, zip:true */
+/* jshint browser:true */
 
-    // New Version Notify
-    $(function() {
+$(function() {
+/* 依赖库初始化 */
+ZeroClipboard.setDefaults({ moviePath: 'lib/ZeroClipboard.swf' });
+zip.inflateJSPath = 'lib/inflate.js';
+});
 
-        var lastVersion = localStorage.lastKMVersion;
-        $('#km-version').text( 'v' + KM.version );
+// create km instance
+km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
 
-        if (lastVersion != KM.version) {
-            $( '#km-version' ).addClass( 'new-version' );
-            localStorage.lastKMVersion = KM.version;
-        }
-    });
+// init ui for instance
+km.initUI();
 
-    km.on('unziperror', function(ev) {
-        alert('文件解析错误，文件可能已损坏！');
-    });
+// New Version Notify
+$(function() {
 
-    km.on('parseerror', function(ev) {
-        alert('文件解析错误，文件可能已损坏！');
-    });
+    var lastVersion = localStorage.lastKMVersion;
+    $('#km-version').text( 'v' + KM.version );
 
-    km.on('unknownprotocal', function(ev) {
-        alert('不支持的文件格式！');
-    });
+    if (lastVersion != KM.version) {
+        $( '#km-version' ).addClass( 'new-version' );
+        localStorage.lastKMVersion = KM.version;
+    }
+});
+
+km.on('unziperror', function(ev) {
+    window.alert('文件解析错误，文件可能已损坏！');
+});
+
+km.on('parseerror', function(ev) {
+    window.alert('文件解析错误，文件可能已损坏！');
+});
+
+km.on('unknownprotocal', function(ev) {
+    window.alert('不支持的文件格式！');
+});
 
 </script>
 

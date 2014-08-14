@@ -1,5 +1,4 @@
 (function() {
-
     window.KITYMINDER_CONFIG = {
         // 定义
         //modules: [],
