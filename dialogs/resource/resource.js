@@ -42,11 +42,11 @@
                 $addInput.val(null);
             }
 
-            $addInput.on('keydown', function(e) {
-                if (e.keyCode == 13) addResource();
+            $addInput.on('inputcomplete', function(e) {
+                addResource();
             });
 
-            $addButton.click(addResource);
+            $addButton.on('click', addResource);
 
             switchDisplay();
 

@@ -56,7 +56,7 @@ kity.extendClass(Minder, {
 
     setTheme: function(name) {
         this._theme = name || null;
-        this.getPaper().getContainer().style.background = this.getStyle('background');
+        this.getRenderTarget().style.background = this.getStyle('background');
     },
 
     /**

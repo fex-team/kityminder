@@ -1,0 +1,56 @@
+@import "_vars";
+
+@main-menu-btn-color: #ff6e6e;
+
+#main-menu-btn {
+    display: block;
+    float: left;
+    height: @panel-height;
+    line-height: @panel-height;
+    padding: 0 30px 0 15px;
+    z-index: 11;
+
+    background-color: @main-menu-btn-color;
+    &:hover {
+        background-color: lighten(@main-menu-btn-color, 5%) !important;
+    }
+    &:active {
+        background-color: darken(@main-menu-btn-color, 5%) !important;
+    }
+
+    .fui-label {
+        height: @panel-height;
+        line-height: @panel-height;
+        font-size: 14px;
+        color: white;
+    }
+
+    &:after {
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        line-height: 0;
+        font-size: 0;
+        border: 6px solid;
+        border-color: white transparent transparent transparent;
+        right: 12px;
+        top: @panel-height / 2 - 4;
+    }
+}
+
+#main-menu {
+    position: absolute;
+    background: gray;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    .transition(opacity ease 0.2s);
+
+    &.show {
+        bottom: 0;
+        opacity: 1;
+    }
+}

@@ -1,5 +1,5 @@
 KityMinder.registerTheme('classic', {
-    'background': '#3A4144 url(themes/default/images/grid.png) repeat',
+    'background': '#3A4144 url(ui/theme/default/images/grid.png) repeat',
 
     'root-color': '#430',
     'root-background': '#e9df98',

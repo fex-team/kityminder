@@ -15,6 +15,7 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
             this.setDisabled();
         }
         this.refresh();
+        this.setTheme();
         this.fire('ready');
     },
 

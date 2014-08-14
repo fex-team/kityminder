@@ -3,7 +3,6 @@
  *-----------------------------------------------------*/
 'use strict';
 var path = require('path');
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 
 /*-----------------------------------------------------
  * Module Setting
@@ -26,10 +25,10 @@ module.exports = function(grunt) {
 
     var getPath = function(readFile) {
 
-        var sources = require("fs").readFileSync(readFile);
+        var sources = require('fs').readFileSync(readFile);
         sources = /paths\s=\s\[([\s\S]*?)\]/ig.exec(sources);
         sources = sources[1].replace(/\/\/.*\n/g, '\n').replace(/'|"|\n|\t|\s/g, '');
-        sources = sources.split(",");
+        sources = sources.split(',');
         sources.forEach(function(filepath, index) {
             sources[index] = srcPath + filepath;
         });
@@ -50,7 +49,7 @@ module.exports = function(grunt) {
                     banner: banner + '(function(kity, window) {\n\n',
                     footer: '\n\n})(kity, window)',
                     process: function(src, filepath) {
-                        return src + "\n";
+                        return src + '\n';
                     }
                 },
                 src: getPath(buildPath),
@@ -115,14 +114,14 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements: [{
                     from: /src=\"(.+?)\.js\"/ig,
-                    to: 'src="$1.js?_=' + +new Date() + '"'
+                    to: 'src="$1.js?_=' + (+new Date()) + '"'
                 }]
             }
         },
 
         watch: {
             less: {
-                files: ["ui/themes/**/*.less"],
+                files: ['ui/theme/**/*.less'],
                 tasks: ['less:compile']
             }
         },
@@ -130,9 +129,15 @@ module.exports = function(grunt) {
         less: {
             compile: {
                 files: {
-                    'ui/themes/default/css/default.all.css': [
-                        "ui/themes/default/css/import.less"
+                    'ui/theme/default/css/default.all.css': [
+                        'ui/theme/default/css/import.less'
                     ]
+                },
+                options: {
+                    sourceMap: true,
+                    sourceMapFilename: 'ui/theme/default/css/default.all.css.map',
+                    sourceMapBasepath: 'ui/theme/default/css/'
+
                 }
             }
         },

@@ -1,0 +1,50 @@
+/**
+ * 基本页面样式
+ */
+
+@import "_vendor";
+@import "_vars";
+
+html, body, div {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body, svg {
+    font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+#content-wrapper {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#kityminder {
+    position: absolute;
+    left: 0;
+    top: @panel-height;
+    right: 0;
+    bottom: 0;
+    -moz-user-select: none;
+}
+
+#panel {
+    background: hsl(224, 16%, 27%);
+    font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
+    height: @panel-height;
+    overflow: visible;
+    position: relative;
+}
+
+.fui-widget {
+    -webkit-font-smoothing: auto;
+}

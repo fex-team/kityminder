@@ -61,6 +61,7 @@
         'module/hyperlink.js',
         'module/arrange.js',
         'module/paste.js',
+        'module/style.js',
         'protocal/xmind.js',
         'protocal/freemind.js',
         'protocal/mindmanager.js',

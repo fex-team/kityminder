@@ -1,0 +1,31 @@
+.command-buttonset.color-picker {
+    width: 100px;
+
+    .fui-toggle-button {
+        margin: 3px 3px 0 0 !important;
+        padding: 2px !important;
+        border-radius: 100%;
+
+        border: 1px solid #efefef;
+        background: transparent;
+        
+        &.fui-button-pressed {
+            border: 1px solid @button-active;
+            background: #fafcff;
+        }
+
+        &:hover {
+            border: 1px solid #ccd0d3;
+            background: #fff;
+        }
+
+        .fui-label {
+            display: none;
+        }
+        .fui-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 100%;
+        }
+    }
+}

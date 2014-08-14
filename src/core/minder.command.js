@@ -34,7 +34,7 @@ kity.extendClass(Minder, {
             commandName: name.toLowerCase(),
             commandArgs: cmdArgs
         };
-        if (!cmd) {
+        if (!cmd || !~this.queryCommandState(name)) {
             return false;
         }
 

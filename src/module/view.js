@@ -87,6 +87,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('mouseup touchend', dragEnd);
 
         window.addEventListener('mouseup', dragEnd);
+        dragger._minder.getRenderTarget().addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
     }
 });
 

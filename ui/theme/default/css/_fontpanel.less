@@ -1,0 +1,31 @@
+#font-panel {
+    .command-button {
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        border: 1px solid transparent;
+        background: transparent;
+        
+        &.active {
+            border: 1px solid #ccd0d3;
+            background: #fafcff;
+        }
+
+        &:hover {
+            border: 1px solid #ccd0d3;
+            background: #fff;
+        }
+
+        &:active {
+            background: darken(#fafcff, 5%);
+        }
+
+        border-radius: 11px;
+        margin-left: 5px;
+        margin-top: 2px;
+        margin-bottom: 2px !important;
+        .fui-label {
+            display: none;
+        }
+    }
+}
