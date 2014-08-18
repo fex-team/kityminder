@@ -102,13 +102,17 @@
         'ui/ui.js',
         'ui/fuix.js',
         'ui/mainmenu.js',
+        'ui/mainmenu.header.js',
+        'ui/mainmenu.level1.js',
+
         'ui/commandbutton.js',
         'ui/commandbuttonset.js',
         'ui/commandinputmenu.js',
         'ui/history.js',
         'ui/tabs.js',
+        'ui/user.js',
+        'ui/search.js',
         'ui/title.js',
-        'ui/account.js',
         'ui/template.js',
         'ui/theme.js',
         'ui/layout.js',
@@ -118,12 +122,12 @@
         'ui/insertnode.js',
         'ui/arrange.js',
         'ui/nodeop.js',
-        'ui/priority.js',
-        'ui/progress.js',
-        'ui/resource.js',
         'ui/attachment.js',
         'ui/link.js',
-        'ui/image.js'
+        'ui/image.js',
+        'ui/priority.js',
+        'ui/progress.js',
+        'ui/resource.js'
     ];
 
     if (typeof(module) === 'object' && module.exports) {

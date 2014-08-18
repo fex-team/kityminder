@@ -1,7 +1,5 @@
 @import "_vars";
 
-@main-menu-btn-color: #ff6e6e;
-
 #main-menu-btn {
     display: block;
     float: left;
@@ -10,12 +8,12 @@
     padding: 0 30px 0 15px;
     z-index: 11;
 
-    background-color: @main-menu-btn-color;
+    background-color: @main-menu-theme-color;
     &:hover {
-        background-color: lighten(@main-menu-btn-color, 5%) !important;
+        background-color: lighten(@main-menu-theme-color, 5%) !important;
     }
     &:active {
-        background-color: darken(@main-menu-btn-color, 5%) !important;
+        background-color: darken(@main-menu-theme-color, 5%) !important;
     }
 
     .fui-label {
@@ -41,16 +39,120 @@
 }
 
 #main-menu {
+    @left-width: 200px;
+        
     position: absolute;
     background: gray;
     top: 0;
     left: 0;
     right: 0;
+    bottom: 0;
+    overflow: hidden;
     opacity: 0;
-    .transition(opacity ease 0.2s);
+    .transition(all ease 0.2s);
+    .transform(translateX(-100%));
 
     &.show {
         bottom: 0;
         opacity: 1;
+        .transform(translateX(0));
+    }
+    
+    &:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: @left-width;
+        right: 0;
+        bottom: 10px;
+        box-shadow: 0 -3px 8px rgba(0,0,0,.15);
+        z-index: 1;
+    }
+
+    .main-menu- {
+        
+        &header {
+            background: white;
+            height: @panel-height;
+        }
+        &back-panel {
+            background-color: @main-menu-theme-color;
+            float: left;
+            width: @left-width;
+            height: @panel-height;
+            
+            .main-menu-back-button {
+                .fui-label {
+                    display: none;
+                }
+                .fui-icon {
+                    display: block;
+                    width: 25px;
+                    height: 25px;
+                    background: url(../images/icons.png) -1px -370px;
+                }
+                width: 25px;
+                height: 25px;
+                border-radius: 100%;
+                border: 2px solid white;
+                left: 5px;
+                top: 5px;
+                cursor: pointer;
+                &:hover {
+                    background-color: rgba(255,255,255,.3);
+                }
+                &:active {
+                    background-color: rgba(0,0,0,.05);
+                }
+            }
+        }
+        &title {
+            margin-left: @left-width;
+            height: @panel-height;
+            display: block;
+            background: white;
+            z-index: 2;
+        }
+        &level-1 {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: @panel-height;
+            
+            .fui-tabs- {
+                &button-wrap {
+                    width: @left-width;
+                    position: absolute;
+                    background-color: @main-menu-theme-color;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    
+                    .fui-button {
+                        display: block;
+                        text-align: right;
+                        height: 50px;
+                        .fui-label {
+                            height: 50px;
+                            line-height: 50px;
+                            color: white;
+                            padding-right: 20px;
+                            font-size: 16px;
+                        }
+                    }
+                }
+                &panel-wrap {
+                    position: absolute;
+                    top: 0;
+                    left: @left-width;
+                    right: 0;
+                    bottom: 0;
+                    background-color: white;
+                    z-index: 2;
+                }
+            }
+        }
     }
 }

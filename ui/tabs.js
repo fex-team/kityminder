@@ -1,6 +1,8 @@
 KityMinder.registerUI('tabs', function(minder) {
     var $tab = new FUI.Tabs({
-        buttons: ['思路', '展现', '视图']
+        buttons: ['idea', 'appearence', 'view'].map(function(key) {
+            return minder.getLang('ui.tabs.' + key);
+        })
     });
 
     var $header = $('<div id="tab-select"></div>').appendTo('#panel');

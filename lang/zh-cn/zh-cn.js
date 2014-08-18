@@ -34,8 +34,33 @@ KityMinder.LANG['zh-cn'] = {
         'attachment': '附件'
     },
     'ui': {
+        'back': '返回',
+
         'undo': '撤销',
         'redo': '重做',
+
+        'tabs': {
+            'idea': '思路',
+            'appearence': '展现',
+            'view': '视图'
+        },
+
+        'menu': {
+            'level1': {
+                'open': '打开',
+                'save': '保存',
+                'share': '分享',
+                'help': '帮助',
+                'setting': '设置'
+            }
+        },
+
+        'login': '登录',
+        'logout': '注销',
+        'switchuser': '切换账户',
+        'userinfo': '个人信息',
+        'gotonetdisk': '我的网盘',
+
         'bold': '加粗',
         'italic': '斜体',
         'forecolor': '字体颜色',

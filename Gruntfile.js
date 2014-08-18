@@ -24,8 +24,6 @@ module.exports = function(grunt) {
     var srcPath = 'src/',
         distPath = 'dist/';
 
-    console.log(sources);
-
     // Project configuration.
     grunt.initConfig({
 
@@ -35,10 +33,15 @@ module.exports = function(grunt) {
         concat: {
             js: {
                 options: {
-                    banner: banner + '(function(kity, window) {\n\n',
-                    footer: '\n\n})(kity, window)',
+                    banner: banner + '(function(window) {\n\n',
+                    footer: '\n\n})(window)',
                     process: function(src, filepath) {
-                        return src + '\n';
+                        return ['\n',
+                            '/* ' + filepath + ' */',
+                            src.replace(/^.+$/mg, '    $&'),
+                            '/* ' + filepath + ' end */',
+                            '\n',
+                        ].join('\n');
                     }
                 },
                 src: sources,
@@ -62,15 +65,15 @@ module.exports = function(grunt) {
         copy: {
             dir: {
                 files: [{
-                    src: ['ui/theme/**', 'index.html', 'download.php'],
+                    src: [
+                        'ui/theme/**/css/*.css',
+                        'ui/theme/**/images/*',
+                        'lang/**/*',
+                        'index.html',
+                        'download.php'
+                    ],
                     dest: distPath
                 }]
-            },
-            kity: {
-                expand: true,
-                cwd: 'kity/dist/',
-                src: '**',
-                dest: distPath + 'lib/'
             },
             km_config: {
                 expand: true,
@@ -90,9 +93,6 @@ module.exports = function(grunt) {
                 src: distPath + 'index.html',
                 overwrite: true,
                 replacements: [{
-                    from: /kity\/dist\/kity\.js/ig,
-                    to: 'lib/kity.min.js'
-                }, {
                     from: /import\.js/,
                     to: 'kityminder.all.min.js'
                 }]
@@ -143,7 +143,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
 
     // Build task(s).
-    grunt.registerTask('default', ['concat', 'uglify', 'copy', 'replace']);
+    grunt.registerTask('default', ['concat', 'uglify', 'less', 'copy', 'replace']);
     grunt.registerTask('dev', ['less', 'watch']);
 
 };

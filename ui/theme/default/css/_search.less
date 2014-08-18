@@ -1,0 +1,39 @@
+@import "_vars";
+@import "_vendor";
+
+#search {
+    float: right;
+    position: relative;
+
+    &:after {
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 5px;
+        top: 7px;
+        background: url(../images/icons.png) no-repeat 0 -345px;
+    }
+    
+    input[type=search] {
+        background: @tab-hover;
+        border: none;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 15px;
+        outline: none;
+        color: @ui-fore;
+        padding: 5px 10px 5px 30px;
+        box-sizing: content-box;
+        margin-top: 5px;
+        margin-right: 3px;
+        width: 30px;
+        .transition(width .5s ease);
+        .transform(translateZ(0));
+        
+        &:focus {
+            width: 150px;
+        }
+    }
+}

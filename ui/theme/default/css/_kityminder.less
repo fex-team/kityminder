@@ -38,11 +38,21 @@ html, body {
 }
 
 #panel {
-    background: hsl(224, 16%, 27%);
+    background: @ui-color;
     font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
     height: @panel-height;
     overflow: visible;
     position: relative;
+
+    h1 {
+        font-size: 14px;
+        height: @panel-height;
+        line-height: @panel-height;
+        margin: 0;
+        text-align: center;
+        font-weight: normal;
+        color: @ui-fore;
+    }
 }
 
 .fui-widget {

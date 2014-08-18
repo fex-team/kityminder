@@ -7,29 +7,14 @@
     <meta name="description" content="百度脑图，便捷的脑图编辑工具。让您在线上直接创建、保存并分享你的思路。">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <script src="lib/jquery-2.1.0.min.js?_=1406196567611" charset="utf-8"></script>
-    <script src="lib/ZeroClipboard.min.js?_=1406196567611" charset="utf-8"></script>
-    <script type="text/javascript">
-        ZeroClipboard.setDefaults( { moviePath: 'lib/ZeroClipboard.swf' } );
-    </script>
+    <title>百度脑图 - 便捷的思维导图工具</title>
 
-    <script src="lib/kity.min.js?_=1406196567611" charset="utf-8"></script>
-    <script src="kityminder.all.min.js?_=1406196567611" charset="utf-8"></script>
-    <script src="kityminder.config.js?_=1406196567611" charset="utf-8"></script>
-    <script src="lang/zh-cn/zh-cn.js?_=1406196567611" charset="utf-8"></script>
+    <script src="kityminder.all.min.js?_=1408005703290" charset="utf-8"></script>
+    <script src="kityminder.config.js?_=1408005703290" charset="utf-8"></script>
+    <script src="lang/zh-cn/zh-cn.js?_=1408005703290" charset="utf-8"></script>
     
-    <script src="lib/zip.js?_=1406196567611" charset="utf-8"></script>
-    <script>
-        zip.inflateJSPath = 'lib/inflate.js';
-    </script>
+    <link href="ui/theme/default/css/default.all.css" type="text/css" rel="stylesheet" />
 
-    <script src="lib/jquery.xml2json.js?_=1406196567611" charset="utf-8"></script>
-    <script src="lib/baidu-frontia-js-full-1.0.0.js?_=1406196567611" charset="utf-8"></script>
-    <script src="social/draftmanager.js?_=1406196567611" charset="utf-8"></script>
-    <script src="social/social.js?_=1406196567611" charset="utf-8"></script>
-    <link href="social/social.css" rel="stylesheet">
-   
-    <link href="themes/default/css/import.css" type="text/css" rel="stylesheet" />
     <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link href="favicon.ico" type="image/x-icon" rel="apple-touch-icon-precomposed">
 </head>
@@ -38,7 +23,9 @@
 <div id="content-wrapper">
     <div id="panel"></div>
 
-    <div id="kityminder" onselectstart="return false"></div>
+    <div id="kityminder" onselectstart="return false">
+        
+    </div>
 
     <div id="share-dialog">
         <h3>URL分享：</h3>
@@ -107,36 +94,46 @@
 
 <!--脑图启动代码-->
 <script>
-    // create km instance
-    km = KM.getKityMinder('kityminder');
 
-    // New Version Notify
-    $(function() {
+/* global km:true, ZeroClipboard:true, zip:true */
+/* jshint browser:true */
 
-        var lastVersion = localStorage.lastKMVersion;
-        $('#km-version').text( 'v' + KM.version );
+$(function() {
+/* 依赖库初始化 */
+ZeroClipboard.setDefaults({ moviePath: 'lib/ZeroClipboard.swf' });
+zip.inflateJSPath = 'lib/inflate.js';
+});
 
-        if (lastVersion != KM.version) {
-            $( '#km-version' ).addClass( 'new-version' );
-            localStorage.lastKMVersion = KM.version;
-        }
-    });
+// create km instance
+km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
 
-    km.on('unziperror', function(ev) {
-        alert('文件解析错误，文件可能已损坏！');
-    });
+// init ui for instance
+km.initUI();
 
-    km.on('parseerror', function(ev) {
-        alert('文件解析错误，文件可能已损坏！');
-    });
+// New Version Notify
+$(function() {
 
-    km.on('unknownprotocal', function(ev) {
-        alert('不支持的文件格式！');
-    });
+    var lastVersion = localStorage.lastKMVersion;
+    $('#km-version').text( 'v' + KM.version );
 
-    document.body.ontouchmove = function(e) {
-        //e.preventDefault();
+    if (lastVersion != KM.version) {
+        $( '#km-version' ).addClass( 'new-version' );
+        localStorage.lastKMVersion = KM.version;
     }
+});
+
+km.on('unziperror', function(ev) {
+    window.alert('文件解析错误，文件可能已损坏！');
+});
+
+km.on('parseerror', function(ev) {
+    window.alert('文件解析错误，文件可能已损坏！');
+});
+
+km.on('unknownprotocal', function(ev) {
+    window.alert('不支持的文件格式！');
+});
+
 </script>
 
 <!--社会分享代码-->
