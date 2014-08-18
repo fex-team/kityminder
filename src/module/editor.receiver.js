@@ -277,7 +277,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                                 this.km.setStatus('normal');
                                 this.km.fire('contentchange');
                             }
-shide
                             return;
                         }
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
