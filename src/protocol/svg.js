@@ -1,18 +1,20 @@
-
 if (!kity.Browser.ie) {
-    KityMinder.registerProtocal('svg', function() {
+
+    KityMinder.registerProtocol('svg', function(minder) {
+
         return {
             fileDescription: 'SVG 矢量图',
             fileExtension: '.svg',
             mineType: 'image/svg+xml',
-            encode: function(json, km) {
 
-                var paper = km.getPaper(),
+            encode: function(json) {
+
+                var paper = minder.getPaper(),
                     paperTransform = paper.shapeNode.getAttribute('transform'),
                     svgXml,
                     $svg,
 
-                    renderContainer = km.getRenderContainer(),
+                    renderContainer = minder.getRenderContainer(),
                     renderBox = renderContainer.getRenderBox(),
                     transform = renderContainer.getTransform(),
                     width = renderBox.width,
@@ -20,14 +22,14 @@ if (!kity.Browser.ie) {
                     padding = 20;
 
                 paper.shapeNode.setAttribute('transform', 'translate(0.5, 0.5)');
-                svgXml = km.getPaper().container.innerHTML;
+                svgXml = paper.container.innerHTML;
                 paper.shapeNode.setAttribute('transform', paperTransform);
 
                 $svg = $(svgXml).filter('svg');
                 $svg.attr({
                     width: width + padding * 2 | 0,
                     height: height + padding * 2 | 0,
-                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC"; background: ' + km.getStyle('background')
+                    style: 'font-family: Arial, "Microsoft Yahei",  "Heiti SC"; background: ' + minder.getStyle('background')
                 });
                 $svg[0].setAttribute('viewBox', [renderBox.x - padding | 0,
                     renderBox.y - padding | 0,
@@ -46,6 +48,7 @@ if (!kity.Browser.ie) {
                 // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
                 return svgXml;
             },
+
             recognizePriority: -1
         };
     });

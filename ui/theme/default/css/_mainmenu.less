@@ -1,5 +1,3 @@
-@import "_vars";
-
 #main-menu-btn {
     display: block;
     float: left;
@@ -40,22 +38,28 @@
 
 #main-menu {
     @left-width: 200px;
-        
-    position: absolute;
-    background: gray;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    
+    .dock;
     overflow: hidden;
+    transform: scale(0);
+    transform-origin: 0 0;
     opacity: 0;
-    .transition(all ease 0.2s);
-    .transform(translateX(-100%));
+    transition: opacity .25s ease, transform .25s ease;
+    z-index: 10;
 
     &.show {
-        bottom: 0;
         opacity: 1;
-        .transform(translateX(0));
+        transform: scale(1);
+    }
+    
+    .slide-in() {
+        transform: translateX(-(@left-width)) translateZ(0);
+        transition: transform .5s ease;
+
+        .show& {
+            transform: translateX(0) translateZ(0);
+            transition: transform .5s ease;
+        }
     }
     
     &:before {
@@ -64,10 +68,11 @@
         position: absolute;
         top: 0;
         left: @left-width;
-        right: 0;
+        right: -1000px;
         bottom: 10px;
         box-shadow: 0 -3px 8px rgba(0,0,0,.15);
         z-index: 1;
+        .slide-in;
     }
 
     .main-menu- {
@@ -113,6 +118,12 @@
             display: block;
             background: white;
             z-index: 2;
+            text-align: center;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: @panel-height;
+            color: #999;
+            .slide-in;
         }
         &level-1 {
             position: absolute;
@@ -121,14 +132,12 @@
             bottom: 0;
             top: @panel-height;
             
-            .fui-tabs- {
+            & > .fui-tabs- {
                 &button-wrap {
+                    .dock(0, auto, 0, 0);
                     width: @left-width;
                     position: absolute;
                     background-color: @main-menu-theme-color;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
                     
                     .fui-button {
                         display: block;
@@ -141,16 +150,111 @@
                             padding-right: 20px;
                             font-size: 16px;
                         }
+                        &:hover {
+                            background: darken(@main-menu-theme-color, 5%);
+                        }
+                        &:active {
+                            background: darken(@main-menu-theme-color, 10%);
+                        }
+                        &.fui-selected {
+                            background: lighten(@main-menu-theme-color, 10%);
+                        }
                     }
                 }
+                
+                /* 二级菜单区域 */
                 &panel-wrap {
-                    position: absolute;
-                    top: 0;
-                    left: @left-width;
-                    right: 0;
-                    bottom: 0;
+                    .dock(0, 0, 0, @left-width);
                     background-color: white;
                     z-index: 2;
+                    .slide-in;
+                    
+                    /* 每个二级菜单的面板 */
+                    & > .fui-panel {
+                        .dock(0, @panel-height);
+                        
+                        /* 面板内容 */
+                        & > .fui-panel-content {
+                            .dock;
+                            
+                            /* 二级菜单大标题 */
+                            & > h2 {
+                                font-size: 24px;
+                                font-weight: normal;
+                                margin-top: 0;
+                                margin-bottom: 20px;
+                                color: @main-menu-fore-color;
+                            }
+                            
+                            /* 二级菜单导航 */
+                            & > .fui-tabs {
+                                .dock;
+                                
+                                /* 二级导航菜单区域 */
+                                & > .fui-tabs-button-wrap {
+                                    .dock(60px, auto, 30px, 0);
+                                    
+                                    display: block;
+                                    width: 180px;
+                                    border-right: 1px solid lighten(@tab-active, 50%);
+                                    
+                                    & > .fui-button {
+                                        display: block;
+                                        height: 50px;
+                                        line-height: 50px;
+                                        text-align: right;
+                                        padding-right: 20px;
+                                        
+                                        & > .fui-label {
+                                            font-size: 14px;
+                                            line-height: 50px;
+                                            color: @main-menu-fore-color;
+                                        }
+                                        
+                                        &:hover {
+                                            background-color: lighten(@tab-hover, 40%);
+                                            & > .fui-label { 
+                                            }
+                                        }
+                                        
+                                        &.fui-selected {
+                                            background-color: lighten(@tab-active, 20%);
+                                            
+                                            & > .fui-label {
+                                                color: white;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                /* 二级菜单内容区域 */
+                                & > .fui-tabs-panel-wrap {
+                                    .dock(60px, 0, 30px, 200px);
+                                    
+                                    & > .fui-panel {
+                                        display: block;
+                                        .dock;
+                                        & > .fui-panel-content {
+                                            .dock;
+                                            display: block;
+                                            
+                                            h2 {
+                                                padding-bottom: 10px;
+                                                height: 30px;
+                                                line-height: 30px;
+                                                border-bottom: 1px solid hsl(0, 0%, 93%);
+                                                font-size: 18px;
+                                                font-weight: normal;
+                                                margin: 0;
+                                                padding-left: 38px;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
                 }
             }
         }

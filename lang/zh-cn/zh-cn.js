@@ -52,8 +52,20 @@ KityMinder.LANG['zh-cn'] = {
                 'share': '分享',
                 'help': '帮助',
                 'setting': '设置'
+            },
+            'open': {
+                'header': '打开文件',
+                'recent': '最近使用',
+                'netdisk': '百度云盘',
+                'local': '本地文件',
+                'draft': '草稿箱'
             }
         },
+
+        'mydocument': '我的文档',
+        'emptydir': '目录为空！',
+        'pickfile': '选择文件...',
+        'acceptfile': '支持的格式：{0}',
 
         'login': '登录',
         'logout': '注销',

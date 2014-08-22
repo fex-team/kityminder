@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.2.1 - 2014-08-14
+ * kityminder - v1.2.1 - 2014-08-19
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -18294,7 +18294,7 @@
 /* lib/fui/dist/fui.all.js */
     /*!
      * ====================================================
-     * Flex UI - v1.0.0 - 2014-08-14
+     * Flex UI - v1.0.0 - 2014-08-15
      * https://github.com/fex-team/fui
      * GitHub: https://github.com/fex-team/fui.git 
      * Copyright (c) 2014 Baidu Kity Group; Licensed MIT
@@ -18370,29 +18370,30 @@
         value: function(require) {
             var FUI_NS = _p.r(11);
             FUI_NS.___register({
-                Widget: _p.r(58),
+                Widget: _p.r(59),
                 Icon: _p.r(42),
                 Label: _p.r(48),
                 Button: _p.r(37),
-                ToggleButton: _p.r(57),
+                ToggleButton: _p.r(58),
                 Buttonset: _p.r(36),
-                Separator: _p.r(54),
+                Separator: _p.r(55),
                 Item: _p.r(46),
                 Input: _p.r(45),
                 InputButton: _p.r(43),
                 Mask: _p.r(49),
                 ColorPicker: _p.r(38),
-                Tabs: _p.r(56),
-                SpinButton: _p.r(55),
+                Tabs: _p.r(57),
+                SpinButton: _p.r(56),
                 Container: _p.r(39),
                 Panel: _p.r(51),
-                PPanel: _p.r(53),
+                PPanel: _p.r(54),
                 LabelPanel: _p.r(47),
                 Menu: _p.r(50),
                 InputMenu: _p.r(44),
                 ButtonMenu: _p.r(34),
                 DropPanel: _p.r(41),
-                Popup: _p.r(52),
+                Popup: _p.r(53),
+                PopupMenu: _p.r(52),
                 Dialog: _p.r(40),
                 Utils: _p.r(13),
                 Creator: _p.r(0)
@@ -18997,7 +18998,7 @@
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(14);
             return _p.r(13).createClass("TPicker", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         // 10行 10列
@@ -19081,9 +19082,9 @@
      */
     _p[17] = {
         value: function(require) {
-            var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(15), Label = _p.r(48), TPicker = _p.r(16), Button = _p.r(37), PPanel = _p.r(53), Mask = _p.r(49);
+            var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(15), Label = _p.r(48), TPicker = _p.r(16), Button = _p.r(37), PPanel = _p.r(54), Mask = _p.r(49);
             return _p.r(13).createClass("TablePicker", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         button: null,
@@ -19294,7 +19295,7 @@
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(18), Button = _p.r(37), Menu = _p.r(50), Mask = _p.r(49), LAYOUT = CONF.layout;
             return _p.r(13).createClass("ButtonMenu", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         // item选项
@@ -19411,7 +19412,7 @@
         value: function(require) {
             var $ = _p.r(4), tpl = _p.r(25), InputButton = _p.r(43), Menu = _p.r(50), Mask = _p.r(49), Utils = _p.r(13);
             return _p.r(13).createClass("InputMenu", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var marker = Utils.getMarker();
                     this.callBase(marker);
@@ -19576,7 +19577,7 @@
      */
     _p[36] = {
         value: function(require) {
-            var $ = _p.r(4), CONF = _p.r(12), ToggleButton = _p.r(57);
+            var $ = _p.r(4), CONF = _p.r(12), ToggleButton = _p.r(58);
             return _p.r(13).createClass("Buttonset", {
                 base: _p.r(51),
                 constructor: function(options) {
@@ -19741,7 +19742,7 @@
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), buttonTpl = _p.r(19), Icon = _p.r(42), Label = _p.r(48);
             return _p.r(13).createClass("Button", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         label: null,
@@ -19758,6 +19759,12 @@
                 },
                 setLabel: function(text) {
                     return this.__labelWidget.setText(text);
+                },
+                getLabelWidget: function() {
+                    return this.__labelWidget;
+                },
+                getIconWidget: function() {
+                    return this.__iconWidget;
                 },
                 __render: function() {
                     this.callBase();
@@ -19818,7 +19825,7 @@
         value: function(require) {
             var Utils = _p.r(13), CONF = _p.r(12), Mask = _p.r(49), tpl = _p.r(20), $ = _p.r(4);
             return Utils.createClass("ColorPicker", {
-                base: _p.r(53),
+                base: _p.r(54),
                 constructor: function(options) {
                     var defaultOptions = {
                         clearText: "",
@@ -19908,7 +19915,7 @@
      */
     _p[39] = {
         value: function(require) {
-            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(58), Creator = _p.r(0), $ = _p.r(4);
+            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(59), Creator = _p.r(0), $ = _p.r(4);
             return Utils.createClass("Container", {
                 base: Widget,
                 constructor: function(options) {
@@ -20068,12 +20075,12 @@
      */
     _p[40] = {
         value: function(require) {
-            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(58), Mask = _p.r(49), tpl = _p.r(21), Button = _p.r(37), LAYOUT = CONF.layout, $ = _p.r(4), ACTION = {
+            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(59), Mask = _p.r(49), tpl = _p.r(21), Button = _p.r(37), LAYOUT = CONF.layout, $ = _p.r(4), ACTION = {
                 CANCEL: "cancel",
                 OK: "ok"
             };
             return Utils.createClass("Dialog", {
-                base: _p.r(53),
+                base: _p.r(54),
                 constructor: function(options) {
                     var defaultOptions = {
                         layout: LAYOUT.CENTER,
@@ -20271,9 +20278,9 @@
      */
     _p[41] = {
         value: function(require) {
-            var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(22), Button = _p.r(37), Panel = _p.r(51), PPanel = _p.r(53), Mask = _p.r(49);
+            var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(22), Button = _p.r(37), Panel = _p.r(51), PPanel = _p.r(54), Mask = _p.r(49);
             return _p.r(13).createClass("DropPanel", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         button: null,
@@ -20395,7 +20402,7 @@
         value: function(require) {
             var $ = _p.r(4), iconTpl = _p.r(23);
             return _p.r(13).createClass("Icon", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         img: null
@@ -20459,7 +20466,7 @@
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(24), Button = _p.r(37), Input = _p.r(45);
             return _p.r(13).createClass("InputButton", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         button: null,
@@ -20558,7 +20565,7 @@
         value: function(require) {
             var $ = _p.r(4), tpl = _p.r(25), InputButton = _p.r(43), Menu = _p.r(50), Mask = _p.r(49);
             return _p.r(13).createClass("InputMenu", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         input: null,
@@ -20764,7 +20771,7 @@
         value: function(require) {
             var CONF = _p.r(12), $ = _p.r(4), tpl = _p.r(26);
             return _p.r(13).createClass("Input", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         placeholder: null
@@ -20848,7 +20855,7 @@
         value: function(require) {
             var Utils = _p.r(13), itemTpl = _p.r(27), Icon = _p.r(42), Label = _p.r(48), CONF = _p.r(12), $ = _p.r(4);
             return Utils.createClass("Item", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         label: "",
@@ -21003,7 +21010,7 @@
         value: function(require) {
             var Utils = _p.r(13), labelTpl = _p.r(28), $ = _p.r(4);
             return Utils.createClass("Label", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         text: "",
@@ -21053,9 +21060,9 @@
      */
     _p[49] = {
         value: function(require) {
-            var Utils = _p.r(13), tpl = _p.r(29), Widget = _p.r(58), $ = _p.r(4), __cache_inited = false, __MASK_CACHE = [];
+            var Utils = _p.r(13), tpl = _p.r(29), Widget = _p.r(59), $ = _p.r(4), __cache_inited = false, __MASK_CACHE = [];
             return Utils.createClass("Mask", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         bgcolor: "#000",
@@ -21190,7 +21197,7 @@
         value: function(require) {
             var Utils = _p.r(13), Item = _p.r(46), CONF = _p.r(12), $ = _p.r(4);
             return Utils.createClass("Menu", {
-                base: _p.r(53),
+                base: _p.r(54),
                 constructor: function(options) {
                     var defaultOptions = {
                         column: true,
@@ -21362,15 +21369,43 @@
         }
     };
 
+    //src/widget/popup-menu.js
+    _p[52] = {
+        value: function(require) {
+            var Utils = _p.r(13), CONF = _p.r(12), $ = _p.r(4), Menu = _p.r(50);
+            return Utils.createClass("PopupMenu", {
+                base: _p.r(53),
+                constructor: function(options) {
+                    this.callBase($.extend({
+                        menu: {}
+                    }, options));
+                },
+                getMenuWidget: function() {
+                    return this.__menuWidget;
+                },
+                __initOptions: function() {
+                    this.callBase();
+                    this.widgetName = "PopupMenu";
+                },
+                __render: function() {
+                    this.callBase();
+                    this.__menuWidget = new Menu();
+                    this.appendWidget(this.__menuWidget);
+                    $(this.__element).addClass(CONF.classPrefix + "popup-menu");
+                }
+            });
+        }
+    };
+
     //src/widget/popup.js
     /**
      * 容器类： PPanel = Positioning Panel
      */
-    _p[52] = {
+    _p[53] = {
         value: function(require) {
-            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(58), Mask = _p.r(49), $ = _p.r(4);
+            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(59), Mask = _p.r(49), $ = _p.r(4);
             return Utils.createClass("Popup", {
-                base: _p.r(53),
+                base: _p.r(54),
                 constructor: function(options) {
                     var defaultOptions = {
                         mask: {}
@@ -21452,9 +21487,9 @@
     /**
      * 容器类： PPanel = Positioning Panel
      */
-    _p[53] = {
+    _p[54] = {
         value: function(require) {
-            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(58), LAYOUT = CONF.layout, $ = _p.r(4);
+            var Utils = _p.r(13), CONF = _p.r(12), Widget = _p.r(59), LAYOUT = CONF.layout, $ = _p.r(4);
             return Utils.createClass("PPanel", {
                 base: _p.r(51),
                 constructor: function(options) {
@@ -21718,11 +21753,11 @@
     /**
      * Separator(分隔符) Widget
      */
-    _p[54] = {
+    _p[55] = {
         value: function(require) {
             var Utils = _p.r(13), separatorTpl = _p.r(31), $ = _p.r(4);
             return Utils.createClass("Separator", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         width: 1,
@@ -21746,11 +21781,11 @@
      * SpinButton对象
      * 数值按钮构件
      */
-    _p[55] = {
+    _p[56] = {
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(32), Button = _p.r(37), Input = _p.r(45), Panel = _p.r(51);
             return _p.r(13).createClass("SpinButton", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         suffix: null,
@@ -21841,11 +21876,11 @@
     /**
      * Tabs Widget
      */
-    _p[56] = {
+    _p[57] = {
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12), tpl = _p.r(33), Button = _p.r(37), Panel = _p.r(51);
             return _p.r(13).createClass("Tabs", {
-                base: _p.r(58),
+                base: _p.r(59),
                 constructor: function(options) {
                     var defaultOptions = {
                         selected: 0,
@@ -22009,7 +22044,7 @@
      * ToggleButton对象
      * 可切换按钮构件
      */
-    _p[57] = {
+    _p[58] = {
         value: function(require) {
             var $ = _p.r(4), CONF = _p.r(12);
             return _p.r(13).createClass("ToggleButton", {
@@ -22096,7 +22131,7 @@
      * widget对象
      * 所有的UI组件都是widget对象
      */
-    _p[58] = {
+    _p[59] = {
         value: function(require) {
             var prefix = "_fui_", uid = 0, CONF = _p.r(12), FUI_NS = _p.r(11), $ = _p.r(4), Utils = _p.r(13);
             var Widget = _p.r(13).createClass("Widget", {
@@ -22373,7 +22408,7 @@
     /**
      * 模块暴露
      */
-    _p[59] = {
+    _p[60] = {
         value: function(require) {
             _p.r(1);
             _p.r(2);
@@ -22381,7 +22416,7 @@
     };
 
     var moduleMapping = {
-        "fui.export": 59
+        "fui.export": 60
     };
 
     function use(name) {
@@ -22937,7 +22972,7 @@
     /* TODO: 脱离 jQuery 依赖 */
     (function(window, $) {
         /**
-         * 保存应用的 Api Key
+         * 保存应用的 Api Key 和 PCS 访问根路径
          */
         var apiKey;
 
@@ -22981,10 +23016,11 @@
          * @param  {object} opt 选项
          *
          *     opt.apiKey {string} 应用的 api key
+         *     opt.pcsRoot {string} 应用的 PCS 权限根路径，默认为 '/'
          *
          */
         function init(opt) {
-            apiKey = opt.apiKey;
+            apiKey = opt.apiKey || apiKey;
         }
 
         /**
@@ -23042,6 +23078,9 @@
          */
         function check() {
 
+            // 缓存检测
+            if (user && +new Date() - user.validateTime > 600) return user;
+
             var fragment = urlFragment();
 
             // 登录回调；会在参数上有 AK
@@ -23088,6 +23127,7 @@
                 user.smallImage = 'http://tb.himg.baidu.com/sys/portraitn/item/' + ret.portrait;
                 user.largeImage = 'http://tb.himg.baidu.com/sys/portrait/item/' + ret.portrait;
                 user.access_token = access_token;
+                user.validateTime = +new Date();
 
                 return user;
             });
@@ -24460,6 +24500,13 @@
 
 
 
+/* lib/jquery.transit.min.js */
+    (function(t,e){if(typeof define==="function"&&define.amd){define(["jquery"],e)}else if(typeof exports==="object"){module.exports=e(require("jquery"))}else{e(t.jQuery)}})(this,function(t){t.transit={version:"0.9.12",propertyMap:{marginLeft:"margin",marginRight:"margin",marginBottom:"margin",marginTop:"margin",paddingLeft:"padding",paddingRight:"padding",paddingBottom:"padding",paddingTop:"padding"},enabled:true,useTransitionEnd:false};var e=document.createElement("div");var n={};function i(t){if(t in e.style)return t;var n=["Moz","Webkit","O","ms"];var i=t.charAt(0).toUpperCase()+t.substr(1);for(var r=0;r<n.length;++r){var s=n[r]+i;if(s in e.style){return s}}}function r(){e.style[n.transform]="";e.style[n.transform]="rotateY(90deg)";return e.style[n.transform]!==""}var s=navigator.userAgent.toLowerCase().indexOf("chrome")>-1;n.transition=i("transition");n.transitionDelay=i("transitionDelay");n.transform=i("transform");n.transformOrigin=i("transformOrigin");n.filter=i("Filter");n.transform3d=r();var a={transition:"transitionend",MozTransition:"transitionend",OTransition:"oTransitionEnd",WebkitTransition:"webkitTransitionEnd",msTransition:"MSTransitionEnd"};var o=n.transitionEnd=a[n.transition]||null;for(var u in n){if(n.hasOwnProperty(u)&&typeof t.support[u]==="undefined"){t.support[u]=n[u]}}e=null;t.cssEase={_default:"ease","in":"ease-in",out:"ease-out","in-out":"ease-in-out",snap:"cubic-bezier(0,1,.5,1)",easeInCubic:"cubic-bezier(.550,.055,.675,.190)",easeOutCubic:"cubic-bezier(.215,.61,.355,1)",easeInOutCubic:"cubic-bezier(.645,.045,.355,1)",easeInCirc:"cubic-bezier(.6,.04,.98,.335)",easeOutCirc:"cubic-bezier(.075,.82,.165,1)",easeInOutCirc:"cubic-bezier(.785,.135,.15,.86)",easeInExpo:"cubic-bezier(.95,.05,.795,.035)",easeOutExpo:"cubic-bezier(.19,1,.22,1)",easeInOutExpo:"cubic-bezier(1,0,0,1)",easeInQuad:"cubic-bezier(.55,.085,.68,.53)",easeOutQuad:"cubic-bezier(.25,.46,.45,.94)",easeInOutQuad:"cubic-bezier(.455,.03,.515,.955)",easeInQuart:"cubic-bezier(.895,.03,.685,.22)",easeOutQuart:"cubic-bezier(.165,.84,.44,1)",easeInOutQuart:"cubic-bezier(.77,0,.175,1)",easeInQuint:"cubic-bezier(.755,.05,.855,.06)",easeOutQuint:"cubic-bezier(.23,1,.32,1)",easeInOutQuint:"cubic-bezier(.86,0,.07,1)",easeInSine:"cubic-bezier(.47,0,.745,.715)",easeOutSine:"cubic-bezier(.39,.575,.565,1)",easeInOutSine:"cubic-bezier(.445,.05,.55,.95)",easeInBack:"cubic-bezier(.6,-.28,.735,.045)",easeOutBack:"cubic-bezier(.175, .885,.32,1.275)",easeInOutBack:"cubic-bezier(.68,-.55,.265,1.55)"};t.cssHooks["transit:transform"]={get:function(e){return t(e).data("transform")||new f},set:function(e,i){var r=i;if(!(r instanceof f)){r=new f(r)}if(n.transform==="WebkitTransform"&&!s){e.style[n.transform]=r.toString(true)}else{e.style[n.transform]=r.toString()}t(e).data("transform",r)}};t.cssHooks.transform={set:t.cssHooks["transit:transform"].set};t.cssHooks.filter={get:function(t){return t.style[n.filter]},set:function(t,e){t.style[n.filter]=e}};if(t.fn.jquery<"1.8"){t.cssHooks.transformOrigin={get:function(t){return t.style[n.transformOrigin]},set:function(t,e){t.style[n.transformOrigin]=e}};t.cssHooks.transition={get:function(t){return t.style[n.transition]},set:function(t,e){t.style[n.transition]=e}}}p("scale");p("scaleX");p("scaleY");p("translate");p("rotate");p("rotateX");p("rotateY");p("rotate3d");p("perspective");p("skewX");p("skewY");p("x",true);p("y",true);function f(t){if(typeof t==="string"){this.parse(t)}return this}f.prototype={setFromString:function(t,e){var n=typeof e==="string"?e.split(","):e.constructor===Array?e:[e];n.unshift(t);f.prototype.set.apply(this,n)},set:function(t){var e=Array.prototype.slice.apply(arguments,[1]);if(this.setter[t]){this.setter[t].apply(this,e)}else{this[t]=e.join(",")}},get:function(t){if(this.getter[t]){return this.getter[t].apply(this)}else{return this[t]||0}},setter:{rotate:function(t){this.rotate=b(t,"deg")},rotateX:function(t){this.rotateX=b(t,"deg")},rotateY:function(t){this.rotateY=b(t,"deg")},scale:function(t,e){if(e===undefined){e=t}this.scale=t+","+e},skewX:function(t){this.skewX=b(t,"deg")},skewY:function(t){this.skewY=b(t,"deg")},perspective:function(t){this.perspective=b(t,"px")},x:function(t){this.set("translate",t,null)},y:function(t){this.set("translate",null,t)},translate:function(t,e){if(this._translateX===undefined){this._translateX=0}if(this._translateY===undefined){this._translateY=0}if(t!==null&&t!==undefined){this._translateX=b(t,"px")}if(e!==null&&e!==undefined){this._translateY=b(e,"px")}this.translate=this._translateX+","+this._translateY}},getter:{x:function(){return this._translateX||0},y:function(){return this._translateY||0},scale:function(){var t=(this.scale||"1,1").split(",");if(t[0]){t[0]=parseFloat(t[0])}if(t[1]){t[1]=parseFloat(t[1])}return t[0]===t[1]?t[0]:t},rotate3d:function(){var t=(this.rotate3d||"0,0,0,0deg").split(",");for(var e=0;e<=3;++e){if(t[e]){t[e]=parseFloat(t[e])}}if(t[3]){t[3]=b(t[3],"deg")}return t}},parse:function(t){var e=this;t.replace(/([a-zA-Z0-9]+)\((.*?)\)/g,function(t,n,i){e.setFromString(n,i)})},toString:function(t){var e=[];for(var i in this){if(this.hasOwnProperty(i)){if(!n.transform3d&&(i==="rotateX"||i==="rotateY"||i==="perspective"||i==="transformOrigin")){continue}if(i[0]!=="_"){if(t&&i==="scale"){e.push(i+"3d("+this[i]+",1)")}else if(t&&i==="translate"){e.push(i+"3d("+this[i]+",0)")}else{e.push(i+"("+this[i]+")")}}}}return e.join(" ")}};function c(t,e,n){if(e===true){t.queue(n)}else if(e){t.queue(e,n)}else{t.each(function(){n.call(this)})}}function l(e){var i=[];t.each(e,function(e){e=t.camelCase(e);e=t.transit.propertyMap[e]||t.cssProps[e]||e;e=h(e);if(n[e])e=h(n[e]);if(t.inArray(e,i)===-1){i.push(e)}});return i}function d(e,n,i,r){var s=l(e);if(t.cssEase[i]){i=t.cssEase[i]}var a=""+y(n)+" "+i;if(parseInt(r,10)>0){a+=" "+y(r)}var o=[];t.each(s,function(t,e){o.push(e+" "+a)});return o.join(", ")}t.fn.transition=t.fn.transit=function(e,i,r,s){var a=this;var u=0;var f=true;var l=t.extend(true,{},e);if(typeof i==="function"){s=i;i=undefined}if(typeof i==="object"){r=i.easing;u=i.delay||0;f=typeof i.queue==="undefined"?true:i.queue;s=i.complete;i=i.duration}if(typeof r==="function"){s=r;r=undefined}if(typeof l.easing!=="undefined"){r=l.easing;delete l.easing}if(typeof l.duration!=="undefined"){i=l.duration;delete l.duration}if(typeof l.complete!=="undefined"){s=l.complete;delete l.complete}if(typeof l.queue!=="undefined"){f=l.queue;delete l.queue}if(typeof l.delay!=="undefined"){u=l.delay;delete l.delay}if(typeof i==="undefined"){i=t.fx.speeds._default}if(typeof r==="undefined"){r=t.cssEase._default}i=y(i);var p=d(l,i,r,u);var h=t.transit.enabled&&n.transition;var b=h?parseInt(i,10)+parseInt(u,10):0;if(b===0){var g=function(t){a.css(l);if(s){s.apply(a)}if(t){t()}};c(a,f,g);return a}var m={};var v=function(e){var i=false;var r=function(){if(i){a.unbind(o,r)}if(b>0){a.each(function(){this.style[n.transition]=m[this]||null})}if(typeof s==="function"){s.apply(a)}if(typeof e==="function"){e()}};if(b>0&&o&&t.transit.useTransitionEnd){i=true;a.bind(o,r)}else{window.setTimeout(r,b)}a.each(function(){if(b>0){this.style[n.transition]=p}t(this).css(l)})};var z=function(t){this.offsetWidth;v(t)};c(a,f,z);return this};function p(e,i){if(!i){t.cssNumber[e]=true}t.transit.propertyMap[e]=n.transform;t.cssHooks[e]={get:function(n){var i=t(n).css("transit:transform");return i.get(e)},set:function(n,i){var r=t(n).css("transit:transform");r.setFromString(e,i);t(n).css({"transit:transform":r})}}}function h(t){return t.replace(/([A-Z])/g,function(t){return"-"+t.toLowerCase()})}function b(t,e){if(typeof t==="string"&&!t.match(/^[\-0-9\.]+$/)){return t}else{return""+t+e}}function y(e){var n=e;if(typeof n==="string"&&!n.match(/^[\-0-9\.]+/)){n=t.fx.speeds[n]||t.fx.speeds._default}return b(n,"ms")}t.transit.getTransitionValue=d;return t});
+/* lib/jquery.transit.min.js end */
+
+
+
+
 /* ui/ui.js */
     (function() {
         var uiQueue = [];
@@ -24510,6 +24557,53 @@
 
 
 
+/* ui/eve.js */
+    KityMinder.registerUI('eve', function(minder) {
+        return {
+            setup: function(obj) {
+                var callbacks = {};
+                
+                obj.on = function on(name, callback) {
+                    var list = callbacks[name] || (callbacks[name] = []);
+                    list.push(callback);
+                    return this;
+                };
+                
+                obj.off = function off(name, callback) {
+                    var list = callbacks[name];
+                    if (list) {
+                        var index = list.indexOf(callback);
+                        if (~index) {
+                            list.splice(index, 1);
+                        } else {
+                            callback[name] = null;
+                        }
+                    }
+                    return this;
+                };
+                
+                obj.once = function once(name, callback) {
+                    return this.on(name, function wrapped() {
+                        callback.apply(obj, arguments);
+                        obj.off(name, wrapped);
+                    });
+                };
+                
+                obj.fire = function fire(name) {
+                    var list = callbacks[name];
+                    if (list) list.forEach(function(callback) {
+                        callback.apply(obj, [].slice.call(arguments, 1));
+                    });
+                    return this;
+                };
+            }
+        };
+    });
+/* ui/eve.js end */
+
+
+
+
 /* ui/fuix.js */
     kity.extendClass(FUI.Widget, {
         setEnable: function(value) {
@@ -24538,27 +24632,117 @@
 
 /* ui/mainmenu.js */
     KityMinder.registerUI('mainmenu', function(minder) {
-        var $button = new FUI.Button({
+        var $mainMenuButton = new FUI.Button({
             id: 'main-menu-btn'
         });
 
         var $panel;
 
-        $button.setLabel('百度脑图');
-        $button.appendTo(document.getElementById('panel'));
+        $mainMenuButton.setLabel('百度脑图');
+        $mainMenuButton.appendTo(document.getElementById('panel'));
 
-        $button.on('click', function(e) {
+        $mainMenuButton.on('click', function(e) {
             $panel.addClass('show');
         });
 
         $panel = $('<div id="main-menu"></div>').appendTo('body');
-        $panel.click(function() {
-            $panel.removeClass('show');
-        });
 
-        return $panel;
+        return $panel.addClass('show');
     });
 /* ui/mainmenu.js end */
+
+
+
+
+/* ui/mainmenu.header.js */
+    KityMinder.registerUI('mainmenu.header', ['mainmenu'], function (minder, $mainmenu) {
+
+        var $header = $('<div class="main-menu-header"></div>').appendTo($mainmenu);
+
+        var $backPanel = $('<div class="main-menu-back-panel"></div>').appendTo($header);
+
+        var $titlePanel = $('<div class="main-menu-title">百度脑图</div>').appendTo($header);
+
+        var $backButton = new FUI.Button({
+            className: 'main-menu-back-button',
+            label: minder.getLang('ui.back')
+        }).appendTo($backPanel[0]).on('click', function() {
+            $mainmenu.removeClass('show');
+        });
+
+        return $header;
+    });
+/* ui/mainmenu.header.js end */
+
+
+
+
+/* ui/mainmenu.level1.js */
+    KityMinder.registerUI('mainmenu.level1', ['mainmenu'], function (minder, $mainmenu) {
+        var tabs = ['open', 'save', 'share', 'help'];
+
+        var $l1_tabs = new FUI.Tabs({
+            buttons: tabs.map(function(key) {
+                return {
+                    label: minder.getLang('ui.menu.level1.' + key),
+                    className: key
+                };
+            }),
+            className: 'main-menu-level-1'
+        });
+
+        $l1_tabs.appendTo($mainmenu[0]);
+
+        $l1_tabs.select(0);
+
+        var ret = {};
+
+        tabs.forEach(function(key, index) {
+            ret[key] = $l1_tabs.getPanel(index);
+        });
+
+        return ret;
+    });
+/* ui/mainmenu.level1.js end */
+
+
+
+
+/* ui/mainmenu.open.js */
+    KityMinder.registerUI('mainmenu.open', ['mainmenu.level1', 'eve'], function(minder, $level1, eve) {
+
+        var $h2 = $('<h2></h2>')
+            .text(minder.getLang('ui.menu.open.header'))
+            .appendTo($level1.open.getContentElement());
+
+        var source = ['recent', 'netdisk', 'local', 'draft'];
+
+        var $tabs = new FUI.Tabs({
+            buttons: source.map(function(key) {
+                return {
+                    label: minder.getLang('ui.menu.open.' + key),
+                    className: key
+                };
+            })
+        }).appendTo($level1.open);
+
+        var ret = {};
+
+        source.forEach(function(key, index) {
+            ret[key] = $tabs.getPanel(index);
+        });
+        
+        eve.setup(ret);
+        
+        $tabs.on('tabsselect', function(e, info) {
+            ret.fire('select', info);
+        });
+
+        ret.select = $tabs.select.bind($tabs);
+
+        return ret;
+    });
+/* ui/mainmenu.open.js end */
 
 
 
@@ -24697,7 +24881,9 @@
 /* ui/tabs.js */
     KityMinder.registerUI('tabs', function(minder) {
         var $tab = new FUI.Tabs({
-            buttons: ['思路', '展现', '视图']
+            buttons: ['idea', 'appearence', 'view'].map(function(key) {
+                return minder.getLang('ui.tabs.' + key);
+            })
         });
 
         var $header = $('<div id="tab-select"></div>').appendTo('#panel');
@@ -24732,21 +24918,137 @@
 
 
 
+/* ui/user.js */
+    KityMinder.registerUI('user', function(minder) {
+
+        var currentUser;
+
+        var $userPanel = $('<div class="user-panel"></div>').appendTo('#panel');
+
+        /* 登录按钮 */
+        var $loginButton = new FUI.Button({
+            label: minder.getLang('ui.login'),
+            text: minder.getLang('ui.login'),
+            className: 'login-button'
+        }).appendTo($userPanel[0]).hide();
+
+        /* 用户按钮 */
+        var $userButton = new FUI.Button({
+            icon: {
+                img: 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+            },
+            className: 'user-button'
+        }).appendTo($userPanel[0]).hide();
+
+        /* 用户菜单 */
+        var $userMenu = new FUI.PopupMenu().appendTo(document.getElementById('content-wrapper')).positionTo($userButton);
+
+        var menu = $userMenu.getMenuWidget().show();
+
+        ['userinfo', 'gotonetdisk', 'fui-spliter', 'switchuser', 'logout'].forEach(function(name) {
+            menu.appendItem(new FUI.Item({
+                label: minder.getLang('ui.' + name),
+                className: name,
+                value: name
+            }));
+        });
+
+        $userButton.on('click', function() {
+            $userMenu.open();
+        });
+
+        menu.on('select', function(e, info) {
+
+            switch (info.value) {
+                case 'userinfo':
+                    window.open('http://i.baidu.com');
+                    break;
+                case 'gotonetdisk':
+                    window.open('http://pan.baidu.com');
+                    break;
+                case 'switchuser':
+                    switchUser();
+                    break;
+                case 'logout':
+                    logout();
+                    break;
+            }
+
+            menu.clearSelect();
+            $userMenu.hide();
+
+        });
+
+
+        /* 初始化网盘使用的 APP 身份 */
+        fio.provider.init('netdisk', {
+            apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
+        });
+
+        fio.user.check().then(check);
+
+        $loginButton.on('click', login);
+
+        function check(user) {
+            if (user) {
+                $userButton.setLabel(user.username);
+                $userButton.getIconWidget().setImage(user.smallImage);
+                $userButton.show();
+                $loginButton.hide();
+            } else {
+                $loginButton.show();
+                $userButton.hide();
+            }
+            currentUser = user;
+        }
+
+        function logout() {
+            fio.user.logout();
+            $loginButton.show();
+            $userButton.hide();
+        }
+
+        function login() {
+            fio.user.login({
+                remember: 7 * 24 * 60 * 60 // remember 7 days
+            }).then(check);
+        }
+
+        function switchUser() {
+            fio.user.login({
+                remember: 7 * 24 * 60 * 60, // remember 7 days
+                force: true
+            }).then(check);
+        }
+
+        return {
+            getCurrent: function() {
+                return currentUser;
+            }
+        };
+    });
+/* ui/user.js end */
+
+
+
+
+/* ui/search.js */
+    KityMinder.registerUI('search', function(minder) {
+        var $search = $('<div id="search"><input type="search" /></div>').appendTo('#panel');
+
+        return $search;
+    });
+/* ui/search.js end */
+
+
+
+
 /* ui/title.js */
     KityMinder.registerUI('title', function (minder) {
         var $title = $('<h1>').appendTo('#panel').text('百度脑图');
         return $title;
     });
 /* ui/title.js end */
-
-
-
-
-/* ui/account.js */
-    KityMinder.registerUI('account', function(minder) {
-        
-    });
-/* ui/account.js end */
 
 
 
@@ -25036,151 +25338,6 @@
 
 
 
-/* ui/priority.js */
-    KityMinder.registerUI('priority', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
-
-        var $priorityPanel = new FUI.LabelPanel({
-            label: minder.getLang('panels.priority')
-        }).appendTo($tabs.idea);
-
-        $commandbuttonset.generate('priority', [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(function(p) {
-            return {
-                label: p,
-                text: minder.getLang('ui.priority') + p,
-                value: p,
-                className: ['priority', p].join('-')
-            };
-        })).appendTo($priorityPanel);
-
-        return $priorityPanel;
-    });
-/* ui/priority.js end */
-
-
-
-
-/* ui/progress.js */
-    KityMinder.registerUI('progress', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
-
-        var $progressPanel = new FUI.LabelPanel({
-            label: minder.getLang('panels.progress')
-        }).appendTo($tabs.idea);
-
-        $commandbuttonset.generate('progress', [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(function(p) {
-            return {
-                label: p,
-                text: minder.getLang('ui.progress.p' + p),
-                value: p,
-                className: ['progress', p].join('-')
-            };
-        })).appendTo($progressPanel);
-
-        return $progressPanel;
-    });
-/* ui/progress.js end */
-
-
-
-
-/* ui/resource.js */
-    KityMinder.registerUI('resource', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
-
-        var $resourcePanel = new FUI.LabelPanel({
-            label: minder.getLang('panels.resource'),
-            id: 'resource-panel'
-        }).appendTo($tabs.idea);
-
-        var $addInput = new FUI.Input().appendTo($resourcePanel);
-
-        var $addButton = new FUI.Button({
-            label: '添加'
-        }).appendTo($resourcePanel);
-
-        var $resourceDrop = new FUI.DropPanel().appendTo($resourcePanel);
-        var $dropContainer = $($resourceDrop.getPanelElement());
-        var $ul = $('<ul></ul>').addClass('resource-list').appendTo($dropContainer);
-
-        function addResource() {
-            var resource = $addInput.getValue();
-            var origin = minder.queryCommandValue('resource');
-            if (resource) {
-                origin.push(resource);
-                minder.execCommand('resource', origin);
-            }
-            $addInput.setValue(null);
-            update();
-            $addInput.focus();
-        }
-
-        $addInput.on('inputcomplete', function(e) {
-            addResource();
-        });
-
-        $addButton.on('click', addResource);
-
-        $dropContainer.delegate('input[type=checkbox]', 'change', function() {
-            minder.execCommand('resource', $dropContainer.find('input[type=checkbox]:checked').map(function(index, chk) {
-                return $(chk).data('resource');
-            }).toArray());
-            update();
-        });
-
-        function hash(resource, used) {
-            return [resource.join(','), used.join(',')].join(';');
-        }
-
-        function changed(resource, used) {
-            var currentHash = hash(resource, used);
-            if (currentHash == changed.lastHash) return true;
-            changed.lastHash = currentHash;
-            return false;
-        }
-
-        function update() {
-            var resource = minder.queryCommandValue('resource');
-            var used = minder.getUsedResource();
-
-            if (!changed(resource, used)) return;
-
-            $ul.empty().append(used.map(function(name) {
-                var $li = $('<li></li>'),
-                    $label = $('<label></label>').appendTo($li),
-                    $chk = $('<input type="checkbox" />')
-                    .data('resource', name)
-                    .prop('checked', ~resource.indexOf(name))
-                    .appendTo($label);
-                $label.append(name);
-                var color = minder.getResourceColor(name);
-                return $li.css({
-                    color: color.dec('l', 60).toString(),
-                    backgroundColor: ~resource.indexOf(name) ? color : color.dec('a', 0.85).toRGBA()
-                });
-            }));
-
-            switch (minder.queryCommandState('resource')) {
-                case 0:
-                    $addInput.enable();
-                    $addButton.enable();
-                    $resourceDrop.enable();
-                    $ul.find('input[type=checkbox]').removeProp('disabled');
-                    break;
-                case -1:
-                    $addInput.disable();
-                    $addButton.disable();
-                    $resourceDrop.disable();
-                    $ul.find('input[type=checkbox]').prop('disabled', 'disabled');
-            }
-        }
-
-        minder.on('interactchange', update);
-
-        return $resourcePanel;
-    });
-/* ui/resource.js end */
-
-
-
-
 /* ui/attachment.js */
     KityMinder.registerUI('attachment', ['tabs'], function(minder, $tabs) {
         var $attachmentPanel = new FUI.LabelPanel({
@@ -25366,6 +25523,236 @@
         return $imageButtonMenu;
     });
 /* ui/image.js end */
+
+
+
+
+/* ui/priority.js */
+    KityMinder.registerUI('priority', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
+
+        var $priorityPanel = new FUI.LabelPanel({
+            label: minder.getLang('panels.priority')
+        }).appendTo($tabs.idea);
+
+        $commandbuttonset.generate('priority', [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(function(p) {
+            return {
+                label: p,
+                text: minder.getLang('ui.priority') + p,
+                value: p,
+                className: ['priority', p].join('-')
+            };
+        })).appendTo($priorityPanel);
+
+        return $priorityPanel;
+    });
+/* ui/priority.js end */
+
+
+
+
+/* ui/progress.js */
+    KityMinder.registerUI('progress', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
+
+        var $progressPanel = new FUI.LabelPanel({
+            label: minder.getLang('panels.progress')
+        }).appendTo($tabs.idea);
+
+        $commandbuttonset.generate('progress', [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(function(p) {
+            return {
+                label: p,
+                text: minder.getLang('ui.progress.p' + p),
+                value: p,
+                className: ['progress', p].join('-')
+            };
+        })).appendTo($progressPanel);
+
+        return $progressPanel;
+    });
+/* ui/progress.js end */
+
+
+
+
+/* ui/resource.js */
+    KityMinder.registerUI('resource', ['tabs', 'commandbuttonset'], function(minder, $tabs, $commandbuttonset) {
+
+        var $resourcePanel = new FUI.LabelPanel({
+            label: minder.getLang('panels.resource'),
+            id: 'resource-panel'
+        }).appendTo($tabs.idea);
+
+        var $addInput = new FUI.Input().appendTo($resourcePanel);
+
+        var $addButton = new FUI.Button({
+            label: '添加'
+        }).appendTo($resourcePanel);
+
+        var $resourceDrop = new FUI.DropPanel().appendTo($resourcePanel);
+        var $dropContainer = $($resourceDrop.getPanelElement());
+        var $ul = $('<ul></ul>').addClass('resource-list').appendTo($dropContainer);
+
+        function addResource() {
+            var resource = $addInput.getValue();
+            var origin = minder.queryCommandValue('resource');
+            if (resource) {
+                origin.push(resource);
+                minder.execCommand('resource', origin);
+            }
+            $addInput.setValue(null);
+            update();
+            $addInput.focus();
+        }
+
+        $addInput.on('inputcomplete', function(e) {
+            addResource();
+        });
+
+        $addButton.on('click', addResource);
+
+        $dropContainer.delegate('input[type=checkbox]', 'change', function() {
+            minder.execCommand('resource', $dropContainer.find('input[type=checkbox]:checked').map(function(index, chk) {
+                return $(chk).data('resource');
+            }).toArray());
+            update();
+        });
+
+        function hash(resource, used) {
+            return [resource.join(','), used.join(',')].join(';');
+        }
+
+        function changed(resource, used) {
+            var currentHash = hash(resource, used);
+            if (currentHash == changed.lastHash) return true;
+            changed.lastHash = currentHash;
+            return false;
+        }
+
+        function update() {
+            var resource = minder.queryCommandValue('resource');
+            var used = minder.getUsedResource();
+
+            if (!changed(resource, used)) return;
+
+            $ul.empty().append(used.map(function(name) {
+                var $li = $('<li></li>'),
+                    $label = $('<label></label>').appendTo($li),
+                    $chk = $('<input type="checkbox" />')
+                    .data('resource', name)
+                    .prop('checked', ~resource.indexOf(name))
+                    .appendTo($label);
+                $label.append(name);
+                var color = minder.getResourceColor(name);
+                return $li.css({
+                    color: color.dec('l', 60).toString(),
+                    backgroundColor: ~resource.indexOf(name) ? color : color.dec('a', 0.85).toRGBA()
+                });
+            }));
+
+            switch (minder.queryCommandState('resource')) {
+                case 0:
+                    $addInput.enable();
+                    $addButton.enable();
+                    $resourceDrop.enable();
+                    $ul.find('input[type=checkbox]').removeProp('disabled');
+                    break;
+                case -1:
+                    $addInput.disable();
+                    $addButton.disable();
+                    $resourceDrop.disable();
+                    $ul.find('input[type=checkbox]').prop('disabled', 'disabled');
+            }
+        }
+
+        minder.on('interactchange', update);
+
+        return $resourcePanel;
+    });
+/* ui/resource.js end */
+
+
+
+
+/* ui/netdisk.js */
+    KityMinder.registerUI('netdisk', ['mainmenu.open'], function(minder, $open) {
+
+        /* 网盘面板 */
+        var $panel = $($open.netdisk.getContentElement());
+
+        /* 路径导航 */
+        var $nav = $('<div class="netdisk-nav"></div>')
+            .appendTo($panel);
+
+        /* 显示当前目录文件列表 */
+        var $list = $('<ul></ul>')
+            .addClass('netdisk-file-list')
+            .appendTo($panel);
+
+        /* 点击目录中的项目时打开项目 */
+        $list.delegate('.netdisk-file-list-item', 'click', function(e) {
+            var $file = $(e.target),
+                file = $file.data('file');
+            open(file);
+        });
+
+        var base = '/apps/kityminder';
+        var currentPath = base + '/';
+
+        function open(file) {
+            if (file.isDir) return list(file.path);
+        }
+
+        function list(path) {
+
+            $list.transit({
+                x: path.length > currentPath.length ? '-100%' : '100%',
+                opacity: 0
+            });
+
+            fio.file.list({
+                path: path
+            })
+            .then(renderList, function(error) {
+                window.alert('加载目录发生错误：' + error);
+            });
+
+            currentPath = path;
+
+            updateNav();
+
+        }
+
+        function updateNav() {
+            $nav.empty();
+            console.log(currentPath);
+        }
+
+        function renderList(list) {
+            $list.empty();
+
+            list.forEach(function(file) {
+                $('<li></li>')
+                    .text(file.filename)
+                    .addClass('netdisk-file-list-item')
+                    .addClass(file.isDir ? 'dir' : 'file')
+                    .data('file', file)
+                    .appendTo($list);
+            });
+
+            $list.transit({
+                x: 0,
+                opacity: 1
+            });
+        }
+
+        $open.once('select', function() {
+            fio.user.check().then(function() {
+                list(currentPath);
+            });
+        });
+
+        $open.select(1);
+    });
+/* ui/netdisk.js end */
 
 
 

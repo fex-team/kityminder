@@ -29,6 +29,7 @@
         "baidu",
         "browser",
         "FUI",
-        "fio"
+        "fio",
+        "Promise"
     ]
 }

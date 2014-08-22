@@ -1,12 +1,11 @@
-/*
+/**
+ * @fileOverview FreeMind 文件格式支持
+ *
+ * Freemind 文件后缀为 .mm，实际上是一个 XML 文件
+ * @see http://freemind.sourceforge.net/
+ */
 
-    http://freemind.sourceforge.net/
-
-    freemind文件后缀为.mm，实际格式为xml
-
-*/
-
-KityMinder.registerProtocal('freemind', function() {
+KityMinder.registerProtocol('freemind', function(minder) {
 
     // 标签 map
     var markerMap = {
@@ -77,12 +76,20 @@ KityMinder.registerProtocal('freemind', function() {
     return {
         fileDescription: 'freemind格式文件',
         fileExtension: '.mm',
+        dataType: 'text',
 
         decode: function(local) {
-            return xml2km(local);
+            return new Promise(function(resolve, reject) {
+                try {
+                    resolve(xml2km(local));
+                } catch (e) {
+                    reject(new Error('XML 文件损坏！'));
+                }
+            });
         },
-        // recognize: null,
-        recognizePriority: -1
+
+        // 不支持
+        encode: null
     };
 
 });

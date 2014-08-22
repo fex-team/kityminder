@@ -1,5 +1,7 @@
 KityMinder.registerUI('user', function(minder) {
 
+    var currentUser;
+
     var $userPanel = $('<div class="user-panel"></div>').appendTo('#panel');
 
     /* 登录按钮 */
@@ -76,6 +78,7 @@ KityMinder.registerUI('user', function(minder) {
             $loginButton.show();
             $userButton.hide();
         }
+        currentUser = user;
     }
 
     function logout() {
@@ -97,4 +100,9 @@ KityMinder.registerUI('user', function(minder) {
         }).then(check);
     }
 
+    return {
+        getCurrent: function() {
+            return currentUser;
+        }
+    };
 });

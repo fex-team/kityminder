@@ -546,6 +546,13 @@
   border-style: solid;
   border-color: transparent;
 }
+.fui-button {
+  -webkit-transition: background-color 0.2s ease;
+  -moz-transition: background-color 0.2s ease;
+  -ms-transition: background-color 0.2s ease;
+  -o-transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease;
+}
 #tab-container .fui-button {
   display: inline-block;
   padding: 2px 5px 2px 3px;
@@ -768,6 +775,7 @@
 }
 .fui-dialog .fui-dialog-head .fui-close-button .fui-close-button-icon {
   display: none;
+  background: none;
 }
 .fui-dialog .fui-dialog-head .fui-close-button:hover {
   background-color: #e66060;
@@ -886,11 +894,20 @@ body {
   -moz-user-select: none;
 }
 #panel {
-  background: #3a4050;
+  background: #393f4f;
   font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
   height: 40px;
   overflow: visible;
   position: relative;
+}
+#panel h1 {
+  font-size: 14px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  text-align: center;
+  font-weight: normal;
+  color: #ffffff;
 }
 .fui-widget {
   -webkit-font-smoothing: auto;
@@ -902,13 +919,13 @@ body {
   line-height: 40px;
   padding: 0 30px 0 15px;
   z-index: 11;
-  background-color: #ff6e6e;
+  background-color: #fc8383;
 }
 #main-menu-btn:hover {
-  background-color: #ff8888 !important;
+  background-color: #fc9c9c !important;
 }
 #main-menu-btn:active {
-  background-color: #ff5555 !important;
+  background-color: #fb6a6a !important;
 }
 #main-menu-btn .fui-label {
   height: 40px;
@@ -931,20 +948,215 @@ body {
 }
 #main-menu {
   position: absolute;
-  background: gray;
+  background: white;
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
+  overflow: hidden;
+  transform: scale(0);
+  transform-origin: 0 0;
   opacity: 0;
-  -webkit-transition: opacity ease 0.2s;
-  -moz-transition: opacity ease 0.2s;
-  -ms-transition: opacity ease 0.2s;
-  -o-transition: opacity ease 0.2s;
-  transition: opacity ease 0.2s;
+  transition: opacity .25s ease, transform .25s ease;
 }
 #main-menu.show {
-  bottom: 0;
   opacity: 1;
+  transform: scale(1);
+}
+#main-menu:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 200px;
+  right: -1000px;
+  bottom: 10px;
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  transform: translateX(-200px) translateZ(0);
+  transition: transform .5s ease;
+}
+.show#main-menu:before {
+  transform: translateX(0) translateZ(0);
+  transition: transform .5s ease;
+}
+#main-menu .main-menu-header {
+  background: white;
+  height: 40px;
+}
+#main-menu .main-menu-back-panel {
+  background-color: #fc8383;
+  float: left;
+  width: 200px;
+  height: 40px;
+}
+#main-menu .main-menu-back-panel .main-menu-back-button {
+  width: 25px;
+  height: 25px;
+  border-radius: 100%;
+  border: 2px solid white;
+  left: 5px;
+  top: 5px;
+  cursor: pointer;
+}
+#main-menu .main-menu-back-panel .main-menu-back-button .fui-label {
+  display: none;
+}
+#main-menu .main-menu-back-panel .main-menu-back-button .fui-icon {
+  display: block;
+  width: 25px;
+  height: 25px;
+  background: url(../images/icons.png) -1px -370px;
+}
+#main-menu .main-menu-back-panel .main-menu-back-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+#main-menu .main-menu-back-panel .main-menu-back-button:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+#main-menu .main-menu-title {
+  margin-left: 200px;
+  height: 40px;
+  display: block;
+  background: white;
+  z-index: 2;
+  text-align: center;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 40px;
+  color: #999;
+  transform: translateX(-200px) translateZ(0);
+  transition: transform .5s ease;
+}
+.show#main-menu .main-menu-title {
+  transform: translateX(0) translateZ(0);
+  transition: transform .5s ease;
+}
+#main-menu .main-menu-level-1 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 40px;
+}
+#main-menu .main-menu-level-1 > .fui-tabs- {
+  /* 二级菜单区域 */
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap {
+  width: 200px;
+  position: absolute;
+  background-color: #fc8383;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap .fui-button {
+  display: block;
+  text-align: right;
+  height: 50px;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap .fui-button .fui-label {
+  height: 50px;
+  line-height: 50px;
+  color: white;
+  padding-right: 20px;
+  font-size: 16px;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap .fui-button:hover {
+  background: #fb6a6a;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap .fui-button:active {
+  background: #fb5151;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-button-wrap .fui-button.fui-selected {
+  background: #fdb4b4;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap {
+  position: absolute;
+  top: 0;
+  left: 200px;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  z-index: 2;
+  transform: translateX(-200px) translateZ(0);
+  transition: transform .5s ease;
+  /* 每个二级菜单的面板 */
+}
+.show#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap {
+  transform: translateX(0) translateZ(0);
+  transition: transform .5s ease;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel {
+  padding: 0 40px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  /* 面板内容 */
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content {
+  /* 二级菜单大标题 */
+  /* 二级菜单导航 */
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > h2 {
+  font-size: 24px;
+  font-weight: normal;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #465468;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  /* 二级导航菜单区域 */
+  /* 二级菜单内容区域 */
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap {
+  position: absolute;
+  display: block;
+  width: 180px;
+  border-right: 1px solid #c8ccd6;
+  left: 0px;
+  top: 60px;
+  bottom: 30px;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap > .fui-button {
+  display: block;
+  height: 50px;
+  line-height: 50px;
+  text-align: right;
+  padding-right: 20px;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap > .fui-button > .fui-label {
+  font-size: 14px;
+  line-height: 50px;
+  color: #465468;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap > .fui-button:hover {
+  background-color: #c8ccd6;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap > .fui-button.fui-selected {
+  background-color: #717b94;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-button-wrap > .fui-button.fui-selected > .fui-label {
+  color: white;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-panel-wrap {
+  position: absolute;
+  left: 200px;
+  top: 60px;
+  right: 0;
+  bottom: 0;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-panel-wrap > .fui-panel {
+  display: block;
+}
+#main-menu .main-menu-level-1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content > .fui-tabs > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content {
+  display: block;
 }
 .command-button.undo,
 .command-button.redo {
@@ -1096,6 +1308,100 @@ body {
 #tab-container.collapsed {
   opacity: 0;
   height: 0;
+}
+#search {
+  float: right;
+  position: relative;
+}
+#search:after {
+  content: ' ';
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 5px;
+  top: 7px;
+  background: url(../images/icons.png) no-repeat 0 -345px;
+}
+#search input[type=search] {
+  background: #5a6378;
+  border: none;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 15px;
+  outline: none;
+  color: #ffffff;
+  padding: 5px 10px 5px 30px;
+  box-sizing: content-box;
+  margin-top: 5px;
+  margin-right: 3px;
+  width: 30px;
+  -webkit-transition: width 0.5s ease;
+  -moz-transition: width 0.5s ease;
+  -ms-transition: width 0.5s ease;
+  -o-transition: width 0.5s ease;
+  transition: width 0.5s ease;
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  tranform: translateZ(0);
+}
+#search input[type=search]:focus {
+  width: 150px;
+}
+#panel div.user-panel {
+  float: right;
+  height: 40px;
+  line-height: 40px;
+}
+#panel div.user-panel .fui-button {
+  padding: 5px 10px;
+  height: 30px;
+  line-height: 30px;
+}
+#panel div.user-panel .fui-button:hover {
+  background-color: #5a6378;
+}
+#panel div.user-panel .fui-button:active {
+  background-color: #444b5b;
+}
+#panel div.user-panel .fui-button .fui-label {
+  font-size: 14px;
+  color: #ffffff;
+  vertical-align: baseline;
+}
+#panel div.user-panel .fui-button.user-button .fui-label {
+  display: none;
+}
+#panel div.user-panel .fui-button .fui-icon {
+  vertical-align: baseline;
+  border-radius: 100%;
+}
+#panel div.user-panel .fui-button .fui-icon img {
+  width: 30px;
+  height: 30px;
+}
+#panel div.user-panel .fui-button.login-button .fui-icon {
+  width: 25px;
+  height: 25px;
+  margin-right: 3px;
+  vertical-align: baseline;
+  background: url(../images/icons.png) 0 -320px;
+}
+.netdisk-file-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.netdisk-file-list .netdisk-file-list-item {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 5px 20px 5px 40px;
+  cursor: default;
+}
+.netdisk-file-list .netdisk-file-list-item:hover {
+  background-color: #c8ccd6;
 }
 #tab-container .command-buttonset.priority {
   width: 140px;

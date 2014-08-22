@@ -1,0 +1,32 @@
+.local-file-open-panel {
+    position: relative;
+    
+    & > h2 {
+        background: url(../images/icons.png) no-repeat 0 -495px;
+    }
+    .pick-file {
+        padding: 10px 0;
+        a {
+            display: inline-block;
+            width: 80px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            outline: none;
+            background: lighten(@tab-active, 20%);
+            &:hover {
+                background: lighten(@tab-hover, 20%);
+            }
+            &:active {
+                background: lighten(@tab-active, 15%);
+            }
+            cursor: default;
+            color: @ui-fore;
+            margin: 0 10px 10px 0;
+        }
+    }
+    .drop-file {
+        border: 1px solid #ccc;
+        .dock(100px, 0, 0);
+    }
+}

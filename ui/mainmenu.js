@@ -14,5 +14,5 @@ KityMinder.registerUI('mainmenu', function(minder) {
 
     $panel = $('<div id="main-menu"></div>').appendTo('body');
 
-    return $panel.addClass('show');
+    return $panel.addClass('show2');
 });

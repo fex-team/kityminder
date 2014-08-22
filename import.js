@@ -4,6 +4,19 @@
 (function() {
     var paths = [
 
+        /* 依赖库 */
+        'lib/jquery-2.1.1.js',
+        'lib/jquery.xml2json.js',
+        'lib/jquery.transit.min.js',
+        'lib/jquery.blob.js',
+        'lib/zip.js',
+        'lib/promise-1.0.0.js',
+        'lib/ZeroClipboard.min.js',
+        'lib/fui/dev-lib/jhtmls.min.js',
+        'lib/fui/dist/fui.all.js',
+        'lib/fio/dist/fio.js',
+        'lib/fio/provider/netdisk/netdisk.js',
+
         /* Kity 依赖库 */
         'lib/kity/dist/kity.js',
 
@@ -77,37 +90,33 @@
         'src/module/style.js',
 
         /* 格式支持 */
-        'src/protocal/xmind.js',
-        'src/protocal/freemind.js',
-        'src/protocal/mindmanager.js',
-        'src/protocal/plain.js',
-        'src/protocal/json.js',
-        'src/protocal/png.js',
-        'src/protocal/svg.js',
-
-        /* UI 依赖库 */
-        'lib/jquery-2.1.0.min.js',
-        'lib/promise-1.0.0.js',
-        'lib/ZeroClipboard.min.js',
-        'lib/fui/dev-lib/jhtmls.min.js',
-        'lib/fui/dist/fui.all.js',
-        'lib/fio/dist/fio.js',
-        'lib/fio/provider/netdisk/netdisk.js',
-
-        /* 导入依赖 */
-        'lib/jquery.xml2json.js',
-        'lib/zip.js',
+        'src/protocol/xmind.js',
+        'src/protocol/freemind.js',
+        'src/protocol/mindmanager.js',
+        'src/protocol/plain.js',
+        'src/protocol/json.js',
+        'src/protocol/png.js',
+        'src/protocol/svg.js',
 
         /* UI 代码 */
+
         'ui/ui.js',
+        'ui/eve.js',
         'ui/fuix.js',
+
         'ui/mainmenu.js',
         'ui/mainmenu.header.js',
         'ui/mainmenu.level1.js',
+        'ui/mainmenu.open.js',
+
+        'ui/fileloader.js',
+        'ui/netdisk.js',
+        'ui/localfile.js',
 
         'ui/commandbutton.js',
         'ui/commandbuttonset.js',
         'ui/commandinputmenu.js',
+
         'ui/history.js',
         'ui/tabs.js',
         'ui/user.js',

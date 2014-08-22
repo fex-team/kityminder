@@ -126,7 +126,8 @@ module.exports = function(grunt) {
                     sourceMap: true,
                     sourceMapFilename: 'ui/theme/default/css/default.all.css.map',
                     sourceMapBasepath: 'ui/theme/default/css/'
-
+                    // compress: true,
+                    // cleancss: true
                 }
             }
         },

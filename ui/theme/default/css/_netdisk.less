@@ -1,0 +1,116 @@
+.netdisk-nav {
+    padding-bottom: 10px;
+    height: 30px;
+    border-bottom: 1px solid #eee;
+    font-size: 18px;
+
+    span, a {
+        display: inline-block;
+        height: 20px;
+        line-height: 20px;
+        padding: 5px 10px;
+        margin: 0 3px 0 0;
+        cursor: default;
+        vertical-align: middle;
+    }
+
+    span.my-document {
+        width: 25px;
+        height: 25px;
+        padding: 0;
+        text-indent: -1000px;
+        position: relative;
+        top: -2px;
+        background: url(../images/icons.png) 0 -470px;
+    }
+
+    a.dir-back {
+        border-radius: 100%;
+        width: 23px;
+        height: 23px;
+        padding: 0;
+        border: 1px solid @ui-color;
+        text-indent: -1000px;
+        position: relative;
+        top: -1px;
+        background: url(../images/icons.png) -2px -396px no-repeat;
+        
+    }
+    
+    span.spliter {
+        .triangle-left(black,4px,8px);
+        display: inline-block;
+        margin-left: 4px;
+    }
+    
+    a {
+        &:hover {
+            background-color: lighten(@tab-hover, 55%);
+        }
+        &:active {
+            background-color: lighten(@tab-active, 55%)
+        }
+    }
+}
+
+.netdisk-file-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    .dock(40px, 0, 0);
+    overflow: auto;
+    
+    .empty {
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        font-size: 18px;
+        color: #ccc;
+    }
+    .netdisk-file-list-item {
+        font-size: 14px;
+        line-height: 20px;
+        padding: 10px 20px 10px 40px;
+        cursor: default;
+        
+        &:hover {
+            background-color: lighten(@tab-hover, 55%);
+        }
+        &:active {
+            background-color: lighten(@tab-hover, 50%);
+        }
+        &.file {
+            position: relative;
+            &:before {
+                content: ' ';
+                display: block;
+                position: absolute;
+                width: 25px;
+                height: 25px;
+                left: 5px;
+                top: 7px;
+                background: url(../images/icons.png) 0 -445px no-repeat;
+            }
+        }
+        &.dir {
+            position: relative;
+            &:before {
+                content: ' ';
+                display: block;
+                position: absolute;
+                width: 25px;
+                height: 25px;
+                left: 5px;
+                top: 7px;
+                background: url(../images/icons.png) 0 -420px no-repeat;
+            }
+            &:after {
+                .triangle-left(black,4px,8px);
+                position: absolute;
+                right: 5px;
+                top: 20px;
+                margin-top: -4px;
+            }
+        }
+    }
+}

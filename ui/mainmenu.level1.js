@@ -3,7 +3,10 @@ KityMinder.registerUI('mainmenu.level1', ['mainmenu'], function (minder, $mainme
 
     var $l1_tabs = new FUI.Tabs({
         buttons: tabs.map(function(key) {
-            return minder.getLang('ui.menu.level1.' + key);
+            return {
+                label: minder.getLang('ui.menu.level1.' + key),
+                className: key
+            };
         }),
         className: 'main-menu-level-1'
     });

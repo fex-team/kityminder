@@ -1,4 +1,4 @@
-KityMinder.registerProtocal('plain', function() {
+KityMinder.registerProtocol('plain', function(minder) {
     var LINE_ENDING = '\r',
         LINE_ENDING_SPLITER = /\r\n|\r|\n/,
         TAB_CHAR = '\t';
@@ -73,33 +73,21 @@ KityMinder.registerProtocal('plain', function() {
         }
         return json;
     }
-    var lastTry, lastResult;
-
-    function recognize(local) {
-        if (!Utils.isString(local)) return false;
-        lastTry = local;
-        try {
-            lastResult = decode(local);
-        } catch (e) {
-            lastResult = null;
-        }
-        return !!lastResult;
-    }
 
     return {
         fileDescription: '大纲文本',
         fileExtension: '.txt',
         mineType: 'text/plain',
+        dataType: 'text',
+
         encode: function(json) {
             return encode(json, 0);
         },
+
         decode: function(local) {
-            if (lastTry == local && lastResult) {
-                return lastResult;
-            }
             return decode(local);
         },
-        recognize: recognize,
+
         recognizePriority: -1
     };
 });

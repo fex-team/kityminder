@@ -4,7 +4,7 @@ KityMinder.registerUI('mainmenu.header', ['mainmenu'], function (minder, $mainme
 
     var $backPanel = $('<div class="main-menu-back-panel"></div>').appendTo($header);
 
-    var $titlePanel = $('<div class="main-menu-title"></div>').appendTo($header);
+    var $titlePanel = $('<div class="main-menu-title">百度脑图</div>').appendTo($header);
 
     var $backButton = new FUI.Button({
         className: 'main-menu-back-button',

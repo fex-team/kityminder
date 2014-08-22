@@ -3,13 +3,14 @@ var Minder = KityMinder.Minder = kity.createClass('KityMinder', {
         this._options = Utils.extend(window.KITYMINDER_CONFIG || {}, options);
         this.setDefaultOptions(KM.defaultOptions);
 
-        this._initEvents();
-        this._initMinder();
-        this._initSelection();
-        this._initStatus();
-        this._initShortcutKey();
-        this._initContextmenu();
-        this._initModules();
+        this._initEvents(options);
+        this._initMinder(options);
+        this._initSelection(options);
+        this._initStatus(options);
+        this._initShortcutKey(options);
+        this._initContextmenu(options);
+        this._initModules(options);
+        this._initProtocols(options);
 
         if (this.getOptions('readOnly') === true) {
             this.setDisabled();

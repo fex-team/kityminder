@@ -3,9 +3,7 @@
     http://www.mindjet.com/mindmanager/
     mindmanager的后缀为.mmap，实际文件格式是zip，解压之后核心文件是Document.xml
 */
-KityMinder.registerProtocal('mindmanager', function() {
-
-    var successCall, errorCall;
+KityMinder.registerProtocol('mindmanager', function(minder) {
 
     // 标签 map
     var markerMap = {
@@ -73,47 +71,59 @@ KityMinder.registerProtocal('mindmanager', function() {
         return result;
     }
 
-    function onerror() {
-        errorCall('ziperror');
+    function getEntries(file) {
+        return new Promise(function(resolve, reject) {
+            zip.createReader(new zip.BlobReader(file), function(zipReader) {
+                zipReader.getEntries(resolve);
+            }, reject);
+        });
     }
 
-    function getEntries(file, onend) {
-        zip.createReader(new zip.BlobReader(file), function(zipReader) {
-            zipReader.getEntries(onend);
-        }, onerror);
+    function readMainDocument(entries) {
+
+        return new Promise(function(resolve, reject) {
+
+            var entry, json;
+
+            // 查找文档入口
+            while ((entry = entries.pop())) {
+
+                if (entry.filename == 'Document.xml') break;
+
+                entry = null;
+
+            }
+
+            // 找到了读取数据
+            if (entry) {
+
+                entry.getData(new zip.TextWriter(), function(text) {
+                    json = xml2km($.parseXML(text));
+                    resolve(json);
+                });
+
+            } 
+
+            // 找不到返回失败
+            else {
+                reject(new Error('Main document missing'));
+            }
+
+        });
     }
 
     return {
         fileDescription: 'mindmanager格式文件',
         fileExtension: '.mmap',
+        dataType: 'blob',
+
         decode: function(local) {
-            return {
-                then: function(callback) {
-                    successCall = callback;
-                    getEntries(local, function(entries) {
-                        var hasMainDoc = false;
-                        entries.forEach(function(entry) {
-                            if (entry.filename == 'Document.xml') {
-                                hasMainDoc = true;
-                                entry.getData(new zip.TextWriter(), function(text) {
-                                    try {
-                                        var km = xml2km($.parseXML(text));
-                                        if (successCall) successCall(km);
-                                    } catch (e) {
-                                        if (errorCall) errorCall('parseerror');
-                                    }
-                                });
-                            }
-                        });
-                        if (!hasMainDoc && errorCall) errorCall('parseerror');
-                    });
-                    return this;
-                },
-                error: function(callback) {
-                    errorCall = callback;
-                }
-            };
+            return getEntries(local).then(readMainDocument);
         },
+
+        // 暂时不支持编码
+        encode: null,
+
         recognizePriority: -1
     };
 });

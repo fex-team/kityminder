@@ -1,3 +1,4 @@
+/* global zip:true */
 /*
     http://www.xmind.net/developer/
     Parsing XMind file
@@ -6,8 +7,7 @@
     compressed archive containing separate XML documents for content and styles,
     a .jpg image file for thumbnails, and directories for related attachments.
  */
-
-KityMinder.registerProtocal('xmind', function() {
+KityMinder.registerProtocol('xmind', function(minder) {
 
     // 标签 map
     var markerMap = {
@@ -34,10 +34,9 @@ KityMinder.registerProtocal('xmind', function() {
     return {
         fileDescription: 'xmind格式文件',
         fileExtension: '.xmind',
+        dataType: 'blob',
 
         decode: function(local) {
-            var successCall, errorCall;
-
 
             function processTopic(topic, obj) {
 
@@ -49,14 +48,15 @@ KityMinder.registerProtocal('xmind', function() {
                 // 处理标签
                 if (topic.marker_refs && topic.marker_refs.marker_ref) {
                     var markers = topic.marker_refs.marker_ref;
+                    var type;
                     if (markers.length && markers.length > 0) {
                         for (var i in markers) {
-                            var type = markerMap[markers[i]['marker_id']];
-                            type && (obj.data[type[0]] = type[1]);
+                            type = markerMap[markers[i].marker_id];
+                            if (type) obj.data[type[0]] = type[1];
                         }
                     } else {
-                        var type = markerMap[markers['marker_id']];
-                        type && (obj.data[type[0]] = type[1]);
+                        type = markerMap[markers.marker_id];
+                        if (type) obj.data[type[0]] = type[1];
                     }
                 }
 
@@ -93,42 +93,45 @@ KityMinder.registerProtocal('xmind', function() {
                 return result;
             }
 
-            function onerror() {
-                errorCall('ziperror');
-            }
-
             function getEntries(file, onend) {
-                zip.createReader(new zip.BlobReader(file), function(zipReader) {
-                    zipReader.getEntries(onend);
-                }, onerror);
+                return new Promise(function(resolve, reject) {                    
+                    zip.createReader(new zip.BlobReader(file), function(zipReader) {
+                        zipReader.getEntries(resolve);
+                    }, reject);
+                });
             }
-            return {
-                then: function(callback) {
 
-                    getEntries(local, function(entries) {
-                        var hasMainDoc = false;
-                        entries.forEach(function(entry) {
-                            if (entry.filename == 'content.xml') {
-                                hasMainDoc = true;
-                                entry.getData(new zip.TextWriter(), function(text) {
-                                    try {
-                                        var km = xml2km($.parseXML(text));
-                                        callback && callback(km);
-                                    } catch (e) {
-                                        errorCall && errorCall('parseerror');
-                                    }
-                                });
-                            }
+            function readDocument(entries) {
+                return new Promise(function(resolve, reject) {
+                    var entry, json;
+
+                    // 查找文档入口
+                    while ((entry = entries.pop())) {
+
+                        if (entry.filename == 'content.xml') break;
+
+                        entry = null;
+
+                    }
+
+                    // 找到了读取数据
+                    if (entry) {
+
+                        entry.getData(new zip.TextWriter(), function(text) {
+                            json = xml2km($.parseXML(text));
+                            resolve(json);
                         });
 
-                        !hasMainDoc && errorCall && errorCall('parseerror');
-                    });
-                    return this;
-                },
-                error: function(callback) {
-                    errorCall = callback;
-                }
-            };
+                    } 
+
+                    // 找不到返回失败
+                    else {
+                        reject(new Error('Content document missing'));
+                    }
+                });
+            }
+
+            return getEntries(local).then(readDocument);
 
         },
         // recognize: recognize,
