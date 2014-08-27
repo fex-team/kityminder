@@ -1,3 +1,12 @@
+/**
+ * @fileOverview
+ *
+ * 拓展 FUI 组件的功能
+ *
+ * @author: techird
+ * @copyright: Baidu FEX, 2014
+ */
+
 kity.extendClass(FUI.Widget, {
     setEnable: function(value) {
         if (value === false) this.disable();

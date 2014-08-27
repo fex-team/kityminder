@@ -1,3 +1,12 @@
+/**
+ * @fileOverview
+ *
+ * 简版事件解耦功能
+ *
+ * @author: techird
+ * @copyright: Baidu FEX, 2014
+ */
+
 KityMinder.registerUI('eve', function(minder) {
     return {
         setup: function(obj) {
@@ -31,11 +40,14 @@ KityMinder.registerUI('eve', function(minder) {
             
             obj.fire = function fire(name) {
                 var list = callbacks[name];
+                var args = [].slice.call(arguments, 1);
                 if (list) list.forEach(function(callback) {
-                    callback.apply(obj, [].slice.call(arguments, 1));
+                    callback.apply(obj, args);
                 });
                 return this;
             };
+
+            return obj;
         }
     };
 });

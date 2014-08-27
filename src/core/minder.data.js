@@ -20,6 +20,7 @@ kity.extendClass(Minder, {
         for (var name in pool) {
             if (pool.hasOwnProperty(name))
                 protocols[name] = pool[name](this);
+                protocols[name].name = name;
         }
     },
 
@@ -28,7 +29,10 @@ kity.extendClass(Minder, {
     },
 
     getSupportedProtocols: function() {
-        return this._protocols;
+        var protocols = this._protocols;
+        return Utils.keys(protocols).map(function(name) {
+            return protocols[name];
+        });
     },
 
     exportData: function(protocolName) {
@@ -104,7 +108,7 @@ kity.extendClass(Minder, {
 
         return new Promise(function(resolve, reject) {
 
-            resolve(protocol.decode(local));
+            resolve(protocol ? protocol.decode(local) : local);
 
         }).then(function(json) {
 

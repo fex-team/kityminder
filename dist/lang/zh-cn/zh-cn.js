@@ -47,26 +47,50 @@ KityMinder.LANG['zh-cn'] = {
 
         'menu': {
             'level1': {
+                'new': '新建',
                 'open': '打开',
                 'save': '保存',
                 'share': '分享',
                 'help': '帮助',
                 'setting': '设置'
             },
+            'new': {
+                'header': '新建脑图'
+            },
             'open': {
-                'header': '打开文件',
+                'header': '打开',
                 'recent': '最近使用',
                 'netdisk': '百度云盘',
                 'local': '本地文件',
                 'draft': '草稿箱'
+            },
+            'save': {
+                'header': '保存到',
+                'netdisk': '百度网盘',
+                'local': '导出到本地'
             }
         },
+
+        'mydocument': '我的文档',
+        'emptydir': '目录为空！',
+        'pickfile': '选择文件...',
+        'acceptfile': '支持的格式：{0}',
+        'dropfile': '或将文件拖至此处',
+        'unsupportedfile': '不支持的文件格式',
+        'untitleddoc': '未命名文档',
 
         'login': '登录',
         'logout': '注销',
         'switchuser': '切换账户',
         'userinfo': '个人信息',
         'gotonetdisk': '我的网盘',
+        'requirelogin': '请 <a class="login-button">登录</a> 后使用',
+        'saveas': '保存为',
+        'filename': '文件名',
+        'fileformat': '保存格式',
+        'save': '保存',
+        'mkdir': '新建目录',
+        'newdir': '未命名目录',
 
         'bold': '加粗',
         'italic': '斜体',
@@ -112,7 +136,14 @@ KityMinder.LANG['zh-cn'] = {
         'image': '图片',
         'removelink': '移除已有连接',
         'removeimage': '移除已有图片',
-        'resetlayout': '整理布局'
+        'resetlayout': '整理布局',
+
+        'justnow': '刚刚',
+        'minutesago': '{0} 分钟前',
+        'hoursago': '{0} 小时前',
+        'yesterday': '昨天',
+        'daysago': '{0} 天前',
+        'longago': '很久之前'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
@@ -163,5 +194,4 @@ KityMinder.LANG['zh-cn'] = {
     'resource': {
         'resource': '资源...'
     }
-
 };

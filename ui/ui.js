@@ -1,3 +1,12 @@
+/**
+ * @fileOverview
+ *
+ * KityMinder UI 注册及加载机制
+ *
+ * @author: techird
+ * @copyright: Baidu FEX, 2014
+ */
+
 (function() {
     var uiQueue = [];
 
@@ -28,7 +37,7 @@
             });
 
             // 阻止非脑图事件冒泡
-            $('#content-wrapper').delegate('#panel, #tab-container, .fui-dialog', 'click mousedown keydown keyup', function(e) {
+            $('#content-wrapper').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'click mousedown keydown keyup', function(e) {
                 e.stopPropagation();
             });
 

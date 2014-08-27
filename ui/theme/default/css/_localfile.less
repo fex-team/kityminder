@@ -2,31 +2,47 @@
     position: relative;
     
     & > h2 {
-        background: url(../images/icons.png) no-repeat 0 -495px;
+        &:before {
+            content: ' ';
+            display: block;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 0;
+            background: url(../images/icons.png) no-repeat 0 -495px;
+        }
     }
     .pick-file {
         padding: 10px 0;
         a {
-            display: inline-block;
-            width: 80px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
-            outline: none;
-            background: lighten(@tab-active, 20%);
-            &:hover {
-                background: lighten(@tab-hover, 20%);
-            }
-            &:active {
-                background: lighten(@tab-active, 15%);
-            }
-            cursor: default;
-            color: @ui-fore;
+            .button;
             margin: 0 10px 10px 0;
         }
     }
     .drop-file {
-        border: 1px solid #ccc;
-        .dock(100px, 0, 0);
+        border: 2px dashed #eee;
+        border-radius: 4px;
+        height: 100px;
+        width: 100px;
+        text-align: center;
+        font-size: 16px;
+        color: #CCC;
+        margin: 150px auto;
+        transition: all .1s ease;
+     
+        span {
+            display: block;
+            margin-top: 25px;
+            padding: 0 15px;
+        }
+        
+        &.accept {
+            border-color: lighten(@tab-active, 40%);
+            transform: scale(1.2);
+        }
+        &.deny {
+            border-color: #eee;
+            color: #eee;
+        }
     }
 }

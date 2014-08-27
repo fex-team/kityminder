@@ -73,7 +73,6 @@
         'src/module/resource.js',
         'src/module/view.js',
         'src/module/dragtree.js',
-        'src/module/dropfile.js',
         'src/module/keyboard.js',
         'src/module/select.js',
         'src/module/history.js',
@@ -98,45 +97,74 @@
         'src/protocol/png.js',
         'src/protocol/svg.js',
 
-        /* UI 代码 */
-
+        /* UI 基础 */
         'ui/ui.js',
         'ui/eve.js',
         'ui/fuix.js',
+        'ui/fiox.js',
 
-        'ui/mainmenu.js',
-        'ui/mainmenu.header.js',
-        'ui/mainmenu.level1.js',
-        'ui/mainmenu.open.js',
+        /* UI 组件 */
+        'ui/widget/commandbutton.js',
+        'ui/widget/commandbuttonset.js',
+        'ui/widget/commandinputmenu.js',
+        'ui/widget/friendlytimespan.js',
+        'ui/widget/locallist.js',
+        'ui/widget/fileloader.js',
+        'ui/widget/netdiskfinder.js',
 
-        'ui/fileloader.js',
-        'ui/netdisk.js',
-        'ui/localfile.js',
+        /* UI 菜单 */
+        'ui/menu/menu.js',
+        'ui/menu/header.js',
+        'ui/menu/level1.js',
 
-        'ui/commandbutton.js',
-        'ui/commandbuttonset.js',
-        'ui/commandinputmenu.js',
+        /* UI 菜单 - 新建 */
+        'ui/menu/new/new.js',
 
-        'ui/history.js',
-        'ui/tabs.js',
-        'ui/user.js',
-        'ui/search.js',
-        'ui/title.js',
-        'ui/template.js',
-        'ui/theme.js',
-        'ui/layout.js',
-        'ui/style.js',
-        'ui/font.js',
-        'ui/color.js',
-        'ui/insertnode.js',
-        'ui/arrange.js',
-        'ui/nodeop.js',
-        'ui/attachment.js',
-        'ui/link.js',
-        'ui/image.js',
-        'ui/priority.js',
-        'ui/progress.js',
-        'ui/resource.js'
+        /* UI 菜单 - 打开 */
+        'ui/menu/open/open.js',
+        'ui/menu/open/local.js',
+        'ui/menu/open/netdisk.js',
+        'ui/menu/open/recent.js',
+        'ui/menu/open/draft.js',
+
+        /* UI 菜单 - 保存 */
+        'ui/menu/save/save.js',
+        'ui/menu/save/netdisk.js',
+        'ui/menu/save/download.js',
+
+        /* UI 菜单 - 分享 */
+        'ui/menu/share/share.js',
+
+        /* UI Top Bar */
+        'ui/topbar/history.js',
+        'ui/topbar/user.js',
+        'ui/topbar/search.js',
+        'ui/topbar/title.js',
+
+        /* UI Ribbon */
+        'ui/ribbon/tabs.js',
+
+        /* UI Ribbon「思路」面板 */
+        'ui/ribbon/idea/insert.js',
+        'ui/ribbon/idea/arrange.js',
+        'ui/ribbon/idea/operation.js',
+        'ui/ribbon/idea/attachment.js',
+        'ui/ribbon/idea/link.js',
+        'ui/ribbon/idea/image.js',
+        'ui/ribbon/idea/priority.js',
+        'ui/ribbon/idea/progress.js',
+        'ui/ribbon/idea/resource.js',
+
+        /* UI Ribbon「展示」面板 */
+        'ui/ribbon/appearence/template.js',
+        'ui/ribbon/appearence/theme.js',
+        'ui/ribbon/appearence/layout.js',
+        'ui/ribbon/appearence/style.js',
+        'ui/ribbon/appearence/font.js',
+        'ui/ribbon/appearence/color.js',
+
+        /* UI Ribbon「视图」面板 */
+        'ui/ribbon/view/level.js'
     ];
 
     if (typeof(module) === 'object' && module.exports) {
