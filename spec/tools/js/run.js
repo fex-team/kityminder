@@ -132,6 +132,7 @@ function run(kiss,runnext) {
     var iframe = document.createElement('iframe');
     iframe.id = fid;
     iframe.src = url;
+    iframe.style.minHeight="1500px";
     addClass(iframe, "runningframe");
     runningarea.appendChild(iframe);
     wb.kissstart = new Date().getTime();

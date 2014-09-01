@@ -10,24 +10,34 @@ describe("utils", function () {
 
     beforeEach(function(){
         if(flag){
-        document.body.appendChild(kityMinderDiv);
-        km = KM.getKityMinder('kityminder');
-        obj = document.getElementById('kityminder');
+            document.getElementById('HTMLReporter').appendChild(kityMinderDiv);
+            km = KM.getKityMinder('kityminder');
+            obj = document.getElementById('kityminder');
             flag = false;
         }
     });
 
     afterEach(function(){
-//        obj = null;
-//        km = null;
-//        KM = null;
-//        kityMinderDiv.style.display = "none";
 //        document.body.removeChild(kityMinderDiv);
-        console.log(document.body);
+//        console.log(km);
 
     });
 
 
+//        var kityMinderDiv  = document.createElement("div");
+//        kityMinderDiv.id = "kityminder";
+//        kityMinderDiv.style.height = "500px";
+//        kityMinderDiv.style.position = "relative";
+//        var obj;
+//        var km;
+//        var flag = true;
+//
+//        if(flag){
+//            document.body.appendChild(kityMinderDiv);
+//            km = KM.getKityMinder('kityminder');
+//            obj = document.getElementById('kityminder');
+//            flag = false;
+//        }
 
 
 
@@ -39,6 +49,9 @@ describe("utils", function () {
         var obj2 = utils.clonePlainObject(obj1);
 
         it('相等',function(){
+//            console.log(km);
+            console.log(document.getElementById('kityminder'));
+
             expect(utils.compareObject(obj1,obj2)).toBeTruthy();
         });
         it('长度不同',function(){

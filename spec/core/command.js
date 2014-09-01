@@ -9,16 +9,14 @@ describe("command", function () {
 
 
     beforeEach(function(){
-        document.body.appendChild(kityMinderDiv);
+    document.body.appendChild(kityMinderDiv);
         km = KM.getKityMinder('kityminder');
         obj = document.getElementById('kityminder');
-        kityMinderDiv.style.display = "block";
     });
 
     afterEach(function(){
-        obj = null;
-        kityMinderDiv.style.display = "none";
-        document.body.removeChild(kityMinderDiv);
+//        obj = null;
+//        document.body.removeChild(kityMinderDiv);
     });
 
 
