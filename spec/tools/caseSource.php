@@ -51,16 +51,40 @@ class Kiss
                 print '<script type="text/javascript" src="' . $this->testPath . $f  . '"></script>' . "\n";
             }
         }
+
+
+
+
+
         //先引用kity
-        print "<script src='../../kity/dist/kitygraph.all.js'></script>\n";
+        print "<script src='../../lib/jquery-2.1.0.min.js'></script>\n";
+        print "<script src='../../lib/ZeroClipboard.min.js' charset='utf-8'></script>\n";
+        print "<script type='text/javascript'>ZeroClipboard.setDefaults( { moviePath: '../../lib/ZeroClipboard.swf' } );</script>\n";
+        print "<script src='../../kity/dist/kity.js' charset='utf-8'></script>\n";
 
         //分成两部分:一部分默认加载(可配置),一部分针对文件加载(例如在文件头部有注释标注依赖文件,根据依赖文件动态加载)
         // core里面的文件全部加载,module加载用例对应的src文件,最后加载与用例同名的原文件
         $importurl = "{$this->testPath}tools/import.php?f=$this->name";
         if ( $cov ) $importurl .= '^&cov=true';
         print "<script type='text/javascript' src='".$importurl."' ></script>\n";
+
+        print "<script src='../../kityminder.config.js' charset='utf-8'></script>\n";
+        print "<script src='../../lang/zh-cn/zh-cn.js' charset='utf-8'></script>\n";
+        print "<script src='../../lib/zip.js' charset='utf-8'></script>\n";
+        print "<script>zip.inflateJSPath = '../../lib/inflate.js';</script>\n";
+        print "<script src='../../lib/jquery.xml2json.js' charset='utf-8'></script>\n";
+        print "<script src='../../lib/baidu-frontia-js-full-1.0.0.js' charset='utf-8'></script>\n";
+        print "<script src='../../social/draftmanager.js' charset='utf-8'></script>\n";
+        print "<script src='../../social/social.js' charset='utf-8'></script>\n";
+
+
         //引用测试文件
         print '<script type="text/javascript" src="' .$this->testPath.$this->name. '.js"></script>' . "\n";
+
+        print "<link href='../../social/social.css' rel='stylesheet'>\n";
+        print "<link href='../../themes/default/css/import.css' type='text/css' rel='stylesheet' />\n";
+        print "<link href='../../favicon.ico' type='image/x-icon' rel='shortcut icon'>\n";
+        print "<link href='../../favicon.ico' type='image/x-icon' rel='apple-touch-icon-precomposed'>\n";
     }
     public function match( $matcher )
     {

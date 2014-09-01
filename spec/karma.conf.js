@@ -17,9 +17,16 @@ module.exports = function(config) {
     files: [
         base_path+'spec/tools/js/UserAction.js'
         ,base_path+'spec/SpecHelper.js'
-        ,base_path+'kity/dist/kitygraph.all.js'
+        ,base_path+'kity/dist/kity.js'
         ,base_path+'lib/jquery-2.1.0.min.js'
         ,base_path+'lib/jquery.xml2json.js'
+        ,base_path+'lib/ZeroClipboard.min.js'
+        ,base_path+'kityminder.config.js'
+        ,base_path+'lang/zh-cn/zh-cn.js'
+        ,base_path+'lib/zip.js'
+        ,base_path+'lib/baidu-frontia-js-full-1.0.0.js'
+        ,base_path+'social/draftmanager.js'
+        ,base_path+'social/social.js'
 
         ,base_path+'src/core/kityminder.js'
         ,base_path+'src/core/utils.js'
@@ -36,6 +43,15 @@ module.exports = function(config) {
         ,base_path+'src/core/keymap.js'
         ,base_path+'src/core/minder.lang.js'
         ,base_path+'src/core/minder.defaultoptions.js'
+        ,base_path+'src/core/browser.js'
+        ,base_path+'src/core/connect.js'
+        ,base_path+'src/core/layout.js'
+        ,base_path+'src/core/minder.data.compatibility.js'
+        ,base_path+'src/core/minder.preference.js'
+        ,base_path+'src/core/render.js'
+        ,base_path+'src/core/template.js'
+        ,base_path+'src/core/theme.js'
+
         ,base_path+'src/module/geometry.js'
         ,base_path+'src/module/history.js'
         ,base_path+'src/module/icon.js'
@@ -56,6 +72,18 @@ module.exports = function(config) {
         ,base_path+'src/module/basestyle.js'
         ,base_path+'src/module/font.js'
         ,base_path+'src/module/zoom.js'
+        ,base_path+'src/module/arrange.js'
+        ,base_path+'src/module/expand.js'
+        ,base_path+'src/module/hyperlink.js'
+        ,base_path+'src/module/image.js'
+        ,base_path+'src/module/node.js'
+        ,base_path+'src/module/outline.js'
+        ,base_path+'src/module/paste.js'
+        ,base_path+'src/module/priority.js'
+        ,base_path+'src/module/progress.js'
+        ,base_path+'src/module/resource.js'
+        ,base_path+'src/module/text.js'
+
         ,base_path+'src/ui/jquery-ui-1.10.4.custom.min.js'
         ,base_path+'src/ui/widget.js'
         ,base_path+'src/ui/button.js'
@@ -74,6 +102,7 @@ module.exports = function(config) {
         ,base_path+'src/ui/tab.js'
         ,base_path+'src/ui/separator.js'
         ,base_path+'src/ui/scale.js'
+
         ,base_path+'src/adapter/utils.js'
         ,base_path+'src/adapter/adapter.js'
         ,base_path+'src/adapter/button.js'
@@ -85,6 +114,12 @@ module.exports = function(config) {
         ,base_path+'src/adapter/node.js'
         ,base_path+'src/adapter/contextmenu.js'
         ,base_path+'src/adapter/dialog.js'
+        ,base_path+'src/adapter/color.js'
+        ,base_path+'src/adapter/face.js'
+        ,base_path+'src/adapter/hyperlink.js'
+        ,base_path+'src/adapter/image.js'
+        ,base_path+'src/adapter/zoom.js'
+
         ,base_path+'src/protocal/xmind.js'
         ,base_path+'src/protocal/freemind.js'
         ,base_path+'src/protocal/mindmanager.js'
@@ -92,6 +127,19 @@ module.exports = function(config) {
         ,base_path+'src/protocal/json.js'
         ,base_path+'src/protocal/png.js'
         ,base_path+'src/protocal/svg.js'
+
+        ,base_path+'src/layout/bottom.js'
+        ,base_path+'src/layout/default.connect.js'
+        ,base_path+'src/layout/default.js'
+        ,base_path+'src/layout/filetree.js'
+
+        ,base_path+'src/template/structure.js'
+
+        ,base_path+'src/theme/default.js'
+        ,base_path+'src/theme/fresh.js'
+        ,base_path+'src/theme/snow.js'
+
+
         ,base_path+'spec/core/*.js'
         ,base_path+'spec/module/*.js'
         ,base_path+'spec/protocal/*.js'
@@ -152,7 +200,10 @@ module.exports = function(config) {
               '../src/adapter/*.js': ['coverage'],
               '../src/module/*.js': ['coverage'],
               '../src/protocal/*.js': ['coverage'],
-              '../src/ui/*.js': ['coverage']
+              '../src/ui/*.js': ['coverage'],
+              '../src/layout/*.js': ['coverage'],
+              '../src/template/*.js': ['coverage'],
+              '../src/theme/*.js': ['coverage']
           }
       ,
     coverageReporter: {

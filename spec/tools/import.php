@@ -39,7 +39,7 @@ function importSrc(){
         $path = $i . '.js';
         $srcFile = Config::$projroot . Config::$src_PATH . $path;
         if (file_exists($srcFile)) {
-            echo "document.write('<script charset=utf-8 src=\"$srcFile\"></script>');";
+            echo "document.write('<script charset=utf-8 src=\"$srcFile\"></script>');\n";
         }
     }
     if(file_exists($this_src)){
@@ -50,7 +50,7 @@ function importSrc(){
             if(custom_strEmpty($statment)){
                 continue ;
             }else if(preg_match('/\/\/\/import\s+([^;]+);?/ies', $statment,$r)){
-                echo "document.write('<script charset=utf-8 src=\"".Config::$projroot . Config::$src_PATH.$r[1].".js\"></script>');";
+                echo "document.write('<script charset=utf-8 src=\"".Config::$projroot . Config::$src_PATH.$r[1].".js\"></script>');\n";
             }else{
                 break;
             }
@@ -59,7 +59,7 @@ function importSrc(){
     }
     //加载与用例同名的原文件,并避免重复加载
     if($flag_ownSrc){
-        echo "document.write('<script charset=utf-8 src=\"".$this_src."\"></script>');";
+        echo "document.write('<script charset=utf-8 src=\"".$this_src."\"></script>');\n";
     }
 }
 importSrc();

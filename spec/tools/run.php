@@ -60,7 +60,12 @@ $cov = array_key_exists( 'cov' , $_GET );
         };
 
         function execJasmine() {
+//            jasmineEnv.beforeEach(function(){console.log(12)});
+//            jasmine.Suite.beforeEach(function(){console.log(123)});
+//            console.log(jasmineEnv.currentSpec);
+//            jasmineEnv.currentSpec.start=function(){console.log(123)};
             jasmineEnv.execute();
+
         }
 
     })();
