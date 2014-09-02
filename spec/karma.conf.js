@@ -201,9 +201,9 @@ module.exports = function(config) {
               '../src/module/*.js': ['coverage'],
               '../src/protocal/*.js': ['coverage'],
               '../src/ui/*.js': ['coverage'],
-              '../src/layout/*.js': ['coverage'],
-              '../src/template/*.js': ['coverage'],
-              '../src/theme/*.js': ['coverage']
+//              '../src/layout/*.js': ['coverage'],
+//              '../src/template/*.js': ['coverage'],
+//              '../src/theme/*.js': ['coverage']
           }
       ,
     coverageReporter: {
