@@ -24,6 +24,5 @@ describe("command", function () {
 
     it('',function(){
 
-        console.log(obj);
     })
 });
