@@ -1,6 +1,6 @@
 //模拟光标
 Minder.Selection = kity.createClass( 'Selection', {
-    base: kity.Rect,
+    base: kity.Group,
     constructor: function ( height, color, width ) {
         this.callBase();
         this.height = height || 20;
@@ -14,14 +14,85 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.setOpacity(0.5);
         this.setStyle('cursor','text');
         this._show = false;
+        this.offset = [];
 
     },
+    setMinderNode : function(node){
+        this.minderNode = node;
+    },
     setColor:function(color){
+
         this.fill(color);
+    },
+    updateOffsetByTextData:function(data,offset){
+        if(this.collapsed){
+            this.offset = utils.getValueByIndex(data,this.startOffset);
+            return this;
+        }else{
+            var arrOffset = [],tmpOffset = {},
+                startOffset = this.startOffset,
+                endOffset = this.endOffset,
+                cIndex = 0;
+
+            utils.each(data,function(l,arr){
+                tmpOffset = {
+                    width:0,
+                    x:0,
+                    y:0
+                };
+                utils.each(arr,function(i,o){
+                    if(cIndex >= startOffset && cIndex <= endOffset){
+                        if(i === 0 || cIndex === startOffset){
+                            tmpOffset.x = o.x;
+                            tmpOffset.y = o.y;
+                            tmpOffset.width = i === 0 && offset && offset.x <= o.x && cIndex != startOffset ? 0 : o.width;
+                        }else if(cIndex < endOffset){
+                            tmpOffset.width += o.width;
+                        }else if(cIndex === endOffset){
+                            return false;
+                        }
+
+                    }
+                    cIndex++;
+
+                });
+                if(tmpOffset.x !== undefined) {
+                    arrOffset.push(tmpOffset);
+                }
+                if(cIndex === endOffset) {
+                    return false;
+                }
+                if(arr.length == 1 && arr[0].width === 0)
+                    return;
+
+                cIndex++;
+
+            });
+            this.offset = arrOffset;
+            return this;
+        }
+
+    },
+    updatePosition:function(offset){
+        var me = this;
+        this.clear();
+        offset = offset || this.offset;
+        if(this.collapsed){
+
+            var rect = new kity.Rect().fill(null).stroke(null).setWidth(2).setHeight(this.height);
+            rect.setPosition(Math.round(offset.x) - 0.5,Math.round(offset.y) - 1.5);
+            this.addShape(rect);
+        }else{
+            utils.each(offset,function(i,v){
+                var rect = new kity.Rect().fill(null).stroke(null).setWidth(v.width).setHeight(me.height);
+                rect.setPosition(Math.round(v.x) - 0.5,Math.round(v.y) - 1.5);
+                me.addShape(rect);
+            });
+        }
+        return this;
     },
     collapse : function(toStart){
         this.setOpacity(1);
-        this.width = 2;
         this.collapsed = true;
         if(toStart){
             this.endOffset = this.startOffset;
@@ -52,24 +123,12 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.setOpacity(0.5);
         return this;
     },
-    updateShow : function(offset,width){
-        if(width){
-            this.setShowHold();
+    update : function(data,offset){
+        if(data){
+            this.updateOffsetByTextData(data,offset);
         }
-        this.setPosition(offset).setWidth(width);
-        this.bringTop();
-        return this;
-    },
-    setPosition: function ( offset ) {
-        try {
-            // 这两个是神奇的 0.5 —— SVG 要边缘锐利，你需要一些对齐
-            this.x = Math.round(offset.x) - 0.5;
-            this.y = Math.round(offset.y) - 1.5;
-
-        } catch ( e ) {
-           console.log(e);
-        }
-        this.update();
+        this.updatePosition();
+        this.setShow();
         return this;
     },
     setHeight: function ( height ) {
@@ -82,13 +141,8 @@ Minder.Selection = kity.createClass( 'Selection', {
         this._show = false;
         return this;
     },
-    setShowHold: function () {
-        clearInterval( this.timer );
-        this.setStyle( 'display', '' );
-        this._show = true;
-        return this;
-    },
     setShow: function () {
+        this.bringTop();
         clearInterval( this.timer );
         var me = this,
             state = '';
@@ -104,10 +158,15 @@ Minder.Selection = kity.createClass( 'Selection', {
         }
         return this;
     },
+    setShowStatus:function(){
+        this._show = true;
+        return this;
+    },
     isShow:function(){
         return this._show;
     },
     isHide:function(){
+
         return !this._show;
     }
 } );
