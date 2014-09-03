@@ -74,8 +74,8 @@ class Kiss
         print "<script>zip.inflateJSPath = '../../lib/inflate.js';</script>\n";
         print "<script src='../../lib/jquery.xml2json.js' charset='utf-8'></script>\n";
         print "<script src='../../lib/baidu-frontia-js-full-1.0.0.js' charset='utf-8'></script>\n";
-        print "<script src='../../social/draftmanager.js' charset='utf-8'></script>\n";
-        print "<script src='../../social/social.js' charset='utf-8'></script>\n";
+//        print "<script src='../../social/draftmanager.js' charset='utf-8'></script>\n";
+//        print "<script src='../../social/social.js' charset='utf-8'></script>\n";
 
 
         //引用测试文件

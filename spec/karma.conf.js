@@ -130,8 +130,8 @@ module.exports = function(config) {
             ,base_path+'lib/jquery.xml2json.js'
 
             ,base_path+'lib/baidu-frontia-js-full-1.0.0.js'
-            ,base_path+'social/draftmanager.js'
-            ,base_path+'social/social.js'
+//            ,base_path+'social/draftmanager.js'
+//            ,base_path+'social/social.js'
             ,base_path+'social/social.css'
             ,base_path+'themes/default/css/import.css'
 
