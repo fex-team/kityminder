@@ -53,7 +53,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             }
         },
         _setTextToContainer : function(keyCode){
-
             var me = this;
             //同步节点
             me.minderNode = me.re.minderNode;
@@ -116,7 +115,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 }
 
             }, 200);
-
             me.km.setStatus('textedit');
         },
         _input:function(e){
@@ -137,7 +135,9 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             switch (keyCode) {
                 case keymap.Enter:
                     if(e.originEvent.shiftKey){
-                        return;
+                        me._handlerEnterkey();
+                        e.preventDefault();
+                        return false;
                     }
                 case keymap.Tab:
                     if(this.selection.isShow()){
@@ -222,11 +222,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             switch (keyCode) {
                 case keymap.Enter:
-
-                    if(e.originEvent.shiftKey){
-                        me._setTextToContainer(keyCode);
-                        return;
-                    }
                 case keymap.Tab:
                 case keymap.F2:
                     if(browser.ipad){
@@ -279,7 +274,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             var me = this;
             var orgEvt = e.originEvent;
             var keyCode = orgEvt.keyCode;
-
             var node = this.km.getSelectedNode();
             if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
                 if (node && this.km.isSingleSelect() && node.isSelected()) {
@@ -306,17 +300,23 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         });
                     }
 
-
                     this.km.setStatus('inputready');
 
                 }
             }
         },
-        _handlerEnterkey:function(e){
-            var textArr = [];
-            utils.each(this.container.childNodes,function(index,node){
-                textArr.push(node.nodeType == 1 ? '\n' : utils.clearWhitespace(node.nodeValue));
-            })
+        _handlerEnterkey:function(){
+            var rng = this.range;
+            var br = document.createElement('br');
+            var me = this;
+            if(!rng.collapsed){
+                rng.deleteContents();
+            }
+            rng.insertNode(br);
+            rng.setStartAfter(br);
+            rng.collapse(true);
+            rng.select();
+            me._setTextToContainer(keymap.Enter);
 
         }
 

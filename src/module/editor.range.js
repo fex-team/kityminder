@@ -7,6 +7,9 @@ Minder.Range = kity.createClass('Range',function(){
         if(node.nodeType == 1){
             //默认不会出现得不到子节点的情况
             node = node.childNodes[offset];
+            if(node.nodeType == 3){
+                offset = 0;
+            }
         }
         utils.each(rng.container.childNodes,function(index,n){
             if(n === node){
@@ -57,6 +60,10 @@ Minder.Range = kity.createClass('Range',function(){
         hasNativeRange : function(){
             return this.nativeSel.rangeCount !== 0 ;
         },
+        deleteContents : function(){
+            this.nativeRange.deleteContents();
+            return this._updateBoundary();
+        },
         select:function(){
             var start = this.nativeRange.startContainer;
             if(start.nodeType == 1 && start.childNodes.length === 0){
@@ -97,6 +104,9 @@ Minder.Range = kity.createClass('Range',function(){
             this.nativeRange.setStart(node,offset);
             this._updateBoundary();
             return this;
+        },
+        setStartAfter:function(node){
+            return this.setStart(node.parentNode,utils.getNodeIndex(node) + 1);
         },
         setEnd:function(node,offset){
             this.nativeRange.setEnd(node,offset);

@@ -22,8 +22,8 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
             r = Math.round;
 
 
-        this.setTextStyle(node, textGroup);
 
+        this.setTextStyle(node, textGroup);
 
         for(var i= 0,text,textShape;
             (text=textArr[i],textShape=textGroup.getItem(i),
@@ -40,13 +40,19 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
                 }
                 textShape.setContent(text);
 
-                var y = i * fontSize * lineHeight - height;
 
-                textShape.setY(y);
-
-                rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width, fontSize));
             }
+
         }
+        this.setTextStyle(node, textGroup);
+
+        textGroup.eachItem(function(i,textShape){
+            var y = i * fontSize * lineHeight - height;
+
+            textShape.setY(y);
+
+            rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width, fontSize));
+        });
 
         var nBox = new kity.Box(r(rBox.x), r(rBox.y),r(rBox.width), r(rBox.height));
 

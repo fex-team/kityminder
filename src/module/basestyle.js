@@ -5,11 +5,15 @@ KityMinder.registerModule('basestylemodule', function() {
         return node.getData(name) || node.getStyle(name);
     }
 
-    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
-        text.setFont({
-            weight: getNodeDataOrStyle(node, 'font-weight'),
-            style: getNodeDataOrStyle(node, 'font-style')
+    KityMinder.TextRenderer.registerStyleHook(function(node, textGroup) {
+
+        textGroup.eachItem(function(index,item){
+            item.setFont({
+                'weight': getNodeDataOrStyle(node,'font-weight'),
+                'style': getNodeDataOrStyle(node,'font-style')
+            });
         });
+
     });
     return {
         'commands': {
