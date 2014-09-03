@@ -111,10 +111,6 @@ Minder.Receiver = kity.createClass('Receiver', {
     getBaseOffset: function() {
         return  this.textGroup.getRenderBox('screen');
     },
-    setBaseOffset: function(refer) {
-        this.baseOffset = this.textGroup.getRenderBox(refer || this.km.getRenderContainer());
-        return this;
-    },
     setContainerStyle: function() {
         var textGroupBox = this.getBaseOffset();
         this.container.style.cssText = ';left:' + (browser.ipad ? '-' : '') +
@@ -221,11 +217,6 @@ Minder.Receiver = kity.createClass('Receiver', {
 
         this.selection.setHeight((this.minderNode.getData('font-size') || this.minderNode.getStyle('font-size')) * 1);
         return this;
-    },
-    _getRelativeValue:function(offset){
-        this.getBaseOffset();
-        offset.x = offset.x - this.baseOffset.x;
-        offset.y = offset.y - this.baseOffset.y;
     },
     updateSelectionByMousePosition: function(offset,dir) {
 

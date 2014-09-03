@@ -266,9 +266,7 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'layoutfinish':function(e){
                 if (e.node === receiver.minderNode && (this.getStatus() == 'textedit' || this.getStatus() == 'inputready') ) {//&& selectionReadyShow
-                    receiver
-                        .setBaseOffset()
-                        .setContainerStyle();
+                    receiver.setContainerStyle();
                 }
             },
             'selectionclear': function() {
@@ -289,7 +287,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 km.setStatus('normal');
                 receiver.clear();
             },
-            'textedit.mousewheel': function() {
+            'inputready.mousewheel textedit.mousewheel': function() {
                 receiver.setContainerStyle();
             }
 
