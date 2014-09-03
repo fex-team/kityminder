@@ -55,6 +55,7 @@
             'module/editor.range.js',
             'module/editor.receiver.js',
             'module/editor.selection.js',
+            'module/editor.keyboard.js',
             'module/basestyle.js',
             'module/font.js',
             'module/zoom.js',
