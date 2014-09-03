@@ -17,16 +17,12 @@ module.exports = function(config) {
         files: [
             base_path+'spec/tools/js/UserAction.js'
             ,base_path+'spec/SpecHelper.js'
-            ,base_path+'kity/dist/kity.js'
             ,base_path+'lib/jquery-2.1.0.min.js'
-            ,base_path+'lib/jquery.xml2json.js'
             ,base_path+'lib/ZeroClipboard.min.js'
-            ,base_path+'kityminder.config.js'
-            ,base_path+'lang/zh-cn/zh-cn.js'
-            ,base_path+'lib/zip.js'
-            ,base_path+'lib/baidu-frontia-js-full-1.0.0.js'
-            ,base_path+'social/draftmanager.js'
-            ,base_path+'social/social.js'
+            ,base_path+'spec/tools/js/ZeroClipboard.js'
+
+            ,base_path+'kity/dist/kity.js'
+
 
 
             ,base_path+'src/core/kityminder.js'
@@ -126,6 +122,16 @@ module.exports = function(config) {
             ,base_path+'src/protocal/json.js'
             ,base_path+'src/protocal/png.js'
             ,base_path+'src/protocal/svg.js'
+
+            ,base_path+'kityminder.config.js'
+            ,base_path+'lang/zh-cn/zh-cn.js'
+            ,base_path+'lib/zip.js'
+            ,base_path+'spec/tools/js/inflate.js'
+            ,base_path+'lib/jquery.xml2json.js'
+
+            ,base_path+'lib/baidu-frontia-js-full-1.0.0.js'
+            ,base_path+'social/draftmanager.js'
+            ,base_path+'social/social.js'
 
 
             ,base_path+'spec/core/*.js'
