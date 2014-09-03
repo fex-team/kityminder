@@ -134,7 +134,6 @@ module.exports = function(config) {
             ,base_path+'social/social.js'
             ,base_path+'social/social.css'
             ,base_path+'themes/default/css/import.css'
-            ,base_path+'favicon.ico'
 
 
             ,base_path+'spec/core/*.js'
