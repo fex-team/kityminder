@@ -132,6 +132,9 @@ module.exports = function(config) {
             ,base_path+'lib/baidu-frontia-js-full-1.0.0.js'
             ,base_path+'social/draftmanager.js'
             ,base_path+'social/social.js'
+            ,base_path+'social/social.css'
+            ,base_path+'themes/default/css/import.css'
+            ,base_path+'favicon.ico'
 
 
             ,base_path+'spec/core/*.js'
@@ -177,7 +180,7 @@ module.exports = function(config) {
         // - Safari (only Mac)
         // - PhantomJS
         // - IE (only Windows)
-        browsers: ['Chrome'],//,'Chrome'
+        browsers: ['Firefox','Chrome'],//,'Chrome'
 
 
         // If browser does not capture in given timeout [ms], kill it
