@@ -183,7 +183,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Firefox'],//,'Chrome'
+    browsers: ['Firefox','Chrome'],//,'Chrome'
 
 
     // If browser does not capture in given timeout [ms], kill it
@@ -201,9 +201,9 @@ module.exports = function(config) {
               '../src/module/*.js': ['coverage'],
               '../src/protocal/*.js': ['coverage'],
               '../src/ui/*.js': ['coverage'],
-//              '../src/layout/*.js': ['coverage'],
-//              '../src/template/*.js': ['coverage'],
-//              '../src/theme/*.js': ['coverage']
+              '../src/layout/*.js': ['coverage'],
+              '../src/template/*.js': ['coverage'],
+              '../src/theme/*.js': ['coverage']
           }
       ,
     coverageReporter: {
