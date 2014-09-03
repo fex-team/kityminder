@@ -141,6 +141,11 @@ Minder.Selection = kity.createClass( 'Selection', {
         this._show = false;
         return this;
     },
+    setHoldShow:function(){
+        this.setStyle('display','');
+        clearInterval(this.timer);
+        return this;
+    },
     setShow: function () {
         this.bringTop();
         clearInterval( this.timer );

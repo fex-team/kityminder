@@ -104,7 +104,8 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             me.selection
                 .updateOffsetByTextData(me.re.textData)
-                .updatePosition();
+                .updatePosition()
+                .setHoldShow();
 
 
 
@@ -305,6 +306,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 }
             }
         },
+        //处理软回车操作
         _handlerEnterkey:function(){
             var rng = this.range;
             var br = document.createElement('br');
