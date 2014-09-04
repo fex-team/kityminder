@@ -80,6 +80,13 @@
             &:active {
                 background-color: lighten(@tab-hover, 50%);
             }
+            &.selected {
+                background-color: lighten(@tab-active, 20%);
+                color: white;
+                &.file:before {
+                    background-position: 0 -545px;
+                }
+            }
             &.file {
                 position: relative;
                 &:before {
@@ -127,41 +134,15 @@
         top: 0;
     }
     
-    .login-tip {
-        display: none;
-        text-align: center;
-        font-size:  16px;
-        color: #999;
-        margin-top: 30px;
-        
-        a {
-            text-decoration: underline;
-            color: @main-menu-theme-color;
-            cursor: pointer;
-            
-            &:hover {
-                color: lighten(@main-menu-theme-color, 10%);
-            }
-        }
-    }
-
-    &.require-login { 
-        .login-tip {
-            display: block;
-        }
-        .netdisk-nav, .netdisk-file-list {
-            display: none;
-        }
-    }
 }
 
 // for save
 .netdisk-save-panel .netdisk-file-list {
-    bottom: 60px;
+    bottom: 50px;
 }
 .netdisk-save-select {
     .dock(auto, 0, 0, 0);
-    height: 30px;
+    height: auto;
     padding: 10px;
     border-top: 1px solid #EEE;
     background: #fcfcfc;
@@ -174,29 +155,22 @@
     }
     & > input {
         width: 50%;
-        padding: 2px 5px;
-        height: 16px;
-        outline: none;
-        border: 1px solid lighten(@tab-hover, 30%);
         margin: 0;
         margin-top: 5px;
+        margin-right: 10px;
 
-        &:focus {
-            border-color: lighten(@tab-active, 40%);
-        }
         vertical-align: middle;
     }
 
     & > select {
-        margin: 5px 0 0 10px;
+        margin: 5px 0 0 0;
         outline: none;
         vertical-align: middle;
     }
         
     & > .save-button {
-        position: absolute;
-        right: 10px;
-        top: 10px;
+        float: right;
         width: 80px;
+        vertical-align: middle;
     }
 }

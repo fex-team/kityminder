@@ -10,14 +10,10 @@
 KityMinder.registerUI('menu/new/new', function(minder) {
 
     var $menu = minder.getUI('menu/menu');
-    var $level1 = minder.getUI('menu/level1');
-    var eve = minder.getUI('eve');
+    var $doc = minder.getUI('doc');
+    var ret = minder.getUI('eve').setup({});
 
-    var $panel = $level1['new'].getContentElement();
-
-    var $h2 = $('<h2></h2>')
-        .text(minder.getLang('ui.menu.new.header'))
-        .appendTo($panel);
+    var $panel = $menu.createSub('new');
 
     // 模板列表容器
     var $ul = $('<ul></ul>')
@@ -40,20 +36,18 @@ KityMinder.registerUI('menu/new/new', function(minder) {
 
     $ul.delegate('.template-item', 'click', function(e) {
         var template = $(e.target).data('template');
-        minder.importData({
-            template: template,
-            version: KityMinder.version,
-            data: {
-                text: minder.getLang('template')[template]
-            }
+        $doc.load({
+            content: {
+                template: template,
+                version: KityMinder.version,
+                data: {
+                    text: minder.getLang('template')[template]
+                }
+            },
+            protocol: null
         });
-        minder.execCommand('camera', minder.getRoot());
-        $menu.removeClass('show');
+        $menu.hide();
     });
-
-    var ret = {};
-
-    eve.setup(ret);
 
     return ret;
 });

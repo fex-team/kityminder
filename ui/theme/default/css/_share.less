@@ -1,3 +1,51 @@
-#share-dialog {
-    display: none;
+#share-select {
+    fieldset {
+        border: 1px solid #f0f0f0;
+        margin: 0;
+        margin-bottom: 10px;
+        padding: 10px;
+        
+        legend {
+            font-size: 14px;
+        }
+        
+        &:disabled {
+            opacity: 0.5;
+        }
+        
+        .share-description {
+            
+        }
+        
+        .share-body {
+            margin-top: 10px;
+        }
+    }
+
+}
+
+#public-share {
+    p {
+        position: relative;
+        max-width: 500px;
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            height: 24px;
+            margin: 0;
+        }
+        #copy-share-url {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 0;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 2px;
+            
+        }
+    }
+    .share-body {
+        display: none;
+    }
 }

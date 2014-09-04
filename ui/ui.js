@@ -28,6 +28,7 @@
         initUI: function() {
             var ui = this._ui = {};
             var minder = this;
+
             uiQueue.forEach(function(uiDeal) {
                 var deps = uiDeal.deps;
                 if (deps) deps = deps.map(function(dep) {
@@ -37,16 +38,26 @@
             });
 
             // 阻止非脑图事件冒泡
-            $('#content-wrapper').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'click mousedown keydown keyup', function(e) {
+            $('body').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'keydown keyup', function(e) {
                 e.stopPropagation();
             });
 
+            minder.getPaper().addClass('loading-target');
+
             this.fire('interactchange');
+            this.fire('uiready');
         },
 
         /* 获得实例的 UI 实例 */
         getUI: function(id) {
             return this._ui[id];
+        }
+    });
+
+    $.extend($, {
+        pajax: function() {
+            var defered = $.ajax.apply($, arguments);
+            return Promise.resolve(defered);
         }
     });
 

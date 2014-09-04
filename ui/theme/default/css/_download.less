@@ -1,0 +1,39 @@
+.download-panel {
+    h2 {
+        &:before {
+            content: ' ';
+            display: block;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 0;
+            background: url(../images/icons.png) no-repeat 0 -595px;
+        }
+    } 
+    & > .download-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            font-size: 14px;
+            line-height: 20px;
+            padding: 10px 20px 10px 40px;
+            cursor: default;
+            position: relative;
+            margin: 0;
+            font-weight: normal;
+            height: 20px;
+            line-height: 20px;
+
+            &:hover {
+                background-color: lighten(@tab-hover, 55%);
+            }
+            
+            &:active {
+                background-color: lighten(@tab-hover, 50%);
+            }
+                
+        }
+    }
+}

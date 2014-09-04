@@ -11,38 +11,73 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
 
     var $menu = minder.getUI('menu/menu');
     var $open = minder.getUI('menu/open/open');
-    var $loader = minder.getUI('widget/fileloader');
     var $netdiskfinder = minder.getUI('widget/netdiskfinder');
     var $eve = minder.getUI('eve');
+    var $doc = minder.getUI('doc');
     var ret = $eve.setup({});
 
-
     /* 网盘面板 */
-    var $panel = $($open.netdisk.getContentElement());
+    var $panel = $($open.createSub('netdisk'));
 
-    var $finder = $netdiskfinder.generate($panel, function(file) {
-        return $loader.support(file);
+    /* extension => protocol */
+    var supports = {};
+
+    minder.getSupportedProtocols().forEach(function(protocol) {
+        if (protocol.decode) {
+            supports[protocol.fileExtension] = protocol;
+        }
     });
 
-    $finder.on('fileclick', openFile);
+    /* Finder */
+    var $finder = $netdiskfinder.generate($panel, function(file) {
 
-    function openFile(file) {
-        var protocol = $loader.support(file);
+        return supports[file.extension];
 
-        $menu.removeClass('show');
+    });
 
-        return $loader.load(fio.file.read({
-            path: file.path,
+    $finder.on('fileclick', function(file) {
+        return open(file.path);
+    });
+
+    function open(path) {
+
+        $menu.hide();
+        $(minder.getRenderTarget()).addClass('loading');
+
+        var info = fio.file.anlysisPath(path);
+        var protocol = supports[info.extension];
+
+        return fio.file.read({
+
+            path: path,
             dataType: protocol.dataType
-        })).then(function(readed) {
-            if (readed) ret.fire('fileload', readed);
+
+        }).then(function(file) {
+
+            var doc = {
+                protocol: supports[file.extension].name,
+                content: file.data.content,
+                title: file.filename,
+                source: 'netdisk',
+                path: file.path,
+                saved: true
+            };
+
+            return $doc.load(doc);
+
+        })['catch'](function(error) {
+
+            window.alert(minder.getLang('ui.errorloading', error.message || minder.getLang('unknownreason')));
+
+        }).then(function() {
+
+            $(minder.getRenderTarget()).removeClass('loading');
+
         });
 
     }
 
-    ret.loadFileByPath = function(path) {
-        var file = new fio.file.File(path);
-        return openFile(file);
-    };
+    ret.open = open;
+
     return ret;
 });

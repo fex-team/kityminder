@@ -2,6 +2,9 @@
     float: right;
     height: @panel-height;
     line-height: @panel-height;
+    font-size: 14px;
+    color: @ui-fore;
+    vertical-align: baseline;
 
     .fui-button {
 
@@ -39,6 +42,31 @@
             margin-right: 3px;
             vertical-align: baseline;
             background: url(../images/icons.png) 0 -320px;
+        }
+    }
+}
+.login-tip {
+    display: none;
+}
+.login-required {
+    & > * {
+        display: none;
+    } 
+    & > .login-tip {
+        display: block;
+        text-align: center;
+        font-size:  16px;
+        color: #999;
+        margin-top: 30px;
+        
+        a {
+            text-decoration: underline;
+            color: @main-menu-theme-color;
+            cursor: pointer;
+            
+            &:hover {
+                color: lighten(@main-menu-theme-color, 10%);
+            }
         }
     }
 }

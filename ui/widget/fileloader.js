@@ -9,6 +9,8 @@
 
 KityMinder.registerUI('widget/fileloader', function(minder) {
 
+    var doc = minder.getUI('doc');
+
     var $container = $(minder.getRenderTarget());
 
     var supports = minder.getSupportedProtocols();
@@ -23,12 +25,16 @@ KityMinder.registerUI('widget/fileloader', function(minder) {
     function load(file) {
         var protocol = getProtocolByExtension(file.extension);
 
-        return minder.importData(file.data.content, protocol.name).then(function(json) {
+        return doc.load({
 
-            var $title = minder.getUI('topbar/title');
-            $title.setTitle(file.filename);
+            source: file.source,
+            title: file.filename,
+            content: file.data.content,
+            protocol: protocol.name
+
+        }).then(function(json) {
+
             $container.removeClass('loading');
-            minder.execCommand('camera', minder.getRoot(), 300);
 
             return {
                 file: file,
@@ -44,7 +50,7 @@ KityMinder.registerUI('widget/fileloader', function(minder) {
     }
 
     return {
-        load: function(filePromise) {
+        load: function(filePromise, source) {
             $container.addClass('loading');
             return Promise.resolve(filePromise).then(load)['catch'](error);
         },

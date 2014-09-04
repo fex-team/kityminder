@@ -1,4 +1,4 @@
-.recent-file-panel {
+.draft-panel {
     h2 {
         &:before {
             content: ' ';
@@ -7,24 +7,23 @@
             height: 25px;
             position: absolute;
             left: 0;
-            top: 2px;
-            background: url(../images/icons.png) no-repeat 0 -520px;
+            background: url(../images/icons.png) no-repeat 0 -570px;
         }
     }
     
-    & > .clear-recent-list {
+    & > .clear-draft {
         position: absolute;
         right: 0;
         top: 0;
     }
     
-    & > .recent-file-list {
+    & > .draft-list {
         margin: 0;
         padding: 0;
         list-style: none;
         
         &:empty:after {
-            content: '没有最近打开文件!';
+            content: '这是个空虚寂寞的草稿箱！';
             display: block;
             text-align: center;
             font-size: 18px;
@@ -33,7 +32,7 @@
             color: #CCC;
         }
         
-        .recent-file-item {
+        .draft-list-item {
             font-size: 14px;
             line-height: 20px;
             padding: 10px 20px 10px 40px;
@@ -48,7 +47,7 @@
                 background-color: lighten(@tab-hover, 50%);
             }
             
-            .file-name {
+            .draft-title {
                 margin: 0;
                 font-weight: normal;
                 height: 20px;
@@ -66,13 +65,6 @@
                 }
             }
             
-            .file-title {
-                margin: 0;
-                margin-top: 5px;
-                font-size: 12px;
-                color: #999;
-            }
-            
             .file-time {
                 position: absolute;
                 right: 5px;
@@ -83,5 +75,4 @@
         
         }
     }
-     
 }

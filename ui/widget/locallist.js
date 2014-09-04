@@ -20,11 +20,13 @@ KityMinder.registerUI('widget/locallist', function() {
             } else {
                 list = [];
             }
+            this.length = list.length;
         }
 
         function save() {
             while (list.length > maxCount) list.pop();
             localStorage.setItem(name, JSON.stringify(list));
+            this.length = list.length;
         }
 
         function get(index) {
@@ -33,6 +35,11 @@ KityMinder.registerUI('widget/locallist', function() {
 
         function remove(index) {
             list.splice(index, 1);
+            save();
+        }
+
+        function clear() {
+            list = [];
             save();
         }
 
@@ -73,6 +80,7 @@ KityMinder.registerUI('widget/locallist', function() {
         this.find = find;
         this.forEach = forEach;
         this.unshift = unshift;
+        this.clear = clear;
     }
 
     return {

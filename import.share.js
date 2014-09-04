@@ -6,18 +6,10 @@
 
         /* 依赖库 */
         'lib/jquery-2.1.1.js',
-        'lib/jquery.xml2json.js',
         'lib/jquery.transit.min.js',
-        'lib/jquery.blob.js',
-        'lib/zip.js',
         'lib/promise-1.0.0.js',
-        'lib/ZeroClipboard.min.js',
         'lib/fui/dev-lib/jhtmls.min.js',
         'lib/fui/dist/fui.all.js',
-        'lib/fio/src/fio.js',
-        'lib/fio/provider/netdisk/oauth.js',
-        'lib/fio/provider/netdisk/netdisk.js',
-        'lib/fio/provider/mongoshare/mongoshare.js',
 
         /* Kity 依赖库 */
         'lib/kity/dist/kity.js',
@@ -78,10 +70,6 @@
         'src/module/keyboard.js',
         'src/module/select.js',
         'src/module/history.js',
-        'src/module/editor.js',
-        'src/module/editor.range.js',
-        'src/module/editor.receiver.js',
-        'src/module/editor.selection.js',
         'src/module/basestyle.js',
         'src/module/font.js',
         'src/module/zoom.js',
@@ -91,9 +79,6 @@
         'src/module/style.js',
 
         /* 格式支持 */
-        'src/protocol/xmind.js',
-        'src/protocol/freemind.js',
-        'src/protocol/mindmanager.js',
         'src/protocol/plain.js',
         'src/protocol/json.js',
         'src/protocol/png.js',
@@ -103,16 +88,16 @@
         'ui/ui.js',
         'ui/eve.js',
         'ui/fuix.js',
-        'ui/fiox.js',
+        // 'ui/fiox.js',
         'ui/doc.js',
 
         /* UI 组件 */
-        'ui/widget/commandbutton.js',
-        'ui/widget/commandbuttonset.js',
-        'ui/widget/commandinputmenu.js',
-        'ui/widget/friendlytimespan.js',
-        'ui/widget/locallist.js',
-        'ui/widget/netdiskfinder.js',
+        // 'ui/widget/commandbutton.js',
+        // 'ui/widget/commandbuttonset.js',
+        // 'ui/widget/commandinputmenu.js',
+        // 'ui/widget/friendlytimespan.js',
+        // 'ui/widget/locallist.js',
+        // 'ui/widget/netdiskfinder.js',
         'ui/widget/menutab',
 
         /* UI 菜单 */
@@ -120,53 +105,53 @@
         'ui/menu/header.js',
 
         /* UI 菜单 - 新建 */
-        'ui/menu/new/new.js',
+        // 'ui/menu/new/new.js',
 
         /* UI 菜单 - 打开 */
-        'ui/menu/open/open.js',
-        'ui/menu/open/recent.js',
-        'ui/menu/open/netdisk.js',
-        'ui/menu/open/local.js',
-        'ui/menu/open/draft.js',
+        // 'ui/menu/open/open.js',
+        // 'ui/menu/open/recent.js',
+        // 'ui/menu/open/netdisk.js',
+        // 'ui/menu/open/local.js',
+        // 'ui/menu/open/draft.js',
 
         /* UI 菜单 - 保存 */
         'ui/menu/save/save.js',
-        'ui/menu/save/netdisk.js',
+        // 'ui/menu/save/netdisk.js',
         'ui/menu/save/download.js',
 
         /* UI 菜单 - 分享 */
-        'ui/menu/share/share.js',
+        // 'ui/menu/share/share.js',
 
         /* UI Top Bar */
-        'ui/topbar/history.js',
-        'ui/topbar/user.js',
+        // 'ui/topbar/history.js',
+        // 'ui/topbar/user.js',
         'ui/topbar/search.js',
         'ui/topbar/title.js',
 
         /* UI Ribbon */
-        'ui/ribbon/tabs.js',
+        // 'ui/ribbon/tabs.js',
 
         /* UI Ribbon「思路」面板 */
-        'ui/ribbon/idea/insert.js',
-        'ui/ribbon/idea/arrange.js',
-        'ui/ribbon/idea/operation.js',
-        'ui/ribbon/idea/attachment.js',
-        'ui/ribbon/idea/link.js',
-        'ui/ribbon/idea/image.js',
-        'ui/ribbon/idea/priority.js',
-        'ui/ribbon/idea/progress.js',
-        'ui/ribbon/idea/resource.js',
+        // 'ui/ribbon/idea/insert.js',
+        // 'ui/ribbon/idea/arrange.js',
+        // 'ui/ribbon/idea/operation.js',
+        // 'ui/ribbon/idea/attachment.js',
+        // 'ui/ribbon/idea/link.js',
+        // 'ui/ribbon/idea/image.js',
+        // 'ui/ribbon/idea/priority.js',
+        // 'ui/ribbon/idea/progress.js',
+        // 'ui/ribbon/idea/resource.js',
 
         /* UI Ribbon「展示」面板 */
-        'ui/ribbon/appearence/template.js',
-        'ui/ribbon/appearence/theme.js',
-        'ui/ribbon/appearence/layout.js',
-        'ui/ribbon/appearence/style.js',
-        'ui/ribbon/appearence/font.js',
-        'ui/ribbon/appearence/color.js',
+        // 'ui/ribbon/appearence/template.js',
+        // 'ui/ribbon/appearence/theme.js',
+        // 'ui/ribbon/appearence/layout.js',
+        // 'ui/ribbon/appearence/style.js',
+        // 'ui/ribbon/appearence/font.js',
+        // 'ui/ribbon/appearence/color.js',
 
         /* UI Ribbon「视图」面板 */
-        'ui/ribbon/view/level.js'
+        // 'ui/ribbon/view/level.js'
     ];
 
     if (typeof(module) === 'object' && module.exports) {

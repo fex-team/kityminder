@@ -8,9 +8,19 @@
  */
 
 KityMinder.registerUI('widget/friendlytimespan', function(minder) {
-    function getFriendlyTimeSpan(t1_in_ms, t2_in_ms) {
-        t2_in_ms = t2_in_ms || +new Date();
-        var ms = Math.abs(t1_in_ms - t2_in_ms),
+
+    $.extend($.fn, {
+        displayFriendlyTime: function(time) {
+            return this.each(function() {
+                display($(this)
+                    .addClass('friendly-time')
+                    .data('time', time));
+            });
+        }
+    });
+
+    function getTimeText(timeInMs) {
+        var ms = Math.abs(timeInMs - new Date()),
             s = ms / 1000,
             m = s / 60,
             h = m / 60,
@@ -20,10 +30,19 @@ KityMinder.registerUI('widget/friendlytimespan', function(minder) {
         if (h < 24) return minder.getLang('ui.hoursago', h | 0);
         if (d < 2) return minder.getLang('ui.yesterday');
         if (d <= 30) return minder.getLang('ui.daysago', d | 0);
+
         return minder.getLang("ui.longago");
     }
 
-    return {
-        display: getFriendlyTimeSpan
-    };
+    function display($element) {
+        $element.text(getTimeText($element.data('time')));
+    }
+
+    function update() {
+        $('.friendly-time').each(function() {
+            display($(this));
+        });
+    }
+
+    setInterval(update, 60000);
 });

@@ -13,14 +13,24 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
     var $open = minder.getUI('menu/open/open');
     var $loader = minder.getUI('widget/fileloader');
     var frdTime = minder.getUI('widget/friendlytimespan');
-    var netdisk = minder.getUI('menu/open/netdisk');
+    var doc = minder.getUI('doc');
     var recentList = minder.getUI('widget/locallist').use('recent');
 
     /* 网盘面板 */
-    var $panel = $($open.recent.getContentElement()).addClass('recent-file-panel');
+    var $panel = $($open.createSub('recent', true)).addClass('recent-file-panel');
 
-    /* 路径导航 */
-    var $nav = $('<h2>最近使用</h2>')
+    minder.on('uiready', function() {
+        minder.getUI('topbar/user').requireLogin($panel);
+    });
+
+    /* 标题 */
+    var $title = $('<h2></h2>')
+        .text(minder.getLang('ui.recent'))
+        .appendTo($panel);
+
+    var $clear = $('<button></button>')
+        .addClass('clear-recent-list')
+        .text(minder.getLang('ui.clearrecent'))
         .appendTo($panel);
 
     /* 最近文件列表容器 */
@@ -28,10 +38,50 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
         .addClass('recent-file-list')
         .appendTo($panel);
 
+    $ul.delegate('.recent-file-item', 'click', function(e) {
+
+        var netdisk = minder.getUI('menu/open/netdisk');
+        var path = $(e.target)
+            .closest('.recent-file-item')
+            .data('path');
+
+        netdisk.open(path);
+    });
+
+    $clear.on('click', function() {
+        if (!window.confirm(minder.getLang('ui.clearrecentconfirm'))) return;
+        recentList.clear();
+        renderList();
+    });
+
+    doc.on('docload', addToList);
+    doc.on('docsave', addToList);
+
     renderList();
+
+    function addToList(doc) {
+
+        if (doc.source != 'netdisk') return;
+
+        var exist = recentList.findIndex('path', doc.path);
+
+        if (~exist) {
+            recentList.remove(exist);
+        }
+
+        recentList.unshift({
+            path: doc.path,
+            filename: fio.file.anlysisPath(doc.path).filename,
+            title: minder.getMinderTitle(),
+            time: +new Date()
+        });
+
+        renderList();
+    }
 
     function renderList() {
         $ul.empty();
+
         recentList.forEach(function(item) {
 
             var $li = $('<li></li>')
@@ -51,39 +101,9 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
 
             $('<span></span>')
                 .addClass('file-time')
-                .data('time', item.time)
-                .text(frdTime.display(item.time))
+                .displayFriendlyTime(item.time)
                 .appendTo($li);
         });
     }
-
-    $ul.delegate('.recent-file-item', 'click', function(e) {
-        var path = $(e.target)
-            .closest('.recent-file-item')
-            .data('path');
-        netdisk.loadFileByPath(path);
-    });
-
-    netdisk.on('fileload', function(loaded) {
-        var exist = recentList.findIndex('path', loaded.file.path);
-        if (~exist) {
-            recentList.remove(exist);
-        }
-        recentList.unshift({
-            path: loaded.file.path,
-            filename: loaded.file.filename,
-            title: loaded.json.data.text || minder.getLang('untitleddoc'),
-            time: +new Date()
-        });
-        renderList();
-    });
-
-    function updateTime() {
-        $ul.find('.file-time').each(function(index, element) {
-            $(element).text(frdTime.display($(element).data('time')));
-        });
-    }
-
-    setInterval(updateTime, 60000);
 
 });

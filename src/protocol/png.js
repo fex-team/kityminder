@@ -138,6 +138,7 @@ if (!kity.Browser.ie) {
             fileDescription: 'PNG 图片',
             fileExtension: '.png',
             mineType: 'image/png',
+            dataType: 'base64',
             encode: encode,
             recognizePriority: -1
         };

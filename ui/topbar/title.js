@@ -44,9 +44,7 @@ KityMinder.registerUI('topbar/title', function(minder) {
 
         setSaved: function(saved) {
 
-            if (saved !== false) {
-                _saved = true;
-            }
+            _saved = saved !== false;
 
             update();
 

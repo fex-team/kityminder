@@ -6,6 +6,7 @@ if (!kity.Browser.ie) {
             fileDescription: 'SVG 矢量图',
             fileExtension: '.svg',
             mineType: 'image/svg+xml',
+            dataType: 'text',
 
             encode: function(json) {
 

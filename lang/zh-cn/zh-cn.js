@@ -46,29 +46,27 @@ KityMinder.LANG['zh-cn'] = {
         },
 
         'menu': {
-            'level1': {
-                'new': '新建',
-                'open': '打开',
-                'save': '保存',
-                'share': '分享',
-                'help': '帮助',
-                'setting': '设置'
-            },
-            'new': {
-                'header': '新建脑图'
-            },
-            'open': {
-                'header': '打开',
-                'recent': '最近使用',
-                'netdisk': '百度云盘',
-                'local': '本地文件',
-                'draft': '草稿箱'
-            },
-            'save': {
-                'header': '保存到',
-                'netdisk': '百度网盘',
-                'local': '导出到本地'
-            }
+
+            'mainmenutext': '百度脑图', // 主菜单按钮文本
+
+            'newtab': '新建',
+            'opentab': '打开',
+            'savetab': '保存',
+            'sharetab': '分享',
+            'helptab': '帮助',
+            'settingtab': '设置',
+            'recenttab': '最近使用',
+            'netdisktab': '百度云存储',
+            'localtab': '本地文件',
+            'drafttab': '草稿箱',
+            'downloadtab': '导出到本地',
+            'createsharetab': '当前脑图',
+            'managesharetab': '已分享',
+
+            'newheader': '新建脑图',
+            'openheader': '打开',
+            'saveheader': '保存到',
+            'shareheader': '分享我的脑图'
         },
 
         'mydocument': '我的文档',
@@ -78,6 +76,34 @@ KityMinder.LANG['zh-cn'] = {
         'dropfile': '或将文件拖至此处',
         'unsupportedfile': '不支持的文件格式',
         'untitleddoc': '未命名文档',
+        'errorloading': '加载失败：{0}',
+        'unknownreason': '可能是外星人篡改了代码...',
+        'overrideconfirm': '{0} 已存在，确认覆盖吗？',
+        'checklogin': '检查登录状态中...',
+        'loggingin': '正在登录...',
+        'recent': '最近打开',
+        'clearrecent': '清空',
+        'clearrecentconfirm': '确认清空最近文档列表？',
+        'cleardraft': '清空',
+        'cleardraftconfirm': '确认清空草稿箱？',
+
+        'none_share': '不分享',
+        'public_share': '公开分享',
+        'password_share': '私密分享',
+        'email_share': '邮件邀请',
+        'url_share': '脑图 URL 地址：',
+        'sns_share': '社交网络分享：',
+        'sns_share_text': '“{0}” - 我用「百度脑图」制作的思维导图，快看看吧！（地址：{1}）',
+        'none_share_description': '不分享当前脑图',
+        'public_share_description': '创建任何人可见的分享',
+        'share_button_text': '创建',
+        'password_share_description': '创建需要密码才可见的分享',
+        'email_share_description': '创建指定人可见的分享，您还可以允许他们编辑',
+        'ondev': '敬请期待！',
+        'create_share_failed': '分享失败：{0}',
+        'copy': '复制',
+        'copied': '已复制',
+        'shared_tip': '当前脑图被 {0}  分享，你可以修改之后保存到自己的网盘上或再次分享',
 
         'login': '登录',
         'logout': '注销',

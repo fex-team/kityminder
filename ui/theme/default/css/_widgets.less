@@ -2,6 +2,11 @@
     .transition(background-color .2s ease);
 }
 
+.fui-disabled,
+.fui-disabled .fui-widget {
+    background-color: transparent !important;
+}
+
 #tab-container .fui-button {
     display: inline-block;
     padding: 2px 5px 2px 3px;
@@ -150,8 +155,12 @@
     height: 50px;
     display: inline-block;
     margin-top: 5px;
+    
     &:hover {
         border-color: @button-hover;
+    }
+    &.fui-disabled:hover {
+        border-color: transparent;
     }
 
     .fui-button:first-child {
@@ -297,35 +306,4 @@
             }
         }
     }
-}
-
-.validate-error {
-    color: red;
-    border-color: red !important;
-}
-
-.button, button {
-    display: inline-block;
-    height: 30px;
-    padding: 0 15px;
-    line-height: 30px;
-    text-align: center;
-    outline: none;
-    background: lighten(@tab-active, 20%);
-    &:hover {
-        background: lighten(@tab-hover, 20%);
-    }
-    &:active {
-        background: lighten(@tab-active, 15%);
-    }
-    cursor: default;
-    color: @ui-fore;
-    border: none;
-}
-
-input[type=text] {
-    padding: 2px 5px;
-    height: 16px;
-    outline: none;
-    border: 1px solid lighten(@tab-hover, 30%);
 }

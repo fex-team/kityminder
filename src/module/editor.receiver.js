@@ -219,9 +219,9 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('inputready');
                             clearTimeout(me.inputTextTimer);
                             e.preventDefault();
+                            this.km.fire('contentchange');
                         }else{
                             this.km.setStatus('normal');
-                            this.km.fire('contentchange');
                         }
                         restoreTextContent();
                         return;
@@ -303,7 +303,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                                 e.preventDefault();
                             }else{
                                 this.km.setStatus('normal');
-                                this.km.fire('contentchange');
                             }
                             restoreTextContent();
                             return;

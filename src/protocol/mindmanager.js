@@ -113,7 +113,7 @@ KityMinder.registerProtocol('mindmanager', function(minder) {
     }
 
     return {
-        fileDescription: 'mindmanager格式文件',
+        fileDescription: 'MindManager 格式',
         fileExtension: '.mmap',
         dataType: 'blob',
 

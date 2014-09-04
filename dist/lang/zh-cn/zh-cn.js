@@ -67,7 +67,10 @@ KityMinder.LANG['zh-cn'] = {
             'save': {
                 'header': '保存到',
                 'netdisk': '百度网盘',
-                'local': '导出到本地'
+                'download': '导出到本地'
+            },
+            'share': {
+                'header': '分享我的脑图'
             }
         },
 
@@ -78,6 +81,16 @@ KityMinder.LANG['zh-cn'] = {
         'dropfile': '或将文件拖至此处',
         'unsupportedfile': '不支持的文件格式',
         'untitleddoc': '未命名文档',
+        'errorloading': '加载失败：{0}',
+        'unknownreason': '可能是外星人篡改了代码...',
+        'overrideconfirm': '{0} 已存在，确认覆盖吗？',
+        'checklogin': '检查登录状态中...',
+        'loggingin': '正在登录...',
+        'recent': '最近打开',
+        'clearrecent': '清空',
+        'clearrecentconfirm': '确认清空最近文档列表？',
+        'cleardraft': '清空',
+        'cleardraftconfirm': '确认清空草稿箱？',
 
         'login': '登录',
         'logout': '注销',

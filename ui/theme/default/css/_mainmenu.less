@@ -38,27 +38,28 @@
 
 #main-menu {
     @left-width: 200px;
+    background: white;
     
     .dock;
     overflow: hidden;
-    transform: scale(0);
+    transform: translate3d(0, -100%, 0);
     transform-origin: 0 0;
     opacity: 0;
-    transition: opacity .25s ease, transform .25s ease;
+    transition: opacity .2s ease, transform .2s ease;
     z-index: 100;
 
     &.show {
         opacity: 1;
-        transform: scale(1);
+        transform: translate3d(0, 0, 0);
     }
     
     .slide-in() {
         transform: translateX(-(@left-width)) translateZ(0);
-        transition: transform .5s ease;
+        transition: transform .7s ease, opacity .5s ease;
 
         .show& {
             transform: translateX(0) translateZ(0);
-            transition: transform .5s ease;
+            transition: transform .7s ease, opacity .5s ease;
         }
     }
     
@@ -89,26 +90,36 @@
             
             .main-menu-back-button {
                 .fui-label {
+                    display: inline-block;
+                    color: white;
+                    margin-left: 10px;
+                    font-size: 14px;
                     display: none;
                 }
                 .fui-icon {
-                    display: block;
+                    display: inline-block;
                     width: 25px;
                     height: 25px;
+                    line-height: 25px;
+                    border-radius: 100%;
+                    border: 2px solid white;
                     background: url(../images/icons.png) -1px -370px;
+                    vertical-align: middle;
                 }
-                width: 25px;
-                height: 25px;
-                border-radius: 100%;
-                border: 2px solid white;
-                left: 5px;
-                top: 5px;
-                cursor: pointer;
+                width: @left-width - 10px;
+                height: @panel-height - 10px;
+                padding: 5px;
                 &:hover {
-                    background-color: rgba(255,255,255,.3);
+                    background: -moz-linear-gradient(left,  rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+                    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0.3)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+                    background: -webkit-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+                    background: -o-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+                    background: -ms-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+                    background: linear-gradient(to right,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* W3C */
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4dffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
                 }
                 &:active {
-                    background-color: rgba(0,0,0,.05);
+                    background: darken(@main-menu-theme-color, 10%);
                 }
             }
         }
@@ -125,7 +136,7 @@
             color: #999;
             .slide-in;
         }
-        &level-1 {
+        &level1 {
             position: absolute;
             left: 0;
             right: 0;

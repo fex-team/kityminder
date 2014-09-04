@@ -1,7 +1,7 @@
 KityMinder.registerProtocol('json', function(minder) {
 
     return {
-        fileDescription: 'KityMinder',
+        fileDescription: 'KityMinder 格式',
         fileExtension: '.km',
         dataType: 'text',
         mineType: 'application/json',

@@ -32,14 +32,12 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         var $list = $('<ul class="netdisk-file-list"></ul>')
             .appendTo($container);
 
-        var $tip = $('<p class="login-tip"></p>')
-            .html(minder.getLang('ui.requirelogin'))
-            .appendTo($container);
-
         var $mkdir = $('<a></a>')
             .text(minder.getLang('ui.mkdir'))
             .addClass('button netdisk-mkdir')
             .click(mkdir);
+
+        var selected = null;
 
         $nav.after($mkdir);
 
@@ -47,6 +45,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
         /* 点击目录中的项目时打开项目 */
         $list.delegate('.netdisk-file-list-item', 'click', function(e) {
+            if (mkdir.onprogress) return mkdir.onprogress.select();
             var $file = $(e.target),
                 file = $file.data('file');
             if (file) open(file);
@@ -54,6 +53,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
         /* 点击导航处，切换路径 */
         $nav.delegate('a', 'click', function(e) {
+            if (mkdir.onprogress) return mkdir.onprogress.select();
             if ($(e.target).hasClass('dir-back')) {
                 var parts = currentPath.split('/');
                 parts.pop(); // 有一个无效部分
@@ -63,34 +63,55 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             list($(e.target).data('path'));
         });
 
-        fio.user.on('login', show);
-        fio.user.on('logout', hide);
-        hide();
+        minder.on('uiready', function() {
+            var $user = minder.getUI('topbar/user');
+            $user.requireLogin($container);
+            fio.user.on('login', function() {
+                list();
+            });
+        });
+
 
         function mkdir() {
+            if (mkdir.onprogress) {
+                return mkdir.onprogress.select();
+            }
+
             var $li = $('<li>').addClass('netdisk-file-list-item dir').prependTo($list);
+
             var $input = $('<input>')
                 .attr('type', 'text')
                 .addClass('new-dir-name')
                 .val(minder.getLang('ui.newdir'))
                 .appendTo($li);
-            $input[0].select();
-            $input.on('keydown', function(e) {
-                if (e.keyCode == 13) {
-                    var name = $input.val();
 
+            mkdir.onprogress = $input[0];
+            $input[0].select();
+
+            $input.on('keydown', function(e) {
+                if (e.keyCode == 13) confirm();
+                if (e.keyCode == 27) {
                     $li.remove();
+                    mkdir.onprogress = false;
+                    e.stopPropagation();
                 }
             });
-        }
 
-        function show() {
-            $container.removeClass('require-login');
-            list();
-        }
-
-        function hide() {
-            $container.addClass('require-login');
+            function confirm() {
+                var name = $input.val();
+                if (name) {
+                    fio.file.mkdir({
+                        path: currentPath + name
+                    }).then(function() {
+                        return list(currentPath);
+                    }, function(e) {
+                        window.alert('创建目录失败：' + e.message);
+                    }).then(function() {
+                        mkdir.onprogress = false;
+                    });
+                }
+                $li.remove();
+            }
         }
 
         /**
@@ -129,7 +150,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 }).stop().transit({
                     x: 0,
                     opacity: 1
-                }, 100, resolve);  
+                }, 100, resolve);
             });
         }
 
@@ -146,20 +167,27 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
             var transitPromise = fadeOutList(-100 * sign(path.length - currentPath.length));
 
-            Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
-                window.alert('加载目录发生错误：' + error);
-            });
-
             currentPath = path.charAt(path.length - 1) == '/' ? path : path + '/';
 
             updateNav();
 
+            return Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
+                window.alert('加载目录发生错误：' + error);
+            });
         }
 
         function renderList(values) {
             $list.empty();
 
             var files = values[0];
+
+            files.sort(function(a, b) {
+                if (a.isDir > b.isDir) {
+                    return -1;
+                } else if (a.isDir == b.isDir) {
+                    return a.createTime > b.createTime ? -1 : 1;
+                } else return 1;
+            });
 
             if (!files.length) {
                 $list.append('<li class="empty" disabled="disabled">' + minder.getLang('ui.emptydir') + '</li>');
@@ -178,6 +206,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             }
 
             fadeInList();
+            checkSelect();
 
             finder.fire('cd', currentPath);
         }
@@ -213,7 +242,31 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             });
         }
 
+        function select(path) {
+            selected = path;
+            return checkSelect();
+        }
+
+        function checkSelect() {
+            var hasSelect = false;
+            $list.find('.netdisk-file-list-item').removeClass('selected').each(function() {
+                var file = $(this).data('file');
+                if (file && file.path == selected) {
+                    $(this).addClass('selected');
+                    hasSelect = true;
+                }
+            });
+            if (!hasSelect) selected = false;
+            return hasSelect;
+        }
+
+        function pwd() {
+            return currentPath;
+        }
+
         finder.list = list;
+        finder.select = select;
+        finder.pwd = pwd;
 
         return finder;
     }

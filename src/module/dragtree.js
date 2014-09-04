@@ -368,7 +368,6 @@ KityMinder.registerModule('DragTree', function() {
                 dragger.dragEnd();
                 //e.stopPropagation();
                 e.preventDefault();
-                this.fire('contentchange');
             },
             'statuschange': function(e) {
                 if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {

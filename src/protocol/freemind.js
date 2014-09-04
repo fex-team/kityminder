@@ -74,7 +74,7 @@ KityMinder.registerProtocol('freemind', function(minder) {
     }
 
     return {
-        fileDescription: 'freemind格式文件',
+        fileDescription: 'Freemind 格式',
         fileExtension: '.mm',
         dataType: 'text',
 

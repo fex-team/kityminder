@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.2.1 - 2014-08-27
+ * kityminder - v1.2.1 - 2014-08-29
  * https://github.com/fex-team/kityminder
  * GitHub: https://github.com/fex-team/kityminder.git 
  * Copyright (c) 2014 f-cube @ FEX; Licensed MIT
@@ -15313,7 +15313,7 @@
 
 
 
-/* lib/fio/dist/fio.js */
+/* lib/fio/src/fio.js */
     /**
      * @fileOverview
      *
@@ -15386,15 +15386,48 @@
         }
 
         File.prototype.setPath = function(path) {
-            var filename, dotpos;
+            fio.file.anlysisPath(path, this);
+        };
 
-            filename = path.substr(path.lastIndexOf('/') + 1);
-            dotpos = filename.lastIndexOf('.');
+        fio.file.anlysisPath = function(path, fill) {
+            fill = fill || {};
 
-            this.extension = ~dotpos ? filename.substr(dotpos) : null;
-            this.name = ~dotpos ? filename.substr(0, dotpos) : filename;
-            this.filename = filename;
-            this.path = path;
+            var pathParts = path.split('/');
+
+            // trim start
+            while (pathParts[0] == '/' || pathParts[0] === '') {
+                pathParts.shift();
+            }
+
+            // trim end
+            while (pathParts[pathParts.length - 1] == '/' || pathParts[pathParts.length - 1] === '') {
+                pathParts.pop();
+            }
+
+            fill.filename = pathParts.pop() || null;
+
+            if (pathParts.length) {
+                fill.parentPath = '/' + pathParts.join('/') + '/';
+            } else {
+                fill.parentPath = fill.filename ? '/' : null;
+            }
+
+            if (fill.filename) {
+                var filenameParts = fill.filename.split('.');
+
+                if (filenameParts.length > 1) {
+                    fill.extension = '.' + filenameParts.pop();
+                } else {
+                    fill.extension = null;
+                }
+
+                fill.name = filenameParts.join('.');
+                fill.path = fill.parentPath + fill.filename;
+            } else {
+                fill.path = '/';
+            }
+
+            return fill;
         };
 
         /* 数据结构：表示一个访问控制列表记录 */
@@ -15825,8 +15858,9 @@
 
                     request.extra = opt;
 
+                    var response = provider.handle(request);
                     // 确保返回的是一个 Promise 对象
-                    return Promise.resolve(provider.handle(request));
+                    return Promise.resolve(response);
                 });
             };
         });
@@ -15834,7 +15868,7 @@
         // export
         window.fio = fio;
     })(Promise);
-/* lib/fio/dist/fio.js end */
+/* lib/fio/src/fio.js end */
 
 
 
@@ -16083,24 +16117,25 @@
 
         // 根据文件请求分发处理
         function handle(request) {
+
             if (!access_token) throw new Error('Not Authorized');
 
             var param = {
                 access_token: access_token
             };
 
+            // 默认参数
             var opt = {
                 url: urls.file,
                 type: 'GET',
-                data: param,
                 dataType: 'JSON'
             };
 
             // 处理 path 参数
-            if (request.method != fio.file.METHOD_MOVE) {
-                param.path = request.path;
-            } else {
+            if (request.method == fio.file.METHOD_MOVE) {
                 param.from = request.path;
+            } else {
+                param.path = request.path;
             }
 
             // 处理其他参数
@@ -16117,15 +16152,21 @@
 
                 case fio.file.METHOD_WRITE:
                     opt.type = 'POST';
+
                     param.method = 'upload';
                     param.ondup = request.dupPolicy == fio.file.DUP_OVERWRITE ? 'overwrite' : 'newcopy';
 
-                    if (request.data.type == 'blob') {
-                        var form = new FormData();
+                    var form = new FormData();
+                    if (request.data.type == fio.file.TYPE_BLOB) {
                         form.append('file', request.data.content);
-                        opt.url += $.param(param);
-                        opt.data = form;
+                    } else {
+                        form.append('file', new Blob([request.data.content], {
+                            type: 'text/plain'
+                        }));
                     }
+                    opt.data = form;
+                    opt.processData = false;
+                    opt.contentType = false;
 
                     break;
 
@@ -16149,6 +16190,9 @@
                     param.method = 'delete';
                     break;
             }
+
+            // 参数拼接到 URL 中
+            opt.url += '?' + $.param(param);
 
             function throwError(response) {
                 throw new Error([response.error_code, response.error_msg]);
@@ -16196,7 +16240,6 @@
                 return file;
 
             }, function(e) {
-                console.log(e);
                 if (e.responseText) throwError(JSON.parse(e.responseText));
                 else throw e;
             });
@@ -25589,8 +25632,7 @@
             });
         },
 
-        exportData: function(protocolName) {
-
+        exportJson: function() {
             /* 导出 node 上整棵树的数据为 JSON */
             function exportNode(node) {
                 var exported = {};
@@ -25605,13 +25647,66 @@
                 return exported;
             }
 
-            var json, protocol;
-
-            json = exportNode(this.getRoot());
+            var json = exportNode(this.getRoot());
 
             json.template = this.getTemplate();
             json.theme = this.getTheme();
             json.version = KityMinder.version;
+
+            return json;
+        },
+
+        importJson: function(json, params) {
+
+            function importNode(node, json, km) {
+                var data = json.data;
+                node.data = {};
+                for (var field in data) {
+                    node.setData(field, data[field]);
+                }
+
+                node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
+
+                var childrenTreeData = json.children || [];
+                for (var i = 0; i < childrenTreeData.length; i++) {
+                    var childNode = km.createNode(null, node);
+                    importNode(childNode, childrenTreeData[i], km);
+                }
+                return node;
+            }
+
+            if (!json) return;
+            
+            this._fire(new MinderEvent('preimport', params, false));
+
+            // 删除当前所有节点
+            while (this._root.getChildren().length) {
+                this.removeNode(this._root.getChildren()[0]);
+            }
+
+            json = KityMinder.compatibility(json);
+
+            importNode(this._root, json, this);
+
+            this.setTemplate(json.template || null);
+            this.setTheme(json.theme || null);
+            this.refresh();
+
+            this.fire('import', params);
+
+            this._firePharse({
+                type: 'contentchange'
+            });
+            this._firePharse({
+                type: 'interactchange'
+            });
+        },
+
+        exportData: function(protocolName) {
+
+            var json, protocol;
+
+            json = this.exportJson();
 
             // 指定了协议进行导出，需要检测协议是否支持
             if (protocolName) {
@@ -25666,58 +25761,12 @@
 
             }).then(function(json) {
 
-                minder._doImport(json, params);
+                minder.importJson(json, params);
 
                 return json;
 
             });
 
-        },
-
-        _doImport: function(json, params) {
-
-            function importNode(node, json, km) {
-                var data = json.data;
-                node.data = {};
-                for (var field in data) {
-                    node.setData(field, data[field]);
-                }
-
-                node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
-
-                var childrenTreeData = json.children || [];
-                for (var i = 0; i < childrenTreeData.length; i++) {
-                    var childNode = km.createNode(null, node);
-                    importNode(childNode, childrenTreeData[i], km);
-                }
-                return node;
-            }
-
-            if (!json) return;
-
-            this._fire(new MinderEvent('preimport', params, false));
-
-            // 删除当前所有节点
-            while (this._root.getChildren().length) {
-                this.removeNode(this._root.getChildren()[0]);
-            }
-
-            json = KityMinder.compatibility(json);
-
-            importNode(this._root, json, this);
-
-            this.setTemplate(json.template || null);
-            this.setTheme(json.theme || null);
-            this.refresh();
-
-            this.fire('import', params);
-
-            this._firePharse({
-                type: 'contentchange'
-            });
-            this._firePharse({
-                type: 'interactchange'
-            });
         }
     });
 /* src/core/minder.data.js end */
@@ -30596,7 +30645,6 @@
                     dragger.dragEnd();
                     //e.stopPropagation();
                     e.preventDefault();
-                    this.fire('contentchange');
                 },
                 'statuschange': function(e) {
                     if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {
@@ -31645,9 +31693,9 @@
                                 this.km.setStatus('inputready');
                                 clearTimeout(me.inputTextTimer);
                                 e.preventDefault();
+                                this.km.fire('contentchange');
                             }else{
                                 this.km.setStatus('normal');
-                                this.km.fire('contentchange');
                             }
                             restoreTextContent();
                             return;
@@ -31729,7 +31777,6 @@
                                     e.preventDefault();
                                 }else{
                                     this.km.setStatus('normal');
-                                    this.km.fire('contentchange');
                                 }
                                 restoreTextContent();
                                 return;
@@ -33029,7 +33076,7 @@
         };
 
         return {
-            fileDescription: 'xmind格式文件',
+            fileDescription: 'XMind 格式',
             fileExtension: '.xmind',
             dataType: 'blob',
 
@@ -33218,7 +33265,7 @@
         }
 
         return {
-            fileDescription: 'freemind格式文件',
+            fileDescription: 'Freemind 格式',
             fileExtension: '.mm',
             dataType: 'text',
 
@@ -33358,7 +33405,7 @@
         }
 
         return {
-            fileDescription: 'mindmanager格式文件',
+            fileDescription: 'MindManager 格式',
             fileExtension: '.mmap',
             dataType: 'blob',
 
@@ -33480,7 +33527,7 @@
     KityMinder.registerProtocol('json', function(minder) {
 
         return {
-            fileDescription: 'KityMinder',
+            fileDescription: 'KityMinder 格式',
             fileExtension: '.km',
             dataType: 'text',
             mineType: 'application/json',
@@ -33640,6 +33687,7 @@
                 fileDescription: 'PNG 图片',
                 fileExtension: '.png',
                 mineType: 'image/png',
+                dataType: 'base64',
                 encode: encode,
                 recognizePriority: -1
             };
@@ -33659,6 +33707,7 @@
                 fileDescription: 'SVG 矢量图',
                 fileExtension: '.svg',
                 mineType: 'image/svg+xml',
+                dataType: 'text',
 
                 encode: function(json) {
 
@@ -33754,6 +33803,8 @@
                 $('#content-wrapper').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'click mousedown keydown keyup', function(e) {
                     e.stopPropagation();
                 });
+
+                minder.getPaper().addClass('loading-target');
 
                 this.fire('interactchange');
             },
@@ -33879,6 +33930,115 @@
         eve.setup(fio.user);
     });
 /* ui/fiox.js end */
+
+
+
+
+/* ui/doc.js */
+    /**
+     * @fileOverview
+     *
+     * 当前文档管理
+     *
+     * @author: techird
+     * @copyright: Baidu FEX, 2014
+     */
+
+    KityMinder.registerUI('doc', function(minder) {
+
+        var ret = minder.getUI('eve').setup({});
+        var current = {};
+        var loading = false;
+
+        /**
+         * 加载文档
+         *
+         * @param  {Object} doc 文档的属性，可包括：
+         *     doc.content  {string} [Required] 文档内容
+         *     doc.protocol {string} [Required] 内容所使用的编码协议
+         *     doc.title    {string} 文档的标题
+         *     doc.source   {string} 文档的来源
+         *     doc.path     {string} 文档的路径
+         *     doc.saved    {bool}   文档的保存状态
+         *
+         * @event docload(doc)
+         *     doc - 文档解析之后的文档对象
+         *
+         * @return {Promise<doc>} 返回解析完之后的文档对象，解析的结果为 doc.data
+         */
+        function load(doc) {
+            var restore = doc;
+
+            current = doc;
+
+            loading = true;
+
+            return minder.importData(doc.content, doc.protocol).then(function(data) {
+
+                doc.title = doc.title || minder.getMinderTitle();
+
+                minder.execCommand('camera', minder.getRoot(), 300);
+
+                doc.data = data;
+                doc.json = JSON.stringify(data);
+
+                minder.getUI('topbar/title').setTitle(doc.title, doc.saved);
+
+                ret.fire('docload', doc);
+
+                return doc;
+
+            })['catch'](function() {
+                current = restore;
+            }).then(function() {
+                loading = false;
+            });
+        }
+
+        function save(doc) {
+            current = doc;
+            minder.getUI('topbar/title').setTitle(doc.title, true);
+            ret.fire('docsave', doc);
+        }
+
+        function getCurrent() {
+            return current;
+        }
+
+        /* 绕开初始化时候的乱事件 */
+        setTimeout(function() {
+            minder.on('contentchange', function() {
+                if (loading) return;
+
+                var $title = minder.getUI('topbar/title');
+
+                if (current.source != 'netdisk') {
+
+                    current.title = minder.getMinderTitle();
+                    $title.setTitle(current.title, false);
+                    ret.fire('docchange', current);
+
+                } else {
+
+                    if (current.json != JSON.stringify(minder.exportJson())) {
+                        $title.setSaved(false);
+                        ret.fire('docchange', current);
+                    } else {
+                        $title.setSaved(true);
+                    }
+
+                }
+            });
+        }, 1000);
+
+
+        ret.load = load;
+        ret.save = save;
+        ret.current = getCurrent;
+
+        return ret;
+    });
+/* ui/doc.js end */
 
 
 
@@ -34034,9 +34194,19 @@
      */
 
     KityMinder.registerUI('widget/friendlytimespan', function(minder) {
-        function getFriendlyTimeSpan(t1_in_ms, t2_in_ms) {
-            t2_in_ms = t2_in_ms || +new Date();
-            var ms = Math.abs(t1_in_ms - t2_in_ms),
+
+        $.extend($.fn, {
+            displayFriendlyTime: function(time) {
+                return this.each(function() {
+                    display($(this)
+                        .addClass('friendly-time')
+                        .data('time', time));
+                });
+            }
+        });
+
+        function getTimeText(timeInMs) {
+            var ms = Math.abs(timeInMs - new Date()),
                 s = ms / 1000,
                 m = s / 60,
                 h = m / 60,
@@ -34046,12 +34216,21 @@
             if (h < 24) return minder.getLang('ui.hoursago', h | 0);
             if (d < 2) return minder.getLang('ui.yesterday');
             if (d <= 30) return minder.getLang('ui.daysago', d | 0);
+
             return minder.getLang("ui.longago");
         }
 
-        return {
-            display: getFriendlyTimeSpan
-        };
+        function display($element) {
+            $element.text(getTimeText($element.data('time')));
+        }
+
+        function update() {
+            $('.friendly-time').each(function() {
+                display($(this));
+            });
+        }
+
+        setInterval(update, 60000);
     });
 /* ui/widget/friendlytimespan.js end */
 
@@ -34081,11 +34260,13 @@
                 } else {
                     list = [];
                 }
+                this.length = list.length;
             }
 
             function save() {
                 while (list.length > maxCount) list.pop();
                 localStorage.setItem(name, JSON.stringify(list));
+                this.length = list.length;
             }
 
             function get(index) {
@@ -34094,6 +34275,11 @@
 
             function remove(index) {
                 list.splice(index, 1);
+                save();
+            }
+
+            function clear() {
+                list = [];
                 save();
             }
 
@@ -34134,6 +34320,7 @@
             this.find = find;
             this.forEach = forEach;
             this.unshift = unshift;
+            this.clear = clear;
         }
 
         return {
@@ -34143,68 +34330,6 @@
         };
     });
 /* ui/widget/locallist.js end */
-
-
-
-
-/* ui/widget/fileloader.js */
-    /**
-     * @fileOverview
-     *
-     * 完成加载一个脑图文件的流程
-     *
-     * @author: techird
-     * @copyright: Baidu FEX, 2014
-     */
-
-    KityMinder.registerUI('widget/fileloader', function(minder) {
-
-        var $container = $(minder.getRenderTarget());
-
-        var supports = minder.getSupportedProtocols();
-
-        function getProtocolByExtension(extension) {
-            for (var protocol in supports) {
-                if (supports[protocol].fileExtension == extension) return supports[protocol];
-            }
-            return false;
-        }
-
-        function load(file) {
-            var protocol = getProtocolByExtension(file.extension);
-
-            return minder.importData(file.data.content, protocol.name).then(function(json) {
-
-                var $title = minder.getUI('topbar/title');
-                $title.setTitle(file.filename);
-                $container.removeClass('loading');
-                minder.execCommand('camera', minder.getRoot(), 300);
-
-                return {
-                    file: file,
-                    json: json
-                };
-
-            });
-        }
-
-        function error(err) {
-            window.alert('加载文件失败：' + err.message);
-            $container.removeClass('loading');
-        }
-
-        return {
-            load: function(filePromise) {
-                $container.addClass('loading');
-                return Promise.resolve(filePromise).then(load)['catch'](error);
-            },
-
-            support: function(file) {
-                return getProtocolByExtension(file.extension);
-            }
-        };
-    });
-/* ui/widget/fileloader.js end */
 
 
 
@@ -34253,12 +34378,15 @@
                 .addClass('button netdisk-mkdir')
                 .click(mkdir);
 
+            var selected = null;
+
             $nav.after($mkdir);
 
             $container.addClass('netdisk-finder-container');
 
             /* 点击目录中的项目时打开项目 */
             $list.delegate('.netdisk-file-list-item', 'click', function(e) {
+                if (mkdir.onprogress) return mkdir.onprogress.select();
                 var $file = $(e.target),
                     file = $file.data('file');
                 if (file) open(file);
@@ -34266,6 +34394,7 @@
 
             /* 点击导航处，切换路径 */
             $nav.delegate('a', 'click', function(e) {
+                if (mkdir.onprogress) return mkdir.onprogress.select();
                 if ($(e.target).hasClass('dir-back')) {
                     var parts = currentPath.split('/');
                     parts.pop(); // 有一个无效部分
@@ -34280,20 +34409,45 @@
             hide();
 
             function mkdir() {
+                if (mkdir.onprogress) {
+                    return mkdir.onprogress.select();
+                }
+
                 var $li = $('<li>').addClass('netdisk-file-list-item dir').prependTo($list);
+
                 var $input = $('<input>')
                     .attr('type', 'text')
                     .addClass('new-dir-name')
                     .val(minder.getLang('ui.newdir'))
                     .appendTo($li);
-                $input[0].select();
-                $input.on('keydown', function(e) {
-                    if (e.keyCode == 13) {
-                        var name = $input.val();
 
+                mkdir.onprogress = $input[0];
+                $input[0].select();
+
+                $input.on('keydown', function(e) {
+                    if (e.keyCode == 13) confirm();
+                    if (e.keyCode == 27) {
                         $li.remove();
+                        mkdir.onprogress = false;
+                        e.stopPropagation();
                     }
                 });
+
+                function confirm() {
+                    var name = $input.val();
+                    if (name) {
+                        fio.file.mkdir({
+                            path: currentPath + name
+                        }).then(function() {
+                            return list(currentPath);
+                        }, function(e) {
+                            window.alert('创建目录失败：' + e.message);
+                        }).then(function() {
+                            mkdir.onprogress = false;
+                        });
+                    }
+                    $li.remove();
+                }
             }
 
             function show() {
@@ -34341,7 +34495,7 @@
                     }).stop().transit({
                         x: 0,
                         opacity: 1
-                    }, 100, resolve);  
+                    }, 100, resolve);
                 });
             }
 
@@ -34358,20 +34512,27 @@
 
                 var transitPromise = fadeOutList(-100 * sign(path.length - currentPath.length));
 
-                Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
-                    window.alert('加载目录发生错误：' + error);
-                });
-
                 currentPath = path.charAt(path.length - 1) == '/' ? path : path + '/';
 
                 updateNav();
 
+                return Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
+                    window.alert('加载目录发生错误：' + error);
+                });
             }
 
             function renderList(values) {
                 $list.empty();
 
                 var files = values[0];
+
+                files.sort(function(a, b) {
+                    if (a.isDir > b.isDir) {
+                        return -1;
+                    } else if (a.isDir == b.isDir) {
+                        return a.createTime > b.createTime ? -1 : 1;
+                    } else return 1;
+                });
 
                 if (!files.length) {
                     $list.append('<li class="empty" disabled="disabled">' + minder.getLang('ui.emptydir') + '</li>');
@@ -34390,6 +34551,7 @@
                 }
 
                 fadeInList();
+                checkSelect();
 
                 finder.fire('cd', currentPath);
             }
@@ -34425,7 +34587,31 @@
                 });
             }
 
+            function select(path) {
+                selected = path;
+                return checkSelect();
+            }
+
+            function checkSelect() {
+                var hasSelect = false;
+                $list.find('.netdisk-file-list-item').removeClass('selected').each(function() {
+                    var file = $(this).data('file');
+                    if (file && file.path == selected) {
+                        $(this).addClass('selected');
+                        hasSelect = true;
+                    }
+                });
+                if (!hasSelect) selected = false;
+                return hasSelect;
+            }
+
+            function pwd() {
+                return currentPath;
+            }
+
             finder.list = list;
+            finder.select = select;
+            finder.pwd = pwd;
 
             return finder;
         }
@@ -34462,6 +34648,7 @@
 
         $mainMenuButton.on('click', function(e) {
             $panel.addClass('show');
+            $panel.trigger('show');
         });
 
         $panel = $('<div id="main-menu"></div>').appendTo('#content-wrapper');
@@ -34470,6 +34657,7 @@
             // ESC Pressed
             if (e.keyCode == 27) {
                 $panel.toggleClass('show');
+                if ($panel.hasClass('show')) $panel.trigger('show');
             }
         });
 
@@ -34542,7 +34730,7 @@
 
         $l1_tabs.appendTo($menu[0]);
 
-        $l1_tabs.select(2);
+        $l1_tabs.select(3);
 
         var ret = {};
 
@@ -34571,6 +34759,7 @@
 
         var $menu = minder.getUI('menu/menu');
         var $level1 = minder.getUI('menu/level1');
+        var $doc = minder.getUI('doc');
         var eve = minder.getUI('eve');
 
         var $panel = $level1['new'].getContentElement();
@@ -34600,14 +34789,16 @@
 
         $ul.delegate('.template-item', 'click', function(e) {
             var template = $(e.target).data('template');
-            minder.importData({
-                template: template,
-                version: KityMinder.version,
-                data: {
-                    text: minder.getLang('template')[template]
-                }
+            $doc.load({
+                content: {
+                    template: template,
+                    version: KityMinder.version,
+                    data: {
+                        text: minder.getLang('template')[template]
+                    }
+                },
+                protocol: null
             });
-            minder.execCommand('camera', minder.getRoot());
             $menu.removeClass('show');
         });
 
@@ -34652,6 +34843,8 @@
             })
         }).appendTo($level1.open);
 
+        $tabs.select(3);
+
 
         // 暴露
         var ret = {};
@@ -34693,51 +34886,27 @@
 
         var $menu = minder.getUI('menu/menu');
         var $open = minder.getUI('menu/open/open');
-        var $loader = minder.getUI('widget/fileloader');
+        var $doc = minder.getUI('doc');
 
-        // 支持的文件类型
-        var supportedExtensions = [];
+        /* extension => protocol */
+        var supports = {};
+        var accepts = [];
 
-        Utils.each(minder.getSupportedProtocols(), function(name, protocol) {
-            if (protocol && protocol.decode) {
-                supportedExtensions.push(protocol.fileExtension);
+        minder.getSupportedProtocols().forEach(function(protocol) {
+            if (protocol.decode) {
+                supports[protocol.fileExtension] = protocol;
+                accepts.push(protocol.fileExtension);
             }
         });
-
-        supportedExtensions = supportedExtensions.join(', ');
-
-        function readFile(domfile) {
-            return new Promise(function(resolve, reject) {
-
-                var file = new fio.file.File(domfile.name);
-                var protocol = minder.getProtocol($loader.support(file));
-                var reader;
-
-                if (protocol.dataType == 'blob') {
-
-                    file.data = new fio.file.Data(domfile);
-                    resolve(file);
-
-                } else {
-
-                    reader = new FileReader();
-                    reader.onload = function() {
-                        file.data = new fio.file.Data(this.result);
-                        resolve(file);
-                    };
-                    reader.readAsText(domfile, 'utf-8');
-
-                }
-            });
-        }
 
         /* 网盘面板 */
         var $panel = $($open.local.getContentElement()).addClass('local-file-open-panel');
 
-        /* 路径导航 */
-        var $nav = $('<h2>本地文件</h2>')
+        /* 标题 */
+        $('<h2>本地文件</h2>')
             .appendTo($panel);
 
+        /* 选择文件 */
         var $pick = $('<div class="pick-file"></div>')
             .appendTo($panel);
 
@@ -34746,18 +34915,25 @@
             .appendTo($pick);
 
         $('<span></span>')
-            .text(minder.getLang('ui.acceptfile', supportedExtensions))
-            .appendTo($pick);
+            .text(minder.getLang('ui.acceptfile', accepts.map(function(ext) {
 
+                var protocol = supports[ext];
+                return protocol.fileDescription + '(' + ext + ')';
+
+            }).join(', '))).appendTo($pick);
+
+        /* 拖放提示 */
         var $drop = $('<div class="drop-file"></div>')
             .append($('<span></span>').html(minder.getLang('ui.dropfile')))
             .appendTo($panel);
 
+
+        /* 交互事件 */
         $pickButton.click(function() {
-            var $file = $('<input type="file" />')
-                .attr('accept', supportedExtensions)
+            $('<input type="file" />')
+                .attr('accept', accepts.join())
                 .on('change', function(e) {
-                    readFile(this.files[0]).then($loader.load);
+                    read(this.files[0]);
                     $menu.removeClass('show');
                 }).click();
         });
@@ -34767,11 +34943,64 @@
             e.stopPropagation();
         }).on('drop', function(e) {
             e = e.originalEvent;
-            var file = e.dataTransfer.files[0];
-            readFile(file).then($loader.load);
+            read(e.dataTransfer.files[0]);
             $menu.removeClass('show');
             e.preventDefault();
         });
+
+        function read(domfile) {
+            if (!domfile) return;
+
+            var info = new fio.file.anlysisPath(domfile.name);
+            var protocol = supports[info.extension];
+
+            var dataPromise = new Promise(function(resolve, reject) {
+
+                var reader;
+
+                if (protocol.dataType == 'blob') {
+
+                    resolve(new fio.file.Data(domfile));
+
+                } else {
+
+                    reader = new FileReader();
+                    reader.onload = function() {
+                        resolve(new fio.file.Data(this.result));
+                    };
+                    reader.onerror = reject;
+                    reader.readAsText(domfile, 'utf-8');
+                }
+
+            });
+
+            $(minder.getRenderTarget()).addClass('loading');
+
+            return dataPromise.then(function(data) {
+
+                var doc = {
+                    content: data.content,
+                    protocol: protocol.name,
+                    title: info.filename,
+                    source: 'local'
+                };
+
+                return $doc.load(doc);
+
+            })['catch'](function(error) {
+
+                window.alert(minder.getLang('ui.errorloading', error.message || minder.getLang('ui.unknownreason')));
+
+            }).then(function() {
+
+                $(minder.getRenderTarget()).removeClass('loading');
+
+            });
+        }
+
+        return {
+            read: read
+        };
     });
 /* ui/menu/open/local.js end */
 
@@ -34792,39 +35021,74 @@
 
         var $menu = minder.getUI('menu/menu');
         var $open = minder.getUI('menu/open/open');
-        var $loader = minder.getUI('widget/fileloader');
         var $netdiskfinder = minder.getUI('widget/netdiskfinder');
         var $eve = minder.getUI('eve');
+        var $doc = minder.getUI('doc');
         var ret = $eve.setup({});
-
 
         /* 网盘面板 */
         var $panel = $($open.netdisk.getContentElement());
 
-        var $finder = $netdiskfinder.generate($panel, function(file) {
-            return $loader.support(file);
+        /* extension => protocol */
+        var supports = {};
+
+        minder.getSupportedProtocols().forEach(function(protocol) {
+            if (protocol.decode) {
+                supports[protocol.fileExtension] = protocol;
+            }
         });
 
-        $finder.on('fileclick', openFile);
+        /* Finder */
+        var $finder = $netdiskfinder.generate($panel, function(file) {
 
-        function openFile(file) {
-            var protocol = $loader.support(file);
+            return supports[file.extension];
+
+        });
+
+        $finder.on('fileclick', function(file) {
+            return open(file.path);
+        });
+
+        function open(path) {
 
             $menu.removeClass('show');
+            $(minder.getRenderTarget()).addClass('loading');
 
-            return $loader.load(fio.file.read({
-                path: file.path,
+            var info = fio.file.anlysisPath(path);
+            var protocol = supports[info.extension];
+
+            return fio.file.read({
+
+                path: path,
                 dataType: protocol.dataType
-            })).then(function(readed) {
-                if (readed) ret.fire('fileload', readed);
+
+            }).then(function(file) {
+
+                var doc = {
+                    protocol: supports[file.extension].name,
+                    content: file.data.content,
+                    title: file.filename,
+                    source: 'netdisk',
+                    path: file.path,
+                    saved: true
+                };
+
+                return $doc.load(doc);
+
+            })['catch'](function(error) {
+
+                window.alert(minder.getLang('ui.errorloading', error.message || minder.getLang('unknownreason')));
+
+            }).then(function() {
+
+                $(minder.getRenderTarget()).removeClass('loading');
+
             });
 
         }
 
-        ret.loadFileByPath = function(path) {
-            var file = new fio.file.File(path);
-            return openFile(file);
-        };
+        ret.open = open;
+
         return ret;
     });
 /* ui/menu/open/netdisk.js end */
@@ -34849,13 +35113,20 @@
         var $loader = minder.getUI('widget/fileloader');
         var frdTime = minder.getUI('widget/friendlytimespan');
         var netdisk = minder.getUI('menu/open/netdisk');
+        var doc = minder.getUI('doc');
         var recentList = minder.getUI('widget/locallist').use('recent');
 
         /* 网盘面板 */
         var $panel = $($open.recent.getContentElement()).addClass('recent-file-panel');
 
-        /* 路径导航 */
-        var $nav = $('<h2>最近使用</h2>')
+        /* 标题 */
+        var $title = $('<h2></h2>')
+            .text(minder.getLang('ui.recent'))
+            .appendTo($panel);
+
+        var $clear = $('<button></button>')
+            .addClass('clear-recent-list')
+            .text(minder.getLang('ui.clearrecent'))
             .appendTo($panel);
 
         /* 最近文件列表容器 */
@@ -34863,10 +35134,49 @@
             .addClass('recent-file-list')
             .appendTo($panel);
 
+        $ul.delegate('.recent-file-item', 'click', function(e) {
+
+            var path = $(e.target)
+                .closest('.recent-file-item')
+                .data('path');
+
+            netdisk.open(path);
+        });
+
+        $clear.on('click', function() {
+            if (!window.confirm(minder.getLang('ui.clearrecentconfirm'))) return;
+            recentList.clear();
+            renderList();
+        });
+
+        doc.on('docload', addToList);
+        doc.on('docsave', addToList);
+
         renderList();
+
+        function addToList(doc) {
+
+            if (doc.source != 'netdisk') return;
+
+            var exist = recentList.findIndex('path', doc.path);
+
+            if (~exist) {
+                recentList.remove(exist);
+            }
+
+            recentList.unshift({
+                path: doc.path,
+                filename: fio.file.anlysisPath(doc.path).filename,
+                title: minder.getMinderTitle(),
+                time: +new Date()
+            });
+
+            renderList();
+        }
 
         function renderList() {
             $ul.empty();
+
             recentList.forEach(function(item) {
 
                 var $li = $('<li></li>')
@@ -34886,40 +35196,10 @@
 
                 $('<span></span>')
                     .addClass('file-time')
-                    .data('time', item.time)
-                    .text(frdTime.display(item.time))
+                    .displayFriendlyTime(item.time)
                     .appendTo($li);
             });
         }
-
-        $ul.delegate('.recent-file-item', 'click', function(e) {
-            var path = $(e.target)
-                .closest('.recent-file-item')
-                .data('path');
-            netdisk.loadFileByPath(path);
-        });
-
-        netdisk.on('fileload', function(loaded) {
-            var exist = recentList.findIndex('path', loaded.file.path);
-            if (~exist) {
-                recentList.remove(exist);
-            }
-            recentList.unshift({
-                path: loaded.file.path,
-                filename: loaded.file.filename,
-                title: loaded.json.data.text || minder.getLang('untitleddoc'),
-                time: +new Date()
-            });
-            renderList();
-        });
-
-        function updateTime() {
-            $ul.find('.file-time').each(function(index, element) {
-                $(element).text(frdTime.display($(element).data('time')));
-            });
-        }
-
-        setInterval(updateTime, 60000);
 
     });
 /* ui/menu/open/recent.js end */
@@ -34938,11 +35218,139 @@
      */
 
     KityMinder.registerUI('menu/open/draft', function(minder) {
+        var $menu = minder.getUI('menu/menu');
         var $open = minder.getUI('menu/open/open');
-        var $panel = $($open.draft.getContentElement()).addClass('draft-file-list');
-        var drafts = minder.getUI('widget/locallist').use('draft');
+        var $loader = minder.getUI('widget/fileloader');
 
-        $panel.append('<h2>草稿箱</h2>');
+        var frdTime = minder.getUI('widget/friendlytimespan');
+
+        var $doc = minder.getUI('doc');
+
+        // 旧数据迁移
+        if (localStorage.drafts) {
+            var oldDrafts = JSON.parse(localStorage.drafts);
+            var list = oldDrafts.map(function(draft) {
+                var ret = {};
+                ret.json = draft.data;
+                ret.time = +new Date(draft.update);
+                ret.title = JSON.parse(draft.data).data.text;
+                return ret;
+            });
+            delete localStorage.drafts;
+            localStorage.draft = JSON.stringify(list);
+        }
+
+        var draftList = minder.getUI('widget/locallist').use('draft');
+
+        /* 网盘面板 */
+        var $panel = $($open.draft.getContentElement()).addClass('draft-panel');
+
+        /* 标题 */
+        var $title = $('<h2></h2>')
+            .text(minder.getLang('ui.menu.open.draft'))
+            .appendTo($panel);
+
+        var $clear = $('<button></button>')
+            .addClass('clear-draft')
+            .text(minder.getLang('ui.cleardraft'))
+            .appendTo($panel);
+
+        /* 最近文件列表容器 */
+        var $ul = $('<ul></ul>')
+            .addClass('draft-list')
+            .appendTo($panel);
+
+        var current = null,
+            lastDoc = null;
+
+        $ul.delegate('.draft-list-item', 'click', function(e) {
+            var item = $(e.target).closest('.draft-list-item').data('item');
+
+            var index = draftList.findIndex(function(finding) {
+                return finding == item;
+            });
+
+            if (index > -1) {
+                current = item;
+
+                draftList.remove(index);
+                draftList.unshift(current);
+
+                lastDoc = {
+                    title: current.title,
+                    protocol: 'json',
+                    content: current.json,
+                    path: current.path,
+                    source: current.source,
+                    saved: false
+                };
+
+                $doc.load(lastDoc);
+            }
+            $menu.removeClass('show');
+        });
+
+        $clear.on('click', function() {
+            if (!window.confirm(minder.getLang('ui.cleardraftconfirm'))) return;
+            draftList.clear();
+            current = null;
+            renderList();
+        });
+
+        $doc.on('docsave', popDraft);
+        $doc.on('docchange', pushDraft);
+
+        renderList();
+
+        function pushDraft(doc) {
+            if (doc == lastDoc) {
+                if (current) {
+                    draftList.remove(0);
+                }
+            } else {
+                current = null;
+            }
+            lastDoc = doc;
+            current = current || {};
+            current.json = JSON.stringify(minder.exportJson());
+            current.title = doc.title;
+            current.time = +new Date();
+            current.path = doc.path;
+            current.source = doc.source;
+            draftList.unshift(current);
+            renderList();
+        }
+
+        function popDraft() {
+            if (current) {
+                draftList.remove(0);
+                current = null;
+            }
+            renderList();
+            console.log('pop draft');
+        }
+
+        function renderList() {
+            $ul.empty();
+
+            draftList.forEach(function(item) {
+
+                var $li = $('<li></li>')
+                    .addClass('draft-list-item')
+                    .data('item', item)
+                    .appendTo($ul);
+
+                $('<h4></h4>')
+                    .addClass('draft-title')
+                    .text(item.title)
+                    .appendTo($li);
+
+                $('<span></span>')
+                    .addClass('file-time')
+                    .displayFriendlyTime(item.time)
+                    .appendTo($li);
+            });
+        }
     });
 /* ui/menu/open/draft.js end */
 
@@ -34968,7 +35376,7 @@
             .text(minder.getLang('ui.menu.save.header'))
             .appendTo($level1.save.getContentElement());
 
-        var source = ['netdisk', 'local'];
+        var source = ['netdisk', 'download'];
 
         var $tabs = new FUI.Tabs({
             buttons: source.map(function(key) {
@@ -34992,6 +35400,8 @@
         $tabs.on('tabsselect', function(e, info) {
             ret.fire('select', info);
         });
+
+        $tabs.select(1);
 
         // 暴露选择事件
         ret.select = $tabs.select.bind($tabs);
@@ -35017,19 +35427,23 @@
         var $save = minder.getUI('menu/save/save');
         var $netdiskfinder = minder.getUI('widget/netdiskfinder');
         var $eve = minder.getUI('eve');
+        var $doc = minder.getUI('doc');
         var ret = $eve.setup({});
 
-        var protocols = minder.getSupportedProtocols().filter(function(protocol) {
-            return protocol.encode;
+        /* extension => protocol */
+        var supports = {};
+
+        minder.getSupportedProtocols().forEach(function(protocol) {
+            if (protocol.encode && protocol.decode) {
+                supports[protocol.fileExtension] = protocol;
+            }
         });
 
         /* 网盘面板 */
         var $panel = $($save.netdisk.getContentElement()).addClass('netdisk-save-panel');
 
         var $finder = $netdiskfinder.generate($panel, function(file) {
-            return protocols.some(function(protocol) {
-                return protocol.fileExtension == file.extension;
-            }, false);
+            return supports[file.extension];
         });
 
         var $selects = $('<div class="netdisk-save-select"></div>')
@@ -35039,28 +35453,133 @@
             .text(minder.getLang('ui.saveas'))
             .appendTo($selects);
 
+        /* 文件名 */
         var $filename = $('<input>')
+            .attr('type', 'text')
             .attr('placeholder', minder.getLang('ui.filename'))
             .attr('title', minder.getLang('ui.filename'))
+            .on('keydown', function(e) {
+                if (e.keyCode == 27) $menu.toggleClass('show');
+            })
             .appendTo($selects);
 
+        /* 文件格式 */
         var $format = $('<select>')
             .attr('title', minder.getLang('ui.fileformat'))
             .appendTo($selects);
 
-        protocols.forEach(function(protocol) {
+        for (var ext in supports) {
+            var protocol = supports[ext];
+            if (!protocol.encode) return;
             $('<option>')
                 .text(protocol.fileDescription + '(' + protocol.fileExtension + ')')
-                .val(protocol.name)
+                .val(ext)
                 .appendTo($format);
-        });
+        }
 
-        $format.val('json');
+        $format.val('.km');
 
+        /* 保存按钮 */
         var $saveBtn = $('<button></button>')
             .addClass('save-button')
             .text(minder.getLang('ui.save'))
+            .click(save)
             .appendTo($selects);
+
+        $menu.on('show', setFileName);
+
+        $finder.on('fileclick', function(file) {
+            $finder.select(file.path);
+            $filename.val(file.filename);
+        });
+
+        function save() {
+            var filename = $filename.val();
+
+            if (fio.file.anlysisPath(filename).extension != $format.val()) {
+                $filename.val(filename += $format.val())[0].select();
+            }
+
+            var path = $finder.pwd() + filename;
+            var doc = $doc.current();
+            var protocol = supports[$format.val()];
+
+            var exist = $finder.select(path); // 目标路径存在
+            var match = doc.path == path; // 目标路径正是当前文档
+            var duplicated = exist && !match;
+
+            if (!exist || match || duplicated && window.confirm(minder.getLang('ui.overrideconfirm', filename))) {
+                doSave(path, protocol, doc);
+            }
+        }
+
+        function doSave(path, protocol, doc) {
+
+            $panel.addClass('loading');
+
+            return minder.exportData(protocol.name).then(function(data) {
+
+                return fio.file.write({
+                    path: path,
+                    content: data,
+                    ondup: fio.file.DUP_OVERWRITE
+                });
+
+            }).then(function() {
+
+                $panel.removeClass('loading');
+                $menu.removeClass('show');
+
+                doc.path = path;
+                doc.title = $filename.val();
+                doc.source = 'netdisk';
+
+                $doc.save(doc);
+
+                setTimeout($finder.list, 500);
+
+            })['catch'](function(e) {
+
+                window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
+
+            });
+        }
+
+        function setFileName() {
+            var doc = $doc.current();
+
+            switch (doc.source) {
+                case 'netdisk':
+                    setFileNameForNetDiskSource(doc);
+                    break;
+                default:
+                    setFileNameForOtherSource(doc);
+                    break;
+            }
+
+            $filename[0].select();
+        }
+
+        function setFileNameForNetDiskSource(doc) {
+            var path = doc.path;
+            var pathInfo = fio.file.anlysisPath(path);
+
+            // 选中当前文件
+            if ($finder.pwd() != pathInfo.parentPath) {
+                $finder.list(pathInfo.parentPath).then(function() {
+                    $finder.select(path);
+                });
+            } else {
+                $finder.select(path);
+            }
+
+            $filename.val(pathInfo.filename);
+        }
+
+        function setFileNameForOtherSource(doc) {
+            $filename.val(doc.title);
+            $finder.select(null);
+        }
 
         return ret;
     });
@@ -35073,12 +35592,111 @@
     /**
      * @fileOverview
      *
-     * 
+     * 导出数据到本地
      *
      * @author: techird
      * @copyright: Baidu FEX, 2014
      */
+    KityMinder.registerUI('menu/save/download', function(minder) {
+        var $menu = minder.getUI('menu/menu');
+        var $save = minder.getUI('menu/save/save');
 
+        /* 导出面板 */
+        var $panel = $($save.download.getContentElement()).addClass('download-panel');
+
+        /* 标题 */
+        var $title = $('<h2></h2>')
+            .text(minder.getLang('ui.menu.save.download'))
+            .appendTo($panel);
+
+        var $list = $('<ul>')
+            .addClass('download-list')
+            .appendTo($panel);
+
+        var supports = [];
+
+        minder.getSupportedProtocols().forEach(function(protocol) {
+            if (protocol.encode) {
+                supports.push(protocol);
+            }
+        });
+
+        supports.forEach(function(protocol) {
+            $('<li>')
+                .addClass(protocol.name)
+                .text(protocol.fileDescription + ' (' + protocol.fileExtension + ')')
+                .data('protocol', protocol)
+                .appendTo($list);
+        });
+
+        $list.delegate('li', 'click', function(e) {
+            var protocol = $(e.target).data('protocol');
+            doExport(protocol);
+        });
+
+        function doExport(protocol) {
+            var filename = minder.getMinderTitle() + protocol.fileExtension;
+            var mineType = protocol.mineType || 'text/plain';
+
+            $panel.addClass('loading');
+
+            minder.exportData(protocol.name).then(function(data) {
+
+                if (typeof(data) != 'string') return;
+
+                switch (protocol.dataType) {
+                    case 'text':
+                        return doDownload(buildDataUrl(mineType), filename, 'text');
+                    case 'base64':
+                        return doDownload(data, filename, 'base64');
+                }
+
+                return null;
+
+            }).then(function() {
+
+                $panel.removeClass('loading');
+                $menu.removeClass('show');
+
+            });
+        }
+
+        function doDownload(url, filename, type) {
+            var content = url.split(',')[1];
+
+            var $form = $('<form></form>').attr({
+                'action': 'download.php',
+                'method': 'POST',
+                'accept-charset': 'utf-8'
+            });
+
+            var $content = $('<input />').attr({
+                name: 'content',
+                type: 'hidden',
+                value: decodeURIComponent(content)
+            }).appendTo($form);
+
+            var $type = $('<input />').attr({
+                name: 'type',
+                type: 'hidden',
+                value: type
+            }).appendTo($form);
+
+            var $filename = $('<input />').attr({
+                name: 'filename',
+                type: 'hidden',
+                value: filename
+            }).appendTo($form);
+
+            $('<input name="iehack" value="&#9760;" />').appendTo($form);
+
+            $form.appendTo('body').submit().remove();
+        }
+
+        function buildDataUrl(mineType, data) {
+            return 'data:' + mineType + '; utf-8,' + encodeURIComponent(data);
+        }
+    });
 /* ui/menu/save/download.js end */
 
 
@@ -35088,11 +35706,34 @@
     /**
      * @fileOverview
      *
-     * 
+     * 分享功能交互
      *
      * @author: techird
      * @copyright: Baidu FEX, 2014
      */
+
+    KityMinder.registerUI('menu/share/share', function(minder) {
+
+        var $level1 = minder.getUI('menu/level1');
+        var eve = minder.getUI('eve');
+
+        var $panel = $level1.share.getContentElement();
+
+        var $h2 = $('<h2></h2>')
+            .text(minder.getLang('ui.menu.share.header'))
+            .appendTo($panel);
+
+        var $publicShare = $('<fieldset>')
+            .appendTo($panel);
+
+        /* global jshtmls: true */
+        var render = jshtmls.render(function() {
+        /*template
+            <p>Mark Here</p>
+            fekwlf200sfwe
+        */
+       });
+    });
 /* ui/menu/share/share.js end */
 
 
@@ -35140,6 +35781,8 @@
         var currentUser;
 
         var $userPanel = $('<div class="user-panel"></div>').appendTo('#panel');
+
+        var $tip = $('<span></span>').text(minder.getLang('ui.checklogin')).appendTo($userPanel);
 
         /* 登录按钮 */
         var $loginButton = new FUI.Button({
@@ -35202,7 +35845,11 @@
             apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
         });
 
-        fio.user.check().then(check);
+        fio.user.check().then(check)['catch'](function(error) {
+            $loginButton.show();
+            $userButton.hide();
+            $tip.remove();
+        });
 
         $loginButton.on('click', login);
         $('body').delegate('.login-button', 'click', login);
@@ -35218,6 +35865,7 @@
                 $loginButton.show();
                 $userButton.hide();
             }
+            $tip.remove();
             currentUser = user;
         }
 
@@ -35229,6 +35877,7 @@
         }
 
         function login() {
+            $loginButton.setLabel(minder.getLang('ui.loggingin'));
             fio.user.login({
                 remember: 7 * 24 * 60 * 60 // remember 7 days
             }).then(check);
@@ -35322,9 +35971,7 @@
 
             setSaved: function(saved) {
 
-                if (saved !== false) {
-                    _saved = true;
-                }
+                _saved = saved !== false;
 
                 update();
 

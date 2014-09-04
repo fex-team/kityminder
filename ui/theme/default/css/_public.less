@@ -30,3 +30,102 @@
     bottom: @bottom;
     left: @left;
 }
+
+
+.validate-error {
+    color: red;
+    border-color: red !important;
+}
+
+.button, button {
+    display: inline-block;
+    height: 30px;
+    padding: 0 15px;
+    line-height: 30px;
+    text-align: center;
+    outline: none;
+    background: lighten(@tab-active, 20%);
+    &:hover, &.hover {
+        background: lighten(@tab-hover, 20%);
+    }
+    &:active, &.active {
+        background: lighten(@tab-active, 15%);
+    }
+    &:disabled {
+        background: #CCC;
+        &:hover, &.hover,
+        &:active, &.active {
+            background: #CCC;
+        }
+    }
+    cursor: default;
+    color: @ui-fore;
+    border: none;
+}
+
+input[type=text],
+input[type=url] {
+    padding: 2px 5px;
+    height: 16px;
+    outline: none;
+    border: 1px solid lighten(@tab-hover, 50%);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
+    border-radius: 2px;
+    &:focus {
+        border-color: hsl(223, 38%, 55%);
+    }
+}
+
+
+.loading(@color: rgb(128, 130, 140), @border-color: #fff) {
+    .loading-target {
+        .blur;
+    }
+    
+    &:after {
+        content: ' ';
+        display: block;
+        .dock;
+        background: fadeOut(@color, 25%);
+    }
+
+    &:before {
+        content: ' ';
+        width: 40px;
+        height: 40px;
+        border: 4px solid;
+        border-color: @border-color transparent transparent;
+        box-shadow: 0 0 35px white;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -24px;
+        margin-top: -24px;
+        z-index: 10;
+        border-radius: 100%;
+        -webkit-animation: rotate 1.33s ease infinite;
+        filter: none;
+        -webkit-filter: none;
+    }
+}
+
+.loading {
+    .loading();
+}
+
+@-webkit-keyframes rotate {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+@-moz-keyframes rotate {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+@-ms-keyframes rotate {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+@keyframes rotate {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}

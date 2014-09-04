@@ -32,7 +32,7 @@ KityMinder.registerProtocol('xmind', function(minder) {
     };
 
     return {
-        fileDescription: 'xmind格式文件',
+        fileDescription: 'XMind 格式',
         fileExtension: '.xmind',
         dataType: 'blob',
 

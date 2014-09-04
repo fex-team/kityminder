@@ -14,6 +14,8 @@ KityMinder.registerUI('topbar/user', function(minder) {
 
     var $userPanel = $('<div class="user-panel"></div>').appendTo('#panel');
 
+    var $tip = $('<span></span>').text(minder.getLang('ui.checklogin')).appendTo($userPanel);
+
     /* 登录按钮 */
     var $loginButton = new FUI.Button({
         label: minder.getLang('ui.login'),
@@ -69,16 +71,16 @@ KityMinder.registerUI('topbar/user', function(minder) {
 
     });
 
-
-    /* 初始化网盘使用的 APP 身份 */
-    fio.provider.init('netdisk', {
-        apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
+    minder.on('uiready', function() {
+        fio.user.check().then(check)['catch'](function(error) {
+            $loginButton.show();
+            $userButton.hide();
+            $tip.remove();
+        });
     });
 
-    fio.user.check().then(check);
-
     $loginButton.on('click', login);
-    $('body').delegate('.login-button', 'click', login);
+    $('#content-wrapper').delegate('.login-button', 'click', login);
 
     function check(user) {
         if (user) {
@@ -90,7 +92,9 @@ KityMinder.registerUI('topbar/user', function(minder) {
         } else {
             $loginButton.show();
             $userButton.hide();
+            fio.user.fire('logout', user);
         }
+        $tip.remove();
         currentUser = user;
     }
 
@@ -102,6 +106,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
     }
 
     function login() {
+        $loginButton.setLabel(minder.getLang('ui.loggingin'));
         fio.user.login({
             remember: 7 * 24 * 60 * 60 // remember 7 days
         }).then(check);
@@ -114,12 +119,25 @@ KityMinder.registerUI('topbar/user', function(minder) {
         }).then(check);
     }
 
+    function requireLogin($element) {
+        var $login_tip = $('<p class="login-tip"></p>')
+            .html(minder.getLang('ui.requirelogin'));
+        $element.append($login_tip);
+        fio.user.on('login', function() {
+            $element.removeClass('login-required');
+        });
+        fio.user.on('logout', function() {
+            $element.addClass('login-required');
+        });
+    }
+
     return {
         getCurrent: function() {
             return currentUser;
         },
         loginLink: function() {
             return $('<a></a>').click(login);
-        }
+        },
+        requireLogin: requireLogin
     };
 });

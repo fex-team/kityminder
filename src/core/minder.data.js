@@ -35,8 +35,7 @@ kity.extendClass(Minder, {
         });
     },
 
-    exportData: function(protocolName) {
-
+    exportJson: function() {
         /* 导出 node 上整棵树的数据为 JSON */
         function exportNode(node) {
             var exported = {};
@@ -51,13 +50,66 @@ kity.extendClass(Minder, {
             return exported;
         }
 
-        var json, protocol;
-
-        json = exportNode(this.getRoot());
+        var json = exportNode(this.getRoot());
 
         json.template = this.getTemplate();
         json.theme = this.getTheme();
         json.version = KityMinder.version;
+
+        return json;
+    },
+
+    importJson: function(json, params) {
+
+        function importNode(node, json, km) {
+            var data = json.data;
+            node.data = {};
+            for (var field in data) {
+                node.setData(field, data[field]);
+            }
+
+            node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
+
+            var childrenTreeData = json.children || [];
+            for (var i = 0; i < childrenTreeData.length; i++) {
+                var childNode = km.createNode(null, node);
+                importNode(childNode, childrenTreeData[i], km);
+            }
+            return node;
+        }
+
+        if (!json) return;
+        
+        this._fire(new MinderEvent('preimport', params, false));
+
+        // 删除当前所有节点
+        while (this._root.getChildren().length) {
+            this.removeNode(this._root.getChildren()[0]);
+        }
+
+        json = KityMinder.compatibility(json);
+
+        importNode(this._root, json, this);
+
+        this.setTemplate(json.template || null);
+        this.setTheme(json.theme || null);
+        this.refresh();
+
+        this.fire('import', params);
+
+        this._firePharse({
+            type: 'contentchange'
+        });
+        this._firePharse({
+            type: 'interactchange'
+        });
+    },
+
+    exportData: function(protocolName) {
+
+        var json, protocol;
+
+        json = this.exportJson();
 
         // 指定了协议进行导出，需要检测协议是否支持
         if (protocolName) {
@@ -112,57 +164,11 @@ kity.extendClass(Minder, {
 
         }).then(function(json) {
 
-            minder._doImport(json, params);
+            minder.importJson(json, params);
 
             return json;
 
         });
 
-    },
-
-    _doImport: function(json, params) {
-
-        function importNode(node, json, km) {
-            var data = json.data;
-            node.data = {};
-            for (var field in data) {
-                node.setData(field, data[field]);
-            }
-
-            node.setData('text', data.text || km.getLang(DEFAULT_TEXT[node.getType()]));
-
-            var childrenTreeData = json.children || [];
-            for (var i = 0; i < childrenTreeData.length; i++) {
-                var childNode = km.createNode(null, node);
-                importNode(childNode, childrenTreeData[i], km);
-            }
-            return node;
-        }
-
-        if (!json) return;
-
-        this._fire(new MinderEvent('preimport', params, false));
-
-        // 删除当前所有节点
-        while (this._root.getChildren().length) {
-            this.removeNode(this._root.getChildren()[0]);
-        }
-
-        json = KityMinder.compatibility(json);
-
-        importNode(this._root, json, this);
-
-        this.setTemplate(json.template || null);
-        this.setTheme(json.theme || null);
-        this.refresh();
-
-        this.fire('import', params);
-
-        this._firePharse({
-            type: 'contentchange'
-        });
-        this._firePharse({
-            type: 'interactchange'
-        });
     }
 });
