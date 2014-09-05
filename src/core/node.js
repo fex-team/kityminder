@@ -108,6 +108,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * @param {String} text 文本数据
      */
     setText: function(text) {
+        if(utils.isArray(text)){
+            text = text.join('\n');
+        }
         return this.setData('text', text);
     },
 
@@ -115,8 +118,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * 获取节点的文本数据
      * @return {String}
      */
-    getText: function() {
-        return this.getData('text');
+    getText: function(str2arr) {
+        var text = this.getData('text');
+
+        if(str2arr){
+            text = text.split('\n');
+        }
+
+        return text;
     },
 
     /**

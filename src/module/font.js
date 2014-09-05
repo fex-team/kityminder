@@ -3,16 +3,18 @@ KityMinder.registerModule("fontmodule", function() {
         return node.getData(name) || node.getStyle(name);
     }
 
-    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
+    KityMinder.TextRenderer.registerStyleHook(function(node, textGroup) {
         var dataColor = node.getData('color');
         var selectedColor = node.getStyle('selected-color');
         var styleColor = node.getStyle('color');
 
-        text.fill(dataColor || (node.isSelected() && selectedColor ? selectedColor : styleColor));
+        textGroup.fill(dataColor || (node.isSelected() && selectedColor ? selectedColor : styleColor));
 
-        text.setFont({
-            family: getNodeDataOrStyle(node, 'font-family'),
-            size: getNodeDataOrStyle(node, 'font-size')
+        textGroup.eachItem(function(index,item){
+            item.setFont({
+                'family': getNodeDataOrStyle(node,'font-family'),
+                'size': getNodeDataOrStyle(node,'font-size')
+            });
         });
     });
 

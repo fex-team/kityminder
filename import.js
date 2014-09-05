@@ -78,6 +78,7 @@
         'src/module/select.js',
         'src/module/history.js',
         'src/module/editor.js',
+        'src/module/editor.keyboard.js',
         'src/module/editor.range.js',
         'src/module/editor.receiver.js',
         'src/module/editor.selection.js',
