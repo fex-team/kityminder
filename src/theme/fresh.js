@@ -54,7 +54,8 @@
             'order-hint-path-color': hsl(h, 100, 25),
             'order-hint-path-width': 1,
 
-            'text-selection-color': hsl(h, 100, 20)
+            'text-selection-color': hsl(h, 100, 20),
+            'line-height':1.5
         };
     }
 

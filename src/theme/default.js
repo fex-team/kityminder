@@ -51,5 +51,6 @@ KityMinder.registerTheme('classic', {
     'order-hint-path-color': '#0f0',
     'order-hint-path-width': 1,
 
-    'text-selection-color': 'rgb(27,171,255)'
+    'text-selection-color': 'rgb(27,171,255)',
+    'line-height':1.5
 });
