@@ -9,6 +9,10 @@ Utils.extend(KityMinder, {
         if (!KityMinder._defaultLayout) {
             KityMinder._defaultLayout = name;
         }
+    },
+
+    getLayoutList: function() {
+        return this._layout;
     }
 });
 

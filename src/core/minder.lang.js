@@ -11,6 +11,13 @@ kity.extendClass( Minder, {
             lang = lang[ ci ];
             if ( !lang ) break;
         }
+
+        if (typeof(lang) == 'string') {
+            var args = arguments;
+            return lang.replace(/\{(\d+)\}/ig, function(match, gindex) {
+                return args[+gindex + 1] != undefined && args[+gindex + 1].toString() || match;
+            });
+        }
         return lang;
     }
 } );

@@ -1,0 +1,78 @@
+.draft-panel {
+    h2 {
+        &:before {
+            content: ' ';
+            display: block;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 0;
+            background: url(../images/icons.png) no-repeat 0 -570px;
+        }
+    }
+    
+    & > .clear-draft {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    
+    & > .draft-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        
+        &:empty:after {
+            content: '这是个空虚寂寞的草稿箱！';
+            display: block;
+            text-align: center;
+            font-size: 18px;
+            height: 50px;
+            line-height: 50px;
+            color: #CCC;
+        }
+        
+        .draft-list-item {
+            font-size: 14px;
+            line-height: 20px;
+            padding: 10px 20px 10px 40px;
+            cursor: default;
+            position: relative;
+
+            &:hover {
+                background-color: lighten(@tab-hover, 55%);
+            }
+            
+            &:active {
+                background-color: lighten(@tab-hover, 50%);
+            }
+            
+            .draft-title {
+                margin: 0;
+                font-weight: normal;
+                height: 20px;
+                line-height: 20px;
+                
+                &:after {
+                    content: ' ';
+                    display: block;
+                    position: absolute;
+                    width: 25px;
+                    height: 25px;
+                    background: url(../images/icons.png) no-repeat 0 -445px;
+                    left: 5px;
+                    top: 10px;
+                }
+            }
+            
+            .file-time {
+                position: absolute;
+                right: 5px;
+                top: 10px;
+                font-size: 12px;
+                color: #999;
+            }
+        
+        }
+    }
+}

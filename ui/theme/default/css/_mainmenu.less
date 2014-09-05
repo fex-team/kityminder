@@ -1,0 +1,273 @@
+#main-menu-btn {
+    display: block;
+    float: left;
+    height: @panel-height;
+    line-height: @panel-height;
+    padding: 0 30px 0 15px;
+    z-index: 11;
+
+    background-color: @main-menu-theme-color;
+    &:hover {
+        background-color: lighten(@main-menu-theme-color, 5%) !important;
+    }
+    &:active {
+        background-color: darken(@main-menu-theme-color, 5%) !important;
+    }
+
+    .fui-label {
+        height: @panel-height;
+        line-height: @panel-height;
+        font-size: 14px;
+        color: white;
+    }
+
+    &:after {
+        content: ' ';
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        line-height: 0;
+        font-size: 0;
+        border: 6px solid;
+        border-color: white transparent transparent transparent;
+        right: 12px;
+        top: @panel-height / 2 - 4;
+    }
+}
+
+#main-menu {
+    @left-width: 200px;
+    background: white;
+    
+    .dock;
+    overflow: hidden;
+    transform: translate3d(0, -100%, 0);
+    transform-origin: 0 0;
+    opacity: 0;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 100;
+
+    &.show {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    
+    .slide-in() {
+        transform: translateX(-(@left-width)) translateZ(0);
+        transition: transform .7s ease, opacity .5s ease;
+
+        .show& {
+            transform: translateX(0) translateZ(0);
+            transition: transform .7s ease, opacity .5s ease;
+        }
+    }
+    
+    &:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: @left-width;
+        right: -1000px;
+        bottom: 10px;
+        box-shadow: 0 -3px 8px rgba(0,0,0,.15);
+        z-index: 1;
+        .slide-in;
+    }
+
+    .main-menu- {
+        
+        &header {
+            background: white;
+            height: @panel-height;
+        }
+        &back-panel {
+            background-color: @main-menu-theme-color;
+            float: left;
+            width: @left-width;
+            height: @panel-height;
+            
+            .main-menu-back-button {
+                .fui-label {
+                    display: inline-block;
+                    color: white;
+                    margin-left: 10px;
+                    font-size: 14px;
+                    display: none;
+                }
+                .fui-icon {
+                    display: inline-block;
+                    width: 25px;
+                    height: 25px;
+                    line-height: 25px;
+                    border-radius: 100%;
+                    border: 2px solid white;
+                    background: url(../images/icons.png) -1px -370px;
+                    vertical-align: middle;
+                }
+                width: @left-width - 10px;
+                height: @panel-height - 10px;
+                padding: 5px;
+                &:hover {
+                    background: -moz-linear-gradient(left,  rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+                    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0.3)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+                    background: -webkit-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+                    background: -o-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+                    background: -ms-linear-gradient(left,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+                    background: linear-gradient(to right,  rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 100%); /* W3C */
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4dffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
+                }
+                &:active {
+                    background: darken(@main-menu-theme-color, 10%);
+                }
+            }
+        }
+        &title {
+            margin-left: @left-width;
+            height: @panel-height;
+            display: block;
+            background: white;
+            z-index: 2;
+            text-align: center;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: @panel-height;
+            color: #999;
+            .slide-in;
+        }
+        &level1 {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: @panel-height;
+            
+            & > .fui-tabs- {
+                &button-wrap {
+                    .dock(0, auto, 0, 0);
+                    width: @left-width;
+                    position: absolute;
+                    background-color: @main-menu-theme-color;
+                    
+                    .fui-button {
+                        display: block;
+                        text-align: right;
+                        height: 50px;
+                        .fui-label {
+                            height: 50px;
+                            line-height: 50px;
+                            color: white;
+                            padding-right: 20px;
+                            font-size: 16px;
+                        }
+                        &:hover {
+                            background: darken(@main-menu-theme-color, 5%);
+                        }
+                        &:active {
+                            background: darken(@main-menu-theme-color, 10%);
+                        }
+                        &.fui-selected {
+                            background: lighten(@main-menu-theme-color, 10%);
+                        }
+                    }
+                }
+                
+                /* 二级菜单区域 */
+                &panel-wrap {
+                    .dock(0, 0, 0, @left-width);
+                    background-color: white;
+                    z-index: 2;
+                    .slide-in;
+                    
+                    /* 每个二级菜单的面板 */
+                    & > .fui-panel {
+                        .dock(0, @panel-height);
+                        
+                        /* 面板内容 */
+                        & > .fui-panel-content {
+                            .dock;
+                            
+                            /* 二级菜单大标题 */
+                            & > h2 {
+                                font-size: 24px;
+                                font-weight: normal;
+                                margin-top: 0;
+                                margin-bottom: 20px;
+                                color: @main-menu-fore-color;
+                            }
+                            
+                            /* 二级菜单导航 */
+                            & > .fui-tabs {
+                                .dock;
+                                
+                                /* 二级导航菜单区域 */
+                                & > .fui-tabs-button-wrap {
+                                    .dock(60px, auto, 30px, 0);
+                                    
+                                    display: block;
+                                    width: 180px;
+                                    border-right: 1px solid lighten(@tab-active, 50%);
+                                    
+                                    & > .fui-button {
+                                        display: block;
+                                        height: 50px;
+                                        line-height: 50px;
+                                        text-align: right;
+                                        padding-right: 20px;
+                                        
+                                        & > .fui-label {
+                                            font-size: 14px;
+                                            line-height: 50px;
+                                            color: @main-menu-fore-color;
+                                        }
+                                        
+                                        &:hover {
+                                            background-color: lighten(@tab-hover, 40%);
+                                            & > .fui-label { 
+                                            }
+                                        }
+                                        
+                                        &.fui-selected {
+                                            background-color: lighten(@tab-active, 20%);
+                                            
+                                            & > .fui-label {
+                                                color: white;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                /* 二级菜单内容区域 */
+                                & > .fui-tabs-panel-wrap {
+                                    .dock(60px, 0, 30px, 200px);
+                                    
+                                    & > .fui-panel {
+                                        display: block;
+                                        .dock;
+                                        & > .fui-panel-content {
+                                            .dock;
+                                            display: block;
+                                            
+                                            h2 {
+                                                padding-bottom: 10px;
+                                                height: 30px;
+                                                line-height: 30px;
+                                                border-bottom: 1px solid hsl(0, 0%, 93%);
+                                                font-size: 18px;
+                                                font-weight: normal;
+                                                margin: 0;
+                                                padding-left: 38px;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -18,6 +18,11 @@ function desc(nodeA, nodeB) {
     return -asc(nodeA, nodeB);
 }
 
+function canArrange(km) {
+    var selected = km.getSelectedNode();
+    return selected && selected.parent && selected.parent.children.length > 1;
+}
+
 var ArrangeUpCommand = kity.createClass('ArrangeUpCommand', {
     base: Command,
 
@@ -31,6 +36,11 @@ var ArrangeUpCommand = kity.createClass('ArrangeUpCommand', {
             node.arrange(lastIndexes[index] - 1);
         });
         km.layout(300);
+    },
+
+    queryState: function(km) {
+        var selected = km.getSelectedNode();
+        return selected ? 0 : -1;
     }
 });
 
@@ -47,6 +57,11 @@ var ArrangeDownCommand = kity.createClass('ArrangeUpCommand', {
             node.arrange(lastIndexes[index] + 1);
         });
         km.layout(300);
+    },
+
+    queryState: function(km) {
+        var selected = km.getSelectedNode();
+        return selected ? 0 : -1;
     }
 });
 
@@ -80,6 +95,11 @@ var ArrangeCommand = kity.createClass('ArrangeCommand', {
         });
 
         km.layout(300);
+    },
+
+    queryState: function(km) {
+        var selected = km.getSelectedNode();
+        return selected ? 0 : -1;
     }
 });
 

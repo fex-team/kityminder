@@ -1,0 +1,309 @@
+.fui-button, li {
+    .transition(background-color .2s ease);
+}
+
+.fui-disabled,
+.fui-disabled .fui-widget {
+    background-color: transparent !important;
+}
+
+#tab-container .fui-button {
+    display: inline-block;
+    padding: 2px 5px 2px 3px;
+
+    .fui-label {
+        color: @button-text;
+        font-size: 12px;
+        vertical-align: baseline;
+    }
+    
+    &.command-button {
+        margin-bottom: 3px;
+        .fui-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 3px;
+            display: inline-block;
+            vertical-align: baseline;
+        }
+        &.large {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+
+            .fui-icon {
+                width: 25px;
+                height: 25px;
+                margin-left: 12px;
+                margin-bottom: 3px;
+                margin-top: 4px;
+            }
+            .fui-label {
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+    &:hover {
+        background-color: @button-hover;
+    }
+    &:active {
+        background-color: @button-active;
+    }
+    &.fui-disabled:hover,
+    &.fui-disabled:active {
+        background-color: transparent;
+    }
+    &.active {
+        background-color: @button-pressed;
+    }
+}
+
+.command-buttonset {
+    .fui-toggle-button {
+        &:hover {
+            background-color: @button-hover;
+            .fui-disabled& {
+                background-color: transparent;
+            }
+        }
+        &:active {
+            .transform(scale(0.9));
+            &:hover {
+                background-color: @button-active;
+                .fui-disabled& {
+                    background-color: transparent;
+                }
+            }
+        }
+        &.fui-button-pressed {
+            background-color: @button-pressed;
+        }
+    }
+}
+
+.command-inputmenu, .fui-input-menu {
+    & > .fui-input-button {
+        position: relative;
+        .fui-input {
+            width: 100px;
+        }
+        border-color: @border-color;
+        margin: 2px 0;
+        & > .fui-button {
+            position: absolute;
+            left: auto;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            border-left: 1px solid @border-color;
+            padding: 0 !important;
+            .fui-icon {
+                position: absolute;
+                left: auto;
+                right: 6px;
+                top: 50%;
+                margin-top: -2px;
+                .triangle-top(@button-text, 8px, 4px);
+            }
+        }
+    }
+}
+
+#tab-container .fui-drop-panel {
+    padding-right: 10px;
+    border-color: @border-color;
+    & > .fui-button {
+        position: absolute;
+        display: block;
+        right: 1px;
+        left: auto;
+        top: 1px;
+        bottom: 1px;
+        width: 10px;
+        padding: 0;
+
+        &:hover {
+            background: @button-hover;
+        }
+        &:active {
+            background: @button-active;
+        }
+
+        & > .fui-icon {
+            position: absolute;
+            .triangle-top(@button-text, 6px, 4px);
+            top: auto;
+            bottom: 2px;
+            left: 2px;
+        }
+    }
+}
+
+.fui-drop-panel-popup {
+    background: white;
+    box-shadow: 0 0 3px rgba(0,0,0,.3);
+    padding-right: 5px;
+    padding-bottom: 5px;
+    max-width: 300px;
+}
+
+#tab-container .fui-button-menu {
+    border: 1px solid transparent;
+    width: 40px;
+    height: 50px;
+    display: inline-block;
+    margin-top: 5px;
+    
+    &:hover {
+        border-color: @button-hover;
+    }
+    &.fui-disabled:hover {
+        border-color: transparent;
+    }
+
+    .fui-button:first-child {
+        display: block;
+        width: 40px;
+        height: 25px;
+        padding: 0;
+    }
+
+    .fui-button:last-child {
+        display: block;
+        width: 40px;
+        height: 25px;
+        padding: 0;
+
+        .fui-label {
+            font-size: 12px;
+        }
+
+        .fui-icon {
+            .triangle-top(@button-text, 6px, 4px);
+            display: block;
+            position: absolute;
+            top: auto;
+            bottom: -2px;
+            left: 50%;
+            margin-left: -3px;
+        }
+    }
+}
+
+.fui-dialog {
+    & > .fui-panel-content {
+        padding: 0;
+    }
+    box-shadow: 0 0 5px rgba(0,0,0, .15);
+    border: none;
+    .fui-dialog-head {
+        background-color: @ui-color;
+        color: white;
+        h1 {
+            font-size: 14px;
+            font-weight: normal;
+        }
+        padding: 5px;
+
+        .fui-close-button {
+            .fui-close-button-icon { 
+                display: none; 
+                background: none;
+            }
+            position: absolute;
+            right: 6px;
+            top: 7px;
+            left: auto;
+            display: block;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 100%;
+            &:hover {
+                background-color: hsl(0, 73%, 64%);
+            }
+            &:active {
+                background-color: hsl(0, 73%, 60%);
+            }
+            &:after {
+                content: 'x';
+                display: block;
+                width: 16px;
+                height: 16px;
+                font-family: inherit;
+                color: white;
+                font-size: 14px;
+                position: absolute;
+                left: 2px;
+                top: 1px;
+                line-height: 16px;
+                text-align: center;
+            }
+        }
+    }
+    .fui-dialog-body {
+        padding: 20px;
+
+        p {
+            margin: 0;
+            height: 40px;
+        }
+
+        input[type=text],
+        input[type=url] {
+            border: 1px solid @border-color;
+            outline: none;
+            height: 20px;
+            padding: 2px 4px;
+            width: 300px;
+        }
+    }
+    .fui-dialog-foot {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        height: 50px;
+        border-top: 1px solid @border-color;
+        text-align: right;
+
+        .fui-button {
+            width: 80px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            
+            &:hover {
+                background: lighten(@ui-color, 60%);
+            }
+            &:active {
+                background: lighten(@ui-color, 55%);
+            }
+
+            &.fui-xdialog-ok-btn {
+                background: @ui-color;
+                &:hover {
+                    background: lighten(@ui-color, 5%);
+                }
+                &:active {
+                    background: darken(@ui-color, 3%);
+                }
+                border-color: transparent;
+                .fui-label {
+                    color: white;
+                }
+            }
+            border: 1px solid @border-color;
+            border-radius: 4px;
+            margin: 8px 8px 0 0;
+            .fui-label {
+                font-size: 14px;
+                line-height: 30px;
+                height: 30px;
+            }
+        }
+    }
+}

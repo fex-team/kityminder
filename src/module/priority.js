@@ -61,7 +61,7 @@ KityMinder.registerModule('PriorityModule', function() {
         execute: function(km, value) {
             var nodes = km.getSelectedNodes();
             for (var i = 0; i < nodes.length; i++) {
-                nodes[i].setData(PRIORITY_DATA, value).render();
+                nodes[i].setData(PRIORITY_DATA, value || null).render();
             }
             km.layout();
         },
@@ -72,7 +72,7 @@ KityMinder.registerModule('PriorityModule', function() {
                 val = nodes[i].getData(PRIORITY_DATA);
                 if (val) break;
             }
-            return val;
+            return val || null;
         },
 
         queryState: function(km) {

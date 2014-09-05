@@ -83,7 +83,7 @@ KityMinder.registerModule('Select', function() {
                 minder.select(selectedNodes, true);
 
                 // 清除多余的东西
-                window.getSelection().removeAllRanges()
+                window.getSelection().removeAllRanges();
             },
             selectEnd: function(e) {
                 if (startPosition) {

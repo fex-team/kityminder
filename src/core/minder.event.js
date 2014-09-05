@@ -13,11 +13,17 @@ kity.extendClass(Minder, {
     },
     // TODO: mousemove lazy bind
     _bindPaperEvents: function() {
-        this._paper.on('click dblclick mousedown contextmenu mouseup mousemove mousewheel DOMMouseScroll touchstart touchmove touchend dragenter dragleave drop', this._firePharse.bind(this));
+        this._paper.on('click dblclick keydown keyup keypress paste mousedown contextmenu mouseup mousemove mousewheel DOMMouseScroll touchstart touchmove touchend dragenter dragleave drop', this._firePharse.bind(this));
         if (window) {
             window.addEventListener('resize', this._firePharse.bind(this));
             window.addEventListener('blur', this._firePharse.bind(this));
         }
+        this._renderTarget.onfocus = function() {
+            console.log('focus');
+        };
+        this._renderTarget.onblur = function() {
+            console.log('blur');
+        };
     },
     _bindKeyboardEvents: function() {
         if ((navigator.userAgent.indexOf('iPhone') == -1) && (navigator.userAgent.indexOf('iPod') == -1) && (navigator.userAgent.indexOf('iPad') == -1)) {

@@ -1,0 +1,115 @@
+#tab-select {
+    height: @panel-height;
+    line-height: @panel-height;
+    margin-left: 10px;
+    float: left;
+
+    .fui-button {
+        width: 60px;
+        height: @panel-height;
+        line-height: @panel-height;
+        text-align: 50px;
+        display: inline-block;
+
+        &:hover {
+            background: @tab-hover !important;
+        }
+        &:active {
+            background: @tab-active !important;
+        }
+
+        .fui-icon {
+            display: none;
+        }
+
+        .fui-label {
+            height: @panel-height;
+            line-height: @panel-height;
+            text-align: center;
+            display: block;
+            color: hsl(224, 6%, 80%);
+            font-size: 14px;
+
+            &:hover {
+                background: @tab-hover;
+            }
+            &:active {
+                background: darken(@tab-active, 10%);
+            }
+        }
+
+        &.fui-selected {
+            .fui-label {
+                color: white;
+            }
+            &:after {
+                content: ' ';
+                height: 0;
+                line-height: 0;
+                font-size: 0;
+                display: block;
+                position: absolute;
+                border: 6px solid;
+                border-color: transparent transparent white transparent;
+                bottom: 0;
+                left: 50%;
+                margin-left: -3px;
+                z-index: 11;
+            }
+        }
+    }
+
+    &.collapsed .fui-button.fui-selected {
+        .fui-label {
+            color: hsl(224, 6%, 80%);
+        }
+        &:after {
+            display: none;
+        }
+    }
+}
+
+#tab-container {
+    position: absolute;
+    top: @panel-height;
+    height: 89px;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 10;
+    border-bottom: 1px solid #dbdbdb;
+    box-shadow: 0 -3px 3px rgba(0, 0, 0, .05);
+    
+    /* 每一个 Tab 面板 */
+    & > .fui-panel {
+        display: block;
+        height: 100%;
+
+        /* 每一个小节 */
+        & > .fui-panel-content > .fui-panel {
+            height: 100%;
+            padding: 0 5px;
+            border-right: 1px dashed #eee;
+            & > .fui-panel-content > .fui-label {
+                text-align: center;
+                display: block;
+                width: 100%;
+                padding: 1px 0;
+                position: absolute;
+                bottom: 0;
+                top: auto;
+            }
+            & > .fui-panel-content > .fui-label-panel-content {
+                padding: 5px;
+            }
+        }
+    }
+    
+
+    .transition(all 0.15s ease);
+
+    &.collapsed {
+        opacity: 0;
+        height: 0;
+    }
+}

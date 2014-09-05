@@ -15,12 +15,12 @@ KityMinder.registerModule('image', function() {
             fitRatio = maxWidth / maxHeight;
 
         // 宽高比大于最大尺寸的宽高比，以宽度为标准适应
-        if (ratio > fitRatio && width > maxWidth) {
+        if (width > maxWidth && ratio > fitRatio) {
             width = maxWidth;
-            height = maxWidth / ratio;
+            height = width / ratio;
         } else if (height > maxHeight) {
             height = maxHeight;
-            width = maxHeight / ratio;
+            width = height * ratio;
         }
 
         return {

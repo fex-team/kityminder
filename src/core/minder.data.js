@@ -1,18 +1,7 @@
 Utils.extend(KityMinder, {
-    _protocals: {},
-    registerProtocal: function(name, protocalDeal) {
-        KityMinder._protocals[name] = protocalDeal();
-    },
-    findProtocal: function(name) {
-        return KityMinder._protocals[name] || null;
-    },
-    getSupportedProtocals: function() {
-        return Utils.keys(KityMinder._protocals).sort(function(a, b) {
-            return KityMinder._protocals[b].recognizePriority - KityMinder._protocals[a].recognizePriority;
-        });
-    },
-    getAllRegisteredProtocals: function() {
-        return KityMinder._protocals;
+    _protocols: {},
+    registerProtocol: function(name, protocolDeal) {
+        KityMinder._protocols[name] = protocolDeal;
     }
 });
 
@@ -24,9 +13,30 @@ var DEFAULT_TEXT = {
 
 // 导入导出
 kity.extendClass(Minder, {
-    exportData: function(protocalName) {
 
-        // 这里的 Json 是一个对象
+    _initProtocols: function(options) {
+        var protocols = this._protocols = {};
+        var pool = KityMinder._protocols;
+        for (var name in pool) {
+            if (pool.hasOwnProperty(name))
+                protocols[name] = pool[name](this);
+                protocols[name].name = name;
+        }
+    },
+
+    getProtocol: function(name) {
+        return this._protocols[name] || null;
+    },
+
+    getSupportedProtocols: function() {
+        var protocols = this._protocols;
+        return Utils.keys(protocols).map(function(name) {
+            return protocols[name];
+        });
+    },
+
+    exportJson: function() {
+        /* 导出 node 上整棵树的数据为 JSON */
         function exportNode(node) {
             var exported = {};
             exported.data = node.getData();
@@ -40,79 +50,16 @@ kity.extendClass(Minder, {
             return exported;
         }
 
-        var json, protocal;
-
-        json = exportNode(this.getRoot());
-        protocal = KityMinder.findProtocal(protocalName);
-
-        if (this._fire(new MinderEvent('beforeexport', {
-            json: json,
-            protocalName: protocalName,
-            protocal: protocal
-        }, true)) === true) return;
+        var json = exportNode(this.getRoot());
 
         json.template = this.getTemplate();
         json.theme = this.getTheme();
         json.version = KityMinder.version;
 
-        if (protocal) {
-            return protocal.encode(json, this);
-        } else {
-            return json;
-        }
+        return json;
     },
 
-    importData: function(local, protocalName) {
-        var json, protocal;
-
-        if (protocalName) {
-            protocal = KityMinder.findProtocal(protocalName);
-        } else {
-            KityMinder.getSupportedProtocals().every(function(name) {
-                var test = KityMinder.findProtocal(name);
-                if (test.recognize && test.recognize(local)) {
-                    protocal = test;
-                }
-                return !protocal;
-            });
-        }
-
-        if (!protocal) {
-            this.fire('unknownprotocal');
-            throw new Error('Unsupported protocal: ' + protocalName);
-        }
-
-        var params = {
-            local: local,
-            protocalName: protocalName,
-            protocal: protocal
-        };
-
-        // 是否需要阻止导入
-        var stoped = this._fire(new MinderEvent('beforeimport', params, true));
-        if (stoped) return this;
-
-        try {
-            json = params.json || (params.json = protocal.decode(local));
-        } catch (e) {
-            return this.fire('parseerror', { message: e.message });
-        }
-
-        if (typeof json === 'object' && 'then' in json) {
-            var self = this;
-            json.then(function(data) {
-                params.json = data;
-                self._doImport(data, params);
-            }).error(function() {
-                self.fire('parseerror');
-            });
-        } else {
-            this._doImport(json, params);
-        }
-        return this;
-    },
-
-    _doImport: function(json, params) {
+    importJson: function(json, params) {
 
         function importNode(node, json, km) {
             var data = json.data;
@@ -132,7 +79,7 @@ kity.extendClass(Minder, {
         }
 
         if (!json) return;
-
+        
         this._fire(new MinderEvent('preimport', params, false));
 
         // 删除当前所有节点
@@ -156,5 +103,72 @@ kity.extendClass(Minder, {
         this._firePharse({
             type: 'interactchange'
         });
+    },
+
+    exportData: function(protocolName) {
+
+        var json, protocol;
+
+        json = this.exportJson();
+
+        // 指定了协议进行导出，需要检测协议是否支持
+        if (protocolName) {
+            protocol = this.getProtocol(protocolName);
+
+            if (!protocol || !protocol.encode) {
+                return Promise.reject(new Error('Not supported protocol:' + protocolName));
+            }
+        }
+
+        // 导出前抛个事件
+        this._fire(new MinderEvent('beforeexport', {
+            json: json,
+            protocolName: protocolName,
+            protocol: protocol
+        }));
+
+
+        if (protocol) {
+            return Promise.resolve(protocol.encode(json, this));
+        } else {
+            return Promise.resolve(json);
+        }
+    },
+
+    importData: function(local, protocolName) {
+
+        var json, protocol;
+        var minder = this;
+
+        // 指定了协议进行导入，需要检测协议是否支持
+        if (protocolName) {
+            protocol = this.getProtocol(protocolName);
+
+            if (!protocol || !protocol.decode) {
+                return Promise.reject(new Error('Not supported protocol:' + protocolName));
+            }
+        }
+
+        var params = {
+            local: local,
+            protocolName: protocolName,
+            protocol: protocol
+        };
+
+        // 导入前抛事件
+        this._fire(new MinderEvent('beforeimport', params));
+
+        return new Promise(function(resolve, reject) {
+
+            resolve(protocol ? protocol.decode(local) : local);
+
+        }).then(function(json) {
+
+            minder.importJson(json, params);
+
+            return json;
+
+        });
+
     }
 });

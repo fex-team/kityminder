@@ -22,6 +22,7 @@ kity.extendClass(Minder, {
             }
         });
 
+        if (changed.length) this.fire('interactchange');
         while (i < changed.length) changed[i++].render();
     },
     getSelectedNodes: function() {

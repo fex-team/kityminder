@@ -3,12 +3,11 @@
  *-----------------------------------------------------*/
 'use strict';
 var path = require('path');
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 
 /*-----------------------------------------------------
  * Module Setting
  *-----------------------------------------------------*/
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var banner = '/*!\n' +
         ' * ====================================================\n' +
@@ -19,24 +18,11 @@ module.exports = function (grunt) {
         ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n' +
         ' * ====================================================\n' +
-        ' */\n\n',
-        buildPath = 'import.js',
-        srcPath = 'src/',
+        ' */\n\n';
+
+    var sources = require('./import.js');
+    var srcPath = 'src/',
         distPath = 'dist/';
-
-    var getPath = function (readFile) {
-
-        var sources = require("fs").readFileSync(readFile);
-        sources = /paths\s=\s\[([\s\S]*?)\]/ig.exec(sources);
-        sources = sources[1].replace(/\/\/.*\n/g, '\n').replace(/'|"|\n|\t|\s/g, '');
-        sources = sources.split(",");
-        sources.forEach(function (filepath, index) {
-            sources[index] = srcPath + filepath;
-        });
-
-        return sources;
-
-    };
 
     // Project configuration.
     grunt.initConfig({
@@ -47,40 +33,47 @@ module.exports = function (grunt) {
         concat: {
             js: {
                 options: {
-                    banner: banner + '(function(kity, window) {\n\n',
-                    footer: '\n\n})(kity, window)',
-                    process: function (src, filepath) {
-                        return src + "\n";
+                    banner: banner + '(function(window) {\n\n',
+                    footer: '\n\n})(window)',
+                    process: function(src, filepath) {
+                        return ['\n',
+                            '/* ' + filepath + ' */',
+                            src.replace(/^.+$/mg, '    $&'),
+                            '/* ' + filepath + ' end */',
+                            '\n',
+                        ].join('\n');
                     }
                 },
-                src: getPath(buildPath),
+                src: sources,
                 dest: distPath + 'kityminder.all.js'
             }
         },
+
         uglify: {
             minimize: {
                 options: {
                     banner: banner
                 },
-                files: (function () {
+                files: (function() {
                     var files = {};
                     files[distPath + 'kityminder.all.min.js'] = distPath + 'kityminder.all.js';
                     return files;
                 })()
             }
         },
+
         copy: {
             dir: {
                 files: [{
-                    src: ['dialogs/**', 'lang/**', 'lib/**', 'social/**', 'themes/**', 'index.html', 'download.php'],
+                    src: [
+                        'ui/theme/**/css/*.css',
+                        'ui/theme/**/images/*',
+                        'lang/**/*',
+                        'index.html',
+                        'download.php'
+                    ],
                     dest: distPath
                 }]
-            },
-            kity: {
-                expand: true,
-                cwd: 'kity/dist/',
-                src: '**',
-                dest: distPath + 'lib/'
             },
             km_config: {
                 expand: true,
@@ -89,19 +82,17 @@ module.exports = function (grunt) {
             },
             mise: {
                 files: [{
-                    src: ['LICENSE', 'favicon.ico', 'README.md'],
+                    src: ['LICENSE', 'favicon.ico', 'README.md', 'CHANGELOG.md'],
                     dest: distPath
                 }]
             }
         },
+
         replace: {
             online: {
                 src: distPath + 'index.html',
                 overwrite: true,
                 replacements: [{
-                    from: /kity\/dist\/kity\.js/ig,
-                    to: 'lib/kity.min.js'
-                }, {
                     from: /import\.js/,
                     to: 'kityminder.all.min.js'
                 }]
@@ -112,38 +103,34 @@ module.exports = function (grunt) {
                 overwrite: true,
                 replacements: [{
                     from: /src=\"(.+?)\.js\"/ig,
-                    to: 'src="$1.js?_=' + +new Date() + '"'
+                    to: 'src="$1.js?_=' + (+new Date()) + '"'
                 }]
             }
         },
 
-        /* Start [Task liverload] ------------------------------------*/
-        livereload: {
-            port: 35729 // Default livereload listening port.
+        watch: {
+            less: {
+                files: ['ui/theme/**/*.less'],
+                tasks: ['less:compile']
+            }
         },
-        connect: {
-            livereload: {
+
+        less: {
+            compile: {
+                files: {
+                    'ui/theme/default/css/default.all.css': [
+                        'ui/theme/default/css/import.less'
+                    ]
+                },
                 options: {
-                    hostname: '*',
-                    port: 9001,
-                    base: '.',
-                    middleware: function (connect, options, middlewares) {
-                        return [
-                            lrSnippet,
-                            connect.static(options.base.toString()),
-                            connect.directory(options.base.toString())
-                        ];
-                    }
+                    sourceMap: true,
+                    sourceMapFilename: 'ui/theme/default/css/default.all.css.map',
+                    sourceMapBasepath: 'ui/theme/default/css/'
+                    // compress: true,
+                    // cleancss: true
                 }
             }
         },
-        regarde: {
-            js: {
-                files: 'src/**/*.js',
-                tasks: ['default', 'livereload']
-            }
-        }
-        /* End [Task liverload] ------------------------------------*/
 
     });
 
@@ -153,15 +140,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-text-replace');
-
-
-    /* [liverload plugin & task ] ------------------------------------*/
-    grunt.loadNpmTasks('grunt-regarde');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-livereload');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     // Build task(s).
-    grunt.registerTask('default', ['concat', 'uglify', 'copy', 'replace']);
-    grunt.registerTask('live', ['livereload-start', 'connect', 'regarde']);
+    grunt.registerTask('default', ['concat', 'uglify', 'less', 'copy', 'replace']);
+    grunt.registerTask('dev', ['less', 'watch']);
 
 };
