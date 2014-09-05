@@ -37,7 +37,7 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
 
     /* 标题 */
     var $title = $('<h2></h2>')
-        .text(minder.getLang('ui.menu.open.draft'))
+        .text(minder.getLang('ui.menu.draftheader'))
         .appendTo($panel);
 
     var $clear = $('<button></button>')

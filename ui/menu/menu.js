@@ -81,7 +81,5 @@ KityMinder.registerUI('menu/menu', function(minder) {
     ret.$button = $button;
     ret.$tabs = $tabs;
 
-    show();
-
     return ret;
 });

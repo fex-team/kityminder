@@ -14,6 +14,14 @@
     tranform: @value;
 }
 
+.animation(@value) {
+    -webkit-animation: @value;
+    -moz-animation: @value;
+    -ms-animation: @value;
+    -o-animation: @value;
+    animation: @value;
+}
+
 .blur {
     -webkit-filter: blur(5px);
     -moz-filter: blur(5px);
@@ -87,6 +95,7 @@ input[type=url] {
         display: block;
         .dock;
         background: fadeOut(@color, 25%);
+        .animation(fadeIn 3s ease);
     }
 
     &:before {
@@ -103,7 +112,7 @@ input[type=url] {
         margin-top: -24px;
         z-index: 10;
         border-radius: 100%;
-        -webkit-animation: rotate 1.33s ease infinite;
+        .animation(rotate 1.33s ease infinite);
         filter: none;
         -webkit-filter: none;
     }
@@ -128,4 +137,38 @@ input[type=url] {
 @keyframes rotate {
     from { transform: rotate(0); }
     to { transform: rotate(360deg); }
+}
+
+@-webkit-keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@-moz-keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@-ms-keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@-webkit-keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@-moz-keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@-ms-keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
 }

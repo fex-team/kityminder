@@ -7,13 +7,14 @@
  * @copyright: Baidu FEX, 2014
  */
 KityMinder.registerUI('menu/share/view', function (minder) {
+    var $menu = minder.getUI('menu/menu');
+    var $save = minder.getUI('menu/save/save');
     var $doc = minder.getUI('doc');
-    var $save = minder.getUI('menu/save');
-    var $download = minder.getUI('download');
 
-    function loadShareDoc(results) {
-        var user = results[0],
-            $panel = results[1];
+    $menu.$tabs.select(0);
+    $save.$tabs.select(0);
+
+    function loadShareDoc() {
 
         var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec(window.location) || pattern.exec(document.referrer);
@@ -25,7 +26,9 @@ KityMinder.registerUI('menu/share/view', function (minder) {
         function renderShareData(data) {
 
             if (data.error) {
-                return window.alert(data.error);
+                window.alert(data.error);
+                window.location.href = 'index.html';
+                return;
             }
 
             var content = data.shareMinder.data;
@@ -35,22 +38,13 @@ KityMinder.registerUI('menu/share/view', function (minder) {
                 source: 'share',
                 content: content,
                 protocol: 'json',
-                saved: false,
+                saved: true,
                 ownerId: data.uid,
                 ownerName: data.uname
 
             }).then(function(doc) {
-
-                if (user) {
-                    if (doc.ownerId == user.id) {
-
-                    }
-                }
-
-                // 分享着不是当前用户
-                if (doc.ownerId && doc.ownerId != (user && user.id)) {
-                    $('#shared-tip', $panel).text(minder.getLang('ui.shared_tip', doc.ownerName));
-                }
+                var $title = minder.getUI('topbar/title');
+                $title.setTitle('[分享的] ' + $title.getTitle());
             });
         }
 
@@ -75,4 +69,6 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
         });
     }
+
+    loadShareDoc();
 });

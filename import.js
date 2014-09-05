@@ -17,7 +17,6 @@
         'lib/fio/src/fio.js',
         'lib/fio/provider/netdisk/oauth.js',
         'lib/fio/provider/netdisk/netdisk.js',
-        'lib/fio/provider/mongoshare/mongoshare.js',
 
         /* Kity 依赖库 */
         'lib/kity/dist/kity.js',
@@ -118,6 +117,7 @@
         /* UI 菜单 */
         'ui/menu/menu.js',
         'ui/menu/header.js',
+        'ui/menu/default.js',
 
         /* UI 菜单 - 新建 */
         'ui/menu/new/new.js',

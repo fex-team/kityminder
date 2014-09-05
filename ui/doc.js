@@ -62,6 +62,9 @@ KityMinder.registerUI('doc', function(minder) {
 
     function save(doc) {
         current = doc;
+        doc.data = minder.exportJson();
+        doc.json = JSON.stringify(doc.data);
+        
         minder.getUI('topbar/title').setTitle(doc.title, true);
         ret.fire('docsave', doc);
     }

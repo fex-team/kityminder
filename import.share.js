@@ -60,7 +60,6 @@
         'src/module/expand.js',
         'src/module/outline.js',
         'src/module/geometry.js',
-        'src/module/history.js',
         'src/module/progress.js',
         'src/module/priority.js',
         'src/module/image.js',
@@ -69,7 +68,6 @@
         'src/module/dragtree.js',
         'src/module/keyboard.js',
         'src/module/select.js',
-        'src/module/history.js',
         'src/module/basestyle.js',
         'src/module/font.js',
         'src/module/zoom.js',
@@ -121,6 +119,7 @@
 
         /* UI 菜单 - 分享 */
         // 'ui/menu/share/share.js',
+        'ui/menu/share/view.js',
 
         /* UI Top Bar */
         // 'ui/topbar/history.js',

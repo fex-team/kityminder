@@ -616,6 +616,11 @@ input[type=url]:focus {
   bottom: 0;
   left: 0;
   background: rgba(128, 130, 140, 0.75);
+  -webkit-animation: fadeIn 3s ease;
+  -moz-animation: fadeIn 3s ease;
+  -ms-animation: fadeIn 3s ease;
+  -o-animation: fadeIn 3s ease;
+  animation: fadeIn 3s ease;
 }
 .loading:before {
   content: ' ';
@@ -632,6 +637,10 @@ input[type=url]:focus {
   z-index: 10;
   border-radius: 100%;
   -webkit-animation: rotate 1.33s ease infinite;
+  -moz-animation: rotate 1.33s ease infinite;
+  -ms-animation: rotate 1.33s ease infinite;
+  -o-animation: rotate 1.33s ease infinite;
+  animation: rotate 1.33s ease infinite;
   filter: none;
   -webkit-filter: none;
 }
@@ -667,6 +676,70 @@ input[type=url]:focus {
     transform: rotate(360deg);
   }
 }
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-ms-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@-moz-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@-ms-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 .triangle {
   content: ' ';
   display: block;
@@ -678,7 +751,8 @@ input[type=url]:focus {
   border-style: solid;
   border-color: transparent;
 }
-.fui-button {
+.fui-button,
+li {
   -webkit-transition: background-color 0.2s ease;
   -moz-transition: background-color 0.2s ease;
   -ms-transition: background-color 0.2s ease;
@@ -2580,11 +2654,143 @@ ul.resource-list li {
 div.right {
   float: right;
 }
+#current-share-header:before {
+  content: ' ';
+  display: block;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: 0;
+  top: 1px;
+  background: url(../images/icons.png) no-repeat 0 -645px;
+}
+#manage-share-header:before {
+  content: ' ';
+  display: block;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: 0;
+  top: 1px;
+  background: url(../images/icons.png) no-repeat 0 -620px;
+}
+#manage-share-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+#manage-share-list:empty:after {
+  content: '没有分享';
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  height: 50px;
+  line-height: 50px;
+  color: #CCC;
+}
+#manage-share-list .share-item {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 10px 20px 10px 40px;
+  cursor: default;
+  position: relative;
+}
+#manage-share-list .share-item:hover {
+  background-color: #f4f5f7;
+}
+#manage-share-list .share-item:active {
+  background-color: #e5e7ec;
+}
+#manage-share-list .share-item .title {
+  display: block;
+  margin: 0;
+  font-weight: normal;
+  height: 20px;
+  line-height: 20px;
+  overflow: ellipse;
+}
+#manage-share-list .share-item .title:after {
+  content: ' ';
+  display: block;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: url(../images/icons.png) no-repeat 0 -445px;
+  left: 5px;
+  top: 10px;
+}
+#manage-share-list .share-item .url {
+  display: block;
+  margin: 0;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #999;
+}
+#manage-share-list .share-item .ctime {
+  position: absolute;
+  right: 5px;
+  top: 10px;
+  font-size: 12px;
+  color: #999;
+}
+#manage-share-list .share-item .view-action,
+#manage-share-list .share-item .remove-action,
+#manage-share-list .share-item .edit-action {
+  display: none;
+  float: right;
+  width: 18px;
+  height: 18px;
+  background: url(../images/icons.png) no-repeat;
+  position: relative;
+  margin-left: 5px;
+  left: 15px;
+  top: -20px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  text-indent: -99999px;
+}
+#manage-share-list .share-item .view-action:hover,
+#manage-share-list .share-item .remove-action:hover,
+#manage-share-list .share-item .edit-action:hover {
+  border: 1px solid #888;
+  box-shadow: inset 0 8px 1px rgba(255, 255, 255, 0.3), inset 0 0 3px rgba(0, 0, 0, 0.2);
+}
+#manage-share-list .share-item .view-action:active,
+#manage-share-list .share-item .remove-action:active,
+#manage-share-list .share-item .edit-action:active {
+  box-shadow: inset 0 7px 3px rgba(0, 0, 0, 0.05), inset 0 0 4px rgba(0, 0, 0, 0.3);
+}
+#manage-share-list .share-item .view-action {
+  background-position: -1px -670px;
+}
+#manage-share-list .share-item .remove-action {
+  background-position: 0 -690px;
+}
+#manage-share-list .share-item .edit-action {
+  background-position: 0 -710px;
+}
+#manage-share-list .share-item:hover .view-action,
+#manage-share-list .share-item:hover .remove-action,
+#manage-share-list .share-item:hover .edit-action {
+  display: block;
+}
+#share-select {
+  margin-top: 10px;
+}
 #share-select fieldset {
   border: 1px solid #f0f0f0;
   margin: 0;
   margin-bottom: 10px;
   padding: 10px;
+  border-radius: 2px;
 }
 #share-select fieldset legend {
   font-size: 14px;

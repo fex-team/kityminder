@@ -103,6 +103,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
         $loginButton.show();
         $userButton.hide();
         fio.user.fire('logout');
+        window.location.href = 'index.html';
     }
 
     function login() {

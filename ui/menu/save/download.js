@@ -15,7 +15,7 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
     /* 标题 */
     var $title = $('<h2></h2>')
-        .text(minder.getLang('ui.menu.save.download'))
+        .text(minder.getLang('ui.menu.downloadheader'))
         .appendTo($panel);
 
     var $list = $('<ul>')
@@ -55,7 +55,7 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
             switch (protocol.dataType) {
                 case 'text':
-                    return doDownload(buildDataUrl(mineType), filename, 'text');
+                    return doDownload(buildDataUrl(mineType, data), filename, 'text');
                 case 'base64':
                     return doDownload(data, filename, 'base64');
             }

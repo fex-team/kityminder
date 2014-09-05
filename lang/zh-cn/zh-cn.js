@@ -66,7 +66,9 @@ KityMinder.LANG['zh-cn'] = {
             'newheader': '新建脑图',
             'openheader': '打开',
             'saveheader': '保存到',
-            'shareheader': '分享我的脑图'
+            'draftheader': '草稿箱',
+            'shareheader': '分享我的脑图',
+            'downloadheader': '导出到指定格式'
         },
 
         'mydocument': '我的文档',
@@ -101,9 +103,15 @@ KityMinder.LANG['zh-cn'] = {
         'email_share_description': '创建指定人可见的分享，您还可以允许他们编辑',
         'ondev': '敬请期待！',
         'create_share_failed': '分享失败：{0}',
+        'remove_share_failed': '删除失败：{1}',
         'copy': '复制',
         'copied': '已复制',
         'shared_tip': '当前脑图被 {0}  分享，你可以修改之后保存到自己的网盘上或再次分享',
+        'current_share': '当前脑图',
+        'manage_share': '我的分享',
+        'share_remove_action': '不分享该脑图',
+        'share_view_action': '打开分享地址',
+        'share_edit_action': '编辑分享的文件',
 
         'login': '登录',
         'logout': '注销',
@@ -182,7 +190,7 @@ KityMinder.LANG['zh-cn'] = {
                 'lang_input_text': '文本内容：',
                 'lang_input_url': '链接地址：',
                 'lang_input_title': '标题：',
-                'lang_input_target': '是否在新窗口打开：'
+                'lang_input_target': '是否在新窗口：'
             },
             'priority': '优先级',
             'none': '无',

@@ -17,7 +17,7 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
     var recentList = minder.getUI('widget/locallist').use('recent');
 
     /* 网盘面板 */
-    var $panel = $($open.createSub('recent', true)).addClass('recent-file-panel');
+    var $panel = $($open.createSub('recent')).addClass('recent-file-panel');
 
     minder.on('uiready', function() {
         minder.getUI('topbar/user').requireLogin($panel);
