@@ -75,7 +75,9 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     getTextShapeHeight: function() {
-        return this.textShape.getRenderBox().height;
+        var height = this.textShape.getRenderBox().height;
+
+        return  height || this.minderNode._lastTextShapeBox.height;
     },
     setKityMinder: function(km) {
         this.km = km;
@@ -115,7 +117,6 @@ Minder.Receiver = kity.createClass('Receiver', {
         var keyCode = orgEvt.keyCode;
 
         function setTextToContainer() {
-
             clearTimeout(me.timer);
             if (!me.range.hasNativeRange()) {
                 return;
@@ -139,26 +140,11 @@ Minder.Receiver = kity.createClass('Receiver', {
                 text += '\u200b';
             }
 
-
-            //如果接受框已经空了，并且已经添加了占位的a了就什么都不做了
-            if(text.length === 0 && me.textShape.getOpacity() === 0){
-                return;
-            }
-
-            if (text.length === 0) {
-                me.minderNode.setTmpData('_lastTextContent',me.textShape.getContent());
-                me.minderNode.setText('a');
-            }else {
-                me.minderNode.setText(text);
-                if (me.textShape.getOpacity() === 0) {
-                    me.textShape.setOpacity(1);
-                }
-            }
-
-
+            me.minderNode.setText(text);
             me.setContainerStyle();
             me.minderNode.getRenderContainer().bringTop();
             me.minderNode.render();
+
             //移动光标不做layout
             if(!keymap.notContentChange[keyCode]){
                 clearTimeout(me.inputTextTimer);
@@ -170,9 +156,7 @@ Minder.Receiver = kity.createClass('Receiver', {
 
 
             me.textShape = me.minderNode.getRenderer('TextRenderer').getRenderShape();
-            if (text.length === 0) {
-                me.textShape.setOpacity(0);
-            }
+
             me.setBaseOffset();
             me.updateTextOffsetData();
             me.updateRange();
@@ -187,18 +171,7 @@ Minder.Receiver = kity.createClass('Receiver', {
             me.km.setStatus('textedit');
         }
 
-        function restoreTextContent(){
-            if(me.minderNode){
-                var textShape = me.minderNode.getTextShape();
-                if(textShape && textShape.getOpacity() === 0){
-                    me.minderNode.setText(me.minderNode.getTmpData('_lastTextContent'));
-                    me.minderNode.render();
-                    me.minderNode.getTextShape().setOpacity(1);
-                    me.km.layout(300);
-                }
 
-            }
-        }
         switch (e.type) {
 
             case 'input':
@@ -223,7 +196,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                             this.km.setStatus('normal');
                             this.km.fire('contentchange');
                         }
-                        restoreTextContent();
+
                         return;
                     case keymap.left:
                     case keymap.right:
@@ -233,7 +206,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                     case keymap.Del:
                     case keymap['/']:
                         if(this.selection.isHide()){
-                            restoreTextContent();
                             this.km.setStatus('normal');
                             return;
                         }
@@ -257,7 +229,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                         88:1,
                         67:1
                     }[keyCode]){
-                        restoreTextContent();
+
                         this.km.setStatus('normal');
                         return;
                     }
@@ -305,7 +277,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                                 this.km.setStatus('normal');
                                 this.km.fire('contentchange');
                             }
-                            restoreTextContent();
                             return;
                         }
                         if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
@@ -343,6 +314,7 @@ Minder.Receiver = kity.createClass('Receiver', {
                 return true;
 
             case 'keyup':
+
                 var node = this.km.getSelectedNode();
                 if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
                     if (node && this.km.isSingleSelect() && node.isSelected()) {
@@ -374,8 +346,6 @@ Minder.Receiver = kity.createClass('Receiver', {
                         }
 
 
-                        this.minderNode.setTmpData('_lastTextContent',this.textShape.getContent());
-
                         this.km.setStatus('inputready');
 
                     }
@@ -390,7 +360,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         return this;
     },
     updateTextOffsetData: function() {
-        this.textShape.textData = this.getTextOffsetData();
+        this.getTextOffsetData();
         return this;
     },
     setSelection: function(selection) {
@@ -452,6 +422,15 @@ Minder.Receiver = kity.createClass('Receiver', {
                 height: box.height
             });
         }
+        if(this.textData.length === 0){
+            var lastBox = this.minderNode._lastTextShapeBox;
+            this.textData.push({
+                x: lastBox.x ,
+                y: lastBox.y,
+                width: 0,
+                height: lastBox.height
+            });
+        }
         return this;
     },
     setCurrentIndex: function(offset) {
@@ -460,6 +439,10 @@ Minder.Receiver = kity.createClass('Receiver', {
         var hadChanged = false;
         //要剪掉基数
         this._getRelativeValue(offset);
+        if(this.textData.length == 1 && this.textData[0].width === 0){
+            me.index = 0;
+            return this;
+        }
         utils.each(this.textData, function(i, v) {
             //点击开始之前
             if (i === 0 && offset.x <= v.x) {
@@ -578,6 +561,9 @@ Minder.Receiver = kity.createClass('Receiver', {
     updateContainerRangeBySel:function(){
         var me = this;
         var node = this.container.firstChild;
+        if(!node){
+           node = this.container;
+        }
         this.range.setStart(node, this.selection.startOffset);
         this.range.setEnd(node, this.selection.endOffset);
         if(browser.gecko){

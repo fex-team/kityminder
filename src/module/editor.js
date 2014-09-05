@@ -20,6 +20,7 @@ KityMinder.registerModule('TextEditModule', function() {
     function inputStatusReady(node){
         if (node && km.isSingleSelect() && node.isSelected()) {
 
+
             var color = node.getStyle('text-selection-color');
 
             //准备输入状态
@@ -47,8 +48,6 @@ KityMinder.registerModule('TextEditModule', function() {
             }
 
 
-            receiver.minderNode.setTmpData('_lastTextContent',receiver.textShape.getContent());
-
             km.setStatus('inputready');
 
         }
@@ -73,16 +72,6 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
 
 
-                if(receiver.minderNode){
-                    var textShape = receiver.minderNode.getTextShape();
-                    if(textShape && textShape.getOpacity() === 0){
-                        receiver.minderNode.setText(receiver.minderNode.getTmpData('_lastTextContent'));
-                        receiver.minderNode.render();
-                        receiver.minderNode.getTextShape().setOpacity(1);
-                        km.layout(300);
-                    }
-
-                }
                 mouseDownStatus = true;
 
                 selectionReadyShow = sel.isShow();
@@ -104,6 +93,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 if(node){
 
                     var textShape = node.getTextShape();
+
                     textShape.setStyle('cursor', 'default');
                     if (this.isSingleSelect() && node.isSelected()) {
                         sel.collapse(true);

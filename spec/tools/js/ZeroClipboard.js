@@ -1,0 +1,1 @@
+ZeroClipboard.setDefaults( { moviePath: '../../../lib/ZeroClipboard.swf' } );

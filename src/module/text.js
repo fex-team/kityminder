@@ -10,16 +10,35 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
             .setAttr('text-rendering', 'inherit');
     },
 
-    update: function(text, node) {
-        this.setTextStyle(node, text.setContent(node.getText()));
-        var box = text.getBoundaryBox();
-        var r = Math.round;
-        if (kity.Browser.ie) {
-            box.y += 1;
+    update: function(text,node) {
+
+        var tmpText = node.getText();
+
+        this.setTextStyle(node, text.setContent(tmpText));
+
+        if(tmpText.length || !this._lastBox){
+
+            var box = text.getBoundaryBox();
+            var r = Math.round;
+            if (kity.Browser.ie) {
+                box.y += 1;
+            }
+
+            this._lastBox = {
+                x : r(box.x),
+                y : r(box.y),
+                width : r(box.width),
+                height: r(box.height)
+            };
+        }else {
+            this._lastBox.width = 0;
         }
+        var lastBox = this._lastBox;
+        node._lastTextShapeBox = lastBox;
         return function() {
-            return new kity.Box(r(box.x), r(box.y), r(box.width), r(box.height));
+            return new kity.Box(lastBox.x, lastBox.y,lastBox.width, lastBox.height);
         };
+
     },
 
     setTextStyle: function(node, text) {
