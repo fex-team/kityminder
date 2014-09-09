@@ -1,43 +1,25 @@
 describe("utils", function () {
+    //初始化kityminder
     var kityMinderDiv  = document.createElement("div");
     kityMinderDiv.id = "kityminder";
     kityMinderDiv.style.height = "500px";
     kityMinderDiv.style.position = "relative";
     var obj;
     var km;
-    var flag = true;
-
 
     beforeEach(function(){
-        if(flag){
-            document.getElementById('HTMLReporter').appendChild(kityMinderDiv);
-            km = KM.getKityMinder('kityminder');
-            obj = document.getElementById('kityminder');
-            flag = false;
-        }
+        document.body.appendChild(kityMinderDiv);
+        km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
+        obj = document.getElementById('kityminder');
     });
 
     afterEach(function(){
+//        obj = null;
 //        document.body.removeChild(kityMinderDiv);
-//        console.log(km);
-
     });
+    //kityminder初始化end
 
 
-//        var kityMinderDiv  = document.createElement("div");
-//        kityMinderDiv.id = "kityminder";
-//        kityMinderDiv.style.height = "500px";
-//        kityMinderDiv.style.position = "relative";
-//        var obj;
-//        var km;
-//        var flag = true;
-//
-//        if(flag){
-//            document.body.appendChild(kityMinderDiv);
-//            km = KM.getKityMinder('kityminder');
-//            obj = document.getElementById('kityminder');
-//            flag = false;
-//        }
 
 
 
