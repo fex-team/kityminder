@@ -309,6 +309,11 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
         },
         //处理软回车操作
         _handlerEnterkey:function(){
+            function removeTmpTextNode(node){
+                if(node && node.nodeType == 3 && node.nodeValue.length === 0){
+                    node.parentNode.removeChild(node);
+                }
+            }
             var rng = this.range;
             var br = document.createElement('br');
             var me = this;
@@ -316,17 +321,17 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 rng.deleteContents();
             }
             rng.insertNode(br);
+            removeTmpTextNode(br.previousSibling);
+            removeTmpTextNode(br.nextSibling);
             rng.setStartAfter(br);
             rng.collapse(true);
+
             var start = rng.startContainer.childNodes[rng.startOffset];
-            if(start && start.nodeType == 3 && start.nodeValue.length === 0){
-                start.parentNode.removeChild(start);
-                if(!rng.startContainer.childNodes[rng.startOffset]){
-                    br = br.cloneNode(false);
-                    rng.startContainer.appendChild(br);
-                    rng.setStartBefore(br);
-                    rng.collapse(true);
-                }
+            if(!start){
+                br = br.cloneNode(false);
+                rng.startContainer.appendChild(br);
+                rng.setStartBefore(br);
+                rng.collapse(true);
             }
             rng.select();
             me._setTextToContainer(keymap.Enter);

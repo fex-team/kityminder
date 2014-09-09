@@ -28,13 +28,13 @@ Minder.Range = kity.createClass('Range',function(){
         var rOffset = 0,cont = rng.container;
         utils.each(cont.childNodes,function(index,node){
             if(node.nodeType == 1){
-
-                rOffset++;
                 if(rOffset == offset){
 
                     rng['set' + dir](cont,index);
                     return false;
                 }
+                rOffset++;
+
                 return;
             }
 
@@ -65,6 +65,7 @@ Minder.Range = kity.createClass('Range',function(){
             return this._updateBoundary();
         },
         select:function(){
+
             var start = this.nativeRange.startContainer;
             if(start.nodeType == 1 && start.childNodes.length === 0){
                 var char = document.createTextNode('\u200b');
