@@ -71,6 +71,13 @@ Minder.Range = kity.createClass('Range',function(){
                 start.appendChild(char);
                 this.nativeRange.setStart(char,1);
                 this.nativeRange.collapse(true);
+            }else if(this.collapsed && start.nodeType == 1){
+                start = start.childNodes[this.startOffset];
+                if(start && start.nodeType == 3 && start.nodeValue.length === 0){
+
+                    this.nativeRange.setStart(start,1);
+                    this.nativeRange.collapse(true);
+                }
             }
             try{
                 this.nativeSel.removeAllRanges();
@@ -83,6 +90,7 @@ Minder.Range = kity.createClass('Range',function(){
         },
         _updateBoundary : function(){
             var nRange = this.nativeRange;
+            this.startContainer = nRange.startContainer;
             this.startContainer = nRange.startContainer;
             this.endContainer = nRange.endContainer;
             this.startOffset = nRange.startOffset;
@@ -107,6 +115,9 @@ Minder.Range = kity.createClass('Range',function(){
         },
         setStartAfter:function(node){
             return this.setStart(node.parentNode,utils.getNodeIndex(node) + 1);
+        },
+        setStartBefore:function(node){
+            return this.setStart(node.parentNode,utils.getNodeIndex(node));
         },
         setEnd:function(node,offset){
             this.nativeRange.setEnd(node,offset);
