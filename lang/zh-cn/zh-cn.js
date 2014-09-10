@@ -174,7 +174,7 @@ KityMinder.LANG['zh-cn'] = {
         'image': '图片',
         'removelink': '移除已有连接',
         'removeimage': '移除已有图片',
-        'resetlayout': '整理布局',
+        'resetlayout': '整理',
 
         'justnow': '刚刚',
         'minutesago': '{0} 分钟前',

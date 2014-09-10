@@ -106,4 +106,10 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
         });
     }
 
+    return {
+        loadLast: function() {
+            $ul.find('.recent-file-item').eq(0).click();
+        }
+    };
+
 });

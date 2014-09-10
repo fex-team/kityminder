@@ -4,7 +4,9 @@
 
 .fui-disabled,
 .fui-disabled .fui-widget {
-    background-color: transparent !important;
+    &:hover, &:active {
+        background-color: transparent;
+    }
 }
 
 #tab-container .fui-button {
@@ -305,5 +307,45 @@
                 height: 30px;
             }
         }
+    }
+}
+
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content {
+    padding-right: 10px;
+    border: 1px solid transparent;
+    width: auto;
+    
+    &:hover {
+        border-color: @border-color;
+    }
+    & > .fui-button {
+        position: absolute;
+        display: block;
+        right: 0;
+        left: auto;
+        top: 0;
+        bottom: 0;
+        width: 10px;
+        padding: 0;
+
+        &:hover {
+            background: @button-hover;
+        }
+        &:active {
+            background: @button-active;
+        }
+
+        & > .fui-icon {
+            position: absolute;
+            .triangle-top(@button-text, 6px, 4px);
+            top: auto;
+            bottom: 2px;
+            left: 2px;
+        }
+    }
+    
+    & > .fui-select-menu-container {
+        border: 1px solid #ccc;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, .3);
     }
 }

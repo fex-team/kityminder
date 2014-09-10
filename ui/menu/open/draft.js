@@ -141,4 +141,10 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
                 .appendTo($li);
         });
     }
+
+    return {
+        openLast: function() {
+            $ul.find('.draft-list-item').eq(0).click();
+        }
+    };
 });

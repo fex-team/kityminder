@@ -18,13 +18,13 @@ KityMinder.registerUI('ribbon/appearence/layout', function(minder) {
         label: minder.getLang('panels.layout')
     }).appendTo($tabs.appearence);
 
-    var $layoutSelect = new FUI.DropPanel({
-        id: 'layout-select'
-    }).appendTo($layoutPanel);
+    // var $layoutSelect = new FUI.DropPanel({
+    //     id: 'layout-select'
+    // }).appendTo($layoutPanel);
 
-    var layoutList = KityMinder.Utils.keys(KityMinder.getLayoutList());
+    // var layoutList = KityMinder.Utils.keys(KityMinder.getLayoutList());
 
-    $layoutSelect.appendWidget($commandbuttonset.generate('layout', layoutList));
+    // $layoutSelect.appendWidget($commandbuttonset.generate('layout', layoutList));
 
     $commandbutton.generate('resetlayout').appendTo($layoutPanel).addClass('large');
 

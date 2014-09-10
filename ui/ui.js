@@ -38,7 +38,7 @@
             });
 
             // 阻止非脑图事件冒泡
-            $('body').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'keydown keyup', function(e) {
+            $('#content-wrapper').delegate('#panel, #tab-container, .fui-dialog, #main-menu', 'keydown keyup', function(e) {
                 e.stopPropagation();
             });
 

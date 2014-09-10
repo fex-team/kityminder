@@ -116,6 +116,10 @@ kity.extendClass(MinderNode, {
         return this;
     },
 
+    resetLayoutOffset: function() {
+        return this.setLayoutOffset(null);
+    },
+
     setVertexIn: function(p) {
         this._vertexIn = p;
     },
@@ -301,6 +305,79 @@ var Layout = kity.createClass('Layout', {
     },
 
     /**
+     * 对齐指定的节点
+     *
+     * @param {Array<MinderNode>} nodes 要对齐的节点
+     * @param {string} border 对齐边界，允许取值 left, right, top, bottom
+     *
+     */
+    align: function(nodes, border, offset) {
+        var me = this;
+        offset = offset || 0;
+        nodes.forEach(function(node) {
+            var tbox = me.getTreeBox([node]);
+            var matrix = node.getLayoutTransform();
+            switch (border) {
+                case 'left':
+                    return matrix.translate(offset - tbox.left, 0);
+                case 'right':
+                    return matrix.translate(offset - tbox.right, 0);
+                case 'top':
+                    return matrix.translate(0, offset - tbox.top);
+                case 'bottom':
+                    return matrix.translate(0, offset - tbox.bottom);
+            }
+        });
+    },
+
+    stack: function(nodes, axis, distance) {
+        var me = this;
+
+        var position = 0;
+
+        distance = distance || function(node, next, axis) {
+            return node.getStyle({
+                x: 'margin-right',
+                y: 'margin-bottom'
+            }[axis]) + next.getStyle({
+                x: 'margin-left',
+                y: 'margin-top'
+            }[axis]);
+        };
+
+        nodes.forEach(function(node, index, nodes) {
+            var tbox = me.getTreeBox([node]);
+
+            var size = {
+                x: tbox.width,
+                y: tbox.height
+            }[axis];
+            var offset = {
+                x: tbox.left,
+                y: tbox.top
+            }[axis];
+
+            var matrix = node.getLayoutTransform();
+
+            if (axis == 'x') {
+                matrix.translate(position - offset, 0);
+            } else {
+                matrix.translate(0, position - offset);
+            }
+            position += size;
+            if (nodes[index + 1])
+                position += distance(node, nodes[index + 1], axis);
+        });
+        return position;
+    },
+
+    move: function(nodes, dx, dy) {
+        nodes.forEach(function(node) {
+            node.getLayoutTransform().translate(dx, dy);
+        });
+    },
+
+    /**
      * 工具方法：获取给点的节点所占的布局区域
      *
      * @param  {MinderNode[]} nodes 需要计算的节点
@@ -366,5 +443,54 @@ var Layout = kity.createClass('Layout', {
 
     getOrderHint: function(node) {
         return [];
+    }
+});
+
+var LayoutCommand = kity.createClass('LayoutCommand', {
+    base: Command,
+
+    execute: function(minder, name) {
+        var nodes = minder.getSelectedNodes();
+        nodes.forEach(function(node) {
+            node.layout(name);
+        });
+    },
+
+    queryValue: function(minder) {
+        var node = minder.getSelectedNode();
+        if (node) {
+            return node.getData('layout');
+        }
+    },
+
+    queryState: function(minder) {
+        return minder.getSelectedNode() ? 0 : -1;
+    }
+});
+
+var ResetLayoutCommand = kity.createClass('ResetLayoutCommand', {
+    base: Command,
+
+    execute: function(minder, name) {
+        var nodes = minder.getSelectedNodes();
+
+        if (!nodes.length) nodes = [minder.getRoot()];
+
+        nodes.forEach(function(node) {
+            node.traverse(function(child) {
+                child.resetLayoutOffset();
+                if (!child.isRoot()) {
+                    child.setData('layout', null);
+                }
+            });
+        });
+        minder.layout(300);
+    }
+});
+
+KityMinder.registerModule('LayoutModule', {
+    commands: {
+        'layout': LayoutCommand,
+        'resetlayout': ResetLayoutCommand
     }
 });

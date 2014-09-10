@@ -1,7 +1,7 @@
 KityMinder.registerTemplate('structure', {
 
     getLayout: function(node) {
-        return 'bottom';
+        return node.getData('layout') || 'bottom';
     }
 });
 

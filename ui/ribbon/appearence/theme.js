@@ -9,7 +9,7 @@
 
 KityMinder.registerUI('ribbon/appearence/theme', function(minder) {
 
-    var $commandbuttonset = minder.getUI('widget/commandbuttonset');
+    var $commandselectmenu = minder.getUI('widget/commandselectmenu');
     var $tabs = minder.getUI('ribbon/tabs');
 
     var $themePanel = new FUI.LabelPanel({
@@ -17,18 +17,11 @@ KityMinder.registerUI('ribbon/appearence/theme', function(minder) {
         label: minder.getLang('panels.theme')
     });
 
-    var $themeSelect = new FUI.DropPanel({
-        id: 'theme-select'
-    });
-
-    $tabs.appearence.appendWidget($themePanel);
-    $themePanel.appendWidget($themeSelect);
-
     var themeList = KityMinder.Utils.keys(KityMinder.getThemeList());
-
-    $themeSelect.appendWidget($commandbuttonset.generate('theme', themeList.map(function(theme) {
+    var $themeSelect = $commandselectmenu.generate('theme', themeList.map(function(theme) {
         var style = KityMinder._themes[theme];
         return {
+            clazz: 'Button',
             label: {
                 text: minder.getLang('theme.' + theme),
                 style: {
@@ -41,7 +34,10 @@ KityMinder.registerUI('ribbon/appearence/theme', function(minder) {
             value: theme,
             className: ['theme', theme].join(' ')
         };
-    })));
+    }));
+
+    $tabs.appearence.appendWidget($themePanel);
+    $themePanel.appendWidget($themeSelect);
 
     return $themePanel;
 });

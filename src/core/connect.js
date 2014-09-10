@@ -5,17 +5,23 @@ utils.extend(KityMinder, {
 
     _defaultConnectProvider: function(node, parent, connection) {
         connection.setPathData([
-            'M', parent.getLayoutPoint(),
-            'L', node.getLayoutPoint()
+            'M', parent.getLayoutVertexOut(),
+            'L', node.getLayoutVertexIn()
         ]);
     },
 
-    registerConnectProvider: function(layout, provider) {
-        KityMinder._connectProviders[layout] = provider;
+    registerConnectProvider: function(name, provider) {
+        KityMinder._connectProviders[name] = provider;
     },
 
-    getConnectProvider: function(layout) {
-        return KityMinder._connectProviders[layout] || KityMinder._defaultConnectProvider;
+    getConnectProvider: function(name) {
+        return KityMinder._connectProviders[name] || KityMinder._defaultConnectProvider;
+    }
+});
+
+kity.extendClass(MinderNode, {
+    getConnectProvider: function() {
+        return KityMinder.getConnectProvider();
     }
 });
 

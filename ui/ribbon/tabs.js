@@ -40,6 +40,6 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
     $tab.idea = $tab.getPanel(0);
     $tab.appearence = $tab.getPanel(1);
     $tab.view = $tab.getPanel(2);
-
+    $tab.select(1);
     return $tab;
 });

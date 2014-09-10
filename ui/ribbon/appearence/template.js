@@ -9,7 +9,7 @@
 
 KityMinder.registerUI('ribbon/appearence/template', function(minder) {
 
-    var $commandbuttonset = minder.getUI('widget/commandbuttonset');
+    var $commandselectmenu = minder.getUI('widget/commandselectmenu');
     var $tabs = minder.getUI('ribbon/tabs');
 
     var $templatePanel = new FUI.LabelPanel({
@@ -17,16 +17,12 @@ KityMinder.registerUI('ribbon/appearence/template', function(minder) {
         label: minder.getLang('panels.template')
     });
 
-    var $templateSelect = new FUI.DropPanel({
-        id: 'template-select'
-    });
+
+    var templateList = KityMinder.Utils.keys(KityMinder.getTemplateList());
+    var $templateSelect = $commandselectmenu.generate('template', templateList, 2);
 
     $tabs.appearence.appendWidget($templatePanel);
     $templatePanel.appendWidget($templateSelect);
-
-    var templateList = KityMinder.Utils.keys(KityMinder.getTemplateList());
-
-    $templateSelect.appendWidget($commandbuttonset.generate('template', templateList));
 
     return $templatePanel;
 });

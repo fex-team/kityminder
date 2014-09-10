@@ -483,6 +483,20 @@
   z-index: 99999;
 }
 /**
+ * 通用button
+ */
+/**
+ * FUI 通用样式定义
+ */
+/*------------ var*/
+/*------------ mixin*/
+.fui-select-menu .fui-select-menu-container {
+  background: white;
+}
+.fui-select-menu .fui-select-menu-selected {
+  background: #87a9da;
+}
+/**
  * FUI 通用样式定义
  */
 /*------------ var*/
@@ -759,9 +773,11 @@ li {
   -o-transition: background-color 0.2s ease;
   transition: background-color 0.2s ease;
 }
-.fui-disabled,
-.fui-disabled .fui-widget {
-  background-color: transparent !important;
+.fui-disabled:hover,
+.fui-disabled .fui-widget:hover,
+.fui-disabled:active,
+.fui-disabled .fui-widget:active {
+  background-color: transparent;
 }
 #tab-container .fui-button {
   display: inline-block;
@@ -1072,6 +1088,51 @@ li {
   line-height: 30px;
   height: 30px;
 }
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content {
+  padding-right: 10px;
+  border: 1px solid transparent;
+  width: auto;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content:hover {
+  border-color: #c9ced1;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content > .fui-button {
+  position: absolute;
+  display: block;
+  right: 0;
+  left: auto;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  padding: 0;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content > .fui-button:hover {
+  background: #eff3fa;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content > .fui-button:active {
+  background: #c4d0ee;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content > .fui-button > .fui-icon {
+  position: absolute;
+  content: ' ';
+  display: block;
+  width: 0;
+  height: 0;
+  padding: 0 !important;
+  line-height: 0;
+  font-size: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 4px 3px;
+  border-top-color: #5a6378;
+  top: auto;
+  bottom: 2px;
+  left: 2px;
+}
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content > .fui-select-menu-container {
+  border: 1px solid #ccc;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+}
 /**
  * 基本页面样式
  */
@@ -1133,7 +1194,7 @@ body {
   line-height: 40px;
   padding: 0 30px 0 15px;
   z-index: 11;
-  background-color: #fc8383;
+  background-color: hsl(0, 95%, 75%);
 }
 #main-menu-btn:hover {
   background-color: #fc9c9c !important;
@@ -1596,6 +1657,7 @@ body {
   z-index: 10;
   border-bottom: 1px solid #dbdbdb;
   box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.05);
+  overflow: visible;
   /* 每一个 Tab 面板 */
   -webkit-transition: all 0.15s ease;
   -moz-transition: all 0.15s ease;
@@ -2296,6 +2358,7 @@ ul.resource-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  width: 150px;
 }
 ul.resource-list li {
   display: inline-block;
@@ -2320,7 +2383,7 @@ ul.resource-list li {
   width: 50px;
   height: 40px;
   padding: 0 2px !important;
-  margin: 5px 0 0 5px !important;
+  margin: 5px !important;
 }
 .fui-button.template .fui-label {
   display: none;
@@ -2343,7 +2406,7 @@ ul.resource-list li {
 }
 .fui-button.theme {
   padding: 5px !important;
-  margin: 5px 0 0 5px !important;
+  margin: 5px !important;
 }
 .fui-button.theme .fui-label {
   width: 60px;
