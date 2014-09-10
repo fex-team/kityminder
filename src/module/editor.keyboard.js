@@ -83,7 +83,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 //            }
 
             //重新渲染节点
-
             me.minderNode.setText(text);
             me.re.setContainerStyle();
             me.minderNode.getRenderContainer().bringTop();
@@ -109,10 +108,11 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
 
 
+
             me.timer = setTimeout(function() {
                 if(me.selection.isShow()){
-
                     me.selection.setShow();
+
                 }
 
             }, 200);
@@ -227,7 +227,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.F2:
                     if(browser.ipad){
                         if(this.selection.isShow()){
-                            this.clear();
+                            this.re.clear();
                             this.km.setStatus('inputready');
                             clearTimeout(me.inputTextTimer);
                             e.preventDefault();
@@ -237,12 +237,13 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         }
                         return;
                     }
+
                     if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
                         me._setTextToContainer(keyCode);
                     }
-                    if (this.keydownNode === this.minderNode) {
-                        this.rollbackStatus();
-                        this.clear();
+                    if (this.re.keydownNode === this.re.minderNode) {
+                        this.km.rollbackStatus();
+                        this.re.clear();
                     }
                     e.preventDefault();
                     return;
@@ -308,6 +309,11 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
         },
         //处理软回车操作
         _handlerEnterkey:function(){
+            function removeTmpTextNode(node){
+                if(node && node.nodeType == 3 && node.nodeValue.length === 0){
+                    node.parentNode.removeChild(node);
+                }
+            }
             var rng = this.range;
             var br = document.createElement('br');
             var me = this;
@@ -315,10 +321,21 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 rng.deleteContents();
             }
             rng.insertNode(br);
+            removeTmpTextNode(br.previousSibling);
+            removeTmpTextNode(br.nextSibling);
             rng.setStartAfter(br);
             rng.collapse(true);
+
+            var start = rng.startContainer.childNodes[rng.startOffset];
+            if(!start){
+                br = br.cloneNode(false);
+                rng.startContainer.appendChild(br);
+                rng.setStartBefore(br);
+                rng.collapse(true);
+            }
             rng.select();
             me._setTextToContainer(keymap.Enter);
+
 
         }
 

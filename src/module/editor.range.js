@@ -28,13 +28,13 @@ Minder.Range = kity.createClass('Range',function(){
         var rOffset = 0,cont = rng.container;
         utils.each(cont.childNodes,function(index,node){
             if(node.nodeType == 1){
-
-                rOffset++;
                 if(rOffset == offset){
 
                     rng['set' + dir](cont,index);
                     return false;
                 }
+                rOffset++;
+
                 return;
             }
 
@@ -65,12 +65,20 @@ Minder.Range = kity.createClass('Range',function(){
             return this._updateBoundary();
         },
         select:function(){
+
             var start = this.nativeRange.startContainer;
             if(start.nodeType == 1 && start.childNodes.length === 0){
                 var char = document.createTextNode('\u200b');
                 start.appendChild(char);
                 this.nativeRange.setStart(char,1);
                 this.nativeRange.collapse(true);
+            }else if(this.collapsed && start.nodeType == 1){
+                start = start.childNodes[this.startOffset];
+                if(start && start.nodeType == 3 && start.nodeValue.length === 0){
+
+                    this.nativeRange.setStart(start,1);
+                    this.nativeRange.collapse(true);
+                }
             }
             try{
                 this.nativeSel.removeAllRanges();
@@ -83,6 +91,7 @@ Minder.Range = kity.createClass('Range',function(){
         },
         _updateBoundary : function(){
             var nRange = this.nativeRange;
+            this.startContainer = nRange.startContainer;
             this.startContainer = nRange.startContainer;
             this.endContainer = nRange.endContainer;
             this.startOffset = nRange.startOffset;
@@ -107,6 +116,9 @@ Minder.Range = kity.createClass('Range',function(){
         },
         setStartAfter:function(node){
             return this.setStart(node.parentNode,utils.getNodeIndex(node) + 1);
+        },
+        setStartBefore:function(node){
+            return this.setStart(node.parentNode,utils.getNodeIndex(node));
         },
         setEnd:function(node,offset){
             this.nativeRange.setEnd(node,offset);

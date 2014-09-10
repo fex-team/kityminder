@@ -281,7 +281,12 @@ var utils = Utils = KityMinder.Utils = {
 
         utils.each(data,function(i,arr){
             if(initIndex + arr.length >= index){
+
                 if(index - initIndex == arr.length){
+                    if(arr.length == 1 && arr[0].width === 0){
+                        initIndex++;
+                        return;
+                    }
                     result = {
                         x: arr[arr.length - 1].x + arr[arr.length - 1].width,
                         y: arr[arr.length - 1].y

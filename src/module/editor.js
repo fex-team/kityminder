@@ -210,11 +210,14 @@ KityMinder.registerModule('TextEditModule', function() {
                     var node = e.getTargetNode();
                     e.stopPropagationImmediately();
 
-                    var offset = e.getPosition(node.getRenderContainer());
+                    if(node){
+                        var offset = e.getPosition(node.getRenderContainer());
 
-                    receiver.updateSelectionByMousePosition(offset)
-                        .updateSelection(offset)
-                        .updateContainerRangeBySel();
+                        receiver.updateSelectionByMousePosition(offset)
+                            .updateSelection(offset)
+                            .updateContainerRangeBySel();
+
+                    }
 
 
                 }else if(mouseDownStatus && !selectionReadyShow){

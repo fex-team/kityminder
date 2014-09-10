@@ -194,8 +194,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                         return false;
                     }
                     if (i == arr.length - 1 && offset.x >= v.x) {
-                        me.index += arr.length;
 
+                        me.index += (arr.length == 1 && arr[0].width === 0 ? 0 : arr.length);
                         return false;
                     }
                 });
@@ -245,7 +245,8 @@ Minder.Receiver = kity.createClass('Receiver', {
                         return false;
                     }
                     if (i == arr.length - 1 && offset.x >= v.x) {
-                        result += arr.length;
+
+                        result += (arr.length == 1 && arr[0].width === 0 ? 0 : arr.length);
 
                         return false;
                     }
