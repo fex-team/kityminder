@@ -13,7 +13,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     var $manage_menu = $($share_menu.createSub('manageshare'));
     var $doc = minder.getUI('doc');
 
-    var BACKEND_URL = 'http://127.0.0.1/naotu/mongo.php';
+    var BACKEND_URL = 'http://naotu.baidu.com/share.php';
 
     var currentShare = null;
     var shareList = [];
