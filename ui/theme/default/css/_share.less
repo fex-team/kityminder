@@ -165,7 +165,6 @@
     }
 
 }
-
 #public-share {
     p {
         position: relative;
@@ -190,4 +189,177 @@
     .share-body {
         display: none;
     }
+}
+.shared-content {
+  .left, .right {
+    float: left;
+  }
+  .m-logo {
+    float: left;
+    margin-top: 4px;
+    margin-left: 8px;
+  }
+  .switch-view {
+    float: right;
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 8px;
+    text-align: center;
+    font-weight: normal;
+    color: #ffffff;
+  }
+  .cur-list, .cur-root {
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+  .cur-list {
+    list-style-type: none;  
+    overflow-y: scroll;  
+  }
+  .cur-list li, .cur-root {
+      line-height: 50px;
+      height: 50px;
+      padding-left: 25px;
+      border-bottom: 1px solid #ddd;
+  }
+  .cur-root {
+    background-color: #fc8383;
+    font-size: 16px;
+    padding-left: 15px;
+    border-bottom: none;
+    position: absolute;
+    width: 100%;
+  }
+  .priority {
+    height: 20px;
+    width: 20px;
+    background: url(../images/iconpriority.png) repeat-x;
+    float: left;
+    margin: 15px 15px auto 0;
+  }
+  .priority-1 {
+    background-position: 0 0;
+  }
+  .priority-2 {
+    background-position: -20px 0;
+  }
+  .priority-3 {
+    background-position: -40px 0;
+  }
+  .priority-4 {
+    background-position: -60px 0;
+  }
+  .priority-5 {
+    background-position: -80px 0;
+  }
+  .priority-6 {
+    background-position: -100px 0;
+  }
+  .priority-7 {
+    background-position: -120px 0;
+  }
+  .priority-8 {
+    background-position: -140px 0;
+  }
+  .priority-9 {
+    background-position: -160px 0;
+  }
+  .priority-0 {
+    background-position: -180px 0;
+  }
+  .progress {
+    height: 20px;
+    width: 20px;
+    background: url(../images/iconprogress.png) repeat-x;
+    float: left;
+    margin: 15px 15px auto 0;
+  }
+  .progress-1 {
+    background-position: 0 0;
+  }
+  .progress-2 {
+    background-position: -20px 0;
+  }
+  .progress-3 {
+    background-position: -40px 0;
+  }
+  .progress-4 {
+    background-position: -60px 0;
+  }
+  .progress-5 {
+    background-position: -80px 0;
+  }
+  .progress-6 {
+    background-position: -100px 0;
+  }
+  .progress-7 {
+    background-position: -120px 0;
+  }
+  .progress-8 {
+    background-position: -140px 0;
+  }
+  .progress-9 {
+    background-position: -160px 0;
+  }
+  .progress-0 {
+    background-position: -180px 0;
+  }
+  .resource {
+    padding: 3px 5px;
+    border-radius: 2px;
+    font-size: 12px;
+    color: rgb(77, 65, 0);
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .hyperlink {
+    display: inline-block;
+  /*   float: left; */
+    width: 30px;
+    height: 20px;
+    margin-left: 15px;
+    padding: 0;
+    background: url(../images/icons.png) no-repeat 0 -80px;
+    background-size: 20px;
+    vertical-align: middle; 
+  }
+  .next-level {
+    width: 32px;
+    height: 50px;
+    margin-right: 16px;
+    float: right;
+    background: url(../images/next-level.png) no-repeat center center;
+  }
+  #km-list-view {
+    .dock(40px, 0, 0, 0);
+    overflow: visible;
+  }
+  .cur-list {
+    .dock(50px, 0, 0, 0);
+  }
+  .back {
+    width: 32px;
+    height: 32px;
+    background: url(../images/prev-level.png) no-repeat center center;
+    display: none;
+  }
+  .clickable:hover {
+    background-color: #eee;  
+  }
+  .clickable:active {
+    background-color: #eee;  
+  }
+  #km-list-view > div {
+    .dock;
+  }
+  .text {
+    width:12em; 
+    white-space:nowrap; 
+    text-overflow:ellipsis; 
+    -o-text-overflow:ellipsis; 
+    overflow:hidden;
+    vertical-align: middle;
+  }
 }

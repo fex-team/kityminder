@@ -2823,6 +2823,192 @@ div.right {
 #public-share .share-body {
   display: none;
 }
+.shared-content .left,
+.shared-content .right {
+  float: left;
+}
+.shared-content .m-logo {
+  float: left;
+  margin-top: 4px;
+  margin-left: 8px;
+}
+.shared-content .switch-view {
+  float: right;
+  font-size: 14px;
+  height: 40px;
+  line-height: 40px;
+  margin-right: 8px;
+  text-align: center;
+  font-weight: normal;
+  color: #ffffff;
+}
+.shared-content .cur-list,
+.shared-content .cur-root {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+.shared-content .cur-list {
+  list-style-type: none;
+  overflow-y: scroll;
+}
+.shared-content .cur-list li,
+.shared-content .cur-root {
+  line-height: 50px;
+  height: 50px;
+  padding-left: 25px;
+  border-bottom: 1px solid #ddd;
+}
+.shared-content .cur-root {
+  background-color: #fc8383;
+  font-size: 16px;
+  padding-left: 15px;
+  border-bottom: none;
+  position: absolute;
+  width: 100%;
+}
+.shared-content .priority {
+  height: 20px;
+  width: 20px;
+  background: url(../images/iconpriority.png) repeat-x;
+  float: left;
+  margin: 15px 15px auto 0;
+}
+.shared-content .priority-1 {
+  background-position: 0 0;
+}
+.shared-content .priority-2 {
+  background-position: -20px 0;
+}
+.shared-content .priority-3 {
+  background-position: -40px 0;
+}
+.shared-content .priority-4 {
+  background-position: -60px 0;
+}
+.shared-content .priority-5 {
+  background-position: -80px 0;
+}
+.shared-content .priority-6 {
+  background-position: -100px 0;
+}
+.shared-content .priority-7 {
+  background-position: -120px 0;
+}
+.shared-content .priority-8 {
+  background-position: -140px 0;
+}
+.shared-content .priority-9 {
+  background-position: -160px 0;
+}
+.shared-content .priority-0 {
+  background-position: -180px 0;
+}
+.shared-content .progress {
+  height: 20px;
+  width: 20px;
+  background: url(../images/iconprogress.png) repeat-x;
+  float: left;
+  margin: 15px 15px auto 0;
+}
+.shared-content .progress-1 {
+  background-position: 0 0;
+}
+.shared-content .progress-2 {
+  background-position: -20px 0;
+}
+.shared-content .progress-3 {
+  background-position: -40px 0;
+}
+.shared-content .progress-4 {
+  background-position: -60px 0;
+}
+.shared-content .progress-5 {
+  background-position: -80px 0;
+}
+.shared-content .progress-6 {
+  background-position: -100px 0;
+}
+.shared-content .progress-7 {
+  background-position: -120px 0;
+}
+.shared-content .progress-8 {
+  background-position: -140px 0;
+}
+.shared-content .progress-9 {
+  background-position: -160px 0;
+}
+.shared-content .progress-0 {
+  background-position: -180px 0;
+}
+.shared-content .resource {
+  padding: 3px 5px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: #4d4100;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.shared-content .hyperlink {
+  display: inline-block;
+  /*   float: left; */
+  width: 30px;
+  height: 20px;
+  margin-left: 15px;
+  padding: 0;
+  background: url(../images/icons.png) no-repeat 0 -80px;
+  background-size: 20px;
+  vertical-align: middle;
+}
+.shared-content .next-level {
+  width: 32px;
+  height: 50px;
+  margin-right: 16px;
+  float: right;
+  background: url(../images/next-level.png) no-repeat center center;
+}
+.shared-content #km-list-view {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: visible;
+}
+.shared-content .cur-list {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.shared-content .back {
+  width: 32px;
+  height: 32px;
+  background: url(../images/prev-level.png) no-repeat center center;
+  display: none;
+}
+.shared-content .clickable:hover {
+  background-color: #eee;
+}
+.shared-content .clickable:active {
+  background-color: #eee;
+}
+.shared-content #km-list-view > div {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.shared-content .text {
+  width: 12em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  overflow: hidden;
+  vertical-align: middle;
+}
 .command-button .fui-icon {
   background: url(../images/icons.png) no-repeat;
   background-position: 0 20px;

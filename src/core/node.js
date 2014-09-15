@@ -119,7 +119,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * @return {String}
      */
     getText: function(str2arr) {
-        var text = this.getData('text');
+        var text = this.getData('text') || '';
 
         if(str2arr){
             text = text.split('\n');

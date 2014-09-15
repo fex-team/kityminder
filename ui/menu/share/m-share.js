@@ -6,17 +6,14 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-KityMinder.registerUI('menu/share/view', function (minder) {
-    var $menu = minder.getUI('menu/menu');
-    var $save = minder.getUI('menu/save/save');
+KityMinder.registerUI('menu/share/m-share', function (minder) {
     var $doc = minder.getUI('doc');
-
 
     function loadShareDoc() {
 
         var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec(window.location) || pattern.exec(document.referrer);
-        
+
         if (!match) return Promise.resolve(null);
 
         var shareId = match[1];
@@ -69,7 +66,12 @@ KityMinder.registerUI('menu/share/view', function (minder) {
         });
     }
 
+    minder.on('dblclick', function() {
+        minder.execCommand('camera', minder.getRoot(), 500);
+    });
+
     return {
         ready: loadShareDoc()
     };
+
 });

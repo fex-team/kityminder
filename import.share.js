@@ -96,7 +96,7 @@
         // 'ui/widget/friendlytimespan.js',
         // 'ui/widget/locallist.js',
         // 'ui/widget/netdiskfinder.js',
-        'ui/widget/menutab',
+        'ui/widget/menutab.js',
 
         /* UI 菜单 */
         'ui/menu/menu.js',

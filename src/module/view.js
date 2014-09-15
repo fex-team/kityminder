@@ -57,6 +57,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('normal.mousemove normal.touchmove ' +
             'readonly.touchmove readonly.mousemove ' +
             'inputready.mousemove inputready.touchmove', function(e) {
+                if(typeof(e) == 'touchmove')
+                    e.preventDefault(); // 阻止浏览器的后退事件
                 if (!isTempDrag) return;
                 var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
                 if (offset.length() > 3) this.setStatus('hand');
