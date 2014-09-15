@@ -14,10 +14,6 @@ KityMinder.LANG['zh-cn'] = {
         'fresh-purple': '浪漫紫',
         'fresh-pink': '脑残粉'
     },
-    'insert':{
-        //'maintopic':'插入中心主题',
-        'topic':'插入分支主题'
-    },
     'maintopic': '中心主题',
     'topic': '分支主题',
     'panels': {
@@ -38,6 +34,16 @@ KityMinder.LANG['zh-cn'] = {
         'attachment': '附件'
     },
     'ui': {
+        'command': {
+            'appendsiblingnode': '新建兄弟节点',
+            'appendchildnode': '新建子节点',
+            'removenode': '删除',
+            'editnode': '编辑',
+            'arrangeup': '上移',
+            'arrangedown': '下移',
+            'resetlayout': '整理布局'
+        },
+
         'back': '返回',
 
         'undo': '撤销',

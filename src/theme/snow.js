@@ -32,6 +32,7 @@ KityMinder.registerTheme('snow', {
 
     'connect-color': 'white',
     'connect-width': 2,
+    'main-connect-width': 3,
     'connect-radius': 5,
 
     'selected-background': 'rgb(254, 219, 0)',

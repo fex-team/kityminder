@@ -172,3 +172,70 @@ input[type=url] {
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+
+.shortcut-key {
+    display: inline-block;
+    padding: 3px 8px 5px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 14px;
+    color: hsl(0, 0%, 43%);
+    /* text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25); */
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: hsl(0, 0%, 99%);
+    border-radius: 3px;
+    /* border: 1px solid hsl(0, 0%, 60%); */
+    text-transform: capitalize;
+    box-shadow: inset 0 -2px hsl(0, 0%, 92%), inset 0 -3px hsl(0, 100%, 100%), 0 1px 2px rgba(255, 255, 255, 0.3);
+
+    .mac &.ctrl,
+    .mac &.shift,
+    .mac &.alt,
+    &.up,
+    &.down,
+    &.left,
+    &.right {
+        text-indent: -1000px;
+        position: relative;
+        width: 9px;
+
+        &:after {
+            display: block;
+            position: absolute;
+            text-align: center;
+            left: 5px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            text-indent: 0;
+        }
+    }
+
+    .mac &.ctrl:after {
+        content: '⌘';
+    }
+    .mac &.shift:after {
+        content: '⇧';
+    }
+    .mac &.alt:after {
+        content: '⌥';
+    }
+    &.up:after {
+        content: '↑';
+        top: 2px;
+    }
+    &.down:after {
+        content: '↓';
+        top: 2px;
+    }
+    &.left:after {
+        content: '←';
+        top: 2px;
+    }
+    &.right:after {
+        content: '→';
+        top: 2px;
+    }
+}

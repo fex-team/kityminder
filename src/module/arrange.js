@@ -109,7 +109,14 @@ KityMinder.registerModule('ArrangeModule', {
         'arrangedown': ArrangeDownCommand,
         'arrange': ArrangeCommand
     },
-    addShortcutKeys: {
+    contextmenu: [{
+        command: 'arrangeup'
+    }, {
+        command: 'arrangedown'
+    }, {
+        divider: true
+    }],
+    commandShortcutKeys: {
         'arrangeup': 'alt+Up',
         'arrangedown': 'alt+Down'
     }

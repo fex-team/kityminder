@@ -1,4 +1,5 @@
 Utils.extend(KityMinder, {
+    
     compatibility: function(json) {
 
         var version = json.version || '1.1.3';
@@ -8,6 +9,11 @@ Utils.extend(KityMinder, {
             if (node.children) node.children.forEach(function(child) {
                 traverse(child, fn);
             });
+        }
+
+        /* 脑图数据升级 */
+        function c_120_130(json) {
+
         }
 
         /**

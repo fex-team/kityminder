@@ -24,36 +24,42 @@
         /* 核心代码 */
         'src/core/kityminder.js',
         'src/core/utils.js',
+        'src/core/browser.js',
+        'src/core/minder.js',
+        'src/core/option.js',
+        'src/core/event.js',
+        'src/core/status.js',
+        'src/core/paper.js',
+        'src/core/readonly.js',
         'src/core/command.js',
         'src/core/node.js',
         'src/core/module.js',
-        'src/core/event.js',
-        'src/core/minder.js',
-        'src/core/minder.data.compatibility.js',
-        'src/core/minder.data.js',
-        'src/core/minder.event.js',
-        'src/core/minder.module.js',
-        'src/core/minder.command.js',
-        'src/core/minder.node.js',
-        'src/core/minder.select.js',
-        'src/core/keymap.js',
-        'src/core/minder.lang.js',
-        'src/core/minder.defaultoptions.js',
-        'src/core/minder.preference.js',
-        'src/core/browser.js',
-        'src/core/layout.js',
-        'src/core/connect.js',
+        'src/core/data.js',
+        'src/core/compatibility.js',
         'src/core/render.js',
+        'src/core/connect.js',
         'src/core/theme.js',
+        'src/core/layout.js',
         'src/core/template.js',
+        'src/core/select.js',
+        'src/core/lang.js',
+        'src/core/defaultoptions.js',
+        'src/core/preference.js',
+        'src/core/keymap.js',
+        'src/core/key.js',
+        'src/core/contextmenu.js',
 
         /* 布局 */
-        'src/layout/default.js',
-        'src/layout/default.connect.js',
-        'src/layout/bottom.js',
+        'src/layout/mind.js',
         'src/layout/filetree.js',
-        'src/layout/left.js',
-        'src/layout/right.js',
+        'src/layout/btree.js',
+
+        /* 连线 */
+        'src/connect/bezier.js',
+        'src/connect/poly.js',
+        'src/connect/arc.js',
+        'src/connect/under.js',
+        'src/connect/l.js',
 
         /* 皮肤 */
         'src/theme/default.js',
@@ -61,7 +67,10 @@
         'src/theme/fresh.js',
 
         /* 模板 */
+        'src/template/default.js',
         'src/template/structure.js',
+        'src/template/filetree.js',
+        'src/template/right.js',
 
         /* 模块 */
         'src/module/node.js',
@@ -76,7 +85,7 @@
         'src/module/resource.js',
         'src/module/view.js',
         'src/module/dragtree.js',
-        'src/module/keyboard.js',
+        'src/module/keynav.js',
         'src/module/select.js',
         'src/module/history.js',
         // 'src/module/editor.js',
@@ -107,6 +116,7 @@
         'ui/fuix.js',
         'ui/fiox.js',
         'ui/doc.js',
+        'ui/contextmenu.js',
 
         /* UI 组件 */
         'ui/widget/commandbutton.js',
@@ -116,7 +126,7 @@
         'ui/widget/friendlytimespan.js',
         'ui/widget/locallist.js',
         'ui/widget/netdiskfinder.js',
-        'ui/widget/menutab',
+        'ui/widget/menutab.js',
 
         /* UI 菜单 */
         'ui/menu/menu.js',
@@ -165,9 +175,9 @@
         'ui/ribbon/appearence/template.js',
         'ui/ribbon/appearence/theme.js',
         'ui/ribbon/appearence/layout.js',
-        'ui/ribbon/appearence/style.js',
         'ui/ribbon/appearence/font.js',
         'ui/ribbon/appearence/color.js',
+        'ui/ribbon/appearence/style.js',
 
         /* UI Ribbon「视图」面板 */
         'ui/ribbon/view/level.js'

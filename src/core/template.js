@@ -8,8 +8,6 @@ utils.extend(KityMinder, {
     }
 });
 
-KityMinder.registerTemplate('default', {});
-
 kity.extendClass(Minder, (function() {
     var originGetTheme = Minder.prototype.getTheme;
     return {
@@ -26,16 +24,14 @@ kity.extendClass(Minder, (function() {
             this._template = name || null;
         },
 
-        getTemplateSupports: function() {
-            return KityMinder._templates[this._template] || null;
+        getTemplateSupport: function(method) {
+            var supports = KityMinder._templates[this._template];
+            return supports && supports[method];
         },
 
         getTheme: function(node) {
-            var supports = this.getTemplateSupports();
-            if (supports && supports.getTheme) {
-                return supports.getTheme(node);
-            }
-            return originGetTheme.call(this, node);
+            var support = this.getTemplateSupport('getTheme') || originGetTheme;
+            return support.call(this, node);
         }
     };
 })());
@@ -43,13 +39,16 @@ kity.extendClass(Minder, (function() {
 
 kity.extendClass(MinderNode, (function() {
     var originGetLayout = MinderNode.prototype.getLayout;
+    var originGetConnect = MinderNode.prototype.getConnect;
     return {
         getLayout: function() {
-            var supports = this.getMinder().getTemplateSupports();
-            if (supports && supports.getLayout) {
-                return supports.getLayout(this);
-            }
-            return originGetLayout.call(this);
+            var support = this.getMinder().getTemplateSupport('getLayout') || originGetLayout;
+            return support.call(this, this);
+        },
+
+        getConnect: function() {
+            var support = this.getMinder().getTemplateSupport('getConnect') || originGetConnect;
+            return support.call(this, this);
         }
     };
 })());

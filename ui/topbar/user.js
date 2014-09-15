@@ -47,6 +47,12 @@ KityMinder.registerUI('topbar/user', function(minder) {
 
     $userButton.on('click', function() {
         $userMenu.open();
+        var $dom = $($userMenu.getElement());
+        var $button = $($userButton.getElement());
+        $dom.offset({
+            left: $button.offset().left - $dom.outerWidth() + $button.outerWidth() - 10,
+            top: $button.offset().top + $button.outerHeight() + 10
+        });
     });
 
     menu.on('select', function(e, info) {

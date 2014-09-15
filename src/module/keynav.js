@@ -127,6 +127,7 @@ KityMinder.registerModule('KeyboardModule', function() {
             km.select(nextNode, true);
         }
     }
+    // 稀释用
     var lastFrame;
     return {
         'events': {
@@ -143,57 +144,12 @@ KityMinder.registerModule('KeyboardModule', function() {
                 if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
             },
             'normal.keydown': function(e) {
-
-                var keys = KityMinder.keymap;
-                var node = e.getTargetNode();
-                var lang = this.getLang();
-
-                if (this.receiver) this.receiver.keydownNode = node;
-
-                var keyEvent = e.originEvent;
-
-                if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey || keyEvent.shiftKey) {
-                    if ([keys.Tab].indexOf(keyEvent.keyCode)) e.preventDefault;
-                    return;
-                }
-
-                switch (keyEvent.keyCode) {
-                    case keys.Enter:
-                        this.execCommand('AppendSiblingNode', lang.topic);
-                        e.preventDefault();
-                        break;
-                    case keys.Tab:
-                        this.execCommand('AppendChildNode', lang.topic);
-                        e.preventDefault();
-                        break;
-                    case keys.Backspace:
-                    case keys.Del:
-                        e.preventDefault();
-                        this.execCommand('RemoveNode');
-                        break;
-                    case keys.F2:
-                        e.preventDefault();
-                        this.execCommand('EditNode');
-                        break;
-
-                    case keys.Left:
-                        navigateTo(this, 'left');
-                        e.preventDefault();
-                        break;
-                    case keys.Up:
-                        navigateTo(this, 'top');
-                        e.preventDefault();
-                        break;
-                    case keys.Right:
-                        navigateTo(this, 'right');
-                        e.preventDefault();
-                        break;
-                    case keys.Down:
-                        navigateTo(this, 'down');
-                        e.preventDefault();
-                        break;
-                }
-
+                var minder = this;
+                ['left', 'right', 'up', 'down'].forEach(function(key) {
+                    if (e.isShortcutKey(key)) {
+                        navigateTo(minder, key == 'up' ? 'top' : key);
+                    }
+                });
             },
             'normal.keyup': function(e) {
                 if (browser.ipad) {

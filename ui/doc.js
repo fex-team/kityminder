@@ -53,7 +53,7 @@ KityMinder.registerUI('doc', function(minder) {
 
         })['catch'](function(e) {
             current = restore;
-            throw e;
+            console.error(e.stack);
         }).then(function(doc) {
             loading = false;
             return doc;

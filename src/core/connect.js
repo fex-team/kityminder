@@ -21,7 +21,11 @@ utils.extend(KityMinder, {
 
 kity.extendClass(MinderNode, {
     getConnectProvider: function() {
-        return KityMinder.getConnectProvider();
+        return KityMinder.getConnectProvider(this.getConnect());
+    },
+
+    getConnect: function() {
+        return null;
     }
 });
 
@@ -63,7 +67,7 @@ kity.extendClass(Minder, {
         }
         connection.setVisible(true);
 
-        var provider = KityMinder.getConnectProvider(parent.getLayout());
+        var provider = node.getConnectProvider();
 
         var strokeColor = node.getStyle('connect-color') || 'white',
             strokeWidth = node.getStyle('connect-width') || 2;
@@ -71,6 +75,12 @@ kity.extendClass(Minder, {
         connection.stroke(strokeColor, strokeWidth);
 
         provider(node, parent, connection, strokeWidth, strokeColor);
+
+        if (strokeWidth % 2 === 0) {
+            connection.setTranslate(0.5, 0.5);
+        } else {
+            connection.setTranslate(0, 0);
+        }
     }
 });
 

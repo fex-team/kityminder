@@ -1,11 +1,4 @@
 /**
- * 浏览器判断模块
- * @file
- * @module UE.browser
- * @since 1.2.6.1
- */
-
-/**
  * 提供浏览器检测的模块
  * @unfile
  * @module KM.browser

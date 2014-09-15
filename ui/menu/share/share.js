@@ -291,6 +291,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     function loadShareList() {
 
         return fio.user.check().then(function(user) {
+            if (!user) return;
             $.pajax(BACKEND_URL, {
 
                 type: 'GET',

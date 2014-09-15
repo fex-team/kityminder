@@ -5,11 +5,11 @@ var AppendChildCommand = kity.createClass('AppendChildCommand', {
         if (!parent) {
             return null;
         }
+        text = text || km.getLang(parent.isRoot() ? 'maintopic' : 'topic');
         parent.expand();
         var node = km.createNode(text, parent);
         km.select(node, true);
         node.render();
-        node._lastLayoutTransform = parent._lastLayoutTransform;
         km.layout(300);
     },
     queryState: function(km) {
@@ -26,10 +26,10 @@ var AppendSiblingCommand = kity.createClass('AppendSiblingCommand', {
         if (!parent) {
             return km.execCommand('AppendChildNode', text);
         }
+        text = text || km.getLang(parent.isRoot() ? 'maintopic' : 'topic');
         var node = km.createNode(text, parent, sibling.getIndex() + 1);
         km.select(node, true);
         node.render();
-        node._lastLayoutTransform = sibling._lastLayoutTransform;
         km.layout(300);
     },
     queryState: function(km) {
@@ -82,45 +82,31 @@ var EditNodeCommand = kity.createClass('EditNodeCommand', {
 
 KityMinder.registerModule('NodeModule', function() {
     return {
+
         commands: {
             'AppendChildNode': AppendChildCommand,
             'AppendSiblingNode': AppendSiblingCommand,
             'RemoveNode': RemoveNodeCommand,
             'EditNode': EditNodeCommand
         },
+
         'contextmenu': [{
-            label: this.getLang('node.appendsiblingnode'),
-            exec: function() {
-                this.execCommand('AppendSiblingNode', this.getLang('topic'));
-            },
-            cmdName: 'appendsiblingnode'
+            command: 'appendsiblingnode'
         }, {
-            label: this.getLang('node.appendchildnode'),
-            exec: function() {
-                this.execCommand('AppendChildNode', this.getLang('topic'));
-            },
-            cmdName: 'appendchildnode'
+            command: 'appendchildnode'
         }, {
-            label: this.getLang('node.editnode'),
-            exec: function() {
-                this.execCommand('EditNode');
-            },
-            cmdName: 'editnode'
+            command: 'editnode'
         }, {
-            label: this.getLang('node.removenode'),
-            cmdName: 'RemoveNode'
+            command: 'removenode'
         }, {
             divider: 1
-        },{
-            label: this.getLang('insert.topic'),
-            exec: function() {
-                this.select(this.getRoot());
-                this.execCommand('AppendSiblingNode', this.getLang('topic'));
-            },
-            query:function(){
-                var nodes = this.getSelectedNodes();
-                return nodes.length === 0 ? 0 : -1;
-            }
-        }]
+        }],
+
+        'commandShortcutKeys': {
+            'appendsiblingnode': 'Enter',
+            'appendchildnode': 'Insert|Tab',
+            'editnode': 'F2',
+            'removenode': 'Delete|Backspace'
+        }
     };
 });

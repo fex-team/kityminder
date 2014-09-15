@@ -14,7 +14,7 @@ KityMinder.registerConnectProvider('bezier', function(node, parent, connection) 
         pi = node.getLayoutVertexIn();
 
     // 连线矢量和方向
-    var v = node.getLayoutVector().normalize();
+    var v = parent.getLayoutVector().normalize();
 
     var r = Math.round;
     var abs = Math.abs;
@@ -29,7 +29,7 @@ KityMinder.registerConnectProvider('bezier', function(node, parent, connection) 
     } else {
         // y - direction
         var hy = (pi.y + po.y) / 2;
-        pathData.push('C', po.x, hy, pi.y, hy, pi.x, pi.y);
+        pathData.push('C', po.x, hy, pi.x, hy, pi.x, pi.y);
     }
 
     connection.setMarker(null);
