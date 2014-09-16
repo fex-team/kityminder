@@ -14,16 +14,16 @@ KityMinder.registerUI('topbar/switch-view', function(minder) {
     $('<div class="back"></div>').appendTo('#m-logo');
 
     var treeData;
-    var $curView=$('<div>');
-    var $preView=$('<div>');
+    var $curView=$('<div id="curView">');
+    var $preView=$('<div id="preView">');
 
     minder.on('uiready', function() {
         var shareView = minder.getUI('menu/share/m-share');
         shareView.ready.then(function(){
             treeData = addParentPointer(minder);
 
-            $curView = renderNodeData(treeData, minder, $curView);
-            $preView = renderNodeData(treeData, minder, $preView);
+            renderNodeData(treeData, minder, $curView);
+            renderNodeData(treeData, minder, $preView);
             $('#km-list-view').append($curView);
             $('#km-list-view').append($preView);
             $preView.css('x', '100%');
@@ -48,11 +48,16 @@ KityMinder.registerUI('topbar/switch-view', function(minder) {
 
     $('#km-list-view').delegate('li', 'click', function(){
         var preViewData = $(this).data();
-        renderNodeData(preViewData, minder, $preView);
 
         if (preViewData.children) {
+            renderNodeData(preViewData, minder, $preView);
+//            $curView.css('x');
+//            console.log($preView.css('x'));
+            $preView.css('x', parseInt($curView.css('x')) + 100 + '%');
+//            console.log($preView.css('x'));
+//            $('#km-list-view').css('x', '0');
             $('#km-list-view').transition({
-                x: '-100%',
+                x: parseInt($('#km-list-view').css('x')) - 100 + '%',
                 duration: 200,
                 easing: 'ease',
                 complete: function(){
@@ -70,11 +75,14 @@ KityMinder.registerUI('topbar/switch-view', function(minder) {
     });
 
     $('.back').on('click', function(){
-        var parentViewData = $('.cur-root').data();
-        $preView.css('x', '0');
+        var parentViewData = $('.cur-root', $curView).data();
+        renderNodeData(parentViewData, minder, $preView);
+        $preView.css('x', parseInt($curView.css('x')) - 100 + '%');
+//        $curView.css('x');
+//        $('#km-list-view').css('x', '-100%');
 
         $('#km-list-view').transition({
-            x: '0',
+            x: parseInt($('#km-list-view').css('x')) + 100 + '%',
             duration: 200,
             easing: 'ease',
             complete: function(){
@@ -135,6 +143,7 @@ function renderNodeData(node, minder, $target){
         });
     }
 
+//    debugger;
     return $target.html($curRoot.add($curList));
 }
 
@@ -167,7 +176,7 @@ function createListNode(node, minder){
     // 处理子节点
     if (node.children){
         $list.addClass('clickable');
-        $list.append('<span class="next-level"></span>');
+        $list.children().first().before('<span class="next-level"></span>');
         $list.data(node);
     }
 
@@ -193,8 +202,6 @@ function getNodeHtml (node, minder){
         html += '<div class="progress progress-' + data.progress + '"></div>'
     }
 
-    // 处理文字
-    html += '<span class="text">' + (data.text || '') + '</span>';
     // 处理超链接
     if (data.hyperlink) {
         html +='<a class="hyperlink" href="'+ data.hyperlink +'" target="_blank"></a>';
@@ -206,6 +213,9 @@ function getNodeHtml (node, minder){
         });
     }
 
+    // 处理文字
+    if (data.text) {
+        html += '<span class="text">' + (data.text || '') + '</span>';
+    }
     return html;
 }
-
