@@ -26,10 +26,18 @@ kity.extendClass(MinderNode, {
 
     getConnect: function() {
         return null;
+    },
+
+    getConnection: function() {
+        return this._connection || null;
     }
 });
 
 kity.extendClass(Minder, {
+
+    getConnectContainer: function() {
+        return this._connectContainer;
+    },
 
     createConnect: function(node) {
         if (node.isRoot()) return;
@@ -37,11 +45,6 @@ kity.extendClass(Minder, {
         var connection = new kity.Path();
 
         node._connection = connection;
-
-        if (!this._connectContainer) {
-            this._connectContainer = new kity.Group().setId(KityMinder.uuid('minder_connect_group'));
-            this.getRenderContainer().prependShape(this._connectContainer);
-        }
 
         this._connectContainer.addShape(connection);
         this.updateConnect(node);
@@ -51,6 +54,7 @@ kity.extendClass(Minder, {
         var me = this;
         node.traverse(function(node) {
             me._connectContainer.removeShape(node._connection);
+            node._connection = null;
         });
     },
 
@@ -59,7 +63,7 @@ kity.extendClass(Minder, {
         var connection = node._connection;
         var parent = node.parent;
 
-        if (!parent) return;
+        if (!parent || !connection) return;
 
         if (parent.isCollapsed()) {
             connection.setVisible(false);
@@ -85,6 +89,10 @@ kity.extendClass(Minder, {
 });
 
 KityMinder.registerModule('Connect', {
+    init: function() {
+        this._connectContainer = new kity.Group().setId(KityMinder.uuid('minder_connect_group'));
+        this.getRenderContainer().prependShape(this._connectContainer);
+    },
     events: {
         'nodeattach': function(e) {
             this.createConnect(e.node);

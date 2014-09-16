@@ -1,4 +1,7 @@
 /**
+ * Created by zhangbo21 on 14-9-10.
+ */
+/**
  * 开发版本的文件导入
  */
 (function() {
@@ -99,8 +102,8 @@
         'ui/widget/menutab.js',
 
         /* UI 菜单 */
-        'ui/menu/menu.js',
-        'ui/menu/header.js',
+//        'ui/menu/menu.js',
+//        'ui/menu/header.js',
 
         /* UI 菜单 - 新建 */
         // 'ui/menu/new/new.js',
@@ -113,19 +116,21 @@
         // 'ui/menu/open/draft.js',
 
         /* UI 菜单 - 保存 */
-        'ui/menu/save/save.js',
+//        'ui/menu/save/save.js',
         // 'ui/menu/save/netdisk.js',
-        'ui/menu/save/download.js',
+//        'ui/menu/save/download.js',
 
         /* UI 菜单 - 分享 */
         // 'ui/menu/share/share.js',
-        'ui/menu/share/view.js',
+        'ui/menu/share/m-share.js',
 
         /* UI Top Bar */
         // 'ui/topbar/history.js',
         // 'ui/topbar/user.js',
-        'ui/topbar/search.js',
-        'ui/topbar/title.js',
+//        'ui/topbar/search.js',
+        'ui/topbar/m-logo.js',
+        'ui/topbar/switch-view.js',
+        'ui/topbar/title.js'
 
         /* UI Ribbon */
         // 'ui/ribbon/tabs.js',

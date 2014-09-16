@@ -79,5 +79,14 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
         error(false);
     });
 
+    $(minder.getPaper().getNode()).delegate('a', 'click', function(e) {
+        var $a = $(e.target).closest('a');
+        var href = $a.prop('href').baseVal;
+        if (window.confirm(minder.getLang('ui.redirect', href))) {
+            window.open(href, '_blank');
+        }
+        e.preventDefault();
+    });
+
     return $linkButtonMenu;
 });

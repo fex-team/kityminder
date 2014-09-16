@@ -187,7 +187,9 @@ KityMinder.LANG['zh-cn'] = {
         'hoursago': '{0} 小时前',
         'yesterday': '昨天',
         'daysago': '{0} 天前',
-        'longago': '很久之前'
+        'longago': '很久之前',
+
+        'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

@@ -4,15 +4,18 @@ var ViewDragger = kity.createClass("ViewDragger", {
         this._enabled = false;
         this._bind();
     },
+
     isEnabled: function() {
         return this._enabled;
     },
+
     setEnabled: function(value) {
         var paper = this._minder.getPaper();
         paper.setStyle('cursor', value ? 'pointer' : 'default');
         paper.setStyle('cursor', value ? '-webkit-grab' : 'default');
         this._enabled = value;
     },
+
     move: function(offset, duration) {
         if (!duration) {
             this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
@@ -57,6 +60,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('normal.mousemove normal.touchmove ' +
             'readonly.touchmove readonly.mousemove ' +
             'inputready.mousemove inputready.touchmove', function(e) {
+                if (e.type == 'touchmove') {
+                    e.preventDefault(); // 阻止浏览器的后退事件
+                }
                 if (!isTempDrag) return;
                 var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
                 if (offset.length() > 3) this.setStatus('hand');
@@ -87,9 +93,6 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('mouseup touchend', dragEnd);
 
         window.addEventListener('mouseup', dragEnd);
-        dragger._minder.getRenderTarget().addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
     }
 });
 
@@ -134,21 +137,21 @@ KityMinder.registerModule('View', function() {
     var MoveCommand = kity.createClass('MoveCommand', {
         base: Command,
 
-        execute: function(km, dir) {
-            var dragger = this._viewDragger;
+        execute: function(km, dir, duration) {
+            var dragger = km._viewDragger;
             var size = km._lastClientSize;
             switch (dir) {
                 case 'up':
-                    dragger.move(new kity.Point(0, -size.height / 2));
+                    dragger.move(new kity.Point(0, -size.height / 2), duration);
                     break;
                 case 'down':
-                    dragger.move(new kity.Point(0, size.height / 2));
+                    dragger.move(new kity.Point(0, size.height / 2), duration);
                     break;
                 case 'left':
-                    dragger.move(new kity.Point(-size.width / 2, 0));
+                    dragger.move(new kity.Point(-size.width / 2, 0), duration);
                     break;
                 case 'right':
-                    dragger.move(new kity.Point(size.width / 2, 0));
+                    dragger.move(new kity.Point(size.width / 2, 0), duration);
                     break;
             }
         }
@@ -169,6 +172,15 @@ KityMinder.registerModule('View', function() {
                     this.execCommand('hand');
                     e.preventDefault();
                 }
+            },
+            keydown: function(e) {
+                var minder = this;
+                ['up', 'down', 'left', 'right'].forEach(function(name) {
+                    if (e.isShortcutKey('ctrl+' + name)) {
+                        minder.execCommand('move', name, 600);
+                        e.preventDefault();
+                    }
+                });
             },
             statuschange: function(e) {
                 this._viewDragger.setEnabled(e.currentStatus == 'hand');

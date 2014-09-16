@@ -117,6 +117,7 @@
         'ui/fiox.js',
         'ui/doc.js',
         'ui/contextmenu.js',
+        'ui/nav.js',
 
         /* UI 组件 */
         'ui/widget/commandbutton.js',

@@ -100,17 +100,19 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             function confirm() {
                 var name = $input.val();
                 if (name) {
+                    $container.addClass('loading');
                     fio.file.mkdir({
                         path: currentPath + name
                     }).then(function() {
-                        return list(currentPath);
+                        return list(currentPath, true);
                     }, function(e) {
                         window.alert('创建目录失败：' + e.message);
+                        $li.remove();
                     }).then(function() {
+                        $container.removeClass('loading');
                         mkdir.onprogress = false;
                     });
                 }
-                $li.remove();
             }
         }
 
@@ -157,7 +159,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         /**
          * 列出指定目录的文件
          */
-        function list(path) {
+        function list(path, noAnimate) {
 
             path = path || base;
 
@@ -165,7 +167,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 path: path
             });
 
-            var transitPromise = fadeOutList(-100 * sign(path.length - currentPath.length));
+            var transitPromise = noAnimate ? Promise.resolve() : fadeOutList(-100 * sign(path.length - currentPath.length));
 
             currentPath = path.charAt(path.length - 1) == '/' ? path : path + '/';
 
