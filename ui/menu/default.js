@@ -21,7 +21,7 @@ KityMinder.registerUI('menu/default', function (minder) {
         $save.$tabs.select(0); // 云存储
         $share.$tabs.select(0); // 当前脑图
         
-        if ($draft.hasLast()) {
+        if ($draft.hasDraft()) {
             $draft.openLast();
         }
         // $menu.show();

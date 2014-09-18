@@ -117,7 +117,7 @@ KityMinder.registerModule('ArrangeModule', {
         divider: true
     }],
     commandShortcutKeys: {
-        'arrangeup': 'alt+Up',
-        'arrangedown': 'alt+Down'
+        'arrangeup': 'normal::alt+Up',
+        'arrangedown': 'normal::alt+Down'
     }
 });

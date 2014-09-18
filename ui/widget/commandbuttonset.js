@@ -27,7 +27,8 @@ KityMinder.registerUI('widget/commandbuttonset', function(minder) {
             className: ['command-widget', 'command-buttonset', command].join(' ')
         });
 
-        $buttonset.on('change', function() {
+
+        $buttonset.bindExecution('change', function() {
             minder.execCommand(command, $buttonset.getValue());
         });
 

@@ -19,19 +19,14 @@ KityMinder.registerUI('widget/commandinputmenu', function(minder) {
         });
 
 
-        var interactFlag = false;
-
         $menu.bindCommandState(minder, command, function(value) {
-            interactFlag = true;
             if (!$menu.selectByValue(value)) {
                 $menu.clearSelect();
             }
-            interactFlag = false;
         });
 
         var lastIndex = -1;
-        $menu.on('select', function(e, info) {
-            if (interactFlag) return;
+        $menu.bindExecution('select', function(e, info) {
             if (~info.index) {
                 minder.execCommand(command, info.value);
             } else {

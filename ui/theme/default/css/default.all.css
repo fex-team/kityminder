@@ -1820,7 +1820,7 @@ body {
 #tab-container {
   position: absolute;
   top: 40px;
-  height: 65px;
+  height: 60px;
   left: 0;
   right: 0;
   background: white;
@@ -2388,13 +2388,13 @@ body {
   background-color: #e5e7ec;
 }
 #tab-container .command-buttonset.priority {
-  width: 140px;
+  width: 130px;
 }
 #tab-container .command-buttonset.priority .fui-button {
   width: 20px;
   height: 20px;
   margin: 1px;
-  padding: 3px;
+  padding: 2px;
   border-radius: 4px;
 }
 #tab-container .command-buttonset.priority .fui-button .fui-label {
@@ -2441,13 +2441,13 @@ body {
   background-color: #c4d0ee;
 }
 #tab-container .command-buttonset.progress {
-  width: 140px;
+  width: 130px;
 }
 #tab-container .command-buttonset.progress .fui-button {
   width: 20px;
   height: 20px;
   margin: 1px;
-  padding: 3px;
+  padding: 2px;
   border-radius: 4px;
 }
 #tab-container .command-buttonset.progress .fui-button .fui-label {
@@ -2511,7 +2511,7 @@ body {
 }
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-drop-panel {
   display: block;
-  height: 30px;
+  height: 25px;
   margin-top: -1px;
   width: 140px;
 }
@@ -2535,7 +2535,7 @@ ul.resource-list li {
   display: inline-block;
   padding: 1px 2px;
   border-radius: 4px;
-  margin: 5px 0px 5px 5px;
+  margin: 3px;
 }
 #template-panel > .fui-panel-content > .fui-label-panel-content > .fui-drop-panel {
   width: 65px;
@@ -3226,6 +3226,13 @@ div.right {
   border-radius: 0 2px 2px 0;
   padding: 3px;
   z-index: 9;
+  cursor: crosshair;
+}
+.preview-navigator.grab {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+  cursor: grabbing;
 }
 .nav-bar {
   position: absolute;

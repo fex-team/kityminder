@@ -67,8 +67,12 @@ module.exports = function(grunt) {
                 files: [{
                     src: [
                         'ui/theme/**/css/*.css',
+                        'ui/theme/**/css/*.css.map',
                         'ui/theme/**/images/*',
                         'lang/**/*',
+                        'static/**/*',
+                        'lib/ZeroClipboard.swf',
+                        'lib/inflate.js',
                         'index.html',
                         'download.php'
                     ],

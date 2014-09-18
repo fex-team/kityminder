@@ -74,7 +74,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function renderCreatePanel() {
         // render template
-        return $.pajax('ui/menu/share/create.html').then(function(html) {
+        return $.pajax('static/pages/createshare.html').then(function(html) {
             /* global jhtmls: true */
             var render = jhtmls.render(html);
             $create_menu.html(render({

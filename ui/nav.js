@@ -84,6 +84,7 @@ KityMinder.registerUI('nav', function(minder) {
         paper.on('mousedown', function(e) {
             dragging = true;
             moveView(e.getPosition('top'), 200);
+            $previewNavigator.addClass('grab');
         });
 
         paper.on('mousemove', function(e) {
@@ -94,6 +95,7 @@ KityMinder.registerUI('nav', function(minder) {
 
         $(window).on('mouseup', function() {
             dragging = false;
+            $previewNavigator.removeClass('grab');
         });
 
         function preview() {

@@ -122,16 +122,17 @@ Minder.Receiver = kity.createClass('Receiver', {
     updateTextOffsetData: function() {
         var me = this;
 
-        var lineHeight =
-                this.minderNode.getStyle('line-height') * (this.minderNode.getData('font-size') || this.minderNode.getStyle('font-size'));
-        var offsetHeight = (me.textGroup.getShapes().length * lineHeight)/2;
+        var fontHeight = this.minderNode.getData('font-size') || this.minderNode.getStyle('font-size');
+        var lineHeight = this.minderNode.getStyle('line-height') * fontHeight;
+
+        var offsetHeight = (me.textGroup.getShapes().length * lineHeight - (lineHeight - fontHeight)) / 2;
 
         var box;
         this.textData = [];
 
         me.textGroup.eachItem(function(index,textShape){
             me.textData[index] = [];
-            var currentLineTop = index * lineHeight + 2;
+            var currentLineTop = index * lineHeight + 1;
             var text = textShape.getContent();
 
             for (var i = 0, l = text.length; i < l; i++) {

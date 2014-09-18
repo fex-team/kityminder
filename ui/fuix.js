@@ -18,12 +18,22 @@ kity.extendClass(FUI.Widget, {
         else this.addClass('active');
     },
 
+    bindExecution: function(event, fn) {
+        var widget = this;
+        widget.executionFlag = false;
+        widget.on(event, function() {
+            widget.executionFlag = true;
+            fn.apply(widget, arguments);
+            widget.executionFlag = false;
+        });
+    },
+
     bindCommandState: function(minder, command, valueHandle) {
-        var $widget = this;
+        var widget = this;
         minder.on('interactchange', function() {
-            $widget.setEnable(this.queryCommandState(command) !== -1);
-            $widget.setActive(this.queryCommandState(command) === 1);
-            if (valueHandle) valueHandle.call($widget, this.queryCommandValue(command));
+            widget.setEnable(this.queryCommandState(command) !== -1);
+            widget.setActive(this.queryCommandState(command) === 1);
+            if (valueHandle && !widget.executionFlag) valueHandle.call(widget, this.queryCommandValue(command));
         });
     }
 });

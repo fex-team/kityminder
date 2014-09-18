@@ -7,32 +7,34 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         return new kity.Group().setId(KityMinder.uuid('node_text'));
     },
 
-    update: function(textGroup,node) {
+    update: function(textGroup, node) {
+
+        function s(name) {
+            return node.getData(name) || node.getStyle(name);
+        }
 
         var textArr = node.getText(true);
 
         var lineHeight = node.getStyle('line-height');
 
-        var fontSize = node.getData('font-size') || node.getStyle('font-size');
+        var fontSize = s('font-size');
 
-        var height = textArr.length *
-            node.getStyle('line-height') * (node.getData('font-size') || node.getStyle('font-size')) / 2;
+        var height = (lineHeight * fontSize) * textArr.length - (lineHeight - 1) * fontSize;
+        var yStart = -height / 2;
+
         var rBox = new kity.Box(),
-
             r = Math.round;
-
-
 
         this.setTextStyle(node, textGroup);
 
-        for(var i= 0,text,textShape;
-            (text=textArr[i],textShape=textGroup.getItem(i),
-                text!==undefined||textShape!==undefined);i++){
+        for (var i = 0, text, textShape;
+            (text = textArr[i], textShape = textGroup.getItem(i),
+                text !== undefined || textShape !== undefined); i++) {
 
-            if(text === undefined && textShape){
+            if (text === undefined && textShape) {
                 textGroup.removeItem(i);
-            }else{
-                if(text!==undefined&&!textShape){
+            } else {
+                if (text !== undefined && !textShape) {
                     textShape = new kity.Text()
                         .setVerticalAlign('top')
                         .setAttr('text-rendering', 'inherit');
@@ -46,15 +48,15 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         }
         this.setTextStyle(node, textGroup);
 
-        textGroup.eachItem(function(i,textShape){
-            var y = i * fontSize * lineHeight - height;
+        textGroup.eachItem(function(i, textShape) {
+            var y = yStart + i * fontSize * lineHeight;
 
             textShape.setY(y);
 
             rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width, fontSize));
         });
 
-        var nBox = new kity.Box(r(rBox.x), r(rBox.y),r(rBox.width), r(rBox.height));
+        var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
 
         node._currentTextGroupBox = nBox;
         return function() {
@@ -79,9 +81,9 @@ utils.extend(TextRenderer, {
     }
 });
 
-kity.extendClass(MinderNode,{
-    getTextGroup : function() {
-        return  this.getRenderer('TextRenderer').getRenderShape();
+kity.extendClass(MinderNode, {
+    getTextGroup: function() {
+        return this.getRenderer('TextRenderer').getRenderShape();
     }
 });
 KityMinder.registerModule('text', {

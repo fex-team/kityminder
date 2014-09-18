@@ -74,7 +74,9 @@ kity.extendClass(Minder, {
             for (var keys in map) {
                 if (!map[has](keys)) break;
                 if (e.isShortcutKey(keys)) {
-                    map[keys]();
+                    var fn = map[keys];
+                    if (fn.__statusCondition && fn.__statusCondition != this.getStatus()) return;
+                    fn();
                     e.preventDefault();
                 }
             }
@@ -84,6 +86,13 @@ kity.extendClass(Minder, {
     addShortcut: function(keys, fn) {
         var binds = this._shortcutKeys;
         keys.split(/\|\s*/).forEach(function(combine) {
+            var parts = combine.split('::');
+            var status;
+            if (parts.length > 1) {
+                combine = parts[1];
+                status = parts[0];
+                fn.__statusCondition = status;
+            }
             binds[combine] = fn;
         });
     },

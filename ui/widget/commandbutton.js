@@ -17,7 +17,7 @@ KityMinder.registerUI('widget/commandbutton', function(minder) {
                 className: ['command-widget', 'command-button', command]
             });
 
-            $button.on('click', onclick || function() {
+            $button.bindExecution('click', onclick || function() {
                 minder.execCommand(command);
             });
 

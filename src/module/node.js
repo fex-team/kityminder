@@ -103,10 +103,10 @@ KityMinder.registerModule('NodeModule', function() {
         }],
 
         'commandShortcutKeys': {
-            'appendsiblingnode': 'Enter',
-            'appendchildnode': 'Insert|Tab',
-            'editnode': 'F2',
-            'removenode': 'Delete|Backspace'
+            'appendsiblingnode': 'normal::Enter',
+            'appendchildnode': 'normal::Insert|Tab',
+            'editnode': 'normal::F2',
+            'removenode': 'normal::Delete|Backspace'
         }
     };
 });

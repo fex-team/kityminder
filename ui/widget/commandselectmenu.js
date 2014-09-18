@@ -28,7 +28,7 @@ KityMinder.registerUI('widget/commandselectmenu', function(minder) {
             column: column || 3
         });
 
-        $selectMenu.on('change', function() {
+        $selectMenu.bindExecution('change', function() {
             minder.execCommand(command, $selectMenu.getValue());
         });
 

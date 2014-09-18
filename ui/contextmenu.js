@@ -25,7 +25,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
         }
     });
 
-    minder.on('contextmenu', function(e) {
+    $('#content-wrapper').on('contextmenu', function(e) {
         e.preventDefault();
     });
 
@@ -61,6 +61,8 @@ KityMinder.registerUI('contextmenu', function(minder) {
                     shortcuts.split('|').forEach(function(shortcut) {
                         var $shortcut = $('<span>').addClass('shortcut').appendTo($li);
                         shortcut.split('+').forEach(function(key) {
+                            var parts = key.split('::');
+                            key = parts.length > 1 ? parts[1] : parts[0];
                             $('<span>').addClass('shortcut-key ' + key.toLowerCase())
                                 .text(camel(key))
                                 .appendTo($shortcut);
