@@ -1,7 +1,7 @@
 .idea
 .DS_Store
-.dist
 *.sublime-project
 *.sublime-workspace
+dist/
 node_modules/
 _drafts/
