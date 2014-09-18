@@ -777,7 +777,7 @@ input[type=url]:focus {
 .shortcut-key.down,
 .shortcut-key.left,
 .shortcut-key.right {
-  text-indent: -1000px;
+  text-indent: -10000px;
   position: relative;
   width: 9px;
 }
@@ -1006,7 +1006,7 @@ li {
   width: 40px;
   height: 50px;
   display: inline-block;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 #tab-container .fui-button-menu:hover {
   border-color: #eff3fa;
@@ -1210,7 +1210,7 @@ li {
   list-style: none;
   background-color: #ffffff;
   border-radius: 0;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.3);
   background-clip: padding-box;
   font-family: Arial, "Heiti SC", "Microsoft Yahei";
 }
@@ -1820,7 +1820,7 @@ body {
 #tab-container {
   position: absolute;
   top: 40px;
-  height: 89px;
+  height: 65px;
   left: 0;
   right: 0;
   background: white;
@@ -1853,6 +1853,7 @@ body {
   position: absolute;
   bottom: 0;
   top: auto;
+  display: none;
 }
 #tab-container > .fui-panel > .fui-panel-content > .fui-panel > .fui-panel-content > .fui-label-panel-content {
   padding: 5px;
@@ -2497,7 +2498,7 @@ body {
 }
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-input {
   width: 148px;
-  margin: 5px 0 0;
+  margin: 2px 0 0;
   vertical-align: middle;
 }
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-button {
@@ -3215,12 +3216,131 @@ div.right {
   background-position: 0 -300px;
 }
 .preview-navigator {
-  border: 1px solid #FC9C9C;
   background: white;
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 120px;
   position: absolute;
-  left: 20px;
-  bottom: 20px;
+  left: 45px;
+  bottom: 30px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 0 2px 2px 0;
+  padding: 3px;
+  z-index: 9;
+}
+.nav-bar {
+  position: absolute;
+  width: 35px;
+  height: 240px;
+  padding: 5px 0;
+  left: 10px;
+  bottom: 10px;
+  background: #fc8383;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+.nav-bar .command-button {
+  width: 35px;
+  height: 24px;
+  text-align: center;
+  line-height: 30px;
+}
+.nav-bar .command-button .fui-label {
+  display: none;
+}
+.nav-bar .command-button .fui-icon {
+  background: url(../images/icons.png);
+  width: 20px;
+  height: 20px;
+  margin: 2px auto;
+  display: block;
+}
+.nav-bar .command-button:hover {
+  background: #fdb4b4;
+}
+.nav-bar .command-button:active {
+  background: #fb7474;
+}
+.nav-bar .command-button.active {
+  background: #5A6378;
+}
+.nav-bar .command-button.hand,
+.nav-bar .command-button.nav-trigger,
+.nav-bar .command-button.camera {
+  height: 25px;
+  margin: 3px 0;
+}
+.nav-bar .command-button.hand .fui-icon,
+.nav-bar .command-button.nav-trigger .fui-icon,
+.nav-bar .command-button.camera .fui-icon {
+  margin: 0 auto;
+  width: 25px;
+  height: 25px;
+}
+.nav-bar .command-button.zoom-in .fui-icon {
+  background-position: 0 -730px;
+}
+.nav-bar .command-button.zoom-out .fui-icon {
+  background-position: 0 -750px;
+}
+.nav-bar .command-button.hand {
+  margin-top: 10px;
+}
+.nav-bar .command-button.hand .fui-icon {
+  background-position: 0 -770px;
+}
+.nav-bar .command-button.hand.active .fui-icon {
+  background-position: 0 -795px;
+}
+.nav-bar .command-button.nav-trigger .fui-icon {
+  background-position: 0 -820px;
+}
+.nav-bar .command-button.nav-trigger.active .fui-icon {
+  background-position: 0 -845px;
+}
+.nav-bar .command-button.camera {
+  margin-bottom: 0;
+}
+.nav-bar .command-button.camera .fui-icon {
+  background-position: 0 -870px;
+}
+.nav-bar .zoom-pan {
+  width: 2px;
+  height: 70px;
+  box-shadow: 0 1px #E50000;
+  position: relative;
+  background: white;
+  margin: 3px auto;
+  overflow: visible;
+}
+.nav-bar .zoom-pan .origin {
+  position: absolute;
+  width: 20px;
+  height: 8px;
+  left: -9px;
+  margin-top: -4px;
+  background: transparent;
+}
+.nav-bar .zoom-pan .origin:after {
+  content: ' ';
+  display: block;
+  width: 6px;
+  height: 2px;
+  background: white;
+  left: 7px;
+  top: 3px;
+  position: absolute;
+}
+.nav-bar .zoom-pan .origin:hover:after {
+  box-shadow: 0 0 5px #ffffff;
+}
+.nav-bar .zoom-pan .indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: -3px;
+  background: white;
+  border-radius: 100%;
+  margin-top: -4px;
 }
 /*# sourceMappingURL=default.all.css.map */

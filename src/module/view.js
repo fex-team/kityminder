@@ -3,6 +3,10 @@ var ViewDragger = kity.createClass("ViewDragger", {
         this._minder = minder;
         this._enabled = false;
         this._bind();
+        var me = this;
+        this._minder.getViewDragger = function() {
+            return me;
+        };
     },
 
     isEnabled: function() {
@@ -17,11 +21,47 @@ var ViewDragger = kity.createClass("ViewDragger", {
     },
 
     move: function(offset, duration) {
-        if (!duration) {
-            this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        } else {
-            this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
+        var minder = this._minder;
+
+        var targetPosition = this.getMovement().offset(offset);
+
+        this.moveTo(targetPosition, duration);
+    },
+
+    moveTo: function(position, duration) {
+
+        if (duration) {
+            var dragger = this;
+
+            this._minder.getRenderContainer().animate(new kity.Animator(
+                this.getMovement(),
+                position,
+                function(target, value) {
+                    dragger.moveTo(value);
+                }
+            ), duration, 'easeOutCubic');
+
+            return this;
         }
+
+        this._minder.getRenderContainer().setTranslate(position.round());
+        this._minder.fire('viewchange');
+    },
+
+    getMovement: function() {
+        var translate = this._minder.getRenderContainer().transform.translate;
+        return translate ? translate[0] : new kity.Point();
+    },
+
+    getView: function() {
+        var minder = this._minder;
+        var c = {
+            width: minder.getRenderTarget().clientWidth,
+            height: minder.getRenderTarget().clientHeight
+        };
+        var m = this.getMovement();
+        var box = new kity.Box(-m.x, -m.y, c.width, c.height);
+        return box;
     },
 
     _bind: function() {
@@ -121,6 +161,7 @@ KityMinder.registerModule('View', function() {
     var CameraCommand = kity.createClass('CameraCommand', {
         base: Command,
         execute: function(km, focusNode, duration) {
+
             focusNode = focusNode || km.getRoot();
             var viewport = km.getPaper().getViewPort();
             var offset = focusNode.getRenderContainer().getRenderBox('view');
@@ -226,8 +267,8 @@ KityMinder.registerModule('View', function() {
                         height: this.getRenderTarget().clientHeight
                     },
                     b = this._lastClientSize;
-                this.getRenderContainer().translate(
-                    (a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0);
+                this._viewDragger.move(
+                    new kity.Point((a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0));
                 this._lastClientSize = a;
             }
         }

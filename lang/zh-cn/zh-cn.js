@@ -12,7 +12,13 @@ KityMinder.LANG['zh-cn'] = {
         'fresh-green': '文艺绿',
         'fresh-blue': '天空蓝',
         'fresh-purple': '浪漫紫',
-        'fresh-pink': '脑残粉'
+        'fresh-pink': '脑残粉',
+        'fresh-red-compat': '紧凑红',
+        'fresh-soil-compat': '紧凑黄',
+        'fresh-green-compat': '紧凑绿',
+        'fresh-blue-compat': '紧凑蓝',
+        'fresh-purple-compat': '紧凑紫',
+        'fresh-pink-compat': '紧凑粉'
     },
     'maintopic': '中心主题',
     'topic': '分支主题',
@@ -51,7 +57,7 @@ KityMinder.LANG['zh-cn'] = {
 
         'tabs': {
             'idea': '思路',
-            'appearence': '展现',
+            'appearence': '外观',
             'view': '视图'
         },
 
@@ -145,7 +151,9 @@ KityMinder.LANG['zh-cn'] = {
         'node': '节点操作',
         'saveto': '另存为',
         'hand': '允许拖拽',
-        'zoom': '放大缩小',
+        'camera': '定位根节点',
+        'zoom-in': '放大',
+        'zoom-out': '缩小',
         'markers': '标签',
         'resource': '资源',
         'help': '帮助',
@@ -189,7 +197,8 @@ KityMinder.LANG['zh-cn'] = {
         'daysago': '{0} 天前',
         'longago': '很久之前',
 
-        'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？'
+        'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？',
+        'navigator': '导航器'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

@@ -145,6 +145,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     }
 
     function setFileNameForNetDiskSource(doc) {
+        if (!fio.user.current()) return;
+
         var path = doc.path;
         var pathInfo = fio.file.anlysisPath(path);
 

@@ -33,7 +33,7 @@ kity.extendClass( Minder, function(){
 
             removeItem: function ( key ) {
 
-                storage && storage.removeItem( key );
+                if (storage) storage.removeItem( key );
 
             }
 
@@ -61,14 +61,14 @@ kity.extendClass( Minder, function(){
             var data = LocalStorage.getLocalData(ROOTKEY);
             if(data){
                 data = JSON.parse(data);
-                return key ? data[key] : data
+                return key ? data[key] : data;
             }
             return null;
         },
         resetPreferences:function(pres){
             var str = pres ? JSON.stringify(pres) : '';
-            LocalStorage.saveLocalData(str)
+            LocalStorage.saveLocalData(str);
         }
-    }
+    };
 
 }() );

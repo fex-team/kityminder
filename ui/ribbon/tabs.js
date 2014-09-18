@@ -9,7 +9,7 @@
 
 KityMinder.registerUI('ribbon/tabs', function(minder) {
     var $tab = new FUI.Tabs({
-        buttons: ['idea', 'appearence', 'view'].map(function(key) {
+        buttons: ['idea', 'appearence'/*, 'view'*/].map(function(key) {
             return minder.getLang('ui.tabs.' + key);
         })
     });

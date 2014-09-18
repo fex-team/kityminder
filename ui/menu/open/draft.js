@@ -143,6 +143,9 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
     }
 
     return {
+        hasDraft: function() {
+            return draftList.length;
+        },
         openLast: function() {
             $ul.find('.draft-list-item').eq(0).click();
         }

@@ -14,7 +14,7 @@ KityMinder.registerConnectProvider('bezier', function(node, parent, connection) 
         pi = node.getLayoutVertexIn();
 
     // 连线矢量和方向
-    var v = parent.getLayoutVector().normalize();
+    var v = parent.getLayoutVectorOut().normalize();
 
     var r = Math.round;
     var abs = Math.abs;

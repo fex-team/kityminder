@@ -117,7 +117,6 @@
         'ui/fiox.js',
         'ui/doc.js',
         'ui/contextmenu.js',
-        'ui/nav.js',
 
         /* UI 组件 */
         'ui/widget/commandbutton.js',
@@ -128,6 +127,9 @@
         'ui/widget/locallist.js',
         'ui/widget/netdiskfinder.js',
         'ui/widget/menutab.js',
+
+        /* 视野导航 */
+        'ui/nav.js',
 
         /* UI 菜单 */
         'ui/menu/menu.js',
@@ -176,9 +178,9 @@
         'ui/ribbon/appearence/template.js',
         'ui/ribbon/appearence/theme.js',
         'ui/ribbon/appearence/layout.js',
+        'ui/ribbon/appearence/style.js',
         'ui/ribbon/appearence/font.js',
         'ui/ribbon/appearence/color.js',
-        'ui/ribbon/appearence/style.js',
 
         /* UI Ribbon「视图」面板 */
         'ui/ribbon/view/level.js'

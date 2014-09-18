@@ -33,7 +33,9 @@ KityMinder.registerUI('topbar/user', function(minder) {
     }).appendTo($userPanel[0]).hide();
 
     /* 用户菜单 */
-    var $userMenu = new FUI.PopupMenu().appendTo(document.getElementById('content-wrapper')).positionTo($userButton);
+    var $userMenu = new FUI.PopupMenu({
+        id: 'user-menu'
+    }).appendTo(document.getElementById('content-wrapper')).positionTo($userButton);
 
     var menu = $userMenu.getMenuWidget().show();
 
@@ -51,7 +53,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
         var $button = $($userButton.getElement());
         $dom.offset({
             left: $button.offset().left - $dom.outerWidth() + $button.outerWidth() - 10,
-            top: $button.offset().top + $button.outerHeight() + 10
+            top: $button.offset().top + $button.outerHeight()
         });
     });
 

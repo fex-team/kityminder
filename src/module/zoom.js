@@ -58,6 +58,7 @@ KityMinder.registerModule('Zoom', function() {
             timeline.pause();
         }
         timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
+        minder.fire('viewchange');
     }
 
     var ZoomCommand = kity.createClass('Zoom', {
@@ -74,7 +75,7 @@ KityMinder.registerModule('Zoom', function() {
             zoomMinder(minder, this.nextValue(minder));
         },
         queryState: function(minder) {
-            return (~this.nextValue(minder));
+            return +!this.nextValue(minder);
         },
         nextValue: function(minder) {
             var stack = minder.getOptions('zoom'),
@@ -93,7 +94,7 @@ KityMinder.registerModule('Zoom', function() {
             zoomMinder(minder, this.nextValue(minder));
         },
         queryState: function(minder) {
-            return (~this.nextValue(minder));
+            return +!this.nextValue(minder);
         },
         nextValue: function(minder) {
             var stack = minder.getOptions('zoom'),
@@ -117,24 +118,9 @@ KityMinder.registerModule('Zoom', function() {
             'zoom': ZoomCommand
         },
         events: {
-            'normal.keydown': function(e) {
-                var me = this;
-                var originEvent = e.originEvent;
-                var keyCode = originEvent.keyCode || originEvent.which;
-                if (keymap['='] == keyCode) {
-                    me.execCommand('zoom-in');
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
-                if (keymap['-'] == keyCode) {
-                    me.execCommand('zoom-out');
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                }
-            },
             'normal.mousewheel readonly.mousewheel': function(e) {
-                if (!e.originEvent.ctrlKey) return;
+                if (!e.originEvent.ctrlKey && !e.originEvent.metaKey) return;
+
                 var delta = e.originEvent.wheelDelta;
                 var me = this;
 
@@ -161,6 +147,11 @@ KityMinder.registerModule('Zoom', function() {
 
                 e.originEvent.preventDefault();
             }
+        },
+
+        commandShortcutKeys: {
+            'zoom-in': 'ctrl+=',
+            'zoom-out': 'ctrl+-'
         }
     };
 });

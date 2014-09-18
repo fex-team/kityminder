@@ -83,7 +83,7 @@ KityMinder.registerModule('basestylemodule', function() {
                 }
             })
         },
-        shortcutKeys: {
+        commandShortcutKeys: {
             'bold': 'ctrl+b', //bold
             'italic': 'ctrl+i' //italic
         }

@@ -316,7 +316,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
         var $list = $('<ul>')
             .attr('id', 'manage-share-list')
             .appendTo($manage_menu);
-
+        if (!list) return;
         list.forEach(function(share) {
             $list.append(buildShareItem(share));
         });
