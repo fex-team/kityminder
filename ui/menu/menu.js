@@ -38,11 +38,16 @@ KityMinder.registerUI('menu/menu', function(minder) {
 
     function hide() {
         $panel.removeClass('show');
+        minder.getRenderTarget().focus();
         ret.fire('hide');
     }
 
+    function isVisible() {
+        return $panel.hasClass('show');
+    }
+
     function toggle() {
-        ($panel.hasClass('show') ? hide : show)();
+        (isVisible() ? hide : show)();
     }
 
     function createSub(name, asDefault) {
@@ -75,6 +80,7 @@ KityMinder.registerUI('menu/menu', function(minder) {
     ret.show = show;
     ret.hide = hide;
     ret.toggle = toggle;
+    ret.isVisible = isVisible;
     ret.createSub = createSub;
     ret.createSubMenu = createSubMenu;
     ret.$panel = $panel;

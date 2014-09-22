@@ -1,3 +1,8 @@
+
+Minder.registerInit(function() {
+    this._initSelection();
+});
+
 // 选区管理
 kity.extendClass(Minder, {
     _initSelection: function() {
@@ -22,7 +27,10 @@ kity.extendClass(Minder, {
             }
         });
 
-        if (changed.length) this.fire('interactchange');
+        if (changed.length) {
+            this._interactChange();
+            this.fire('selectionchange');
+        }
         while (i < changed.length) changed[i++].render();
     },
     getSelectedNodes: function() {

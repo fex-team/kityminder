@@ -54,6 +54,9 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
         lastDoc = null;
 
     $ul.delegate('.draft-list-item', 'click', function(e) {
+
+        if (!$doc.checkSaved()) return;
+
         var item = $(e.target).closest('.draft-list-item').data('item');
 
         var index = draftList.findIndex(function(finding) {
@@ -117,7 +120,6 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
             current = null;
         }
         renderList();
-        console.log('pop draft');
     }
 
     function renderList() {

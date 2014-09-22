@@ -12,6 +12,7 @@ KityMinder.registerUI('doc', function(minder) {
     var ret = minder.getUI('eve').setup({});
     var current = {};
     var loading = false;
+    var saved = true;
 
     /**
      * 加载文档
@@ -45,7 +46,7 @@ KityMinder.registerUI('doc', function(minder) {
             doc.data = data;
             doc.json = JSON.stringify(data);
 
-            minder.getUI('topbar/title').setTitle(doc.title, doc.saved);
+            minder.getUI('topbar/title').setTitle(doc.title, saved = doc.saved);
 
             ret.fire('docload', doc);
 
@@ -65,12 +66,16 @@ KityMinder.registerUI('doc', function(minder) {
         doc.data = minder.exportJson();
         doc.json = JSON.stringify(doc.data);
         
-        minder.getUI('topbar/title').setTitle(doc.title, true);
+        minder.getUI('topbar/title').setTitle(doc.title, saved = true);
         ret.fire('docsave', doc);
     }
 
     function getCurrent() {
         return current;
+    }
+
+    function checkSaved() {
+        return saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
     }
 
     /* 绕开初始化时候的乱事件 */
@@ -83,16 +88,16 @@ KityMinder.registerUI('doc', function(minder) {
             if (current.source != 'netdisk') {
 
                 current.title = minder.getMinderTitle();
-                $title.setTitle(current.title, false);
+                $title.setTitle(current.title, saved = false);
                 ret.fire('docchange', current);
 
             } else {
 
                 if (current.json != JSON.stringify(minder.exportJson())) {
-                    $title.setSaved(false);
+                    $title.setSaved(saved = false);
                     ret.fire('docchange', current);
                 } else {
-                    $title.setSaved(true);
+                    $title.setSaved(saved = true);
                 }
 
             }
@@ -103,6 +108,7 @@ KityMinder.registerUI('doc', function(minder) {
     ret.load = load;
     ret.save = save;
     ret.current = getCurrent;
-
+    ret.checkSaved = checkSaved;
+    
     return ret;
 });

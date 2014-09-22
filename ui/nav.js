@@ -9,6 +9,8 @@
 
 KityMinder.registerUI('nav', function(minder) {
 
+    var memory = minder.getUI('memory');
+
     var $navBar = $('<div>').addClass('nav-bar').appendTo('#content-wrapper');
     var $commandbutton = minder.getUI('widget/commandbutton');
 
@@ -60,47 +62,87 @@ KityMinder.registerUI('nav', function(minder) {
         return $pan;
     }
 
+    /**
+     * 创建导航器的 DOM 元素以及交互的逻辑代码
+     */
     function createViewNavigator() {
         var $previewNavigator = $('<div>')
             .addClass('preview-navigator')
             .appendTo('#content-wrapper');
 
-        var width = $previewNavigator.width();
-        var height = $previewNavigator.height();
+        // 画布，渲染缩略图
         var paper = new kity.Paper($previewNavigator[0]);
 
-        paper.setWidth(width);
-        paper.setHeight(height);
+        // 用两个路径来挥之节点和连线的缩略图
+        var nodeThumb = paper.put(new kity.Path());
+        var connectionThumb = paper.put(new kity.Path());
 
-        var nodePath = paper.put(new kity.Path());
-        var connectPath = paper.put(new kity.Path());
-        var currentView = paper.put(new kity.Rect(100, 100).stroke('red', '1%'));
+        // 表示可视区域的矩形
+        var visibleRect = paper.put(new kity.Rect(100, 100).stroke('red', '1%'));
 
-        minder.on('layout layoutallfinish', preview);
-        minder.on('viewchange', updateView);
+        // 分别表示脑图内容区域大小和当前见区域大小
+        var contentView, visibleView;
 
-        var dragging = false;
+        navigate();
 
-        paper.on('mousedown', function(e) {
-            dragging = true;
-            moveView(e.getPosition('top'), 200);
-            $previewNavigator.addClass('grab');
-        });
+        $previewNavigator.show = function() {
+            $.fn.show.call(this);
+            bind();
+            updateVisibleView();
+        };
 
-        paper.on('mousemove', function(e) {
-            if (dragging) {
-                moveView(e.getPosition('top'));
+        $previewNavigator.hide = function() {
+            $.fn.hide.call(this);
+            unbind();
+        };
+
+        function bind() {
+            minder.on('layout layoutallfinish', updateContentView);
+            minder.on('viewchange', updateVisibleView);
+        }
+
+        function unbind() {
+            minder.off('layout layoutallfinish', updateContentView);
+            minder.off('viewchange', updateVisibleView);
+        }
+
+        function navigate() {
+
+            function moveView(center, duration) {
+                var box = visibleRect.getBox();
+                center.x = -center.x;
+                center.y = -center.y;
+                minder.getViewDragger().moveTo(center.offset(box.width / 2, box.height / 2), duration);
             }
-        });
 
-        $(window).on('mouseup', function() {
-            dragging = false;
-            $previewNavigator.removeClass('grab');
-        });
+            var dragging = false;
 
-        function preview() {
-            var view = minder.getRenderContainer().getBoundaryBox();
+            paper.on('mousedown', function(e) {
+                dragging = true;
+                moveView(e.getPosition('top'), 200);
+                $previewNavigator.addClass('grab');
+            });
+
+            paper.on('mousemove', function(e) {
+                if (dragging) {
+                    moveView(e.getPosition('top'));
+                }
+            });
+
+            $(window).on('mouseup', function() {
+                dragging = false;
+                $previewNavigator.removeClass('grab');
+            });
+        }
+
+        function updateContentView() {
+
+            contentView = minder.getRenderContainer().getBoundaryBox();
+
+            var view = visibleView ? contentView.merge(visibleView) : contentView;
+
             var padding = 30;
+
             paper.setViewBox(
                 view.x - padding - 0.5,
                 view.y - padding - 0.5,
@@ -108,7 +150,7 @@ KityMinder.registerUI('nav', function(minder) {
                 view.height + padding * 2 + 1);
 
             var nodePathData = [];
-            var connectPathData = [];
+            var connectionThumbData = [];
 
             minder.getRoot().traverse(function(node) {
                 var box = node.getLayoutBox();
@@ -116,39 +158,33 @@ KityMinder.registerUI('nav', function(minder) {
                     'h', box.width, 'v', box.height,
                     'h', -box.width, 'z');
                 if (node.getConnection() && node.parent && node.parent.isExpanded()) {
-                    connectPathData.push(node.getConnection().getPathData());
+                    connectionThumbData.push(node.getConnection().getPathData());
                 }
             });
 
             paper.setStyle('background', minder.getStyle('background'));
 
             if (nodePathData.length) {
-                nodePath
+                nodeThumb
                     .fill(minder.getStyle('root-background'))
                     .setPathData(nodePathData);
             } else {
-                nodePath.setPathData(null);
+                nodeThumb.setPathData(null);
             }
 
-            if (connectPathData.length) {
-                connectPath
+            if (connectionThumbData.length) {
+                connectionThumb
                     .stroke(minder.getStyle('connect-color'), '0.5%')
-                    .setPathData(connectPathData);
+                    .setPathData(connectionThumbData);
             } else {
-                connectPath.setPathData(null);
+                connectionThumb.setPathData(null);
             }
         }
 
-        function updateView() {
-            var view = minder.getViewDragger().getView();
-            currentView.setBox(view);
-        }
-
-        function moveView(center, duration) {
-            var box = currentView.getBox();
-            center.x = -center.x;
-            center.y = -center.y;
-            minder.getViewDragger().moveTo(center.offset(box.width / 2, box.height / 2), duration);
+        function updateVisibleView() {
+            visibleView = minder.getViewDragger().getView();
+            visibleRect.setBox(visibleView);
+            updateContentView();
         }
 
         return $previewNavigator;
@@ -156,16 +192,24 @@ KityMinder.registerUI('nav', function(minder) {
 
     function createPreviewTrigger($previewNavigator) {
         var $trigger = $('<div>').addClass('command-button nav-trigger');
+
         $trigger.append('<div class="fui-icon">');
-        $trigger.click(function() {
-            $trigger.toggleClass('active');
-            if ($trigger.hasClass('active')) {
+        $trigger.click(toggle);
+        $trigger.attr('title', minder.getLang('ui.navigator'));
+
+        function toggle() {
+            if ($trigger.toggleClass('active').hasClass('active')) {
                 $previewNavigator.show();
+                memory.set('navigator-hidden', false);
             } else {
                 $previewNavigator.hide();
+                memory.set('navigator-hidden', true);
             }
-        }).click();
-        $trigger.attr('title', minder.getLang('ui.navigator'));
+        }
+
+        if (memory.get('navigator-hidden')) toggle();
+        toggle();
+
         return $trigger;
     }
 

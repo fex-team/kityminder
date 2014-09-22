@@ -61,6 +61,10 @@ kity.extendClass(MinderEvent, {
     }
 });
 
+Minder.registerInit(function() {
+    this._initShortcutKey();
+});
+
 kity.extendClass(Minder, {
 
     _initShortcutKey: function() {

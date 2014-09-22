@@ -72,7 +72,7 @@ KityMinder.registerUI('widget/locallist', function() {
             list.forEach(callback);
         }
 
-        load();
+        load.call(this);
 
         this.get = get;
         this.remove = remove;

@@ -13,6 +13,10 @@
     };
 } )();
 
+Minder.registerInit(function() {
+    this._initModules();
+});
+
 // 模块声明周期维护
 kity.extendClass(Minder, {
     _initModules: function() {

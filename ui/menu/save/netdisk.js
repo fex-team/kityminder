@@ -43,7 +43,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         .attr('placeholder', minder.getLang('ui.filename'))
         .attr('title', minder.getLang('ui.filename'))
         .on('keydown', function(e) {
-            if (e.keyCode == 27) $menu.toggleClass('show');
+            if (e.keyCode == 27) $menu.toggle();
+            if (e.keyCode == 13) save();
         })
         .appendTo($selects);
 
@@ -77,7 +78,29 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         $filename.val(file.filename);
     });
 
-    function save() {
+    ret.quickSave = quickSave;
+
+    window.onbeforeunload = function() {
+        var noask = window.location.href.indexOf('noask') > 0;
+        if (!$doc.checkSave() && !noask)
+            return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
+    };
+
+    // 快速保存
+    function quickSave() {
+        var doc = $doc.current();
+        if (doc.source != 'netdisk' && !$menu.isVisible()) {
+            $menu.$tabs.select(2);
+            $save.$tabs.select(0);
+            return $menu.show();
+        } else {
+            var $title = minder.getUI('topbar/title').$title;
+            $filename.val(doc.title);
+            doSave(doc.path, doc.protocol, doc, $title);
+        }
+    }
+
+    function getSaveContext() {
         var filename = $filename.val();
 
         if (fio.file.anlysisPath(filename).extension != $format.val()) {
@@ -92,16 +115,36 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         var match = doc.path == path; // 目标路径正是当前文档
         var duplicated = exist && !match;
 
-        if (!exist || match || duplicated && window.confirm(minder.getLang('ui.overrideconfirm', filename))) {
-            doSave(path, protocol, doc);
+        return {
+            filename: filename,
+            path: path,
+            doc: doc,
+            protocol: protocol,
+            exist: exist,
+            match: match,
+            duplicated: duplicated
+        };
+    }
+
+    function save() {
+        var ctx = getSaveContext();
+
+        if (ctx.match || !ctx.exist || ctx.duplicated && window.confirm(minder.getLang('ui.overrideconfirm', ctx.filename))) {
+            doSave(ctx.path, ctx.protocol.name, ctx.doc, $panel);
         }
     }
 
-    function doSave(path, protocol, doc) {
+    var saving = false;
 
-        $panel.addClass('loading');
+    function doSave(path, protocol, doc, $mask) {
 
-        return minder.exportData(protocol.name).then(function(data) {
+        // if (saving) return;
+
+        saving = true;
+
+        if ($mask) $mask.addClass('loading');
+
+        return minder.exportData(protocol).then(function(data) {
 
             return fio.file.write({
                 path: path,
@@ -111,7 +154,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
         }).then(function() {
 
-            $panel.removeClass('loading');
+            if ($mask) $mask.removeClass('loading');
+
             $menu.hide();
 
             doc.path = path;
@@ -123,9 +167,10 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             setTimeout($finder.list, 500);
 
         })['catch'](function(e) {
-
             window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
 
+        }).then(function(e) {
+            saving = false;
         });
     }
 

@@ -8,6 +8,8 @@
  */
 
 KityMinder.registerUI('ribbon/tabs', function(minder) {
+    var memory = minder.getUI('memory');
+
     var $tab = new FUI.Tabs({
         buttons: ['idea', 'appearence'/*, 'view'*/].map(function(key) {
             return minder.getLang('ui.tabs.' + key);
@@ -34,12 +36,19 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
             $container.removeClass('collapsed');
             $header.removeClass('collapsed');
         }
+        memory.set('ribbon-tab-collapsed', $container.hasClass('collapsed'));
+        memory.set('ribbon-tab-index', info.index);
         lastIndex = info.index;
     });
 
     $tab.idea = $tab.getPanel(0);
     $tab.appearence = $tab.getPanel(1);
     $tab.view = $tab.getPanel(2);
-    $tab.select(1);
+    
+    $tab.select(memory.get('ribbon-tab-index') || 0);
+    if (memory.get('ribbon-tab-collapsed')) {
+        $container.addClass('collapsed');
+        $header.addClass('collapsed');
+    }
     return $tab;
 });

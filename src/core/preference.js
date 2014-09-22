@@ -41,7 +41,7 @@ kity.extendClass( Minder, function(){
 
     } )();
     return {
-        setPreferences:function(key,value){
+        setPreferences: function(key,value){
             var obj = {};
             if ( Utils.isString( key ) ) {
                 obj[ key ] = value;
@@ -57,15 +57,15 @@ kity.extendClass( Minder, function(){
             }
             LocalStorage.saveLocalData(ROOTKEY,JSON.stringify(data));
         },
-        getPreferences:function(key){
+        getPreferences: function(key){
             var data = LocalStorage.getLocalData(ROOTKEY);
             if(data){
                 data = JSON.parse(data);
                 return key ? data[key] : data;
             }
-            return null;
+            return {};
         },
-        resetPreferences:function(pres){
+        resetPreferences: function(pres){
             var str = pres ? JSON.stringify(pres) : '';
             LocalStorage.saveLocalData(str);
         }

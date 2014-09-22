@@ -11,6 +11,10 @@ var DEFAULT_TEXT = {
     'sub': 'topic'
 };
 
+Minder.registerInit(function() {
+    this._initProtocols();
+});
+
 // 导入导出
 kity.extendClass(Minder, {
 
@@ -100,9 +104,7 @@ kity.extendClass(Minder, {
         this._firePharse({
             type: 'contentchange'
         });
-        this._firePharse({
-            type: 'interactchange'
-        });
+        this._interactChange();
     },
 
     exportData: function(protocolName) {

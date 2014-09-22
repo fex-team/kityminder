@@ -2,6 +2,8 @@
  * 开发版本的文件导入
  */
 (function() {
+
+    /* 可能的文件路径，已按照依赖关系排序 */
     var paths = [
 
         /* 依赖库 */
@@ -17,28 +19,30 @@
         /* 核心代码 */
         'src/core/kityminder.js',
         'src/core/utils.js',
+        'src/core/browser.js',
+        'src/core/minder.js',
+        'src/core/option.js',
+        'src/core/event.js',
+        'src/core/status.js',
+        'src/core/paper.js',
+        'src/core/readonly.js',
         'src/core/command.js',
         'src/core/node.js',
         'src/core/module.js',
-        'src/core/event.js',
-        'src/core/minder.js',
-        'src/core/minder.data.compatibility.js',
-        'src/core/minder.data.js',
-        'src/core/minder.event.js',
-        'src/core/minder.module.js',
-        'src/core/minder.command.js',
-        'src/core/minder.node.js',
-        'src/core/minder.select.js',
-        'src/core/keymap.js',
-        'src/core/minder.lang.js',
-        'src/core/minder.defaultoptions.js',
-        'src/core/minder.preference.js',
-        'src/core/browser.js',
-        'src/core/layout.js',
-        'src/core/connect.js',
+        'src/core/data.js',
+        'src/core/compatibility.js',
         'src/core/render.js',
+        'src/core/connect.js',
         'src/core/theme.js',
+        'src/core/layout.js',
         'src/core/template.js',
+        'src/core/select.js',
+        'src/core/lang.js',
+        'src/core/defaultoptions.js',
+        'src/core/preference.js',
+        'src/core/keymap.js',
+        'src/core/key.js',
+        'src/core/contextmenu.js',
 
         /* 布局 */
         'src/layout/default.js',

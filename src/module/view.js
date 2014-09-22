@@ -33,13 +33,19 @@ var ViewDragger = kity.createClass("ViewDragger", {
         if (duration) {
             var dragger = this;
 
-            this._minder.getRenderContainer().animate(new kity.Animator(
+            if (this._moveTimeline) this._moveTimeline.stop();
+
+            this._moveTimeline = this._minder.getRenderContainer().animate(new kity.Animator(
                 this.getMovement(),
                 position,
                 function(target, value) {
                     dragger.moveTo(value);
                 }
             ), duration, 'easeOutCubic');
+
+            this._moveTimeline.on('finish', function() {
+                dragger._moveTimeline = null;
+            });
 
             return this;
         }
@@ -133,6 +139,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('mouseup touchend', dragEnd);
 
         window.addEventListener('mouseup', dragEnd);
+        this._minder.on('contextmenu', function(e) {
+            e.preventDefault();
+        });
     }
 });
 
@@ -183,16 +192,16 @@ KityMinder.registerModule('View', function() {
             var size = km._lastClientSize;
             switch (dir) {
                 case 'up':
-                    dragger.move(new kity.Point(0, -size.height / 2), duration);
-                    break;
-                case 'down':
                     dragger.move(new kity.Point(0, size.height / 2), duration);
                     break;
+                case 'down':
+                    dragger.move(new kity.Point(0, -size.height / 2), duration);
+                    break;
                 case 'left':
-                    dragger.move(new kity.Point(-size.width / 2, 0), duration);
+                    dragger.move(new kity.Point(size.width / 2, 0), duration);
                     break;
                 case 'right':
-                    dragger.move(new kity.Point(size.width / 2, 0), duration);
+                    dragger.move(new kity.Point(-size.width / 2, 0), duration);
                     break;
             }
         }
@@ -218,10 +227,14 @@ KityMinder.registerModule('View', function() {
                 var minder = this;
                 ['up', 'down', 'left', 'right'].forEach(function(name) {
                     if (e.isShortcutKey('ctrl+' + name)) {
-                        minder.execCommand('move', name, 600);
+                        minder.removeAllSelectedNodes();
+                        minder.execCommand('move', name, 100);
                         e.preventDefault();
                     }
                 });
+                if (e.isShortcutKey('ctrl+enter')) {
+                    minder.execCommand('camera', minder.getRoot(), 100);
+                }
             },
             statuschange: function(e) {
                 this._viewDragger.setEnabled(e.currentStatus == 'hand');
@@ -270,6 +283,29 @@ KityMinder.registerModule('View', function() {
                 this._viewDragger.move(
                     new kity.Point((a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0));
                 this._lastClientSize = a;
+            },
+            selectionchange: function() {
+                var selected = this.getSelectedNode();
+
+                if (!selected) return;
+
+                var dragger = this._viewDragger;
+                var view = dragger.getView();
+                var focus = selected.getLayoutBox();
+                var space = 50;
+
+                if (focus.right > view.right) {
+                    dragger.move(new kity.Point(view.right - focus.right - space, 0), 100);
+                }
+                if (focus.left < view.left) {
+                    dragger.move(new kity.Point(view.left - focus.left + space, 0), 100);
+                }
+                if (focus.bottom > view.bottom) {
+                    dragger.move(new kity.Point(0, view.bottom - focus.bottom - space), 100);
+                }
+                if (focus.top < view.top) {
+                    dragger.move(new kity.Point(0, view.top - focus.top + space), 100);
+                }
             }
         }
     };

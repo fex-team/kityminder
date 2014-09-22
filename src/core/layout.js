@@ -142,6 +142,14 @@ kity.extendClass(MinderNode, {
         return this._vertexOut || new kity.Point();
     },
 
+    getLayoutVertexIn: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexIn());
+    },
+
+    getLayoutVertexOut: function() {
+        return this.getGlobalLayoutTransform().transformPoint(this.getVertexOut());
+    },
+
     setLayoutVectorIn: function(v) {
         this._layoutVectorIn = v;
         return this;
@@ -206,14 +214,6 @@ kity.extendClass(MinderNode, {
         return this.setLayoutOffset(null);
     },
 
-    getLayoutVertexIn: function() {
-        return this.getGlobalLayoutTransform().transformPoint(this.getVertexIn());
-    },
-
-    getLayoutVertexOut: function() {
-        return this.getGlobalLayoutTransform().transformPoint(this.getVertexOut());
-    },
-
     getLayoutRoot: function() {
         if (this.isLayoutRoot()) {
             return this;
@@ -224,6 +224,10 @@ kity.extendClass(MinderNode, {
     isLayoutRoot: function() {
         return this.getData('layout') || this.isRoot();
     }
+});
+
+Minder.registerInit(function(options) {
+    this.refresh();
 });
 
 kity.extendClass(Minder, {
@@ -264,7 +268,7 @@ kity.extendClass(Minder, {
 
     refresh: function(duration) {
         this.getRoot().renderTree();
-        this.layout(duration).fire('contentchange').fire('interactchange');
+        this.layout(duration).fire('contentchange')._interactChange();
         return this;
     },
 
@@ -319,7 +323,7 @@ kity.extendClass(Minder, {
             // 如果要求以动画形式来更新，创建动画
             if (duration) {
                 node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
-                    .start(node, duration + 300, 'ease')
+                    .start(node, duration, 'ease')
                     .on('finish', function() {
                         //可能性能低的时候会丢帧，手动添加一帧
                         kity.Timeline.requestFrame(function() {
@@ -499,7 +503,7 @@ var Layout = kity.createClass('Layout', {
 
             treeBox = node.getContentBox();
 
-            if (node.children.length) {
+            if (node.isExpanded() && node.children.length) {
                 treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
             }
 

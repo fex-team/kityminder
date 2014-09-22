@@ -35,6 +35,9 @@ KityMinder.registerUI('menu/new/new', function(minder) {
     }
 
     $ul.delegate('.template-item', 'click', function(e) {
+
+        if (!$doc.checkSaved()) return;
+
         var template = $(e.target).data('template');
         $doc.load({
             content: {
@@ -44,7 +47,8 @@ KityMinder.registerUI('menu/new/new', function(minder) {
                     text: minder.getLang('template')[template]
                 }
             },
-            protocol: null
+            protocol: null,
+            saved: true
         });
         $menu.hide();
     });

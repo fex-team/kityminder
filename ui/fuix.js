@@ -20,20 +20,26 @@ kity.extendClass(FUI.Widget, {
 
     bindExecution: function(event, fn) {
         var widget = this;
-        widget.executionFlag = false;
         widget.on(event, function() {
-            widget.executionFlag = true;
+            if (widget.interactFlag) return;
             fn.apply(widget, arguments);
-            widget.executionFlag = false;
         });
     },
 
     bindCommandState: function(minder, command, valueHandle) {
         var widget = this;
         minder.on('interactchange', function() {
+            widget.interactFlag = true;
+            if (valueHandle) {
+                var value = this.queryCommandValue(command);
+                if (value != widget.lastHandleCommandValue) {
+                    valueHandle.call(widget, value);
+                    widget.lastHandleCommandValue = value;
+                }
+            }
             widget.setEnable(this.queryCommandState(command) !== -1);
             widget.setActive(this.queryCommandState(command) === 1);
-            if (valueHandle && !widget.executionFlag) valueHandle.call(widget, this.queryCommandValue(command));
+            widget.interactFlag = false;
         });
     }
 });

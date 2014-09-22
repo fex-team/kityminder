@@ -61,6 +61,12 @@ KityMinder.LANG['zh-cn'] = {
             'view': '视图'
         },
 
+        'quickvisit': {
+            'new': '新建',
+            'save': '保存',
+            'share': '分享'
+        },
+
         'menu': {
 
             'mainmenutext': '百度脑图', // 主菜单按钮文本
@@ -69,8 +75,8 @@ KityMinder.LANG['zh-cn'] = {
             'opentab': '打开',
             'savetab': '保存',
             'sharetab': '分享',
+            'preferencetab': '设置',
             'helptab': '帮助',
-            'settingtab': '设置',
             'recenttab': '最近使用',
             'netdisktab': '百度云存储',
             'localtab': '本地文件',
@@ -84,7 +90,8 @@ KityMinder.LANG['zh-cn'] = {
             'saveheader': '保存到',
             'draftheader': '草稿箱',
             'shareheader': '分享我的脑图',
-            'downloadheader': '导出到指定格式'
+            'downloadheader': '导出到指定格式',
+            'preferenceheader': '偏好设置'
         },
 
         'mydocument': '我的文档',
@@ -198,7 +205,9 @@ KityMinder.LANG['zh-cn'] = {
         'longago': '很久之前',
 
         'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？',
-        'navigator': '导航器'
+        'navigator': '导航器',
+
+        'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n确定要继续操作么？（未保存的数据会缓存在草稿箱）'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

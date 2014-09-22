@@ -256,7 +256,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         var baseUrl = /^(.*?)(\?|\#|$)/.exec(window.location.href)[1];
 
-        baseUrl = baseUrl.split('index.html')[0];
+        baseUrl = baseUrl.split('edit.html')[0];
 
         return baseUrl + 'viewshare.html?shareId=' + id;
     }

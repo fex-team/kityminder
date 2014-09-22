@@ -84,6 +84,18 @@ input[type=url] {
     }
 }
 
+.loading-circle(@size: 40px, @border-size: 4px) {
+    width: @size;
+    height: @size;
+    border: @border-size solid;
+    border-color: @border-color transparent transparent;
+    box-shadow: 0 0 (@size - 5px) white;
+    z-index: 10;
+    border-radius: 100%;
+    .animation(rotate 1.33s ease infinite);
+    filter: none;
+    -webkit-filter: none;
+}
 
 .loading(@color: rgb(128, 130, 140), @border-color: #fff) {
     .loading-target {
@@ -100,21 +112,12 @@ input[type=url] {
 
     &:before {
         content: ' ';
-        width: 40px;
-        height: 40px;
-        border: 4px solid;
-        border-color: @border-color transparent transparent;
-        box-shadow: 0 0 35px white;
+        .loading-circle;
         position: absolute;
         left: 50%;
         top: 50%;
         margin-left: -24px;
         margin-top: -24px;
-        z-index: 10;
-        border-radius: 100%;
-        .animation(rotate 1.33s ease infinite);
-        filter: none;
-        -webkit-filter: none;
     }
 }
 

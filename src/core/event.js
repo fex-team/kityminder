@@ -55,6 +55,10 @@ var MinderEvent = kity.createClass('MindEvent', {
     }
 });
 
+Minder.registerInit(function() {
+    this._initEvents();
+});
+
 // 事件机制
 kity.extendClass(Minder, {
     _initEvents: function() {
@@ -109,8 +113,8 @@ kity.extendClass(Minder, {
         preEvent = new MinderEvent('pre' + e.type, e, true);
         executeEvent = new MinderEvent(e.type, e, true);
 
-        this._fire(preEvent) ||
-            this._fire(executeEvent) ||
+        if (this._fire(preEvent) ||
+            this._fire(executeEvent))
             this._fire(new MinderEvent('after' + e.type, e, false));
 
         if (~'mousedown mouseup keydown keyup'.indexOf(e.type)) {
@@ -120,15 +124,16 @@ kity.extendClass(Minder, {
     _interactChange: function(e) {
         var minder = this;
 
-        clearTimeout(this._interactTimeout);
-        this._interactTimeout = setTimeout(function() {
+        var trigger = function trigger() {
             var stoped = minder._fire(new MinderEvent('beforeinteractchange'));
             if (stoped) {
                 return;
             }
             minder._fire(new MinderEvent('preinteractchange'));
             minder._fire(new MinderEvent('interactchange'));
-        }, 20);
+        };
+
+        this._interactTimeout = setTimeout(trigger, 100);
     },
     _listen: function(type, callback) {
         var callbacks = this._eventCallbacks[type] || (this._eventCallbacks[type] = []);

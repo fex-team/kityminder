@@ -6,6 +6,11 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+Minder.registerInit(function(options) {
+    if (options.readOnly) {
+        this.setDisabled();
+    }
+});
 kity.extendClass(Minder, {
 
     disable: function() {
@@ -28,7 +33,7 @@ kity.extendClass(Minder, {
             return null;
         };
         this.setStatus('readonly');
-        me.fire('interactchange');
+        me._interactChange();
     },
 
     enable: function() {
@@ -45,6 +50,6 @@ kity.extendClass(Minder, {
 
         this.rollbackStatus();
 
-        me.fire('interactchange');
+        me._interactChange();
     }
 });

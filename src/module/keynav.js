@@ -30,7 +30,6 @@ KityMinder.registerModule('KeyboardModule', function() {
         }
     }
 
-
     // 这是金泉的点子，赞！
     // 求两个不相交矩形的最近距离
     function getCoefedDistance(box1, box2) {
@@ -114,7 +113,6 @@ KityMinder.registerModule('KeyboardModule', function() {
         };
     }
 
-
     function navigateTo(km, direction) {
         var referNode = km.getSelectedNode();
         if (!referNode) {
@@ -127,21 +125,36 @@ KityMinder.registerModule('KeyboardModule', function() {
             km.select(nextNode, true);
         }
     }
+
+    var NavigateToParentCommand = kity.createClass({
+        base: Command,
+
+        execute: function(km) {
+            var node = km.getSelectedNode();
+            if (node && node.parent) {
+                km.select(node.parent, true);
+            }
+            this.setContentChanged(false);
+        },
+
+        queryState: function(km) {
+            return km.getSelectedNode() ? 0 : -1;
+        }
+    });
+
     // 稀释用
     var lastFrame;
     return {
+        'commands': {
+            'navparent': NavigateToParentCommand
+        },
+        'commandShortcutKeys': {
+            'navparent': 'shift+tab'
+        },
         'events': {
             'layoutallfinish': function() {
                 var root = this.getRoot();
-                function build() {
-                    buildPositionNetwork(root);
-                }
-                kity.Timeline.releaseFrame(lastFrame);
-                lastFrame = kity.Timeline.requestFrame(build);
-            },
-            'inputready.beforekeydown': function(e) {
-                var keyEvent = e.originEvent;
-                if (keyEvent.shiftKey && keyEvent.keyCode == KityMinder.keymap.Tab) e.preventDefault();
+                buildPositionNetwork(root);
             },
             'normal.keydown': function(e) {
                 var minder = this;

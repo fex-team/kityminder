@@ -7,6 +7,10 @@
  * @copyright: Baidu FEX, 2014
  */
 
+Minder.registerInit(function() {
+    this._initStatus();
+});
+
 kity.extendClass(Minder, {
 
     _initStatus: function() {

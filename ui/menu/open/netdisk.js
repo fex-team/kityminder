@@ -36,6 +36,7 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
     });
 
     $finder.on('fileclick', function(file) {
+        if (!$doc.checkSaved()) return;
         return open(file.path);
     });
 

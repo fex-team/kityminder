@@ -6,6 +6,9 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+Minder.registerInit(function() {
+    this._initPaper();
+});
 kity.extendClass(Minder, {
     
     _initPaper: function() {

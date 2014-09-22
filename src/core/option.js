@@ -36,4 +36,9 @@ kity.extendClass(Minder, {
     setOptions: function(key, val) {
         this.setPreferences(key, val);
     }
+
+});
+
+Minder.registerInit(function(option) {
+    this.setDefaultOptions(KM.defaultOptions);
 });

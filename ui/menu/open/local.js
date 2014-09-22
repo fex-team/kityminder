@@ -55,6 +55,7 @@ KityMinder.registerUI('menu/open/local', function(minder) {
 
     /* 交互事件 */
     $pickButton.click(function() {
+        if (!$doc.checkSaved()) return;
         $('<input type="file" />')
             .attr('accept', accepts.join())
             .on('change', function(e) {
@@ -67,6 +68,7 @@ KityMinder.registerUI('menu/open/local', function(minder) {
         e.preventDefault();
         e.stopPropagation();
     }).on('drop', function(e) {
+        if (!$doc.checkSave()) return;
         e = e.originalEvent;
         read(e.dataTransfer.files[0]);
         $menu.hide();

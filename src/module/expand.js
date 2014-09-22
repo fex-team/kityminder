@@ -76,24 +76,26 @@ KityMinder.registerModule('Expand', function() {
         
         if (!changed) return;
 
+        var vo = node.getVertexOut();
+
         if (state == STATE_EXPAND) {
 
-            var m = node.getGlobalLayoutTransform();
+            var m = node.getGlobalLayoutTransform().clone().translate(vo.x, vo.y);
             node.traverse(function(child) {
                 child.setGlobalLayoutTransform(m);
-                child.getRenderContainer().fadeIn();
+                child.getRenderContainer().setOpacity(0).fadeIn();
             }, true);
-            node.renderTree().getMinder().layout(30);
+            node.renderTree().getMinder().layout(300);
 
         } else {
 
             node.traverse(function(child) {
-                child.setLayoutTransform(null);
-                child.getRenderContainer().fadeOut();
+                child.setLayoutTransform(child.parent == node ? new kity.Matrix().translate(vo.x, vo.y) : null);
+                child.getRenderContainer().fadeOut(100);
             }, true);
 
-            node.getMinder().applyLayoutResult(node, 30).then(function() {
-                node.renderTree();
+            node.getMinder().applyLayoutResult(node, 150).then(function() {
+                node.renderTree().getMinder().layout(150);
             });
 
         }

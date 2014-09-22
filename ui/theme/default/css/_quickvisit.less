@@ -1,0 +1,54 @@
+#panel .quick-visit-button {
+    float: left;
+    border: none;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+    margin: 0;
+    display: block;
+    position: relative;
+    
+    &:after {
+        content: ' ';
+        position: absolute;
+        display: block;
+        width: 25px;
+        height: 25px;
+        left: 7.5px;
+        top: 5.5px;
+        background: url(../images/icons.png) no-repeat;
+    }
+    text-indent: -10000px;
+    
+    &.new {
+        &:after {
+            background-position: 0 -895px;
+        }
+    }
+    
+    &.save {
+        
+        &:after {
+            background-position: 0 -920px;
+        }
+    }
+    
+    &.share {
+        
+        &:after {
+            background-position: 0 -945px;
+        }
+    }
+
+    &:hover {
+        background-color: @tab-hover;
+    }
+    &:active {
+        background-color: @tab-active;
+    }
+    &:first-child {
+        margin-left: 5px;
+    }
+
+}

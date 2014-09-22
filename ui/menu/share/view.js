@@ -11,6 +11,8 @@ KityMinder.registerUI('menu/share/view', function (minder) {
     var $save = minder.getUI('menu/save/save');
     var $doc = minder.getUI('doc');
 
+    $menu.$tabs.select(0);
+    $save.$tabs.select(0);
 
     function loadShareDoc() {
 
@@ -65,6 +67,7 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
             $(minder.getRenderTarget()).removeClass('loading');
             minder.execCommand('hand');
+            minder.disable();
 
         });
     }

@@ -6,6 +6,11 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
+Minder.registerInit(function() {
+    this._initContextMenu();
+});
+
 kity.extendClass(Minder, {
     _initContextMenu: function() {
         this.contextmenus = [];

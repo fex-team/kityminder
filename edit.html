@@ -9,7 +9,7 @@
 
     <title>百度脑图 - 便捷的思维导图工具</title>
 
-    <script src="import.js" charset="utf-8"></script>
+    <script src="import.js?pack=edit" charset="utf-8"></script>
     <script src="kityminder.config.js" charset="utf-8"></script>
     <script src="lang/zh-cn/zh-cn.js" charset="utf-8"></script>
     
@@ -83,8 +83,8 @@
 /* jshint browser:true */
 
 $(function() {
-/* 依赖库初始化 */
-zip.inflateJSPath = 'lib/inflate.js';
+    /* 依赖库初始化 */
+    zip.inflateJSPath = 'lib/inflate.js';
 });
 
 // create km instance
@@ -103,18 +103,6 @@ $(function() {
         $( '#km-version' ).addClass( 'new-version' );
         localStorage.lastKMVersion = KM.version;
     }
-});
-
-km.on('unziperror', function(ev) {
-    window.alert('文件解析错误，文件可能已损坏！');
-});
-
-km.on('parseerror', function(ev) {
-    window.alert('文件解析错误，文件可能已损坏！');
-});
-
-km.on('unknownprotocal', function(ev) {
-    window.alert('不支持的文件格式！');
 });
 
 </script>

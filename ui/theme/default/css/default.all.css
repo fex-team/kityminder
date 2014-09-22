@@ -641,13 +641,8 @@ input[type=url]:focus {
   width: 40px;
   height: 40px;
   border: 4px solid;
-  border-color: #ffffff transparent transparent;
-  box-shadow: 0 0 35px white;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-left: -24px;
-  margin-top: -24px;
+  border-color: #c9ced1 transparent transparent;
+  box-shadow: 0 0 35px #ffffff;
   z-index: 10;
   border-radius: 100%;
   -webkit-animation: rotate 1.33s ease infinite;
@@ -657,6 +652,11 @@ input[type=url]:focus {
   animation: rotate 1.33s ease infinite;
   filter: none;
   -webkit-filter: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -24px;
+  margin-top: -24px;
 }
 @-webkit-keyframes rotate {
   from {
@@ -1332,11 +1332,18 @@ body {
 }
 #kityminder {
   position: absolute;
-  top: 40px;
+  top: 100px;
   right: 0;
   bottom: 0;
   left: 0;
   -moz-user-select: none;
+}
+#kityminder.maximize {
+  top: 40px;
+}
+#tab-container.collapsed + #kityminder,
+#panel + #kityminder {
+  top: 40px;
 }
 #panel {
   background: #393f4f;
@@ -1353,6 +1360,30 @@ body {
   text-align: center;
   font-weight: normal;
   color: #ffffff;
+}
+#panel h1.loading:before {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 3px solid;
+  border-color: #c9ced1 transparent transparent;
+  box-shadow: 0 0 7px #ffffff;
+  z-index: 10;
+  border-radius: 100%;
+  -webkit-animation: rotate 1.33s ease infinite;
+  -moz-animation: rotate 1.33s ease infinite;
+  -ms-animation: rotate 1.33s ease infinite;
+  -o-animation: rotate 1.33s ease infinite;
+  animation: rotate 1.33s ease infinite;
+  filter: none;
+  -webkit-filter: none;
+  left: -6px;
+  top: 3px;
+  box-shadow: none;
+}
+#panel h1.loading:after {
+  display: none;
 }
 .fui-widget {
   -webkit-font-smoothing: auto;
@@ -1709,6 +1740,46 @@ body {
 .new-file-template-select li:active:before {
   background-color: #fee6e6;
 }
+#panel .quick-visit-button {
+  float: left;
+  border: none;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  padding: 0;
+  margin: 0;
+  display: block;
+  position: relative;
+  text-indent: -10000px;
+}
+#panel .quick-visit-button:after {
+  content: ' ';
+  position: absolute;
+  display: block;
+  width: 25px;
+  height: 25px;
+  left: 7.5px;
+  top: 5.5px;
+  background: url(../images/icons.png) no-repeat;
+}
+#panel .quick-visit-button.new:after {
+  background-position: 0 -895px;
+}
+#panel .quick-visit-button.save:after {
+  background-position: 0 -920px;
+}
+#panel .quick-visit-button.share:after {
+  background-position: 0 -945px;
+}
+#panel .quick-visit-button:hover {
+  background-color: #5a6378;
+}
+#panel .quick-visit-button:active {
+  background-color: #444b5b;
+}
+#panel .quick-visit-button:first-child {
+  margin-left: 5px;
+}
 .command-button.undo,
 .command-button.redo {
   float: left;
@@ -1751,9 +1822,6 @@ body {
 .command-button.undo.fui-disabled .fui-icon,
 .command-button.redo.fui-disabled .fui-icon {
   background-position-y: 0;
-}
-.command-button.undo {
-  margin-left: 10px;
 }
 .command-button.redo .fui-icon {
   background-position-x: -40px;
@@ -2404,38 +2472,38 @@ body {
   display: block;
   height: 20px;
   width: 20px;
-  background: url(../images/iconpriority.png) repeat-x;
+  background: url(../images/iconpriority.png) repeat-y;
   background-color: transparent;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-0 .fui-icon {
-  background-position: 20px 0;
+  background-position: 0 20px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-1 .fui-icon {
-  background-position: 0px 0;
+  background-position: 0 0px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-2 .fui-icon {
-  background-position: -20px 0;
+  background-position: 0 -20px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-3 .fui-icon {
-  background-position: -40px 0;
+  background-position: 0 -40px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-4 .fui-icon {
-  background-position: -60px 0;
+  background-position: 0 -60px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-5 .fui-icon {
-  background-position: -80px 0;
+  background-position: 0 -80px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-6 .fui-icon {
-  background-position: -100px 0;
+  background-position: 0 -100px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-7 .fui-icon {
-  background-position: -120px 0;
+  background-position: 0 -120px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-8 .fui-icon {
-  background-position: -140px 0;
+  background-position: 0 -140px;
 }
 #tab-container .command-buttonset.priority .fui-button.priority-9 .fui-icon {
-  background-position: -160px 0;
+  background-position: 0 -160px;
 }
 #tab-container .command-buttonset.priority .fui-button.fui-button-pressed {
   background-color: #c4d0ee;
@@ -2457,38 +2525,38 @@ body {
   display: block;
   height: 20px;
   width: 20px;
-  background: url(../images/iconprogress.png) repeat-x;
+  background: url(../images/iconprogress.png) repeat-y;
   background-color: transparent;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-0 .fui-icon {
-  background-position: 20px 0;
+  background-position: 0 20px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-1 .fui-icon {
-  background-position: 0px 0;
+  background-position: 0 0px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-2 .fui-icon {
-  background-position: -20px 0;
+  background-position: 0 -20px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-3 .fui-icon {
-  background-position: -40px 0;
+  background-position: 0 -40px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-4 .fui-icon {
-  background-position: -60px 0;
+  background-position: 0 -60px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-5 .fui-icon {
-  background-position: -80px 0;
+  background-position: 0 -80px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-6 .fui-icon {
-  background-position: -100px 0;
+  background-position: 0 -100px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-7 .fui-icon {
-  background-position: -120px 0;
+  background-position: 0 -120px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-8 .fui-icon {
-  background-position: -140px 0;
+  background-position: 0 -140px;
 }
 #tab-container .command-buttonset.progress .fui-button.progress-9 .fui-icon {
-  background-position: -160px 0;
+  background-position: 0 -160px;
 }
 #tab-container .command-buttonset.progress .fui-button.fui-button-pressed {
   background-color: #c4d0ee;

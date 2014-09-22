@@ -40,6 +40,8 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
 
     $ul.delegate('.recent-file-item', 'click', function(e) {
 
+        if (!doc.checkSaved()) return;
+
         var netdisk = minder.getUI('menu/open/netdisk');
         var path = $(e.target)
             .closest('.recent-file-item')
@@ -107,6 +109,9 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
     }
 
     return {
+        hasRecent: function() {
+            return recentList.length;
+        },
         loadLast: function() {
             $ul.find('.recent-file-item').eq(0).click();
         }

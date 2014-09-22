@@ -6,24 +6,55 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-KityMinder.registerUI('menu/default', function (minder) {
+KityMinder.registerUI('menu/default', function(minder) {
 
     minder.on('uiready', function() {
 
         var $menu = minder.getUI('menu/menu');
         var $open = minder.getUI('menu/open/open');
+        var $recent = minder.getUI('menu/open/recent');
         var $save = minder.getUI('menu/save/save');
         var $share = minder.getUI('menu/share/share');
         var $draft = minder.getUI('menu/open/draft');
 
-        $menu.$tabs.select(1); // 打开
-        $open.$tabs.select(0); // 最近
-        $save.$tabs.select(0); // 云存储
-        $share.$tabs.select(0); // 当前脑图
-        
+        // 主菜单默认选中「打开」
+        $menu.$tabs.select(1);
+
+        // 打开菜单默认选中「本地文件」
+        $open.$tabs.select(2);
+
         if ($draft.hasDraft()) {
+            // 草稿箱有草稿，默认选中「草稿箱」，并打开最近编辑的文件
+            $open.$tabs.select(3);
             $draft.openLast();
+        } else {
+            // 没有草稿，但用户登陆了
+            fio.user.check().then(function(user) {
+                if (user) {
+                    // 有最近文件选中「最近文件」
+                    if ($recent.hasRecent()) {
+                        $open.$tabs.select(0);
+                        $recent.loadLast();
+                    }
+                    // 否则选中网盘目录
+                    else {
+                        $open.$tabs.select(1);
+                    }
+                }
+            });
         }
+
+        // 保存菜单默认选中「导出到本地」
+        $save.$tabs.select(1);
+
+        // 如果用户登陆了，选中「百度云存储」
+        fio.user.check().then(function(user) {
+            if (user) {
+                $save.$tabs.select(0);
+            }
+        });
+
+        $share.$tabs.select(0); // 当前脑图
         // $menu.show();
     });
 });

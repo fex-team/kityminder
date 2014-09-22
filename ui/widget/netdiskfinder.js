@@ -91,11 +91,15 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             $input.on('keydown', function(e) {
                 if (e.keyCode == 13) confirm();
                 if (e.keyCode == 27) {
-                    $li.remove();
-                    mkdir.onprogress = false;
+                    cancel();
                     e.stopPropagation();
                 }
-            });
+            }).on('blur', confirm);
+
+            function cancel() {
+                $li.remove();
+                mkdir.onprogress = false;
+            }
 
             function confirm() {
                 var name = $input.val();
@@ -106,6 +110,9 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     }).then(function() {
                         return list(currentPath, true);
                     }, function(e) {
+                        if (e.message.indexOf('31061') === 0) {
+                            e.message = '已存在同名目录';
+                        }
                         window.alert('创建目录失败：' + e.message);
                         $li.remove();
                     }).then(function() {

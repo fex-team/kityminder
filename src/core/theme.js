@@ -136,3 +136,7 @@ KityMinder.registerModule('Theme', {
         })
     }
 });
+
+Minder.registerInit(function() {
+    this.setTheme();
+});

@@ -31,8 +31,15 @@ html, body {
 }
 
 #kityminder {
-    .dock(@panel-height, 0, 0, 0);
+    .dock(100px, 0, 0, 0);
+    &.maximize {
+        top: 40px;
+    }
     -moz-user-select: none;
+}
+#tab-container.collapsed + #kityminder,
+#panel + #kityminder{
+    top: 40px;
 }
 
 #panel {
@@ -50,6 +57,20 @@ html, body {
         text-align: center;
         font-weight: normal;
         color: @ui-fore;
+    
+        &.loading {
+            &:before {
+                position: relative;
+                display: inline-block;
+                .loading-circle(12px, 3px);
+                left: -6px;
+                top: 3px;
+                box-shadow: none;
+            }
+            &:after {
+                display: none;
+            }
+        }
     }
 }
 

@@ -5,7 +5,7 @@ var AppendChildCommand = kity.createClass('AppendChildCommand', {
         if (!parent) {
             return null;
         }
-        text = text || km.getLang(parent.isRoot() ? 'maintopic' : 'topic');
+        text = text || km.getLang('topic');
         parent.expand();
         var node = km.createNode(text, parent);
         km.select(node, true);
@@ -26,7 +26,7 @@ var AppendSiblingCommand = kity.createClass('AppendSiblingCommand', {
         if (!parent) {
             return km.execCommand('AppendChildNode', text);
         }
-        text = text || km.getLang(parent.isRoot() ? 'maintopic' : 'topic');
+        text = text || km.getLang('topic');
         var node = km.createNode(text, parent, sibling.getIndex() + 1);
         km.select(node, true);
         node.render();
