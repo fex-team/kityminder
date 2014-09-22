@@ -45,10 +45,17 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
     $tab.appearence = $tab.getPanel(1);
     $tab.view = $tab.getPanel(2);
     
-    $tab.select(memory.get('ribbon-tab-index') || 0);
-    if (memory.get('ribbon-tab-collapsed')) {
+    var rememberIndex = memory.get('ribbon-tab-index');
+    var rememberCollapse = memory.get('ribbon-tab-collapsed');
+    
+    $tab.select(rememberIndex || 0);
+
+    if (rememberCollapse) {
         $container.addClass('collapsed');
         $header.addClass('collapsed');
+    } else {
+        $container.removeClass('collapsed');
+        $header.removeClass('collapsed');
     }
     return $tab;
 });

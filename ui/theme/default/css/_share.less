@@ -229,8 +229,7 @@
     font-size: 16px;
     padding-left: 15px;
     border-bottom: none;
-    position: absolute;
-    width: 100%;
+    .dock;
   }
   .priority {
     height: 20px;
@@ -310,16 +309,18 @@
     padding: 3px 5px;
     border-radius: 2px;
     font-size: 12px;
+    line-height: 16px;
     color: rgb(77, 65, 0);
     vertical-align: middle;
-    margin-left: 8px;
+    margin: 14px 8px;
+    float: right;
   }
   .hyperlink {
-    display: inline-block;
-  /*   float: left; */
+    display: block;
+    float: right;
     width: 30px;
     height: 20px;
-    margin-left: 15px;
+    margin: 15px;
     padding: 0;
     background: url(../images/icons.png) no-repeat 0 -80px;
     background-size: 20px;
@@ -355,11 +356,14 @@
     .dock;
   }
   .text {
-    width:12em; 
-    white-space:nowrap; 
-    text-overflow:ellipsis; 
-    -o-text-overflow:ellipsis; 
-    overflow:hidden;
+    display: block;
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    -o-text-overflow: ellipsis; 
+    overflow: hidden;
     vertical-align: middle;
+  }
+  .cur-root .text {
+    color: white;
   }
 }

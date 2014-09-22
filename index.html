@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="title" content="百度脑图（KityMinder）">
+    <meta name="keyword" content="kityminder,脑图,思维导图,kity,svg,minder,百度,fex,前端,在线">
+    <meta name="description" content="百度脑图，便捷的脑图编辑工具。让您在线上直接创建、保存并分享你的思路。">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>百度脑图 - 便捷的思维编辑工具</title>
+    
+    <script src="import.js?pack=index"></script>
+
+    <script>
+
+        $(function() {
+
+            var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
+            var match = pattern.exec(window.location) || pattern.exec(document.referrer);
+
+            if (match) {
+                window.location.href = 'viewshare.html?shareId=' + match[1];
+                return;
+            }
+
+            /* 初始化网盘使用的 APP 身份 */
+            fio.user.init({
+                apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
+            });
+
+            $('hr').addClass('loading');
+
+            var $a = $('p.login a').hide();
+
+            fio.user.check().then(function(user) {
+                if (user) {
+                    window.location.href = 'edit.html';
+                }
+                else {
+                    $a.fadeIn(800);
+                    $('hr').removeClass('loading');
+                }
+            });
+            
+            $('p.login a').click(function() {
+                fio.user.login({
+                    redirectUrl: window.location.href.split('index.html')[0] + 'edit.html'
+                });
+                $('hr').addClass('loading');
+            });
+        });
+
+    </script>
+
+    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link href="favicon.ico" type="image/x-icon" rel="apple-touch-icon-precomposed">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            -webkit-user-select: none;
+        }
+
+        h1:before {
+            content: ' ';
+            display: block;
+            background: url(ui/theme/default/images/indexbackground.jpg) no-repeat;
+            background-size: cover;
+            position: absolute;
+            z-index: -1;
+            left: -10px;
+            top: -10px;
+            right: -10px;
+            bottom: -10px;
+            -webkit-filter: blur(5px);
+            -moz-filter: blur(5px);
+            -mz-filter: blur(5px);
+            -o-filter: blur(5px);
+            filter: url(ui/theme/default/images/blur.svg#blur);
+            filter: blur(5px);
+        }
+
+        h1:after {
+            content: ' ';
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, .75);
+            z-index: -1;
+        }
+
+        h1, p {
+            font-weight: 100;
+            font-family: Arial, "Microsoft Yahei", "Heiti SC",  sans-serif;
+            text-align: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1 {
+            margin: 0;
+            margin-top: 200px;
+            color: white;
+            font-size: 50px;
+            line-height: 1.4em;
+        }
+
+        hr {
+            height: 0;
+            border: none;
+            border-bottom: 1px solid #F98183;
+            width: 110px;
+            margin: 40px auto;
+            transition: transform 0.5s ease;
+        }
+
+        hr.loading {
+            -webkit-animation: slide 1.33s ease-in-out infinite alternate;
+            animation: slide 1.33s ease-in-out infinite alternate;
+        }
+
+        @-webkit-keyframes slide {
+            0% { transform: translate3d(-100px, 0, 0); }
+            100% { transform: translate3d(100px, 0, 0); }
+        }
+
+        @keyframes slide {
+            0% { transform: translate3d(-100px, 0, 0); }
+            100% { transform: translate3d(100px, 0, 0); }
+        }
+
+        p.description {
+            color: #CCC;
+            font-size: 20px;
+            line-height: 1.8em;
+        }
+
+        p.login a {
+            display: inline-block;
+            width: 200px;
+            height: 60px;
+            background: #F98183;
+            font-size: 24px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 30px;
+            color: white;
+            text-shadow: 0 1px 0 #F8474F;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-top: 50px;
+        }
+
+        p.login a:active {
+            background: #FF6161;
+            transform: scale(0.95);
+        }
+
+        p.login a:before {
+            content: ' ';
+            display: block;
+            background: rgba(255, 255, 255, .2);
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 30px;
+            transform: scale(0, 1);
+            transition: transform 0.3s ease;
+        }
+
+        p.login a:hover:before {
+            transform: scale(1, 1);
+        }
+    
+    </style>
+</head>
+<body>
+    <h1>百度脑图 <br/> 便捷的思维编辑工具</h1>
+    <hr /> 
+    <p class="description">
+        线上直接创建、保存并分享您的思路<br />
+        更加高效地工作或学习
+    </p>
+    <p class="login">
+        <a>立即体验</a>
+    </p>
+</body>
+
+<!--Baidu Tongji Code-->
+<script type="text/javascript">
+if (document.domain == 'naotu.baidu.com') {
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F0703917f224067c887f3664479a03887' type='text/javascript'%3E%3C/script%3E"));
+}
+</script>
+</html>

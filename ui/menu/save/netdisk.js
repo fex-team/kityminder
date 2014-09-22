@@ -82,7 +82,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     window.onbeforeunload = function() {
         var noask = window.location.href.indexOf('noask') > 0;
-        if (!$doc.checkSave() && !noask)
+        if (!$doc.checkSaved() && !noask)
             return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
     };
 

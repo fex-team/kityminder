@@ -666,22 +666,6 @@ input[type=url]:focus {
     transform: rotate(360deg);
   }
 }
-@-moz-keyframes rotate {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-ms-keyframes rotate {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 @keyframes rotate {
   from {
     transform: rotate(0);
@@ -698,22 +682,6 @@ input[type=url]:focus {
     opacity: 1;
   }
 }
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@-ms-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -723,22 +691,6 @@ input[type=url]:focus {
   }
 }
 @-webkit-keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-@-moz-keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-@-ms-keyframes fadeOut {
   from {
     opacity: 1;
   }
@@ -3099,7 +3051,10 @@ div.right {
   padding-left: 15px;
   border-bottom: none;
   position: absolute;
-  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .shared-content .priority {
   height: 20px;
@@ -3179,16 +3134,18 @@ div.right {
   padding: 3px 5px;
   border-radius: 2px;
   font-size: 12px;
+  line-height: 16px;
   color: #4d4100;
   vertical-align: middle;
-  margin-left: 8px;
+  margin: 14px 8px;
+  float: right;
 }
 .shared-content .hyperlink {
-  display: inline-block;
-  /*   float: left; */
+  display: block;
+  float: right;
   width: 30px;
   height: 20px;
-  margin-left: 15px;
+  margin: 15px;
   padding: 0;
   background: url(../images/icons.png) no-repeat 0 -80px;
   background-size: 20px;
@@ -3236,12 +3193,15 @@ div.right {
   left: 0;
 }
 .shared-content .text {
-  width: 12em;
+  display: block;
   white-space: nowrap;
   text-overflow: ellipsis;
   -o-text-overflow: ellipsis;
   overflow: hidden;
   vertical-align: middle;
+}
+.shared-content .cur-root .text {
+  color: white;
 }
 .command-button .fui-icon {
   background: url(../images/icons.png) no-repeat;
