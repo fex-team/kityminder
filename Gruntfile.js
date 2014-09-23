@@ -20,9 +20,39 @@ module.exports = function(grunt) {
         ' * ====================================================\n' +
         ' */\n\n';
 
+    var packs = ['index', 'edit', 'share', 'm-share'];
     var sources = require('./import.js');
-    var srcPath = 'src/',
-        distPath = 'dist/';
+    var srcPath = 'src/';
+    var distPath = 'dist/';
+
+    var distPages = ['index', 'edit', 'viewshare', 'm-share'].map(function(name) {
+        return distPath + name + '.html';
+    });
+
+    var concatConfigs = {};
+
+    packs.forEach(function(pack) {
+        concatConfigs[pack] = {
+            options: {
+                banner: banner + '(function(window) {\n\n',
+                footer: '\n\n})(window)',
+                process: function(src, filepath) {
+                    return ['\n',
+                        '/* ' + filepath + ' */',
+                        src.replace(/^.+$/mg, '    $&'),
+                        '/* ' + filepath + ' end */',
+                        '\n',
+                    ].join('\n');
+                }
+            },
+            src: sources.filter(function(source) {
+                return source.pack == '*' || source.pack.split('|').indexOf(pack) !== -1;
+            }).map(function(source) {
+                return source.path;
+            }),
+            dest: distPath + 'kityminder.' + pack + '.js'
+        };
+    });
 
     // Project configuration.
     grunt.initConfig({
@@ -30,24 +60,9 @@ module.exports = function(grunt) {
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
 
-        concat: {
-            js: {
-                options: {
-                    banner: banner + '(function(window) {\n\n',
-                    footer: '\n\n})(window)',
-                    process: function(src, filepath) {
-                        return ['\n',
-                            '/* ' + filepath + ' */',
-                            src.replace(/^.+$/mg, '    $&'),
-                            '/* ' + filepath + ' end */',
-                            '\n',
-                        ].join('\n');
-                    }
-                },
-                src: sources,
-                dest: distPath + 'kityminder.all.js'
-            }
-        },
+        clean: ['dist'],
+
+        concat: concatConfigs,
 
         uglify: {
             minimize: {
@@ -56,7 +71,9 @@ module.exports = function(grunt) {
                 },
                 files: (function() {
                     var files = {};
-                    files[distPath + 'kityminder.all.min.js'] = distPath + 'kityminder.all.js';
+                    packs.forEach(function(pack) {
+                        files[distPath + 'kityminder.' + pack + '.min.js'] = distPath + 'kityminder.' + pack + '.js';
+                    });
                     return files;
                 })()
             }
@@ -74,6 +91,9 @@ module.exports = function(grunt) {
                         'lib/ZeroClipboard.swf',
                         'lib/inflate.js',
                         'index.html',
+                        'edit.html',
+                        'viewshare.html',
+                        'm-share.html',
                         'download.php'
                     ],
                     dest: distPath
@@ -94,16 +114,16 @@ module.exports = function(grunt) {
 
         replace: {
             online: {
-                src: distPath + 'index.html',
+                src: distPages,
                 overwrite: true,
                 replacements: [{
-                    from: /import\.js/,
-                    to: 'kityminder.all.min.js'
+                    from: /import\.js\?pack=([\w-]+)\"/,
+                    to: 'kityminder.$1.min.js"'
                 }]
             },
 
             noCache: {
-                src: distPath + 'index.html',
+                src: distPages,
                 overwrite: true,
                 replacements: [{
                     from: /src=\"(.+?)\.js\"/ig,
@@ -140,6 +160,7 @@ module.exports = function(grunt) {
 
     // These plugins provide necessary tasks.
     /* [Build plugin & task ] ------------------------------------*/
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -148,7 +169,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
 
     // Build task(s).
-    grunt.registerTask('default', ['concat', 'uglify', 'less', 'copy', 'replace']);
+    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'less', 'copy', 'replace']);
     grunt.registerTask('dev', ['less', 'watch']);
 
 };

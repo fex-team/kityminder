@@ -293,19 +293,23 @@ KityMinder.registerModule('View', function() {
                 var view = dragger.getView();
                 var focus = selected.getLayoutBox();
                 var space = 50;
+                var dx = 0, dy = 0;
 
                 if (focus.right > view.right) {
-                    dragger.move(new kity.Point(view.right - focus.right - space, 0), 100);
+                    dx += view.right - focus.right - space;
                 }
-                if (focus.left < view.left) {
-                    dragger.move(new kity.Point(view.left - focus.left + space, 0), 100);
+                else if (focus.left < view.left) {
+                    dx += view.left - focus.left + space;
                 }
+
                 if (focus.bottom > view.bottom) {
-                    dragger.move(new kity.Point(0, view.bottom - focus.bottom - space), 100);
+                    dy += view.bottom - focus.bottom - space;
                 }
                 if (focus.top < view.top) {
-                    dragger.move(new kity.Point(0, view.top - focus.top + space), 100);
+                    dy += view.top - focus.top + space;
                 }
+                
+                if (dx || dy) dragger.move(new kity.Point(dx, dy), 100);
             }
         }
     };

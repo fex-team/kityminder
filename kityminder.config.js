@@ -23,6 +23,9 @@
 
         // 图片尺寸限制
         maxImageWidth: 200,
-        maxImageHeight: 200
+        maxImageHeight: 200,
+
+        // 自动保存时间间隔（s）
+        autoSave: 10
     };
 })();

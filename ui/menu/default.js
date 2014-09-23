@@ -56,5 +56,6 @@ KityMinder.registerUI('menu/default', function(minder) {
 
         $share.$tabs.select(0); // 当前脑图
         // $menu.show();
+        // $menu.$tabs.select(4);
     });
 });

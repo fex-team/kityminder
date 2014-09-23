@@ -321,18 +321,14 @@
     & > .fui-button {
         position: absolute;
         display: block;
-        right: 0;
-        left: auto;
-        top: 0;
-        bottom: 0;
-        width: 10px;
+        .dock;
         padding: 0;
 
         &:hover {
-            background: @button-hover;
+            background: fadeOut(@button-hover, 90%);
         }
         &:active {
-            background: @button-active;
+            background: fadeOut(@button-active, 50%);
         }
 
         & > .fui-icon {
@@ -340,7 +336,8 @@
             .triangle-top(@button-text, 6px, 4px);
             top: auto;
             bottom: 2px;
-            left: 2px;
+            right: 2px;
+            left: auto;
         }
     }
     

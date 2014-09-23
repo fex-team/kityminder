@@ -198,7 +198,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
     _fadeDragSources: function(opacity) {
         var minder = this._minder;
         this._dragSources.forEach(function(source) {
-            source.getRenderContainer().fxOpacity(opacity, 200);
+            source.getRenderContainer().setOpacity(opacity, 200);
             source.traverse(function(node) {
                 if (opacity < 1) {
                     minder.detachNode(node);

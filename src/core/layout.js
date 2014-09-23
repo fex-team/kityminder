@@ -261,7 +261,12 @@ kity.extendClass(Minder, {
         // 第二轮布局
         layoutNode(this.getRoot());
 
-        this.applyLayoutResult(this.getRoot(), duration);
+        duration = duration ? 300 : 0;
+
+        var minder = this;
+        this.applyLayoutResult(this.getRoot(), duration).then(function() {
+            minder.fire('layoutallfinish');
+        });
 
         return this.fire('layout');
     },
@@ -286,7 +291,6 @@ kity.extendClass(Minder, {
 
         function consume() {
             if (!--complex) {
-                me.fire('layoutallfinish');
                 deffered.resolve();
             }
         }

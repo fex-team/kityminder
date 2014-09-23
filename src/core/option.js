@@ -12,14 +12,10 @@ kity.extendClass(Minder, {
         var val;
         if (key) {
             val = this.getPreferences(key);
-            return val === null || val === undefined ? this._options[key] : val;
+            return val && val[key] || this._options[key];
         } else {
             val = this.getPreferences();
-            if (val) {
-                return utils.extend(val, this._options, true);
-            } else {
-                return this._options;
-            }
+            return utils.extend(val, this._options, true);
         }
     },
 

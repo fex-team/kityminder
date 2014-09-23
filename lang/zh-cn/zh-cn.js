@@ -2,7 +2,8 @@ KityMinder.LANG['zh-cn'] = {
     'template': {
         'default': '思维导图',
         'structure': '组织结构图',
-        'filetree': '文件夹'
+        'filetree': '目录组织图',
+        'right': '逻辑结构图'
     },
     'theme': {
         'classic': '脑图经典',
@@ -91,7 +92,8 @@ KityMinder.LANG['zh-cn'] = {
             'draftheader': '草稿箱',
             'shareheader': '分享我的脑图',
             'downloadheader': '导出到指定格式',
-            'preferenceheader': '偏好设置'
+            'preferenceheader': '偏好设置',
+            'helpheader': '帮助'
         },
 
         'mydocument': '我的文档',
@@ -207,7 +209,12 @@ KityMinder.LANG['zh-cn'] = {
         'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？',
         'navigator': '导航器',
 
-        'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n确定要继续操作么？（未保存的数据会缓存在草稿箱）'
+        'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n确定要继续操作么？（未保存的数据会缓存在草稿箱）',
+
+        'shortcuts': '快捷键',
+        'contact': '联系我们',
+        'email': '邮件组',
+        'qq_group': 'QQ 群'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

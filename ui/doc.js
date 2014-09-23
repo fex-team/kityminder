@@ -10,9 +10,8 @@
 KityMinder.registerUI('doc', function(minder) {
 
     var ret = minder.getUI('eve').setup({});
-    var current = {};
+    var current = { saved: true };
     var loading = false;
-    var saved = true;
 
     /**
      * 加载文档
@@ -46,7 +45,7 @@ KityMinder.registerUI('doc', function(minder) {
             doc.data = data;
             doc.json = JSON.stringify(data);
 
-            minder.getUI('topbar/title').setTitle(doc.title, saved = doc.saved);
+            minder.getUI('topbar/title').setTitle(doc.title, doc.saved);
 
             ret.fire('docload', doc);
 
@@ -66,7 +65,7 @@ KityMinder.registerUI('doc', function(minder) {
         doc.data = minder.exportJson();
         doc.json = JSON.stringify(doc.data);
         
-        minder.getUI('topbar/title').setTitle(doc.title, saved = true);
+        minder.getUI('topbar/title').setTitle(doc.title, doc.saved = true);
         ret.fire('docsave', doc);
     }
 
@@ -76,7 +75,7 @@ KityMinder.registerUI('doc', function(minder) {
 
     function checkSaved() {
         if (!fio.user.current()) return true;
-        return saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
+        return current.saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
     }
 
     /* 绕开初始化时候的乱事件 */
@@ -89,16 +88,16 @@ KityMinder.registerUI('doc', function(minder) {
             if (current.source != 'netdisk') {
 
                 current.title = minder.getMinderTitle();
-                $title.setTitle(current.title, saved = false);
+                $title.setTitle(current.title, current.saved = false);
                 ret.fire('docchange', current);
 
             } else {
 
                 if (current.json != JSON.stringify(minder.exportJson())) {
-                    $title.setSaved(saved = false);
+                    $title.setSaved(current.saved = false);
                     ret.fire('docchange', current);
                 } else {
-                    $title.setSaved(saved = true);
+                    $title.setSaved(current.saved = true);
                 }
 
             }

@@ -86,6 +86,17 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
     };
 
+    var autoSaveDuration = minder.getOptions('autoSave') || 10;
+
+
+    setTimeout(autoSave, autoSaveDuration * 1000);
+
+    function autoSave() {
+        saveCurrent().then(function() {
+            setTimeout(autoSave, autoSaveDuration * 1000);
+        });
+    }
+
     // 快速保存
     function quickSave() {
         var doc = $doc.current();
@@ -94,10 +105,18 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             $save.$tabs.select(0);
             return $menu.show();
         } else {
-            var $title = minder.getUI('topbar/title').$title;
-            $filename.val(doc.title);
-            doSave(doc.path, doc.protocol, doc, $title);
+            saveCurrent();
         }
+    }
+
+    function saveCurrent() {
+        var doc = $doc.current();
+
+        if (doc.source != 'netdisk' || doc.saved) return Promise.resolve();
+
+        var $title = minder.getUI('topbar/title').$title;
+        $filename.val(doc.title);
+        return doSave(doc.path, doc.protocol, doc, $title);
     }
 
     function getSaveContext() {

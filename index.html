@@ -42,8 +42,11 @@
             });
             
             $('p.login a').click(function() {
+                var urlparts = window.location.href.split('/');
+                urlparts.pop();
+                urlparts = urlparts.join('/');
                 fio.user.login({
-                    redirectUrl: window.location.href.split('index.html')[0] + 'edit.html'
+                    redirectUrl: urlparts + '/edit.html'
                 });
                 $('hr').addClass('loading');
             });

@@ -1,75 +1,49 @@
-
-.shortcuts-opt {
-    margin: 0px 7px;
-    background-color: #fff;
-    font-size: 14px;
-}
-.shortcuts-group {
-	padding-right: 15px;
+#help-panel {
+    .dock(50px, 0, 0, 0);
+    overflow-y: auto;
     
-	width: 200px;
-	text-shadow: none;
-}
-.shortcuts-thead {
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 14px;
-}
-#div1 {
-	display: none;
-}
-/*.help-container {
-	width: 586px;
-	float: left;
-}*/
-.shortcuts-use {
-    width: 160px;
-    font-size: 14px;
-    font-weight: lighter;
-}
-.help-header {
-	padding-bottom: 9px;
-	margin: 20px 20px 30px;
-	border-bottom: 1px solid #EEE;
-    display: none;
-}
-.shortcuts-table  {
-    max-width: 100%;
-    background-color: transparent;
-    border-collapse: collapse;
-    border-spacing: 0px;
-    float: left;
-    margin-left: 10px;
-    margin-top: 30px;
-}
-.shortcuts-table tr:first-child td span{
-	padding: 10px 0;
-	font-size: 18px;
-	display: block;
-	color: white;
-}
-.shortcuts-table td {
-    display: table-cell;
-    float: none;
-    margin-left: 0px;
-    padding-bottom: 7px;
-}
-.shortcuts-table td[colspan] {
-	text-align: center;
-}
-.shortcuts-table h2 {
-	font-size: 31.5px;
-	line-height: 40px;
-}
-.help-container {
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 14px;
-    line-height: 20px;
-    color: hsl(0, 100%, 100%);
-	
-    text-shadow: 0 1px black;
-    margin: 30px;
-}
-div.right {
-    float: right;
+    h2 {
+        font-weight: normal;
+        color: @theme-color;
+        margin: 10px 0;
+    }
+    
+    .shortcut-content {
+        font-family: 'Microsoft Yahei';
+        margin-left: 50px;
+        section {
+            min-width: 300px;
+            margin: 0 20px 20px 0;
+            float: left;
+            
+            h3 {
+                border-bottom: 1px solid #EEE;
+            }
+            
+            div.shortcut-group {
+                margin: 5px auto;
+                
+                span.shortcut {
+                    display: inline-block;
+                    width: 220px;
+                    text-align: right;
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+    
+    .contact-content {
+        list-style: none;
+        margin-left: 50px;
+        padding-left: 0;
+        li {
+            padding: 5px 0;
+            
+            a {
+                -webkit-user-select: initial;
+                cursor: text;
+            }
+        }
+    }
 }

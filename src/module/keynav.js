@@ -120,6 +120,9 @@ KityMinder.registerModule('KeyboardModule', function() {
             buildPositionNetwork(km.getRoot());
             return;
         }
+        if (!referNode._nearestNodes) {
+            buildPositionNetwork(km.getRoot());
+        }
         var nextNode = referNode._nearestNodes[direction];
         if (nextNode) {
             km.select(nextNode, true);

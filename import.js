@@ -1,3 +1,5 @@
+
+
 /**
  * 开发版本的文件导入
  */
@@ -7,11 +9,11 @@
 
         /* 依赖库 */
         { path: 'lib/jquery-2.1.1.js',                  pack: '*' },
+        { path: 'lib/promise-1.0.0.js',                 pack: '*' },
         { path: 'lib/jquery.xml2json.js',               pack: 'edit|share|m-share' },
         { path: 'lib/jquery.transit.min.js',            pack: 'edit|share|m-share' },
         { path: 'lib/jquery.blob.js',                   pack: 'edit' },
         { path: 'lib/zip.js',                           pack: 'edit' },
-        { path: 'lib/promise-1.0.0.js',                 pack: 'index|edit' },
         { path: 'lib/ZeroClipboard.min.js',             pack: 'edit' },
         { path: 'lib/fui/dev-lib/jhtmls.min.js',        pack: 'edit|share|m-share' },
         { path: 'lib/fui/dist/fui.all.js',              pack: 'edit|share|m-share' },
@@ -102,7 +104,7 @@
         { path: 'src/module/zoom.js',                   pack: 'edit|share|m-share' },
         { path: 'src/module/hyperlink.js',              pack: 'edit|share|m-share' },
         { path: 'src/module/arrange.js',                pack: 'edit' },
-        { path: 'src/module/paste.js',                  pack: 'edit' },
+        { path: 'src/module/clipboard.js',              pack: 'edit' },
         { path: 'src/module/style.js',                  pack: 'edit' },
 
         /* 格式支持 */
@@ -161,6 +163,9 @@
         { path: 'ui/menu/share/view.js',                pack: 'share' },
         { path: 'ui/menu/share/m-share.js',             pack: 'm-share' },
 
+        /* UI 菜单 - 帮助 */
+        { path: 'ui/menu/help/help.js',                 pack: 'edit|share'},
+
         /* UI Top Bar */
         { path: 'ui/topbar/quickvisit.js',              pack: 'edit' },
         { path: 'ui/topbar/history.js',                 pack: 'edit' },
@@ -201,6 +206,53 @@
     } 
 
     else if (document) {
+
+        // currentScript polyfill
+        if("undefined" === typeof document.currentScript){
+            (function(){
+                /***************************************************************************/
+                /* document.currentScript polyfill + improvements */
+                /***************************************************************************/
+                var scripts = document.getElementsByTagName('script');
+                document._currentScript = document.currentScript;
+         
+                // return script object based off of src
+                var getScriptFromURL = function(url) {
+                    for (var i = 0; i < scripts.length; i++)
+                        if (scripts[i].src === url)
+                            return scripts[i];
+         
+                    return undefined;
+                };
+         
+                var actualScript = document.actualScript = function() {
+                    if (document._currentScript)
+                        return document._currentScript;
+         
+                    var stack;
+                    try {
+                        window.omgwtf();
+                    } catch(e) {
+                        stack = e.stack;
+                    }
+         
+                    if (!stack)
+                        return undefined;
+         
+                    var e = stack.indexOf(' at ') !== -1 ? ' at ' : '@';
+                    while (stack.indexOf(e) !== -1)
+                        stack = stack.substring(stack.indexOf(e) + e.length);
+                        stack = stack.substring(0, stack.indexOf(':', stack.indexOf(':')+1));
+         
+                    return getScriptFromURL(stack);
+                };
+                if (document.__defineGetter__)
+                    document.__defineGetter__('currentScript', actualScript);
+         
+            })();
+         
+         
+        }
         /* jshint browser:true */
         var src = document.currentScript.src;
         var pack = /pack=([\w-]+)(?:&|$)/.exec(src);
