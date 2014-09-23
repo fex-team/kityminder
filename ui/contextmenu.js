@@ -52,7 +52,6 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
                 var $li = $('<li>')
                     .addClass('fui-item')
-                    .append(label)
                     .data('menu', item)
                     .appendTo($menu);
 
@@ -70,6 +69,8 @@ KityMinder.registerUI('contextmenu', function(minder) {
                         if (mac) $shortcut.addClass('mac');
                     });
                 }
+
+                $li.append($('<div>').text(label).addClass('menu-label'));
 
                 lastDivider = false;
             }

@@ -719,7 +719,7 @@ input[type=url]:focus {
   color: #6e6e6e;
   /* text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25); */
   white-space: nowrap;
-  vertical-align: baseline;
+  vertical-align: middle;
   background-color: #fcfcfc;
   border-radius: 3px;
   border: 1px solid #cccccc;
@@ -1159,7 +1159,7 @@ li {
 }
 .fui-popup-menu {
   position: absolute;
-  z-index: 99999999999;
+  z-index: 9999;
   min-width: 160px;
   padding: 5px 0;
   font-size: 12px;
@@ -1169,6 +1169,7 @@ li {
   box-shadow: 0 1px 15px rgba(0, 0, 0, 0.3);
   background-clip: padding-box;
   font-family: Arial, "Heiti SC", "Microsoft Yahei";
+  overflow: hidden;
 }
 .fui-popup-menu:empty {
   display: none !important;
@@ -1189,6 +1190,7 @@ li {
   white-space: nowrap;
   text-decoration: none;
   font-size: 12px;
+  overflow: hidden;
   transition: none;
 }
 .fui-popup-menu .fui-item .fui-label,
@@ -2577,7 +2579,7 @@ body {
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-button {
   left: auto;
   right: 6px;
-  top: 11px;
+  top: 8px;
   padding: 1px 3px;
   vertical-align: middle;
   position: absolute;
@@ -3229,14 +3231,14 @@ ul.resource-list li {
 }
 .preview-navigator {
   background: white;
-  width: 180px;
+  width: 140px;
   height: 120px;
   position: absolute;
   left: 45px;
   bottom: 30px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   border-radius: 0 2px 2px 0;
-  padding: 3px;
+  padding: 1px;
   z-index: 9;
   cursor: crosshair;
 }

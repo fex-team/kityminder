@@ -191,7 +191,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     }
 
     function uuid() {
-        var timeLead = 1e9;
+        // 最多使用 1e7，否则 IE toString() 会出来指数表示法
+        var timeLead = 1e7;
         return ((+new Date() * timeLead) + (Math.random() * --timeLead)).toString(36);
     }
 

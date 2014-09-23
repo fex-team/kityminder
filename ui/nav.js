@@ -80,8 +80,7 @@ KityMinder.registerUI('nav', function(minder) {
         // 表示可视区域的矩形
         var visibleRect = paper.put(new kity.Rect(100, 100).stroke('red', '1%'));
 
-        // 分别表示脑图内容区域大小和当前见区域大小
-        var contentView, visibleView;
+        var contentView = new kity.Box(), visibleView = new kity.Box();
 
         navigate();
 
@@ -109,10 +108,16 @@ KityMinder.registerUI('nav', function(minder) {
         function navigate() {
 
             function moveView(center, duration) {
-                var box = visibleRect.getBox();
+                var box = visibleView;
                 center.x = -center.x;
                 center.y = -center.y;
-                minder.getViewDragger().moveTo(center.offset(box.width / 2, box.height / 2), duration);
+
+                var viewMatrix = minder.getPaper().getViewPortMatrix();
+                box = viewMatrix.transformBox(box);
+
+                var targetPosition = center.offset(box.width / 2, box.height / 2);
+
+                minder.getViewDragger().moveTo(targetPosition, duration);
             }
 
             var dragging = false;
@@ -137,9 +142,9 @@ KityMinder.registerUI('nav', function(minder) {
 
         function updateContentView() {
 
-            contentView = minder.getRenderContainer().getBoundaryBox();
+            var view = minder.getRenderContainer().getBoundaryBox();
 
-            var view = visibleView ? contentView.merge(visibleView) : contentView;
+            contentView = view;
 
             var padding = 30;
 
@@ -183,8 +188,7 @@ KityMinder.registerUI('nav', function(minder) {
 
         function updateVisibleView() {
             visibleView = minder.getViewDragger().getView();
-            visibleRect.setBox(visibleView);
-            updateContentView();
+            visibleRect.setBox(visibleView.intersect(contentView));
         }
 
         return $previewNavigator;

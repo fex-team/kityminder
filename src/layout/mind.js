@@ -15,7 +15,7 @@ KityMinder.registerLayout('mind', kity.createClass({
         rightLayout.doLayout(node, right);
 
         var box = node.getContentBox();
-        node.setVertexOut(box.cx, box.cy);
+        node.setVertexOut(new kity.Point(box.cx, box.cy));
         node.setLayoutVectorOut(new kity.Vector(0, 0));
     },
 

@@ -349,7 +349,7 @@
 
 .fui-popup-menu {
     position: absolute;
-    z-index: 99999999999;
+    z-index: 9999;
     min-width: 160px;
     padding: 5px 0;
     font-size: 12px;
@@ -359,6 +359,7 @@
     box-shadow: 0 1px 15px rgba(0, 0, 0, 0.3);
     background-clip: padding-box;
     font-family: Arial, "Heiti SC", "Microsoft Yahei";
+    overflow: hidden;
     
     &:empty {
         display: none !important;
@@ -386,6 +387,7 @@
         white-space: nowrap;
         text-decoration: none;
         font-size: 12px;
+        overflow: hidden;
         
         transition: none;
         

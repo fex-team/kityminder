@@ -58,7 +58,9 @@ KityMinder.registerModule('Zoom', function() {
             timeline.pause();
         }
         timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
-        minder.fire('viewchange');
+        timeline.on('finish', function() {
+            minder.fire('viewchange');
+        });
     }
 
     var ZoomCommand = kity.createClass('Zoom', {

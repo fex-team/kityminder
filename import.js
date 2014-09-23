@@ -242,7 +242,8 @@
                     var e = stack.indexOf(' at ') !== -1 ? ' at ' : '@';
                     while (stack.indexOf(e) !== -1)
                         stack = stack.substring(stack.indexOf(e) + e.length);
-                        stack = stack.substring(0, stack.indexOf(':', stack.indexOf(':')+1));
+
+                    stack = stack.substring(stack.indexOf('http'), stack.indexOf(':', stack.indexOf(':')+1));
          
                     return getScriptFromURL(stack);
                 };

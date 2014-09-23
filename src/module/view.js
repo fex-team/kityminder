@@ -66,8 +66,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
             height: minder.getRenderTarget().clientHeight
         };
         var m = this.getMovement();
-        var box = new kity.Box(-m.x, -m.y, c.width, c.height);
-        return box;
+        var box = new kity.Box(0, 0, c.width, c.height);
+        var viewMatrix = minder.getPaper().getViewPortMatrix();
+        return viewMatrix.inverse().translate(-m.x, -m.y).transformBox(box);
     },
 
     _bind: function() {
