@@ -12,7 +12,7 @@ KityMinder.registerModule('TextEditModule', function() {
     //鼠标被点击，并未太抬起时为真
     var mouseDownStatus = false;
 
-    var mouseupTimer;
+    var dblclickEvent = false;
     //当前是否有选区存在
     var selectionReadyShow = false;
 
@@ -128,30 +128,25 @@ KityMinder.registerModule('TextEditModule', function() {
                 receiver.clear();
 
             },
-            'inputready.keyup':function(e){
+            'inputready.keyup':function(){
                 if(sel.isHide()){
-                    var me = this;
-                    // setTimeout(function(){
-                    //     inputStatusReady(me.getSelectedNode());
-                    // });
+                    inputStatusReady(this.getSelectedNode());
                 }
             },
 
             //当节点选区通过键盘发生变化时，输入状态要准备好
             'normal.keyup': function(e) {
                 var node = this.getSelectedNode();
+                var keyCode = e.getKeyCode();
                 if (node) {
                     if (this.isSingleSelect() && node.isSelected() && !sel.isShow() ) {
-                        var orgEvt = e.originEvent,
-                            keyCode = orgEvt.keyCode;
+                        var orgEvt = e.originEvent;
                         if (keymap.isSelectedNodeKey[keyCode] &&
                             !orgEvt.ctrlKey &&
                             !orgEvt.metaKey &&
                             !orgEvt.shiftKey &&
                             !orgEvt.altKey) {
-                                // setTimeout(function(){
-                                //     inputStatusReady(node);
-                                // })
+                                inputStatusReady(node);
 
                         }
                     }
@@ -170,17 +165,16 @@ KityMinder.registerModule('TextEditModule', function() {
 
                     sel.setColor(node.getStyle('text-selection-color'));
 
-
-
-//                    node.getTextShape().setStyle('cursor', 'text');
-
-
                     //必须再次focus，要不不能呼出键盘
                     if(browser.ipad){
                         receiver.focus();
                     }
 
-                    mouseupTimer = setTimeout(function() {
+                    setTimeout(function() {
+                        if(dblclickEvent){
+                            dblclickEvent = false;
+                            return;
+                        }
                         sel.collapse(true)
                             .updatePosition(receiver.getOffsetByIndex())
                             .setShow();
@@ -238,8 +232,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 var node = e.getTargetNode();
 
                 if(node){
-                    //清理mouseup的timer
-                    clearTimeout(mouseupTimer);
+                    //跟mouseup的timeout有冲突，这里做标记处理
+                    dblclickEvent = true;
 
                     inputStatusReady(node);
 

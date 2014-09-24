@@ -12,6 +12,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             this.lastMinderNode = null;
             this.isTypeText = false;
             this._initEvent();
+            this.isShortcutCopyKey = false;
         },
         //给接受容器绑定事件
         _initEvent: function(){
@@ -118,7 +119,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             }, 200);
             me.km.setStatus('textedit');
         },
-        _input:function(e){
+        _input:function(){
             var me = this;
             if (browser.ipad) {
                 setTimeout(function() {
@@ -139,7 +140,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         me._handlerEnterkey();
                         e.preventDefault();
                         return false;
-                    }
+                    };
                 case keymap.Tab:
                     if(this.selection.isShow()){
                         this.re.clear();
@@ -168,7 +169,8 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.Alt:
                 case keymap.Cmd:
                 case keymap.F2:
-                    if(this.selection.isHide() && this.km.getStatus() != 'textedit'){
+
+                    if(this.selection.isHide() && this.km.getStatus() != 'textedit' && this.km.getStatus() !='inputready'){
                         this.km.setStatus('normal');
                         return;
                     }
@@ -183,8 +185,10 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     88:1,
                     67:1
                 }[keyCode]){
-
+                    //修正在cvs方式下_keyup会把节点文字选中
+                    this.isShortcutCopyKey = true;
                     this.km.setStatus('normal');
+
                     return;
                 }
 
@@ -193,24 +197,38 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
                     setTimeout(function () {
                         me.range.updateNativeRange().insertNode($('<span>$$_kityminder_bookmark_$$</span>')[0]);
-                        me.container.innerHTML = utils.unhtml(me.container.textContent.replace(/[\u200b\t\r\n]/g, ''));
-                        var index = me.container.textContent.indexOf('$$_kityminder_bookmark_$$');
-                        me.container.textContent = me.container.textContent.replace('$$_kityminder_bookmark_$$', '');
-                        me.range.setStart(me.container.firstChild, index).collapse(true).select();
+                        var brArr = [];
+                        utils.each(me.container.getElementsByTagName('br'),function(i,br){
+                            brArr.push(br);
+                        });
+                        utils.each(brArr,function(i,br){
+                            var textNode = document.createTextNode('\n');
+                            br.parentNode.insertBefore(textNode,br);
+                            br.parentNode.removeChild(br);
+                        });
+                        var textContent = me.container.textContent.replace(/[\u200b\t\r]/g,'');
+                        var index = textContent.indexOf('$$_kityminder_bookmark_$$');
+
+                        me.re.setContainerTxt(textContent.replace('$$_kityminder_bookmark_$$',''));
+
+
+                        me.range.setStartOffset(index).collapse(true).select();
                         me._setTextToContainer(keyCode);
-                    }, 100);
+                    },50);
                     return;
                 }
                 //剪切
                 if (keyCode == keymap.x) {
                     setTimeout(function () {
                         me._setTextToContainer(keyCode);
-                    }, 100);
+                    },50);
                     return;
                 }
 
 
             }
+
+            this.isShortcutCopyKey = false;
             //针对不能连续删除做处理
             if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
                 me._setTextToContainer(keyCode);
@@ -260,6 +278,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     me._setTextToContainer(keyCode);
                     return;
             }
+
             if (this.isTypeText) {
                 me._setTextToContainer(keyCode);
                 return;
@@ -274,25 +293,31 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
         },
         _keyup:function(e){
             var me = this;
-            var orgEvt = e.originEvent;
-            var keyCode = orgEvt.keyCode;
+            var timer;
             var node = this.km.getSelectedNode();
             if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
+
+                if(this.isShortcutCopyKey){
+                    console.log(this.km.getStatus())
+                    return;
+                }
+
+
                 if (node && this.km.isSingleSelect() && node.isSelected()) {
 
+                    this.re.updateByMinderNode(node);
 
                     this.selection.setHide()
                         .setStartOffset(0)
                         .setEndOffset(this.re.getTxtOfContainer().length)
                         .setColor( node.getStyle('text-selection-color'));
 
-                    var re = this.re;
-                    setTimeout(function() {
-                        re.updateByMinderNode(node).updateContainerRangeBySel();
+                    setTimeout(function(){
+                        me.re.updateContainerRangeBySel();
                     });
 
                     if(browser.ie ){
-                        var timer = setInterval(function(){
+                        timer = setInterval(function(){
                             var nativeRange = me.range.nativeSel.getRangeAt(0);
                             if(!nativeRange || nativeRange.collapsed){
                                 me.range.select();
@@ -333,6 +358,8 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 rng.setStartBefore(br);
                 rng.collapse(true);
             }
+
+
             rng.select();
             me._setTextToContainer(keymap.Enter);
 
