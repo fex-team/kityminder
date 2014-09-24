@@ -102,12 +102,12 @@ KityMinder.registerModule("hyperlink", function() {
                     var spaceRight = node.getStyle('space-right');
 
                     link.setTranslate(box.right + spaceRight + 2, -5);
-                    return {
+                    return new kity.Box({
                         x: box.right + spaceRight,
                         y: -11,
                         width: 24,
                         height: 22
-                    };
+                    });
                 }
             })
         }

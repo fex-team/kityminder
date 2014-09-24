@@ -42,23 +42,26 @@
     
     .dock;
     overflow: hidden;
-    transform: translate3d(0, -100%, 0);
+    .transform(translate3d(0, -100%, 0));
     transform-origin: 0 0;
     opacity: 0;
+    -webkit-transition: opacity .2s ease, -webkit-transform .2s ease;
     transition: opacity .2s ease, transform .2s ease;
     z-index: 100;
 
     &.show {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        .transform(translate3d(0, 0, 0));
     }
     
     .slide-in() {
-        transform: translateX(-(@left-width)) translateZ(0);
+        .transform(translateX(-(@left-width)) translateZ(0));
+        -webkit-transition: -webkit-transform .7s ease, opacity .5s ease;
         transition: transform .7s ease, opacity .5s ease;
 
         .show& {
-            transform: translateX(0) translateZ(0);
+            .transform(translateX(0) translateZ(0));
+            -webkit-transition: -webkit-transform .7s ease, opacity .5s ease;
             transition: transform .7s ease, opacity .5s ease;
         }
     }

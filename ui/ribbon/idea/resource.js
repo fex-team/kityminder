@@ -68,7 +68,7 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
         var resource = minder.queryCommandValue('resource');
         var used = minder.getUsedResource();
 
-        if (changed(resource, used)) return;
+        if (!changed(resource, used)) return;
 
         var delta = used.length - $ul.children().length;
         while (delta--) $ul.append('<li><label><input type="checkbox" /><span></span></label></li>');
