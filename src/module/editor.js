@@ -12,7 +12,7 @@ KityMinder.registerModule('TextEditModule', function() {
     //鼠标被点击，并未太抬起时为真
     var mouseDownStatus = false;
 
-
+    var mouseupTimer;
     //当前是否有选区存在
     var selectionReadyShow = false;
 
@@ -109,6 +109,7 @@ KityMinder.registerModule('TextEditModule', function() {
                             textGroup.setStyle('cursor', 'text');
                             sel.setShowStatus();
                             setTimeout(function() {
+
                                 sel.collapse(true)
                                     .updatePosition(receiver.getOffsetByIndex())
                                     .setShow();
@@ -129,7 +130,10 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'inputready.keyup':function(e){
                 if(sel.isHide()){
-                    inputStatusReady(this.getSelectedNode());
+                    var me = this;
+                    setTimeout(function(){
+                        inputStatusReady(me.getSelectedNode());
+                    });
                 }
             },
 
@@ -145,7 +149,10 @@ KityMinder.registerModule('TextEditModule', function() {
                             !orgEvt.metaKey &&
                             !orgEvt.shiftKey &&
                             !orgEvt.altKey) {
-                                inputStatusReady(node);
+                                setTimeout(function(){
+                                    inputStatusReady(node);
+                                })
+
                         }
                     }
                 }
@@ -173,7 +180,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         receiver.focus();
                     }
 
-                    setTimeout(function() {
+                    mouseupTimer = setTimeout(function() {
                         sel.collapse(true)
                             .updatePosition(receiver.getOffsetByIndex())
                             .setShow();
@@ -231,11 +238,15 @@ KityMinder.registerModule('TextEditModule', function() {
                 var node = e.getTargetNode();
 
                 if(node){
+                    //清理mouseup的timer
+                    clearTimeout(mouseupTimer);
+
                     inputStatusReady(node);
 
                     km.setStatus('textedit');
 
                     receiver.updateSelection();
+
                 }
 
             },
