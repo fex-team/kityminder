@@ -2,7 +2,8 @@
 
 var FONT_ADJUST = {
     '微软雅黑,Microsoft YaHei': -0.15,
-    'arial black,avant garde': -0.17
+    'arial black,avant garde': -0.17,
+    'default': -0.15
 };
 
 var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
@@ -23,7 +24,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         var lineHeight = node.getStyle('line-height');
 
         var fontSize = s('font-size');
-        var fontFamily = node.getData('font-family');
+        var fontFamily = s('font-family') || 'default';
 
         var height = (lineHeight * fontSize) * textArr.length - (lineHeight - 1) * fontSize;
         var yStart = -height / 2;

@@ -1282,7 +1282,7 @@ div {
 }
 body,
 svg {
-  font-family: Arial, "Microsoft Yahei", "Heiti SC", sans-serif;
+  font-family: "Microsoft Yahei", "Heiti SC", Arial, sans-serif;
 }
 html,
 body {
