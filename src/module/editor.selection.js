@@ -71,7 +71,7 @@ Minder.Selection = kity.createClass( 'Selection', {
             this.offset = arrOffset;
             return this;
         }
-
+        this._show = true;
     },
     updatePosition:function(offset){
         var me = this;
@@ -89,6 +89,7 @@ Minder.Selection = kity.createClass( 'Selection', {
                 me.addShape(rect);
             });
         }
+        this._show = true;
         return this;
     },
     collapse : function(toStart){
