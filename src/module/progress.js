@@ -124,12 +124,7 @@ KityMinder.registerModule('ProgressModule', function() {
                     y = -icon.height / 2;
                     icon.setTranslate(x + icon.width / 2, y + icon.height / 2);
 
-                    return {
-                        x: x,
-                        y: y,
-                        width: icon.width,
-                        height: icon.height
-                    };
+                    return new kity.Box(x, y, icon.width, icon.height);
                 }
             })
         }

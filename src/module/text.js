@@ -1,5 +1,10 @@
 /* global Renderer: true */
 
+var FONT_ADJUST = {
+    '微软雅黑,Microsoft YaHei': -0.15,
+    'arial black,avant garde': -0.17
+};
+
 var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
     base: Renderer,
 
@@ -18,9 +23,14 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         var lineHeight = node.getStyle('line-height');
 
         var fontSize = s('font-size');
+        var fontFamily = node.getData('font-family');
 
         var height = (lineHeight * fontSize) * textArr.length - (lineHeight - 1) * fontSize;
         var yStart = -height / 2;
+
+        var adjust = FONT_ADJUST[fontFamily] || 0;
+
+        textGroup.setTranslate(0, adjust * fontSize);
 
         var rBox = new kity.Box(),
             r = Math.round;
@@ -36,7 +46,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
             } else {
                 if (text !== undefined && !textShape) {
                     textShape = new kity.Text()
-                        .setVerticalAlign('top')
+                        .setAttr('dominant-baseline', 'text-before-edge')
                         .setAttr('text-rendering', 'inherit');
                     textGroup.addItem(textShape);
                 }
@@ -48,18 +58,18 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
         }
         this.setTextStyle(node, textGroup);
 
-        textGroup.eachItem(function(i, textShape) {
-            var y = yStart + i * fontSize * lineHeight;
-
-            textShape.setY(y);
-
-            rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width, fontSize));
-        });
-
-        var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
-
-        node._currentTextGroupBox = nBox;
         return function() {
+            textGroup.eachItem(function(i, textShape) {
+                var y = yStart + i * fontSize * lineHeight;
+
+                textShape.setY(y);
+
+                rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width || 1, fontSize));
+            });
+
+            var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
+
+            node._currentTextGroupBox = nBox;
             return nBox;
         };
 

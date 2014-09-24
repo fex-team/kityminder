@@ -109,7 +109,8 @@ Minder.Receiver = kity.createClass('Receiver', {
         return utils.getValueByIndex(this.textData, index !== undefined ? index : this.index);
     },
     getBaseOffset: function() {
-        return  this.textGroup.getRenderBox('screen');
+        var offset = this.textGroup.getRenderBox('screen');
+        return offset;
     },
     setContainerStyle: function() {
         var textGroupBox = this.getBaseOffset();

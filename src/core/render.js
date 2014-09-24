@@ -3,16 +3,43 @@ var Renderer = KityMinder.Renderer = kity.createClass('Renderer', {
         this.node = node;
     },
 
-    create: function() {
+    create: function(node) {
         throw new Error('Not implement: Renderer.create()');
     },
 
-    shouldRender: function() {
+    shouldRender: function(node) {
         return true;
     },
 
-    update: function() {
-        throw new Error('Not implement: Renderer.update()');
+    watchChange: function(data) {
+        var changed;
+
+        if (this.watchingData === undefined) {
+            changed = true;
+        } else if (this.watchingData != data) {
+            changed = true;
+        } else {
+            changed = false;
+        }
+
+        this.watchingData = data;
+    },
+
+    shouldDraw: function(node) {
+        return true;
+    },
+
+    update: function(shape, node, box) {
+        if (this.shouldDraw()) this.draw(shape, node);
+        return this.place(shape, node, box);
+    },
+
+    draw: function(shape, node) {
+        throw new Error('Not implement: Renderer.draw()');
+    },
+
+    place: function(shape, node, box) {
+        throw new Error('Not implement: Renderer.place()');
     },
 
     getRenderShape: function() {
@@ -142,12 +169,7 @@ kity.extendClass(Minder, (function() {
                 node: node
             });
 
-            node._contentBox = g.wrapBox({
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0
-            });
+            node._contentBox = new kity.Box();
 
             node._renderers.forEach(function(renderer) {
 
@@ -174,7 +196,7 @@ kity.extendClass(Minder, (function() {
 
                     // 合并渲染区域
                     if (latestBox) {
-                        node._contentBox = g.mergeBox(node._contentBox, latestBox);
+                        node._contentBox = node._contentBox.merge(latestBox);
                     }
                 }
 

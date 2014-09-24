@@ -26,6 +26,7 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
     var $resourceDrop = new FUI.DropPanel().appendTo($resourcePanel);
     var $dropContainer = $($resourceDrop.getPanelElement());
     var $ul = $('<ul></ul>').addClass('resource-list').appendTo($dropContainer);
+    var $list = [];
 
     function addResource() {
         var resource = $addInput.getValue();
@@ -58,31 +59,38 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
 
     function changed(resource, used) {
         var currentHash = hash(resource, used);
-        if (currentHash == changed.lastHash) return true;
+        if (currentHash == changed.lastHash) return false;
         changed.lastHash = currentHash;
-        return false;
+        return true;
     }
 
     function update() {
         var resource = minder.queryCommandValue('resource');
         var used = minder.getUsedResource();
 
-        if (!changed(resource, used)) return;
+        if (changed(resource, used)) return;
 
-        $ul.empty().append(used.map(function(name) {
-            var $li = $('<li></li>'),
-                $label = $('<label></label>').appendTo($li),
-                $chk = $('<input type="checkbox" />')
-                .data('resource', name)
-                .prop('checked', ~resource.indexOf(name))
-                .appendTo($label);
-            $label.append(name);
+        var delta = used.length - $ul.children().length;
+        while (delta--) $ul.append('<li><label><input type="checkbox" /><span></span></label></li>');
+        while (++delta) $ul.children().first().remove();
+
+        used.forEach(function(name, index) {
+            var $li = $ul.children().eq(index);
+            var $label = $li.find('label');
+            var $chk = $label.find('input');
+            var $span = $label.find('span');
+
+            $chk.data('resource', name);
+            $chk.prop('checked', ~resource.indexOf(name));
+
+            $span.text(name);
             var color = minder.getResourceColor(name);
-            return $li.css({
+
+            $li.css({
                 color: color.dec('l', 60).toString(),
                 backgroundColor: ~resource.indexOf(name) ? color : color.dec('a', 0.85).toRGBA()
             });
-        }));
+        });
 
         switch (minder.queryCommandState('resource')) {
             case 0:

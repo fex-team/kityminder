@@ -286,10 +286,10 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         .setEndOffset(this.re.getTxtOfContainer().length)
                         .setColor( node.getStyle('text-selection-color'));
 
-
-                    this.re
-                        .updateByMinderNode(node)
-                        .updateContainerRangeBySel();
+                    var re = this.re;
+                    setTimeout(function() {
+                        re.updateByMinderNode(node).updateContainerRangeBySel();
+                    });
 
                     if(browser.ie ){
                         var timer = setInterval(function(){

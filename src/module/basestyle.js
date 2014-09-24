@@ -7,10 +7,14 @@ KityMinder.registerModule('basestylemodule', function() {
 
     KityMinder.TextRenderer.registerStyleHook(function(node, textGroup) {
 
+        var fontWeight = getNodeDataOrStyle(node,'font-weight');
+        var fontStyle = getNodeDataOrStyle(node, 'font-style');
+        var styleHash = [fontWeight, fontStyle].join('/');
+
         textGroup.eachItem(function(index,item){
             item.setFont({
-                'weight': getNodeDataOrStyle(node,'font-weight'),
-                'style': getNodeDataOrStyle(node,'font-style')
+                'weight': fontWeight,
+                'style': fontStyle
             });
         });
 

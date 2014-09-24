@@ -116,24 +116,15 @@ kity.extendClass(Minder, {
         if (this._fire(preEvent) ||
             this._fire(executeEvent))
             this._fire(new MinderEvent('after' + e.type, e, false));
-
-        if (~'mousedown mouseup keydown keyup'.indexOf(e.type)) {
-            this._interactChange(e);
-        }
     },
     _interactChange: function(e) {
-        var minder = this;
-
-        var trigger = function trigger() {
-            var stoped = minder._fire(new MinderEvent('beforeinteractchange'));
-            if (stoped) {
-                return;
-            }
-            minder._fire(new MinderEvent('preinteractchange'));
-            minder._fire(new MinderEvent('interactchange'));
-        };
-
-        this._interactTimeout = setTimeout(trigger, 100);
+        var me = this;
+        if (me._interactScheduled) return;
+        setTimeout(function() {
+            me._fire(new MinderEvent('interactchange'));
+            me._interactScheduled = false;
+        }, 100);
+        me._interactScheduled = true;
     },
     _listen: function(type, callback) {
         var callbacks = this._eventCallbacks[type] || (this._eventCallbacks[type] = []);

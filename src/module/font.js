@@ -8,14 +8,23 @@ KityMinder.registerModule("fontmodule", function() {
         var selectedColor = node.getStyle('selected-color');
         var styleColor = node.getStyle('color');
 
-        textGroup.fill(dataColor || (node.isSelected() && selectedColor ? selectedColor : styleColor));
+        var foreColor = dataColor || (node.isSelected() && selectedColor ? selectedColor : styleColor);
+        var fontFamily = getNodeDataOrStyle(node, 'font-family');
+        var fontSize = getNodeDataOrStyle(node, 'font-size');
+        var fontHash = [fontFamily, fontSize].join('/');
+
+        if (foreColor.toString() != node.getTmpData('fore-color')) {
+            textGroup.fill(foreColor);
+            node.setTmpData('fore-color', foreColor.toString());
+        }
 
         textGroup.eachItem(function(index,item){
             item.setFont({
-                'family': getNodeDataOrStyle(node,'font-family'),
-                'size': getNodeDataOrStyle(node,'font-size')
+                'family': fontFamily,
+                'size': fontSize
             });
         });
+        node.setTmpData('font-hash', fontHash);
     });
 
     return {

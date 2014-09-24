@@ -60,6 +60,7 @@ KityMinder.registerModule('Zoom', function() {
         timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
         timeline.on('finish', function() {
             minder.fire('viewchange');
+            minder.fire('zoom', { zoom: value });
         });
     }
 

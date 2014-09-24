@@ -96,9 +96,7 @@ kity.extendClass(Minder, {
                 if (cmd.isContentChanged()) {
                     this._firePharse(new MinderEvent('contentchange'));
                 }
-                if (cmd.isSelectionChanged()) {
-                    this._firePharse(new MinderEvent('selectionchange'));
-                }
+
                 this._interactChange();
             }
             this._hasEnterExecCommand = false;
@@ -106,10 +104,6 @@ kity.extendClass(Minder, {
             result = cmd.execute.apply(cmd, [me].concat(cmdArgs));
 
             if (!this._hasEnterExecCommand) {
-                if (cmd.isSelectionChanged()) {
-                    this._firePharse(new MinderEvent('selectionchange'));
-                }
-
                 this._interactChange();
             }
         }

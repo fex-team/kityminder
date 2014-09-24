@@ -50,7 +50,7 @@ KityMinder.registerUI('topbar/search', function(minder) {
         var startIndex = newSearch ? 0 : doSearch.lastIndex + 1 || 0;
         var endIndex = startIndex + nodeSequence.length - 1;
 
-        for (var i = startIndex; i < endIndex; i++) {
+        for (var i = startIndex; i <= endIndex; i++) {
             var node = nodeSequence[i % nodeSequence.length];
             var text = node.getText();
             if (text.indexOf(keyword) != -1) {
@@ -61,8 +61,10 @@ KityMinder.registerUI('topbar/search', function(minder) {
         }
 
         function setSearchResult(node) {
-            minder.select(node, true);
             minder.execCommand('camera', node, 50);
+            setTimeout(function() {
+                minder.select(node, true);
+            }, 60);
         }
     }
     return $search;

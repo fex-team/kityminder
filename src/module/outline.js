@@ -38,7 +38,7 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
             .stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
                 node.getStyle(prefix + 'stroke-width'));
 
-        return outlineBox;
+        return new kity.Box(outlineBox);
     }
 });
 

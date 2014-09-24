@@ -19,7 +19,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
         .appendTo('#content-wrapper');
 
     $menu.delegate('li', 'click', function(e, info) {
-        var item = $(e.target).data('menu');
+        var item = $(e.target).closest('li').data('menu');
         if (item.command) {
             minder.execCommand(item.command);
         }

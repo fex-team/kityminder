@@ -48,10 +48,9 @@ KityMinder.registerUI('nav', function(minder) {
             .appendTo($pan)
             .css('top', getHeight(100));
 
-        minder.on('interactchange', function() {
-            var zoom = minder.queryCommandValue('zoom');
+        minder.on('zoom', function(e) {
             $indicator.animate({
-                'top': getHeight(zoom)
+                'top': getHeight(e.zoom)
             }, 100);
         });
 
@@ -104,6 +103,8 @@ KityMinder.registerUI('nav', function(minder) {
             minder.off('layout layoutallfinish', updateContentView);
             minder.off('viewchange', updateVisibleView);
         }
+
+        window.u = updateContentView;
 
         function navigate() {
 
@@ -184,6 +185,8 @@ KityMinder.registerUI('nav', function(minder) {
             } else {
                 connectionThumb.setPathData(null);
             }
+
+            updateVisibleView();
         }
 
         function updateVisibleView() {

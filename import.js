@@ -255,7 +255,8 @@
          
         }
         /* jshint browser:true */
-        var src = document.currentScript.src;
+        var script = document.currentScript || document.actualScript();
+        var src = script.src;
         var pack = /pack=([\w-]+)(?:&|$)/.exec(src);
         if (!pack) return;
         pack = pack[1];

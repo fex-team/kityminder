@@ -123,12 +123,12 @@ KityMinder.registerModule('PriorityModule', function() {
 
                     icon.setTranslate(x, y);
 
-                    return {
+                    return new kity.Box({
                         x: x,
                         y: y,
                         width: icon.width,
                         height: icon.height
-                    };
+                    });
                 }
             })
         }

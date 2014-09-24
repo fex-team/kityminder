@@ -131,9 +131,9 @@ KityMinder.registerModule('TextEditModule', function() {
             'inputready.keyup':function(e){
                 if(sel.isHide()){
                     var me = this;
-                    setTimeout(function(){
-                        inputStatusReady(me.getSelectedNode());
-                    });
+                    // setTimeout(function(){
+                    //     inputStatusReady(me.getSelectedNode());
+                    // });
                 }
             },
 
@@ -149,9 +149,9 @@ KityMinder.registerModule('TextEditModule', function() {
                             !orgEvt.metaKey &&
                             !orgEvt.shiftKey &&
                             !orgEvt.altKey) {
-                                setTimeout(function(){
-                                    inputStatusReady(node);
-                                })
+                                // setTimeout(function(){
+                                //     inputStatusReady(node);
+                                // })
 
                         }
                     }
