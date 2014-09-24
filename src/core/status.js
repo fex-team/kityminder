@@ -44,7 +44,9 @@ kity.extendClass(Minder, {
     rollbackStatus: function() {
         this.setStatus(this._rollbackStatus);
     },
-
+    getRollbackStatus:function(){
+        return this._rollbackStatus;
+    },
     getStatus: function() {
         return this._status;
     }
