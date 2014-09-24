@@ -128,15 +128,16 @@ KityMinder.registerModule('TextEditModule', function() {
                 receiver.clear();
 
             },
-            'inputready.keyup':function(e){
+            'inputready.keyup':function(){
                 if(sel.isHide()){
-                    inputStatusReady(me.getSelectedNode());
+                    inputStatusReady(this.getSelectedNode());
                 }
             },
 
             //当节点选区通过键盘发生变化时，输入状态要准备好
             'normal.keyup': function(e) {
                 var node = this.getSelectedNode();
+                var keyCode = e.getKeyCode();
                 if (node) {
                     if (this.isSingleSelect() && node.isSelected() && !sel.isShow() ) {
                         var orgEvt = e.originEvent;

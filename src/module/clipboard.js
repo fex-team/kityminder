@@ -81,9 +81,9 @@ KityMinder.registerModule( "ClipboardModule", function () {
             'paste': PasteCommand
         },
         'commandShortcutKeys': {
-            'copy': 'ctrl+c',
-            'cut': 'ctrl+x',
-            'paste': 'ctrl+v'
+            'copy': 'normal::ctrl+c|',
+            'cut': 'normal::ctrl+x',
+            'paste': 'normal::ctrl+v'
         }
     };
 } );
