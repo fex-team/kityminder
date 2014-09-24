@@ -108,8 +108,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 .setHoldShow();
 
 
-
-
             me.timer = setTimeout(function() {
                 if(me.selection.isShow()){
                     me.selection.setShow();

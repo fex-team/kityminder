@@ -214,9 +214,13 @@ KityMinder.registerModule('TextEditModule', function() {
                     if(node){
                         var offset = e.getPosition(node.getRenderContainer());
 
-                        receiver.updateSelectionByMousePosition(offset)
-                            .updateSelection(offset)
-                            .updateContainerRangeBySel();
+                        receiver
+                            .updateSelectionByMousePosition(offset)
+                            .updateSelection(offset);
+                        setTimeout(function(){
+                            receiver.updateContainerRangeBySel();
+                        });
+
 
                     }
 
@@ -297,6 +301,12 @@ KityMinder.registerModule('TextEditModule', function() {
             },
             'inputready.mousewheel textedit.mousewheel': function() {
                 receiver.setContainerStyle();
+            },
+            'statuschange':function(e){
+                if(this.getRollbackStatus() == 'textedit'){
+
+                    this.fire('contentchange');
+                }
             }
 
         }
