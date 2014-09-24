@@ -52,6 +52,10 @@ var MinderEvent = kity.createClass('MindEvent', {
         else if ("button" in this.originEvent)
             isRightMB = this.originEvent.button == 2;
         return isRightMB;
+    },
+    getKeyCode:function(){
+        var evt = this.originEvent;
+        return evt.keyCode || evt.which;
     }
 });
 
