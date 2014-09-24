@@ -274,12 +274,12 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
         },
         _keyup:function(e){
             var me = this;
-            var orgEvt = e.originEvent;
-            var keyCode = orgEvt.keyCode;
+            var timer;
             var node = this.km.getSelectedNode();
             if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
                 if (node && this.km.isSingleSelect() && node.isSelected()) {
 
+                    this.re.updateByMinderNode(node);
 
                     this.selection.setHide()
                         .setStartOffset(0)
@@ -287,12 +287,12 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         .setColor( node.getStyle('text-selection-color'));
 
 
-                    this.re
-                        .updateByMinderNode(node)
-                        .updateContainerRangeBySel();
+                    setTimeout(function(){
+                        me.re.updateContainerRangeBySel();
+                    });
 
                     if(browser.ie ){
-                        var timer = setInterval(function(){
+                        timer = setInterval(function(){
                             var nativeRange = me.range.nativeSel.getRangeAt(0);
                             if(!nativeRange || nativeRange.collapsed){
                                 me.range.select();
