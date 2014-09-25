@@ -46,7 +46,8 @@
                 urlparts.pop();
                 urlparts = urlparts.join('/');
                 fio.user.login({
-                    redirectUrl: urlparts + '/edit.html'
+                    redirectUrl: urlparts + '/edit.html',
+                    remember: 7 * 24 * 60 * 60
                 });
                 $('hr').addClass('loading');
             });
@@ -119,6 +120,7 @@
             width: 110px;
             margin: 40px auto;
             transition: transform 0.5s ease;
+            -webkit-transition: -webkit-transform 0.5s ease;
         }
 
         hr.loading {
@@ -127,13 +129,25 @@
         }
 
         @-webkit-keyframes slide {
-            0% { transform: translate3d(-100px, 0, 0); }
-            100% { transform: translate3d(100px, 0, 0); }
+            0% { 
+                transform: translate3d(-100px, 0, 0); 
+                -webkit-transform: translate3d(-100px, 0, 0);
+            }
+            100% { 
+                transform: translate3d(100px, 0, 0); 
+                -webkit-transform: translate3d(-100px, 0, 0);
+            }
         }
 
         @keyframes slide {
-            0% { transform: translate3d(-100px, 0, 0); }
-            100% { transform: translate3d(100px, 0, 0); }
+            0% { 
+                transform: translate3d(-100px, 0, 0); 
+                -webkit-transform: translate3d(-100px, 0, 0);
+            }
+            100% { 
+                transform: translate3d(100px, 0, 0); 
+                -webkit-transform: translate3d(-100px, 0, 0);
+            }
         }
 
         p.description {
@@ -161,6 +175,7 @@
 
         p.login a:active {
             background: #FF6161;
+            -webkit-transform: scale(0.95);
             transform: scale(0.95);
         }
 
@@ -175,11 +190,14 @@
             bottom: 0;
             border-radius: 30px;
             transform: scale(0, 1);
+            -webkit-transform: scale(0, 1);
             transition: transform 0.3s ease;
+            -webkit-transition: -webkit-transform 0.3s ease;
         }
 
         p.login a:hover:before {
             transform: scale(1, 1);
+            -webkit-transform: scale(1, 1);
         }
     
     </style>
