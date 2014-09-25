@@ -53,8 +53,8 @@ KityMinder.LANG['zh-cn'] = {
 
         'back': '返回',
 
-        'undo': '撤销',
-        'redo': '重做',
+        'undo': '撤销 (Ctrl + Z)',
+        'redo': '重做 (Ctrl + Y)',
 
         'tabs': {
             'idea': '思路',
@@ -63,9 +63,9 @@ KityMinder.LANG['zh-cn'] = {
         },
 
         'quickvisit': {
-            'new': '新建',
-            'save': '保存',
-            'share': '分享'
+            'new': '新建 (Ctrl + Alt + N)',
+            'save': '保存 (Ctrl + S)',
+            'share': '分享 (Ctrl + Alt + S)'
         },
 
         'menu': {

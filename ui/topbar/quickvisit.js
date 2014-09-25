@@ -11,6 +11,7 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
     function btn(name) {
         return $('<a class="quick-visit-button"></a>')
             .text(minder.getLang('ui.quickvisit.' + name))
+            .attr('title', minder.getLang('ui.quickvisit.' + name))
             .addClass(name)
             .appendTo('#panel');
     }

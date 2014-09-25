@@ -303,7 +303,7 @@ KityMinder.registerModule('TextEditModule', function() {
                 receiver.setContainerStyle();
             },
             'statuschange':function(e){
-                if(this.getRollbackStatus() == 'textedit'){
+                if(e.lastStatus == 'textedit'){
 
                     this.fire('contentchange');
                 }

@@ -89,6 +89,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 if (dragger._minder.getStatus() == 'hand')
                     dragger._minder.rollbackStatus();
             }
+            var paper = dragger._minder.getPaper();
+            paper.setStyle('cursor', dragger._minder.getStatus() == 'hand' ? '-webkit-grab' : 'default');
         }
 
         this._minder.on('normal.mousedown normal.touchstart ' +
@@ -112,7 +114,11 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 }
                 if (!isTempDrag) return;
                 var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-                if (offset.length() > 3) this.setStatus('hand');
+                if (offset.length() > 10) {
+                    this.setStatus('hand');
+                    var paper = dragger._minder.getPaper();
+                    paper.setStyle('cursor', '-webkit-grabbing');
+                }
             })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
@@ -120,6 +126,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
             if (dragger.isEnabled()) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
+                var paper = dragger._minder.getPaper();
+                paper.setStyle('cursor', '-webkit-grabbing');
             }
         })
 
@@ -219,13 +227,20 @@ KityMinder.registerModule('View', function() {
         },
         events: {
             keyup: function(e) {
-                if (e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0) {
+                if (this.getStatus() == 'hand' && e.getKeyCode() == 18) {
                     this.execCommand('hand');
                     e.preventDefault();
                 }
             },
             keydown: function(e) {
                 var minder = this;
+                if (this.getStatus() != 'hand' && e.getKeyCode() == 18) {
+                    this.execCommand('hand');
+                    e.preventDefault();
+                } else if (this.getStatus() == 'hand') {
+                    this.execCommand('hand');
+                }
+
                 ['up', 'down', 'left', 'right'].forEach(function(name) {
                     if (e.isShortcutKey('ctrl+' + name)) {
                         minder.removeAllSelectedNodes();

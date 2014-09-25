@@ -76,7 +76,7 @@ kity.extendClass(Minder, {
         var has = 'hasOwnProperty';
         this.on('keydown', function(e) {
             for (var keys in map) {
-                if (!map[has](keys)) break;
+                if (!map[has](keys)) continue;
                 if (e.isShortcutKey(keys)) {
                     var fn = map[keys];
                     if (fn.__statusCondition && fn.__statusCondition != this.getStatus()) return;

@@ -158,6 +158,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.Backspace:
                 case keymap.Del:
                 case keymap['/']:
+                case keymap.F2:
                     if(this.selection.isHide()){
                         this.km.setStatus('normal');
                         return;
@@ -166,7 +167,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.Control:
                 case keymap.Alt:
                 case keymap.Cmd:
-                case keymap.F2:
 
                     if(this.selection.isHide() && this.km.getStatus() != 'textedit' && this.km.getStatus() !='inputready'){
                         this.km.setStatus('normal');

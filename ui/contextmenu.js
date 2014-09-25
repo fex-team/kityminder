@@ -18,7 +18,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
         .addClass('km-context-menu fui-popup-menu')
         .appendTo('#content-wrapper');
 
-    $menu.delegate('li', 'click', function(e, info) {
+    $menu.delegate('li', 'mousedown', function(e, info) {
         var item = $(e.target).closest('li').data('menu');
         if (item.command) {
             minder.execCommand(item.command);
@@ -29,7 +29,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
         e.preventDefault();
     });
 
-    $('#content-wrapper').on('click', function(e) {
+    $('#content-wrapper').on('mousedown', function(e) {
         $menu.hide();
     });
 

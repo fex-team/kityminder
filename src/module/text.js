@@ -47,8 +47,12 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
             } else {
                 if (text !== undefined && !textShape) {
                     textShape = new kity.Text()
-                        .setAttr('dominant-baseline', 'text-before-edge')
                         .setAttr('text-rendering', 'inherit');
+                    if (kity.Browser.ie) {
+                        textShape.setVerticalAlign('top');
+                    } else {
+                        textShape.setAttr('dominant-baseline', 'text-before-edge');
+                    }
                     textGroup.addItem(textShape);
                 }
                 textShape.setContent(text);
