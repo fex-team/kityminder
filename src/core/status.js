@@ -22,7 +22,9 @@ kity.extendClass(Minder, {
         var sf = ~window.location.href.indexOf('status');
         var tf = ~window.location.href.indexOf('trace');
 
-        return function(status) {
+        // 在 readonly 模式下，只有 force 为 true 才能切换回来
+        return function(status, force) {
+            if (this._status == 'readonly' && !force) return this;
             if (status != this._status) {
                 this._rollbackStatus = this._status;
                 this._status = status;

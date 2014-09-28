@@ -44,7 +44,7 @@ KityMinder.registerUI('image', function(minder) {
     var $dialogBody = $($imageDialog.getBodyElement());
 
     $dialogBody.html([
-        '<p><label>图片地址：</label><input type="url" class="image-url" /></p>',
+        '<p><label>图片地址：</label><input type="url" class="image-url fui-widget fui-selection" /></p>',
         '<p><label>提示文本：</label><input type="text" class="image-title /"></p>',
         '<img class="image-preview" src="" style="max-height: 200px;" />'
     ].join(''));

@@ -39,6 +39,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     /* 文件名 */
     var $filename = $('<input>')
+        .addClass('fui-widget fui-selectable')
         .attr('type', 'text')
         .attr('placeholder', minder.getLang('ui.filename'))
         .attr('title', minder.getLang('ui.filename'))
@@ -81,8 +82,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     ret.quickSave = quickSave;
 
     window.onbeforeunload = function() {
-        var noask = window.location.href.indexOf('noask') > 0;
-        if (!$doc.checkSaved() && !noask)
+        var noask = ret.mute || window.location.href.indexOf('noask') > 0;
+        if (!$doc.checkSaved(true) && !noask)
             return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
     };
 

@@ -9,6 +9,8 @@
 
 KityMinder.registerUI('ribbon/idea/link', function(minder) {
 
+    var R_URL = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/;
+
     var $attachment = minder.getUI('ribbon/idea/attachment');
 
     var $linkButtonMenu = new FUI.ButtonMenu({
@@ -34,8 +36,8 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
     var $dialogBody = $($linkDialog.getBodyElement());
 
     $dialogBody.html([
-        '<p><label>连接地址：</label><input type="url" class="link-href" /></p>',
-        '<p><label>提示文本：</label><input type="text" class="link-title /"></p>'
+        '<p><label>连接地址：</label><input type="url" class="link-href fui-widget fui-selectable" /></p>',
+        '<p><label>提示文本：</label><input type="text" class="link-title fui-widget fui-selectable" /></p>'
     ].join(''));
 
     var $href = $dialogBody.find('.link-href');
@@ -58,7 +60,7 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
 
     $href.on('input', function() {
         var url = $href.val();
-        error(!/^https?\:\/\/(\w+\.)+\w+/.test(url));
+        error(!R_URL.test(url));
     });
 
     $linkButtonMenu.on('buttonclick', function() {

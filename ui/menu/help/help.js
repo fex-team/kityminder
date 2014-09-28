@@ -37,6 +37,9 @@ KityMinder.registerUI('menu/help/help', function (minder) {
         }));
 
         $help.find('.shortcut-content').html(convert(operation));
+        if (kity.Browser.mac) {
+            $help.addClass('mac');
+        }
         $help.removeClass('loading');
     }
 

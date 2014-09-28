@@ -14,7 +14,9 @@ KityMinder.registerUI('topbar/user', function(minder) {
 
     var $userPanel = $('<div class="user-panel"></div>').appendTo('#panel');
 
-    var $tip = $('<span></span>').text(minder.getLang('ui.checklogin')).appendTo($userPanel);
+    var $tip = $('<span class="loading-tip"></span>')
+        .text(minder.getLang('ui.checklogin'))
+        .appendTo($userPanel);
 
     /* 登录按钮 */
     var $loginButton = new FUI.Button({
@@ -83,7 +85,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
         fio.user.check().then(check)['catch'](function(error) {
             $loginButton.show();
             $userButton.hide();
-            $tip.remove();
+            $tip.hide();
         });
     });
 
@@ -98,11 +100,13 @@ KityMinder.registerUI('topbar/user', function(minder) {
             $loginButton.hide();
             fio.user.fire('login', user);
         } else {
-            $loginButton.show();
-            $userButton.hide();
-            fio.user.fire('logout', user);
+            if (window.location.href.indexOf('nocheck') == -1) {
+                logout();
+            } else {
+                $loginButton.show();
+            }
         }
-        $tip.remove();
+        $tip.hide();
         currentUser = user;
     }
 

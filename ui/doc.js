@@ -73,8 +73,9 @@ KityMinder.registerUI('doc', function(minder) {
         return current;
     }
 
-    function checkSaved() {
+    function checkSaved(noConfirm) {
         if (!fio.user.current()) return true;
+        if (noConfirm) return current.saved;
         return current.saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
     }
 

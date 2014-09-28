@@ -62,10 +62,14 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
             return null;
 
+        })['catch'](function(e) {
+            debugger;
+            window.alert('下载失败：' + e.message);
         }).then(function() {
-
-            $panel.removeClass('loading');
-            $menu.hide();
+            setTimeout(function() {
+                $panel.removeClass('loading');
+                $menu.hide();
+            });
 
         });
     }
@@ -99,7 +103,12 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
         $('<input name="iehack" value="&#9760;" />').appendTo($form);
 
+        var netdisk = minder.getUI('menu/save/netdisk');
+        netdisk.mute = true;
         $form.appendTo('body').submit().remove();
+        setTimeout(function() {
+            netdisk.mute = false;
+        });
     }
 
     function buildDataUrl(mineType, data) {

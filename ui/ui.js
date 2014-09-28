@@ -42,6 +42,11 @@
                 e.stopPropagation();
             });
 
+            // 阻止非脑图事件冒泡
+            $('#content-wrapper').delegate('input', 'mousedown mousemove mouseup contextmenu', function(e) {
+                e.stopPropagation();
+            });
+
             minder.getPaper().addClass('loading-target');
 
             this.fire('interactchange');

@@ -296,7 +296,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
 
                 if(this.isShortcutCopyKey){
-                    console.log(this.km.getStatus())
                     return;
                 }
 

@@ -68,7 +68,7 @@ KityMinder.registerUI('menu/open/local', function(minder) {
         e.preventDefault();
         e.stopPropagation();
     }).on('drop', function(e) {
-        if (!$doc.checkSave()) return;
+        if (!$doc.checkSaved()) return;
         e = e.originalEvent;
         read(e.dataTransfer.files[0]);
         $menu.hide();
@@ -80,6 +80,11 @@ KityMinder.registerUI('menu/open/local', function(minder) {
 
         var info = new fio.file.anlysisPath(domfile.name);
         var protocol = supports[info.extension];
+
+        if (!protocol || !protocol.decode) {
+            alert(minder.getLang('ui.unsupportedfile'));
+            return Promise.reject();
+        }
 
         var dataPromise = new Promise(function(resolve, reject) {
 

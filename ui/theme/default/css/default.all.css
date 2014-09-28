@@ -560,6 +560,7 @@
 .validate-error {
   color: red;
   border-color: red !important;
+  vertical-align: middle;
 }
 .button,
 button {
@@ -822,7 +823,7 @@ li {
 #tab-container .fui-button .fui-label {
   color: #5a6378;
   font-size: 12px;
-  vertical-align: baseline;
+  vertical-align: middle;
 }
 #tab-container .fui-button.command-button {
   margin-bottom: 3px;
@@ -832,7 +833,7 @@ li {
   height: 20px;
   margin-right: 3px;
   display: inline-block;
-  vertical-align: baseline;
+  vertical-align: middle;
 }
 #tab-container .fui-button.command-button.large {
   width: 50px;
@@ -1080,6 +1081,7 @@ li {
   height: 20px;
   padding: 2px 4px;
   width: 300px;
+  vertical-align: middle;
 }
 .fui-dialog .fui-dialog-foot {
   position: absolute;
@@ -1314,6 +1316,9 @@ body {
 }
 #kityminder.maximize {
   top: 40px;
+}
+#kityminder:focus {
+  /*         box-shadow: inset 0 0 10px fadeOut(black, 0.5); */
 }
 #tab-container.collapsed + #kityminder,
 #panel + #kityminder {
@@ -1995,6 +2000,36 @@ body {
   font-size: 14px;
   color: #ffffff;
   vertical-align: baseline;
+}
+#panel div.user-panel .loading-tip {
+  text-indent: 100000px;
+  display: inline-block;
+  width: 50px;
+  height: 40px;
+  line-height: 40px;
+  position: relative;
+}
+#panel div.user-panel .loading-tip:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 9px;
+  top: 7px;
+  width: 16px;
+  height: 16px;
+  border: 4px solid;
+  border-color: #c9ced1 transparent transparent;
+  box-shadow: 0 0 11px #ffffff;
+  z-index: 10;
+  border-radius: 100%;
+  -webkit-animation: rotate 1.33s ease infinite;
+  -moz-animation: rotate 1.33s ease infinite;
+  -ms-animation: rotate 1.33s ease infinite;
+  -o-animation: rotate 1.33s ease infinite;
+  animation: rotate 1.33s ease infinite;
+  filter: none;
+  -webkit-filter: none;
+  box-shadow: none;
 }
 #panel div.user-panel .fui-button {
   padding: 5px 10px;

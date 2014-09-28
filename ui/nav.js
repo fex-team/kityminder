@@ -86,6 +86,7 @@ KityMinder.registerUI('nav', function(minder) {
         $previewNavigator.show = function() {
             $.fn.show.call(this);
             bind();
+            updateContentView();
             updateVisibleView();
         };
 

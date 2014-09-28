@@ -100,6 +100,10 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             };
             actions[e.target.value]();
         });
+
+        $panel.delegate('input#share-url', 'dblclick', function() {
+            this.select();
+        });
     }
 
     function bindManageActions() {
@@ -192,7 +196,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function uuid() {
         // 最多使用 1e7，否则 IE toString() 会出来指数表示法
-        var timeLead = 1e7;
+        var timeLead = 1e6;
         return ((+new Date() * timeLead) + (Math.random() * --timeLead)).toString(36);
     }
 

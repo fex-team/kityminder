@@ -107,7 +107,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
             })
 
         .on('normal.mousemove normal.touchmove ' +
-            'readonly.touchmove readonly.mousemove ' +
+            'readonly.mousemove readonly.touchmove ' +
             'inputready.mousemove inputready.touchmove', function(e) {
                 if (e.type == 'touchmove') {
                     e.preventDefault(); // 阻止浏览器的后退事件
@@ -115,7 +115,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 if (!isTempDrag) return;
                 var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
                 if (offset.length() > 10) {
-                    this.setStatus('hand');
+                    this.setStatus('hand', true);
                     var paper = dragger._minder.getPaper();
                     paper.setStyle('cursor', '-webkit-grabbing');
                 }
@@ -163,7 +163,7 @@ KityMinder.registerModule('View', function() {
         execute: function(minder) {
 
             if (minder.getStatus() != 'hand') {
-                minder.setStatus('hand');
+                minder.setStatus('hand', true);
             } else {
                 minder.rollbackStatus();
             }
@@ -173,7 +173,7 @@ KityMinder.registerModule('View', function() {
         queryState: function(minder) {
             return minder.getStatus() == 'hand' ? 1 : 0;
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     var CameraCommand = kity.createClass('CameraCommand', {
@@ -190,7 +190,7 @@ KityMinder.registerModule('View', function() {
             dragger.move(new kity.Point(dx, dy), duration);
             this.setContentChanged(false);
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     var MoveCommand = kity.createClass('MoveCommand', {
@@ -213,7 +213,9 @@ KityMinder.registerModule('View', function() {
                     dragger.move(new kity.Point(-size.width / 2, 0), duration);
                     break;
             }
-        }
+        },
+
+        enableReadOnly: true
     });
 
     return {

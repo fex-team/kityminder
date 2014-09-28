@@ -48,6 +48,8 @@ KityMinder.registerUI('menu/share/view', function (minder) {
             });
         }
 
+        var $container = $(minder.getRenderTarget()).addClass('loading');
+
         return $.pajax({
 
             url: 'http://naotu.baidu.com/share.php', //'http://naotu.baidu.com/mongo.php',
@@ -66,9 +68,9 @@ KityMinder.registerUI('menu/share/view', function (minder) {
         }).then(function() {
 
             $(minder.getRenderTarget()).removeClass('loading');
-            minder.execCommand('hand');
             minder.disable();
-
+            minder.execCommand('hand', true);
+            $container.removeClass('loading');
         });
     }
 

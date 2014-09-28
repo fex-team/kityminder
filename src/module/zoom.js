@@ -88,7 +88,7 @@ KityMinder.registerModule('Zoom', function() {
             }
             return 0;
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     var ZoomOutCommand = kity.createClass('ZoomOutCommand', {
@@ -107,7 +107,7 @@ KityMinder.registerModule('Zoom', function() {
             }
             return 0;
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     return {

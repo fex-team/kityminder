@@ -81,7 +81,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
             var $input = $('<input>')
                 .attr('type', 'text')
-                .addClass('new-dir-name')
+                .addClass('new-dir-name fui-widget fui-selectable')
                 .val(minder.getLang('ui.newdir'))
                 .appendTo($li);
 
