@@ -26,6 +26,11 @@ if (isset($_REQUEST['content'])) {
     header("Content-Length: ".strlen($content));
     header("Content-Disposition: attachment; filename=".urlencode($filename));
     header('Content-Description: File Transfer');
+
+    if (isset($_REQUEST['stamp'])) {
+        setcookie($_REQUEST['stamp'], 1, time() + 30);
+    }
+
     echo $content;
 
 } else {

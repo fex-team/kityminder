@@ -64,16 +64,22 @@ KityMinder.registerUI('menu/open/local', function(minder) {
             }).click();
     });
 
-    $('#content-wrapper').on('dragover', function(e) {
+    var cwrapper = $('#content-wrapper')[0];
+    cwrapper.addEventListener('dragover', function(e) {
         e.preventDefault();
         e.stopPropagation();
-    }).on('drop', function(e) {
-        if (!$doc.checkSaved()) return;
-        e = e.originalEvent;
-        read(e.dataTransfer.files[0]);
-        $menu.hide();
+    }, false);
+
+    cwrapper.addEventListener('drop', function(e) {
         e.preventDefault();
-    });
+
+        if (!$doc.checkSaved()) return;
+
+        if (e.dataTransfer.files.length) {
+            read(e.dataTransfer.files[0]);
+        }
+        $menu.hide();
+    }, false);
 
     function read(domfile) {
         if (!domfile) return;
@@ -82,7 +88,7 @@ KityMinder.registerUI('menu/open/local', function(minder) {
         var protocol = supports[info.extension];
 
         if (!protocol || !protocol.decode) {
-            alert(minder.getLang('ui.unsupportedfile'));
+            window.alert(minder.getLang('ui.unsupportedfile'));
             return Promise.reject();
         }
 

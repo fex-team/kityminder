@@ -40,7 +40,7 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
     $list.delegate('li', 'click', function(e) {
         var protocol = $(e.target).data('protocol');
-        doExport(protocol);
+        if (!$panel.hasClass('loading')) doExport(protocol);
     });
 
     function doExport(protocol) {
@@ -62,19 +62,36 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
             return null;
 
-        })['catch'](function(e) {
-            debugger;
+        })['catch'](function exportError(e) {
             window.alert('下载失败：' + e.message);
-        }).then(function() {
-            setTimeout(function() {
-                $panel.removeClass('loading');
-                $menu.hide();
-            });
+        })
 
+        .then(function done(tick) {
+            $panel.removeClass('loading');
         });
     }
 
     function doDownload(url, filename, type) {
+        var stamp = +new Date() * 1e5 + Math.floor(Math.random() * (1e5 - 1));
+
+        stamp = stamp.toString(36);
+
+        var ret = new Promise(function(resolve, reject) {
+            var ticker = 0;
+            var MAX_TICK = 30;
+            var interval = 1000;
+
+            function check() {
+                if (document.cookie.indexOf(stamp + '=1') != -1) return resolve([stamp, ticker]);
+                if (++ticker > MAX_TICK) {
+                    resolve([stamp, ticker]);
+                }
+                setTimeout(check, interval);
+            }
+
+            setTimeout(check, interval);
+        });
+
         var content = url.split(',')[1];
 
         var $form = $('<form></form>').attr({
@@ -102,6 +119,7 @@ KityMinder.registerUI('menu/save/download', function(minder) {
         }).appendTo($form);
 
         $('<input name="iehack" value="&#9760;" />').appendTo($form);
+        $('<input name="stamp" />').val(stamp).appendTo($form);
 
         var netdisk = minder.getUI('menu/save/netdisk');
         netdisk.mute = true;
@@ -109,6 +127,8 @@ KityMinder.registerUI('menu/save/download', function(minder) {
         setTimeout(function() {
             netdisk.mute = false;
         });
+
+        return ret;
     }
 
     function buildDataUrl(mineType, data) {
