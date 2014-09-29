@@ -20,7 +20,7 @@ KityMinder.registerModule('Select', function() {
         return {
             selectStart: function(e) {
                 // 只接受左键
-                if (e.originEvent.button) return;
+                if (e.originEvent.button || e.originEvent.altKey) return;
 
                 // 清理不正确状态
                 if (startPosition) {

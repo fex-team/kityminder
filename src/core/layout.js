@@ -330,14 +330,14 @@ kity.extendClass(Minder, {
                     .start(node, duration, 'ease')
                     .on('finish', function() {
                         //可能性能低的时候会丢帧，手动添加一帧
-                        kity.Timeline.requestFrame(function() {
+                        setTimeout(function() {
                             applyMatrix(node, matrix);
                             me.fire('layoutfinish', {
                                 node: node,
                                 matrix: matrix
                             });
                             consume();
-                        });
+                        }, 150);
                     });
             }
 

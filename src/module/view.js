@@ -100,7 +100,7 @@ var ViewDragger = kity.createClass("ViewDragger", {
                     e.originEvent.preventDefault(); // 阻止中键拉动
                 }
                 // 点击未选中的根节点临时开启
-                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2 || e.originEvent.altKey) {
                     lastPosition = e.getPosition();
                     isTempDrag = true;
                 }
@@ -228,20 +228,8 @@ KityMinder.registerModule('View', function() {
             'move': MoveCommand
         },
         events: {
-            keyup: function(e) {
-                if (this.getStatus() == 'hand' && e.getKeyCode() == 18) {
-                    this.execCommand('hand');
-                    e.preventDefault();
-                }
-            },
             keydown: function(e) {
                 var minder = this;
-                if (this.getStatus() != 'hand' && e.getKeyCode() == 18) {
-                    this.execCommand('hand');
-                    e.preventDefault();
-                } else if (this.getStatus() == 'hand') {
-                    this.execCommand('hand');
-                }
 
                 ['up', 'down', 'left', 'right'].forEach(function(name) {
                     if (e.isShortcutKey('ctrl+' + name)) {
@@ -302,7 +290,7 @@ KityMinder.registerModule('View', function() {
                     new kity.Point((a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0));
                 this._lastClientSize = a;
             },
-            selectionchange: function() {
+            'selectionchange layoutallfinish': function(e) {
                 var selected = this.getSelectedNode();
 
                 if (!selected) return;

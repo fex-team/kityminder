@@ -140,6 +140,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         return false;
                     };
                 case keymap.Tab:
+                case keymap.Insert:
                     if(this.selection.isShow()){
                         this.re.clear();
                         this.km.setStatus('inputready');
@@ -159,6 +160,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.Del:
                 case keymap['/']:
                 case keymap.F2:
+                case keymap.Insert:
                     if(this.selection.isHide()){
                         this.km.setStatus('normal');
                         return;
@@ -240,6 +242,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             switch (keyCode) {
                 case keymap.Enter:
                 case keymap.Tab:
+                case keymap.Insert:
                 case keymap.F2:
                     if(browser.ipad){
                         if(this.selection.isShow()){

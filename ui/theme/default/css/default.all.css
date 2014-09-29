@@ -562,6 +562,9 @@
   border-color: red !important;
   vertical-align: middle;
 }
+span.validate-error {
+  margin-left: 5px;
+}
 .button,
 button {
   display: inline-block;
@@ -1241,6 +1244,9 @@ li {
 .fui-popup-menu .fui-item:hover .fui-label,
 .fui-popup-menu .fui-item :focus .fui-label {
   color: white;
+}
+.fui-popup-menu .fui-item .menu-label {
+  display: inline-block;
 }
 .fui-popup-menu .fui-item .shortcut {
   float: right;

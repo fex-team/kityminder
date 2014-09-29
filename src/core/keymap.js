@@ -32,6 +32,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'End': 35,
     'Home': 36,
 
+    'Insert': 45,
 
     'Left': 37,
     'Up': 38,
@@ -44,7 +45,6 @@ var keymap = KityMinder.keymap = (function(origin) {
         39: 1,
         40: 1
     },
-    'Insert': 45,
 
     'Del': 46,
 

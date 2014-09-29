@@ -1,6 +1,6 @@
 //模拟光标
 Minder.Selection = kity.createClass( 'Selection', {
-    base: kity.Group,
+    base: kity.Path,
     constructor: function ( height, color, width ) {
         this.callBase();
         this.height = height || 20;
@@ -15,7 +15,7 @@ Minder.Selection = kity.createClass( 'Selection', {
         this.setStyle('cursor','text');
         this._show = false;
         this.offset = [];
-
+        this.setTranslate(-0.5, -1.5);
     },
     setMinderNode : function(node){
         this.minderNode = node;
@@ -73,21 +73,31 @@ Minder.Selection = kity.createClass( 'Selection', {
         }
         this._show = true;
     },
-    updatePosition:function(offset){
+    updatePosition: function(offset){
         var me = this;
-        this.clear();
-        offset = offset || this.offset;
-        if(this.collapsed){
+        var r = Math.round;
 
-            var rect = new kity.Rect().fill(null).stroke(null).setWidth(2).setHeight(this.height);
-            rect.setPosition(Math.round(offset.x) - 0.5,Math.round(offset.y) - 1.5);
-            this.addShape(rect);
-        }else{
-            utils.each(offset,function(i,v){
-                var rect = new kity.Rect().fill(null).stroke(null).setWidth(v.width).setHeight(me.height);
-                rect.setPosition(Math.round(v.x) - 0.5,Math.round(v.y) - 1.5);
-                me.addShape(rect);
-            });
+        var rect = function (x, y, w, h) {
+            return ['M', r(x), r(y),
+                'h', r(w),
+                'v', r(h),
+                'h', -r(w),
+                'v', -r(h),
+                'z'];
+        };
+
+        offset = offset || this.offset;
+
+        if(this.collapsed){
+            if (isNaN(offset.x) || isNaN(offset.y)) {
+                if (console) console.warn('editor.selection.js 不正确的偏移位置');
+                return this;
+            }
+            this.setPathData(rect(offset.x, offset.y, this.width, this.height));
+        } else {
+            this.setPathData(offset.reduce(function (prev, current) {
+                return prev.concat(rect(current.x, current.y, current.width, me.height));
+            }, []));
         }
         this._show = true;
         return this;

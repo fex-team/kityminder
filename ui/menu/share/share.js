@@ -81,7 +81,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 lang: minder.getLang('ui'),
                 minder: minder
             }));
-            zeroCopy();
+            setTimeout(zeroCopy, 10);
             return $create_menu;
         });
     }
@@ -103,6 +103,15 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         $panel.delegate('input#share-url', 'dblclick', function() {
             this.select();
+        });
+
+        $panel.delegate('#copy-share-url', 'click', function() {
+            if (kity.Browser.safari && kity.Browser.safari < 8) {
+                var input = $('#share-url');
+                input.focus();
+                input.select();
+                window.alert(minder.getLang('ui.clipboardunsupported'));
+            }
         });
     }
 
@@ -390,24 +399,24 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     function zeroCopy() {
 
         /* global ZeroClipboard:true */
-        ZeroClipboard.setDefaults({
-            moviePath: 'lib/ZeroClipboard.swf'
-        });
 
         var $copy_url_btn = $('#copy-share-url', $create_menu);
 
         if (window.ZeroClipboard) {
-            var clip = new window.ZeroClipboard($copy_url_btn, {
+            ZeroClipboard.config({
                 hoverClass: 'hover',
                 activeClass: 'active'
             });
-            clip.on('dataRequested', function(client, args) {
-                $copy_url_btn.text(minder.getLang('ui.copied')).attr('disabled', 'disabled');
-                setTimeout(function() {
-                    $copy_url_btn
-                        .text(minder.getLang('ui.copy'))
-                        .removeAttr('disabled');
-                }, 3000);
+            var clip = new window.ZeroClipboard($copy_url_btn);
+            clip.on('ready', function () {
+                clip.on('aftercopy', function() {
+                    $copy_url_btn.text(minder.getLang('ui.copied')).attr('disabled', 'disabled');
+                    setTimeout(function() {
+                        $copy_url_btn
+                            .text(minder.getLang('ui.copy'))
+                            .removeAttr('disabled');
+                    }, 3000);
+                });
             });
         }
     }

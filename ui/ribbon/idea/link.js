@@ -30,6 +30,7 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
     var $linkDialog = new FUI.Dialog({
         width: 600,
         height: 200,
+        prompt: true,
         caption: minder.getLang('ui.link')
     }).appendTo(document.getElementById('content-wrapper'));
 
@@ -41,6 +42,7 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
     ].join(''));
 
     var $href = $dialogBody.find('.link-href');
+    var $title = $dialogBody.find('.link-title');
     var $ok = $linkDialog.getButton(0);
     var $errorMsg = $('<span class="validate-error"></span>');
 
@@ -73,11 +75,13 @@ KityMinder.registerUI('ribbon/idea/link', function(minder) {
     });
 
     $linkDialog.on('ok', function() {
-        minder.execCommand('hyperlink', $href.val());
+        minder.execCommand('hyperlink', $href.val(), $title.val() || '');
     });
 
     $linkDialog.on('open', function() {
-        $href.val(minder.queryCommandValue('hyperlink'));
+        var value = minder.queryCommandValue('hyperlink');
+        $href.val(value.url);
+        $title.val(value.title);
         error(false);
     });
 

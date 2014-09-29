@@ -214,7 +214,9 @@ KityMinder.LANG['zh-cn'] = {
         'shortcuts': '快捷键',
         'contact': '联系我们',
         'email': '邮件组',
-        'qq_group': 'QQ 群'
+        'qq_group': 'QQ 群',
+
+        'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
