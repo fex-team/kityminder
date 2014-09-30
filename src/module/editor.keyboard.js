@@ -134,7 +134,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             switch (keyCode) {
                 case keymap.Enter:
-                    if(e.originEvent.shiftKey){
+                    if(e.originEvent.shiftKey && me.selection.isShow()){
                         me._handlerEnterkey();
                         e.preventDefault();
                         return false;
