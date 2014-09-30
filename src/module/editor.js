@@ -16,6 +16,8 @@ KityMinder.registerModule('TextEditModule', function() {
     //当前是否有选区存在
     var selectionReadyShow = false;
 
+    var mousedownNode;
+
     function inputStatusReady(node){
         if (node && km.isSingleSelect() && node.isSelected()) {
 
@@ -91,6 +93,8 @@ KityMinder.registerModule('TextEditModule', function() {
                 if(node){
 
                     if (this.isSingleSelect() && node.isSelected()) {
+                        mousedownNode = node;
+
                         var textGroup = node.getTextGroup();
 
                         textGroup.setStyle('cursor', 'default');
@@ -158,6 +162,7 @@ KityMinder.registerModule('TextEditModule', function() {
 
                 var node = e.getTargetNode();
 
+                mousedownNode = null;
 
                 if (node && !selectionReadyShow && receiver.isReady()) {
 
@@ -208,11 +213,13 @@ KityMinder.registerModule('TextEditModule', function() {
                 }
                 //ipad下不做框选
                 if (mouseDownStatus && receiver.isReady() && selectionReadyShow) {
+
                     var node = e.getTargetNode();
                     e.stopPropagationImmediately();
 
-                    if(node){
-                        var offset = e.getPosition(node.getRenderContainer());
+                    if(node || mousedownNode){
+
+                        var offset = e.getPosition(node ? node.getRenderContainer() : mousedownNode.getRenderContainer());
 
                         receiver
                             .updateSelectionByMousePosition(offset)
