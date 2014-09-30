@@ -16,7 +16,7 @@ KityMinder.registerModule('TextEditModule', function() {
     //当前是否有选区存在
     var selectionReadyShow = false;
 
-    var mousedownNode;
+    var mousedownNode,mouseupTimer;
 
     function inputStatusReady(node){
         if (node && km.isSingleSelect() && node.isSelected()) {
@@ -174,8 +174,8 @@ KityMinder.registerModule('TextEditModule', function() {
                     if(browser.ipad){
                         receiver.focus();
                     }
-
-                    setTimeout(function() {
+                    clearTimeout(mouseupTimer);
+                    mouseupTimer = setTimeout(function() {
                         if(dblclickEvent){
                             dblclickEvent = false;
                             return;
@@ -198,8 +198,6 @@ KityMinder.registerModule('TextEditModule', function() {
                     if(!sel.collapsed){
                         receiver.updateContainerRangeBySel();
                     }
-
-
                 }
 
 
@@ -214,12 +212,12 @@ KityMinder.registerModule('TextEditModule', function() {
                 //ipad下不做框选
                 if (mouseDownStatus && receiver.isReady() && selectionReadyShow) {
 
-                    var node = e.getTargetNode();
+
                     e.stopPropagationImmediately();
 
-                    if(node || mousedownNode){
+                    if(mousedownNode){
 
-                        var offset = e.getPosition(node ? node.getRenderContainer() : mousedownNode.getRenderContainer());
+                        var offset = e.getPosition( mousedownNode.getRenderContainer());
 
                         receiver
                             .updateSelectionByMousePosition(offset)
@@ -241,10 +239,10 @@ KityMinder.registerModule('TextEditModule', function() {
             'normal.dblclick textedit.dblclick inputready.dblclick': function(e) {
 
                 var node = e.getTargetNode();
-
+                dblclickEvent = true;
                 if(node){
                     //跟mouseup的timeout有冲突，这里做标记处理
-                    dblclickEvent = true;
+
 
                     inputStatusReady(node);
 
