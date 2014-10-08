@@ -163,9 +163,7 @@ class XMindParser {
 
         $info = self::getTimeAndId();
 
-        $imagePath = getcwd() . '/tmp/' . $info[ 'id' ] . $image[ 'suffix' ];
-
-        rename( $image[ 'filepath' ], $imagePath );
+        $imagePath = $image[ 'filepath' ];
 
         $source['data'][ 'image' ] = array(
             'filepath' => 'attachments/' . $info[ 'id' ] . $image[ 'suffix' ],
@@ -173,12 +171,12 @@ class XMindParser {
         );
 
 
-        array_push( $attachments, array(
+        $attachments[] = array(
             'filepath' => 'attachments/' . $info[ 'id' ] . $image[ 'suffix' ],
             'origin' => $imagePath,
             'type' => $image[ 'mime' ],
             'meta' => $info
-        ) );
+        );
 
     }
 
@@ -200,7 +198,16 @@ class XMindParser {
 
     private static function move ( $meta, $path ) {
 
-        $filepath = getcwd() . '/upload/' . $meta['id'] . '.xmind';
+        $config = require( diranme( __FILE__ ) . '/../config.php' );
+        $savepath = $config[ 'savepath' ];
+
+        if ( !file_exists( $savepath ) ) {
+            mkdir( $savepath, 0770, true );
+        }
+
+        $savepath = pathinfo( $savepath . '/test', PATHINFO_DIRNAME );
+
+        $filepath = $savepath . '/' . $meta['id'] . '.xmind';
 
         rename( $path, $filepath );
 
