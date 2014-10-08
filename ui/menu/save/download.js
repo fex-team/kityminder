@@ -49,15 +49,20 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
         $panel.addClass('loading');
 
-        minder.exportData(protocol.name).then(function(data) {
+        var options = {
+            download: true,
+            filename: filename
+        };
 
-            if (typeof(data) != 'string') return;
+        minder.exportData(protocol.name, options).then(function(data) {
 
             switch (protocol.dataType) {
                 case 'text':
                     return doDownload(buildDataUrl(mineType, data), filename, 'text');
                 case 'base64':
                     return doDownload(data, filename, 'base64');
+                case 'blob':
+                    return null;
             }
 
             return null;
@@ -69,7 +74,6 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
         });
     }
-
     function doDownload(url, filename, type) {
         var content = url.split(',')[1];
 

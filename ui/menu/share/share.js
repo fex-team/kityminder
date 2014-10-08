@@ -58,7 +58,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     });
 
     function getShareByPath(path) {
-        if (!path) return null;
+        if (!path || !shareList) return null;
 
         var i = shareList.length;
         while (i--) {

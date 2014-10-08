@@ -107,7 +107,7 @@ kity.extendClass(Minder, {
         this._interactChange();
     },
 
-    exportData: function(protocolName) {
+    exportData: function(protocolName, options) {
 
         var json, protocol;
 
@@ -131,7 +131,7 @@ kity.extendClass(Minder, {
 
 
         if (protocol) {
-            return Promise.resolve(protocol.encode(json, this));
+            return Promise.resolve(protocol.encode(json, this, options));
         } else {
             return Promise.resolve(json);
         }
