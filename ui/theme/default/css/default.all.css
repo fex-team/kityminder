@@ -1798,12 +1798,12 @@ body {
 #panel .quick-visit-button.share:after {
   background-position: 0 -945px;
 }
-#panel .quick-visit-button.help {
+#panel .quick-visit-button.feedback {
   float: right;
   margin-right: 5px;
 }
-#panel .quick-visit-button.help:after {
-  top: 8px;
+#panel .quick-visit-button.feedback:after {
+  top: 6.5px;
   left: 7px;
   background-position: 0 -970px;
 }
@@ -2530,7 +2530,8 @@ body {
 .download-panel > .download-list li:active {
   background-color: #e5e7ec;
 }
-#help-panel {
+#help-panel,
+#feedback-panel {
   position: absolute;
   top: 50px;
   right: 0;
@@ -2538,46 +2539,98 @@ body {
   left: 0;
   overflow-y: auto;
 }
-#help-panel h2 {
+#help-panel h2,
+#feedback-panel h2 {
   font-weight: normal;
   color: #fc8383;
   margin: 10px 0;
 }
-#help-panel .shortcut-content {
+#help-panel .shortcut-content,
+#feedback-panel .shortcut-content {
   font-family: 'Microsoft Yahei';
   margin-left: 50px;
 }
-#help-panel .shortcut-content section {
+#help-panel .shortcut-content section,
+#feedback-panel .shortcut-content section {
   min-width: 300px;
   margin: 0 20px 20px 0;
   float: left;
 }
-#help-panel .shortcut-content section h3 {
+#help-panel .shortcut-content section h3,
+#feedback-panel .shortcut-content section h3 {
   border-bottom: 1px solid #EEE;
 }
-#help-panel .shortcut-content section div.shortcut-group {
+#help-panel .shortcut-content section div.shortcut-group,
+#feedback-panel .shortcut-content section div.shortcut-group {
   margin: 5px auto;
 }
-#help-panel .shortcut-content section div.shortcut-group span.shortcut {
+#help-panel .shortcut-content section div.shortcut-group span.shortcut,
+#feedback-panel .shortcut-content section div.shortcut-group span.shortcut {
   display: inline-block;
   width: 220px;
   text-align: right;
   margin-right: 10px;
 }
-#help-panel .contact-content {
+#help-panel .contact-content,
+#feedback-panel .contact-content {
   list-style: none;
-  margin-left: 50px;
   padding-left: 0;
 }
-#help-panel .contact-content li {
-  padding: 5px 0;
+#help-panel .contact-content li,
+#feedback-panel .contact-content li {
+  display: block;
+  float: left;
+  padding: 0;
+  width: 150px;
+  height: 150px;
+  margin: 20px;
+  text-align: center;
+  position: relative;
 }
-#help-panel .contact-content li a {
+#help-panel .contact-content li a,
+#feedback-panel .contact-content li a {
   -webkit-user-select: initial;
   cursor: text;
+  color: #fc8383;
 }
-#help-panel .contact-content li a[href] {
+#help-panel .contact-content li a[href],
+#feedback-panel .contact-content li a[href] {
   cursor: pointer;
+}
+#help-panel .contact-content li:before,
+#feedback-panel .contact-content li:before {
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+  content: ' ';
+  display: block;
+  width: 150px;
+  height: 150px;
+  background: #ffffff url(../images/feedback.png) no-repeat;
+}
+#help-panel .contact-content li:hover:before,
+#feedback-panel .contact-content li:hover:before {
+  -webkit-transform: translate3d(0, -5px, 0);
+  -moz-transform: translate3d(0, -5px, 0);
+  -ms-transform: translate3d(0, -5px, 0);
+  -o-transform: translate3d(0, -5px, 0);
+  tranform: translate3d(0, -5px, 0);
+  opacity: 1;
+}
+#help-panel .contact-content li.email:before,
+#feedback-panel .contact-content li.email:before {
+  background-position: -150px 0;
+}
+#help-panel .contact-content li.github:before,
+#feedback-panel .contact-content li.github:before {
+  background-position: -300px 0;
+}
+#help-panel .contact-content li.tieba:before,
+#feedback-panel .contact-content li.tieba:before {
+  background-position: -450px 0;
 }
 #tab-container .command-buttonset.priority {
   width: 130px;

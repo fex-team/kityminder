@@ -42,8 +42,8 @@ KityMinder.LANG['zh-cn'] = {
     },
     'ui': {
         'command': {
-            'appendsiblingnode': '新建兄弟节点',
-            'appendchildnode': '新建子节点',
+            'appendsiblingnode': '插入同级主题',
+            'appendchildnode': '插入下级主题',
             'removenode': '删除',
             'editnode': '编辑',
             'arrangeup': '上移',
@@ -66,7 +66,7 @@ KityMinder.LANG['zh-cn'] = {
             'new': '新建 (Ctrl + Alt + N)',
             'save': '保存 (Ctrl + S)',
             'share': '分享 (Ctrl + Alt + S)',
-            'help': '帮助与反馈（F1）'
+            'feedback': '反馈问题（F1）'
         },
 
         'menu': {
@@ -79,6 +79,7 @@ KityMinder.LANG['zh-cn'] = {
             'sharetab': '分享',
             'preferencetab': '设置',
             'helptab': '帮助',
+            'feedbacktab': '反馈',
             'recenttab': '最近使用',
             'netdisktab': '百度云存储',
             'localtab': '本地文件',
@@ -94,7 +95,8 @@ KityMinder.LANG['zh-cn'] = {
             'shareheader': '分享我的脑图',
             'downloadheader': '导出到指定格式',
             'preferenceheader': '偏好设置',
-            'helpheader': '帮助'
+            'helpheader': '帮助',
+            'feedbackheader': '反馈'
         },
 
         'mydocument': '我的文档',
@@ -175,8 +177,8 @@ KityMinder.LANG['zh-cn'] = {
         'clearstyle': '清除样式',
         'copystyle': '复制样式',
         'pastestyle': '粘贴样式',
-        'appendsiblingnode': '下一主题',
-        'appendchildnode': '儿子主题',
+        'appendsiblingnode': '同级主题',
+        'appendchildnode': '下级主题',
         'arrangeup': '前调',
         'arrangedown': '后调',
         'editnode': '编辑',
@@ -216,8 +218,8 @@ KityMinder.LANG['zh-cn'] = {
         'contact': '联系与反馈',
         'email': '邮件组',
         'qq_group': 'QQ 群',
-        'github_issue': 'Github Issue',
-        'baidu_tieba': '百度贴吧',
+        'github_issue': 'Github',
+        'baidu_tieba': '贴吧',
 
         'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制'
     },

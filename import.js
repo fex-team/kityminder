@@ -166,6 +166,7 @@
 
         /* UI 菜单 - 帮助 */
         { path: 'ui/menu/help/help.js',                 pack: 'edit|share'},
+        { path: 'ui/menu/help/feedback.js',             pack: 'edit|share'},
 
         /* UI Top Bar */
         { path: 'ui/topbar/quickvisit.js',              pack: 'edit' },
