@@ -182,6 +182,15 @@ input[type=url] {
     text-transform: capitalize;
     box-shadow: inset 0 -2px hsl(0, 0%, 92%), inset 0 -3px hsl(0, 100%, 100%), 0 1px 2px rgba(255, 255, 255, 0.3);
     
+    &:active {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        box-shadow: inset 0 -1px hsl(0, 0%, 92%), inset 0 -2px hsl(0, 100%, 100%), 0 1px 1px rgba(255, 255, 255, 0.3);
+        &:after {
+            .transform(translate(0, 1px));
+        }
+    }
+
     .mac &.ctrl,
     .mac &.shift,
     .mac &.alt,

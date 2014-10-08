@@ -742,6 +742,18 @@ input[type=url]:focus {
   text-transform: capitalize;
   box-shadow: inset 0 -2px #ebebeb, inset 0 -3px #ffffff, 0 1px 2px rgba(255, 255, 255, 0.3);
 }
+.shortcut-key:active {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  box-shadow: inset 0 -1px #ebebeb, inset 0 -2px #ffffff, 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+.shortcut-key:active:after {
+  -webkit-transform: translate(0, 1px);
+  -moz-transform: translate(0, 1px);
+  -ms-transform: translate(0, 1px);
+  -o-transform: translate(0, 1px);
+  tranform: translate(0, 1px);
+}
 .mac .shortcut-key.ctrl,
 .mac .shortcut-key.shift,
 .mac .shortcut-key.alt,

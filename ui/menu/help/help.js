@@ -42,6 +42,19 @@ KityMinder.registerUI('menu/help/help', function (minder) {
         }
         $help.removeClass('loading');
         $help.find('.km-version').text(KityMinder.version);
+
+        // 彩蛋：点很多次按钮的蛋疼
+        var counter = 0;
+        var archives = {
+            '1': '你是个勇于尝试的人！',
+            '10': '你是个愿意深入探索的人！',
+            '100': '别点了，累',
+            '1000': '你真是最孤独的屌丝啊……真的别点了，没有了'
+        };
+        $help.delegate('.shortcut-key', 'click', function() {
+            var msg = archives[++counter];
+            if (msg) window.alert(msg);
+        });
     }
 
     function convert(markdown) {
@@ -71,7 +84,7 @@ KityMinder.registerUI('menu/help/help', function (minder) {
                 var description = match[2];
                 html += '<div class="shortcut-group"><span class="shortcut">';
                 html += declare.replace(/\`(.+?)\`/g, function(match, key) {
-                    return '<span class="shortcut-key ' + key.toLowerCase() + '">' + key + '</span>';
+                    return '<span class="shortcut-key ' + key.toLowerCase() + '" title="' + key + '">' + key + '</span>';
                 });
                 html += '</span>';
                 html += '<span class="description">' + description + '</span>';
