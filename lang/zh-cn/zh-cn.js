@@ -65,7 +65,8 @@ KityMinder.LANG['zh-cn'] = {
         'quickvisit': {
             'new': '新建 (Ctrl + Alt + N)',
             'save': '保存 (Ctrl + S)',
-            'share': '分享 (Ctrl + Alt + S)'
+            'share': '分享 (Ctrl + Alt + S)',
+            'help': '帮助与反馈（F1）'
         },
 
         'menu': {
@@ -212,9 +213,11 @@ KityMinder.LANG['zh-cn'] = {
         'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n确定要继续操作么？（未保存的数据会缓存在草稿箱）',
 
         'shortcuts': '快捷键',
-        'contact': '联系我们',
+        'contact': '联系与反馈',
         'email': '邮件组',
         'qq_group': 'QQ 群',
+        'github_issue': 'Github Issue',
+        'baidu_tieba': '百度贴吧',
 
         'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制'
     },

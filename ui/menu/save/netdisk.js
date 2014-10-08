@@ -87,15 +87,21 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
     };
 
-    var autoSaveDuration = minder.getOptions('autoSave') || 10;
+    var autoSaveDuration = minder.getOptions('autoSave');
 
+    if (autoSaveDuration !== false) {
+        autoSaveDuration = isNaN(autoSaveDuration) ? 3000 : (autoSaveDuration * 1000);
+        autoSave();
+    }
 
-    setTimeout(autoSave, autoSaveDuration * 1000);
+    var autoSaveTimer = 0;
 
     function autoSave() {
-        saveCurrent().then(function() {
-            setTimeout(autoSave, autoSaveDuration * 1000);
-        });
+        function lazySave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(saveCurrent, autoSaveDuration);
+        }
+        $doc.on('docchange', lazySave);
     }
 
     // 快速保存
@@ -113,7 +119,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     function saveCurrent() {
         var doc = $doc.current();
 
-        if (doc.source != 'netdisk' || doc.saved) return Promise.resolve();
+        if (doc.source != 'netdisk' || doc.saved ) return Promise.resolve();
 
         var $title = minder.getUI('topbar/title').$title;
         $filename.val(doc.title);
@@ -154,25 +160,45 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         }
     }
 
-    var saving = false;
+    var saving = 0;
 
     function doSave(path, protocol, doc, $mask) {
 
-        // if (saving) return;
+        if (saving) return;
 
         saving = true;
 
         if ($mask) $mask.addClass('loading');
 
-        return minder.exportData(protocol).then(function(data) {
-
+        function tryUpload(data) {
+            if (tryUpload.tried++ > 3) {
+                throw new Error('超过最大重试次数，网盘服务可能当前不可用');
+            }
             return fio.file.write({
                 path: path,
                 content: data,
                 ondup: fio.file.DUP_OVERWRITE
             });
+        }
 
+        tryUpload.tried = 0;
+
+        var dataExported = minder.exportData(protocol);
+
+        return dataExported.then(tryUpload)['catch'](function(e) {
+            if (e.message == 'Netdisk Request Error') {
+                if (console && console.warn) console.warn(e);
+                // 网盘抽风失败，重试即可
+                return new Promise(function(resolve, reject) {
+                    setTimeout(function() {
+                        resolve(dataExported.then(tryUpload));
+                    }, 200);
+                });
+            }
+            window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
         }).then(function() {
+
+            saving = false;
 
             if ($mask) $mask.removeClass('loading');
 
@@ -181,16 +207,12 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             doc.path = path;
             doc.title = $filename.val();
             doc.source = 'netdisk';
+            doc.protocol = protocol;
 
             $doc.save(doc);
 
             setTimeout($finder.list, 500);
 
-        })['catch'](function(e) {
-            window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
-
-        }).then(function(e) {
-            saving = false;
         });
     }
 

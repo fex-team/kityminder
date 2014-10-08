@@ -25,7 +25,7 @@
         maxImageWidth: 200,
         maxImageHeight: 200,
 
-        // 自动保存时间间隔（s）
-        autoSave: 10
+        // 修改后自动保存时间间隔（单位：秒）；设置为 false 不自动保存
+        autoSave: 2
     };
 })();

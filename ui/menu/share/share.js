@@ -288,6 +288,16 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         $('#share-url', $sbody).val(shareUrl)[0].select();
 
+        // qr code
+        var $qrcontainer = $sbody.find('.share-qr-code').empty();
+
+        new window.QRCode($qrcontainer[0], {
+            text: shareUrl,
+            width: 128,
+            height: 128,
+            correctLevel : window.QRCode.CorrectLevel.M
+        });
+
         var shareConfig = window._bd_share_config.common,
             resetShare = window._bd_share_main.init;
 
@@ -384,7 +394,6 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function clearShareList() {
         shareList = [];
-
     }
 
     function shareRedirect() {

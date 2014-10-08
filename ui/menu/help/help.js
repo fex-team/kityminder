@@ -41,6 +41,7 @@ KityMinder.registerUI('menu/help/help', function (minder) {
             $help.addClass('mac');
         }
         $help.removeClass('loading');
+        $help.find('.km-version').text(KityMinder.version);
     }
 
     function convert(markdown) {

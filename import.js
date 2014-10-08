@@ -15,6 +15,7 @@
         { path: 'lib/jquery.blob.js',                   pack: 'edit' },
         { path: 'lib/zip.js',                           pack: 'edit' },
         { path: 'lib/ZeroClipboard.min.js',             pack: 'edit' },
+        { path: 'lib/qrcode.js',                        pack: 'edit' },
         { path: 'lib/fui/dev-lib/jhtmls.min.js',        pack: 'edit|share|m-share' },
         { path: 'lib/fui/dist/fui.all.js',              pack: 'edit|share|m-share' },
         { path: 'lib/fio/src/fio.js',                   pack: 'index|edit' },

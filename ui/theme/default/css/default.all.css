@@ -1798,6 +1798,15 @@ body {
 #panel .quick-visit-button.share:after {
   background-position: 0 -945px;
 }
+#panel .quick-visit-button.help {
+  float: right;
+  margin-right: 5px;
+}
+#panel .quick-visit-button.help:after {
+  top: 8px;
+  left: 7px;
+  background-position: 0 -970px;
+}
 #panel .quick-visit-button:hover {
   background-color: #5a6378;
 }
@@ -2567,6 +2576,9 @@ body {
   -webkit-user-select: initial;
   cursor: text;
 }
+#help-panel .contact-content li a[href] {
+  cursor: pointer;
+}
 #tab-container .command-buttonset.priority {
   width: 130px;
 }
@@ -3077,6 +3089,9 @@ ul.resource-list li {
 }
 #share-select fieldset .share-body {
   margin-top: 10px;
+}
+#share-select fieldset .share-body .share-qr-code img {
+  margin: 20px 0;
 }
 #public-share p {
   position: relative;

@@ -53,7 +53,7 @@ KityMinder.registerUI('doc', function(minder) {
 
         })['catch'](function(e) {
             current = restore;
-            console.error(e.stack);
+            window.alert('加载文档失败：' + doc.title);
         }).then(function(doc) {
             loading = false;
             return doc;
