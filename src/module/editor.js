@@ -18,9 +18,11 @@ KityMinder.registerModule('TextEditModule', function() {
 
     var mousedownNode,mouseupTimer;
 
+    var lastMinderNode;
     function inputStatusReady(node){
         if (node && km.isSingleSelect() && node.isSelected()) {
 
+            node.getTextGroup().setStyle('cursor','default');
 
             var color = node.getStyle('text-selection-color');
 
@@ -94,11 +96,13 @@ KityMinder.registerModule('TextEditModule', function() {
                 if(node){
 
                     if (this.isSingleSelect() && node.isSelected()) {
+                        lastMinderNode = node;
+
                         mousedownNode = node;
 
                         var textGroup = node.getTextGroup();
 
-                        textGroup.setStyle('cursor', 'default');
+
                         sel.collapse(true);
                         sel.setColor(node.getStyle('text-selection-color'));
 
@@ -111,13 +115,15 @@ KityMinder.registerModule('TextEditModule', function() {
 
                         if(selectionReadyShow){
 
-                            textGroup.setStyle('cursor', 'text');
+
                             sel.setShowStatus();
                             setTimeout(function() {
 
                                 sel.collapse(true)
                                     .updatePosition(receiver.getOffsetByIndex())
                                     .setShow();
+                                textGroup.setStyle('cursor','text');
+
                             }, 200);
                             km.setStatus('textedit');
 
@@ -131,6 +137,12 @@ KityMinder.registerModule('TextEditModule', function() {
                 receiver.clearReady();
                 //当点击空白处时，光标需要消失
                 receiver.clear();
+
+
+                if(lastMinderNode){
+
+                    lastMinderNode.getTextGroup().setStyle('cursor','default');
+                }
 
             },
             'inputready.keyup':function(){
@@ -184,6 +196,7 @@ KityMinder.registerModule('TextEditModule', function() {
                         sel.collapse(true)
                             .updatePosition(receiver.getOffsetByIndex())
                             .setShow();
+                        node.getTextGroup().setStyle('cursor','text');
                     }, 200);
 
 
