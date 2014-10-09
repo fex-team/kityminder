@@ -27,9 +27,21 @@
                 apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
             });
 
-            $('hr').addClass('loading');
-
             var $a = $('p.login a').hide();
+
+            function loadingAnimate(on) {
+                if (on) {
+                    $('hr').addClass('loading');
+                    loadingAnimate.timer = setTimeout(function() {
+                        $('hr').addClass('animated');
+                    }, 660);
+                } else {
+                    clearTimeout(loadingAnimate.timer);
+                    $('hr').removeClass('loading animated');
+                }
+            }
+
+            loadingAnimate(true);
 
             fio.user.check().then(function(user) {
                 if (user) {
@@ -37,7 +49,7 @@
                 }
                 else {
                     $a.fadeIn(800);
-                    $('hr').removeClass('loading');
+                    loadingAnimate(false);
                 }
             });
             
@@ -49,7 +61,20 @@
                     redirectUrl: urlparts + '/edit.html',
                     remember: 7 * 24 * 60 * 60
                 });
-                $('hr').addClass('loading');
+                loadingAnimate(true);
+            });
+
+            function preload(url) {
+                return new Promise(function(resolve, reject) {
+                    var img = new Image();
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+
+            preload('ui/theme/default/images/indexbackground.jpg').then(function() {
+                $('div.background').addClass('loaded');
             });
         });
 
@@ -63,11 +88,35 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            -webkit-user-select: none;
+            height: 100%;
+            font-size: 0;
+            line-height: 0;
+            z-index: -2;
         }
 
-        h1:before {
-            content: ' ';
+        body {
+            background: #99806B;
+        }
+
+        ::-webkit-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::-moz-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::-ms-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+
+        div.background {
+            opacity: 0;
             display: block;
             background: url(ui/theme/default/images/indexbackground.jpg) no-repeat;
             background-size: cover;
@@ -83,9 +132,15 @@
             -o-filter: blur(5px);
             filter: url(ui/theme/default/images/blur.svg#blur);
             filter: blur(5px);
+            -webkit-transition: opacity 1.5s ease;
+            transition: opacity 1.5s ease;
         }
 
-        h1:after {
+        div.background.loaded {
+            opacity: 1;
+        }
+
+        h1:before {
             content: ' ';
             display: block;
             position: absolute;
@@ -93,7 +148,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, .75);
+            background: rgba(0, 0, 0, .5);
             z-index: -1;
         }
 
@@ -119,34 +174,40 @@
             border-bottom: 1px solid #F98183;
             width: 110px;
             margin: 40px auto;
-            transition: transform 0.5s ease;
-            -webkit-transition: -webkit-transform 0.5s ease;
+            -webkit-transition: -webkit-transform 0.66s ease;
+            transition: transform 0.66s ease;
+            -webkit-backface-visibility: hidden;
         }
 
         hr.loading {
+            -webkit-transform: translate3d(100px, 0, 0);
+            transform: translate3d(100px, 0, 0);
+        }
+
+        hr.animated {
             -webkit-animation: slide 1.33s ease-in-out infinite alternate;
             animation: slide 1.33s ease-in-out infinite alternate;
         }
 
         @-webkit-keyframes slide {
             0% { 
-                transform: translate3d(-100px, 0, 0); 
-                -webkit-transform: translate3d(-100px, 0, 0);
+                -webkit-transform: translate3d(100px, 0, 0);
+                transform: translate3d(100px, 0, 0); 
             }
             100% { 
-                transform: translate3d(100px, 0, 0); 
                 -webkit-transform: translate3d(-100px, 0, 0);
+                transform: translate3d(-100px, 0, 0); 
             }
         }
 
         @keyframes slide {
             0% { 
-                transform: translate3d(-100px, 0, 0); 
-                -webkit-transform: translate3d(-100px, 0, 0);
+                -webkit-transform: translate3d(100px, 0, 0);
+                transform: translate3d(100px, 0, 0); 
             }
             100% { 
-                transform: translate3d(100px, 0, 0); 
                 -webkit-transform: translate3d(-100px, 0, 0);
+                transform: translate3d(-100px, 0, 0); 
             }
         }
 
@@ -171,6 +232,10 @@
             position: relative;
             overflow: hidden;
             margin-top: 50px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -mz-user-select: none;
+            user-select: none;
         }
 
         p.login a:active {
@@ -203,6 +268,7 @@
     </style>
 </head>
 <body>
+    <div class="background"></div>
     <h1>百度脑图 <br/> 便捷的思维编辑工具</h1>
     <hr /> 
     <p class="description">
