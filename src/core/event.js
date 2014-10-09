@@ -152,7 +152,7 @@ kity.extendClass(Minder, {
             callbacks[i].call(this, e);
 
 
-            if (this.getStatus() != lastStatus || e.shouldStopPropagationImmediately()) {
+            if (e.shouldStopPropagationImmediately()) {
                 break;
             }
         }

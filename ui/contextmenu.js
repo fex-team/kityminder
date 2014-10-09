@@ -18,6 +18,8 @@ KityMinder.registerUI('contextmenu', function(minder) {
         .addClass('km-context-menu fui-popup-menu')
         .appendTo('#content-wrapper');
 
+    var downPosition;
+
     $menu.delegate('li', 'mousedown', function(e, info) {
         var item = $(e.target).closest('li').data('menu');
         if (item.command) {
@@ -31,14 +33,21 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
     $('#content-wrapper').on('mousedown', function(e) {
         $menu.hide();
+        if (e.button == 2) {
+            downPosition = [e.pageX, e.pageY].join(',');
+        } else {
+            downPosition = null;
+        }
     });
 
     minder.on('mouseup', function(e) {
         //e.preventDefault();
 
-        if (minder.getStatus() == 'hand' || !e.isRightMB()) return;
+        if (!e.isRightMB()) return;
 
         e = e.originEvent;
+
+        if (downPosition != [e.pageX, e.pageY].join(',')) return;
 
         $menu.empty();
 
