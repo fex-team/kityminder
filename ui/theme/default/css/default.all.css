@@ -608,6 +608,7 @@ input[type=text],
 input[type=url] {
   padding: 2px 5px;
   height: 16px;
+  line-height: 16px;
   outline: none;
   border: 1px solid #e5e7ec;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -830,6 +831,12 @@ li {
 .fui-disabled:active,
 .fui-disabled .fui-widget:active {
   background-color: transparent;
+}
+input::-ms-clear {
+  display: none;
+}
+input[type=search]::-ms-clear {
+  display: inline-block;
 }
 #tab-container .fui-button {
   display: inline-block;
@@ -2754,9 +2761,10 @@ body {
   position: relative;
 }
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-input {
-  width: 148px;
+  width: 140px;
   margin: 2px 0 0;
   vertical-align: middle;
+  box-sizing: content-box;
 }
 #resource-panel > .fui-panel-content > .fui-label-panel-content > .fui-button {
   left: auto;
@@ -3180,8 +3188,8 @@ ul.resource-list li {
 #public-share .share-body {
   display: none;
 }
-.shared-content .left,
-.shared-content .right {
+.shared-content > .left,
+.shared-content > .right {
   float: left;
 }
 .shared-content .m-logo {

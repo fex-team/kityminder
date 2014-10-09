@@ -123,7 +123,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
         var $title = minder.getUI('topbar/title').$title;
         $filename.val(doc.title);
-        return doSave(doc.path, doc.protocol, doc, $title);
+        return doSave(doc.path, doc.protocol, doc, $title, 'leaveTheMenu');
     }
 
     function getSaveContext() {
@@ -162,7 +162,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     var saving = 0;
 
-    function doSave(path, protocol, doc, $mask) {
+    function doSave(path, protocol, doc, $mask, leaveTheMenu) {
 
         if (saving) return;
 
@@ -202,7 +202,9 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
             if ($mask) $mask.removeClass('loading');
 
-            $menu.hide();
+            if (!leaveTheMenu) {
+                $menu.hide();
+            }
 
             doc.path = path;
             doc.title = $filename.val();
@@ -211,7 +213,9 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
             $doc.save(doc);
 
-            setTimeout($finder.list, 500);
+            setTimeout(function() {
+                $finder.list($finder.pwd(), true);
+            }, 1499);
 
         });
     }

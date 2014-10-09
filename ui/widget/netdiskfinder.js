@@ -11,6 +11,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
     var eve = minder.getUI('eve');
 
+    var instances = [];
+
     /**
      * 生成一个网盘的目录访问组件
      *
@@ -20,6 +22,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
     function generate($container, listFilter) {
 
         var finder = eve.setup({});
+
+        instances.push(finder);
 
         var base = '/apps/kityminder';
         var currentPath = base;
@@ -71,7 +75,6 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             });
         });
 
-
         function mkdir() {
             if (mkdir.onprogress) {
                 return mkdir.onprogress.select();
@@ -108,9 +111,13 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     fio.file.mkdir({
                         path: currentPath + name
                     }).then(function() {
-                        return list(currentPath, true);
+                        return new Promise(function(resolve) {
+                            setTimeout(function() {
+                                resolve(list(currentPath, true));
+                            }, 200);
+                        });
                     }, function(e) {
-                        if (e.message.indexOf('31061') === 0) {
+                        if (e.detail && e.detail.error_code == 31061) {
                             e.message = '已存在同名目录';
                         }
                         window.alert('创建目录失败：' + e.message);
@@ -185,19 +192,9 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             });
         }
 
-        function renderList(values) {
+        function renderFileList(files) {
+
             $list.empty();
-
-            var files = values[0];
-
-            files.sort(function(a, b) {
-                if (a.isDir > b.isDir) {
-                    return -1;
-                } else if (a.isDir == b.isDir) {
-                    return a.createTime > b.createTime ? -1 : 1;
-                } else return 1;
-            });
-
             if (!files.length) {
                 $list.append('<li class="empty" disabled="disabled">' + minder.getLang('ui.emptydir') + '</li>');
             } else {
@@ -213,6 +210,30 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                         .appendTo($list);
                 });
             }
+        }
+
+        finder._renderFileList = renderFileList;
+
+        function renderList(values) {
+
+            var files = values[0];
+
+            files.sort(function(a, b) {
+                if (a.isDir > b.isDir) {
+                    return -1;
+                } else if (a.isDir == b.isDir) {
+                    return a.createTime > b.createTime ? -1 : 1;
+                } else return 1;
+            });
+
+            renderFileList(files);
+
+            // 通知其他 finder 更新
+            instances.forEach(function(instance) {
+                if (instance == finder) return;
+                if (instance.pwd() == currentPath)
+                    instance._renderFileList(files);
+            });
 
             fadeInList();
             checkSelect();
