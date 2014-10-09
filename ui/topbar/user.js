@@ -66,7 +66,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
                 window.open('http://i.baidu.com');
                 break;
             case 'gotonetdisk':
-                window.open('http://pan.baidu.com');
+                window.open('http://pan.baidu.com/disk/home#path=/apps/kityminder');
                 break;
             case 'switchuser':
                 switchUser();

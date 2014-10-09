@@ -61,14 +61,13 @@ if (!kity.Browser.ie) {
             // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
             svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');
 
-            // blob = new Blob([svgXml], {
-            //     type: 'image/svg+xml'
-            // });
+            blob = new Blob([svgXml], {
+                type: 'image/svg+xml'
+            });
 
-            // svgUrl = DomURL.createObjectURL(blob);
+            svgUrl = DomURL.createObjectURL(blob);
 
-            svgUrl = 'data:image/svg+xml;charset=utf-8,' + 
-  encodeURIComponent(svgXml);
+            //svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
 
             return {
                 width: width,

@@ -20,7 +20,9 @@ var MinderEvent = kity.createClass('MindEvent', {
         while (!findShape.minderNode && findShape.container) {
             findShape = findShape.container;
         }
-        return findShape.minderNode || null;
+        var node = findShape.minderNode;
+        if (node && findShape.getOpacity() < 1) return null;
+        return node || null;
     },
 
     stopPropagation: function() {
@@ -151,7 +153,7 @@ kity.extendClass(Minder, {
 
             callbacks[i].call(this, e);
 
-
+            /* this.getStatus() != lastStatus ||*/
             if (e.shouldStopPropagationImmediately()) {
                 break;
             }

@@ -19,6 +19,8 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
 
     var $addInput = new FUI.Input().appendTo($resourcePanel);
 
+    $addInput.getElement().type = 'text';
+
     var $addButton = new FUI.Button({
         label: '添加'
     }).appendTo($resourcePanel);
@@ -31,8 +33,9 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
     function addResource() {
         var resource = $addInput.getValue();
         var origin = minder.queryCommandValue('resource');
-        if (resource) {
-            if (!~origin.indexOf(resource)) origin.unshift(resource);
+        if (/\S/.test(resource)) {
+            if (!~origin.indexOf(resource)) origin.push(resource);
+            origin.sort();
             minder.execCommand('resource', origin);
         }
         $addInput.setValue(null);
@@ -67,6 +70,8 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
     function update() {
         var resource = minder.queryCommandValue('resource');
         var used = minder.getUsedResource();
+
+        used.sort();
 
         switch (minder.queryCommandState('resource')) {
             case 0:

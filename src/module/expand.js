@@ -76,8 +76,12 @@ KityMinder.registerModule('Expand', function() {
         
         if (!changed) return;
 
-        var vo = node.getVertexOut();
+        node.renderTree().getMinder().layout(100);
 
+        /* 如何加展开效果：
+
+        var vo = node.getVertexOut();
+        
         if (state == STATE_EXPAND) {
 
             var m = node.getGlobalLayoutTransform().clone().translate(vo.x, vo.y);
@@ -99,6 +103,7 @@ KityMinder.registerModule('Expand', function() {
             });
 
         }
+        */
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上

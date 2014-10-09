@@ -118,7 +118,9 @@ KityMinder.registerUI('menu/save/download', function(minder) {
             value: filename
         }).appendTo($form);
 
-        $('<input name="iehack" value="&#9760;" />').appendTo($form);
+        if (kity.Browser.ie) {
+            $('<input name="iehack" value="1" />').appendTo($form);
+        }
         $('<input name="stamp" />').val(stamp).appendTo($form);
 
         var netdisk = minder.getUI('menu/save/netdisk');
