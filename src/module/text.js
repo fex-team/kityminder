@@ -38,29 +38,34 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         this.setTextStyle(node, textGroup);
 
-        for (var i = 0, text, textShape;
-            (text = textArr[i], textShape = textGroup.getItem(i),
-                text !== undefined || textShape !== undefined); i++) {
+        var textLength = textArr.length;
 
-            if (text === undefined && textShape) {
+        var textGroupLength = textGroup.getItems().length;
+
+        if(textLength < textGroupLength){
+            for( var i = textLength,ci;ci = textGroup.getItem(i);){
                 textGroup.removeItem(i);
-            } else {
-                if (text !== undefined && !textShape) {
-                    textShape = new kity.Text()
-                        .setAttr('text-rendering', 'inherit');
-                    if (kity.Browser.ie) {
-                        textShape.setVerticalAlign('top');
-                    } else {
-                        textShape.setAttr('dominant-baseline', 'text-before-edge');
-                    }
-                    textGroup.addItem(textShape);
-                }
-                textShape.setContent(text);
-
-
             }
-
+        }else if(textLength > textGroupLength){
+            var length = textLength - textGroupLength;
+            for(var i = 0;i < length;i++){
+                var textShape = new kity.Text()
+                    .setAttr('text-rendering', 'inherit');
+                if (kity.Browser.ie) {
+                    textShape.setVerticalAlign('top');
+                } else {
+                    textShape.setAttr('dominant-baseline', 'text-before-edge');
+                }
+                textGroup.addItem(textShape);
+            }
         }
+
+
+        for (var i = 0, text, textShape;
+            (text = textArr[i], textShape = textGroup.getItem(i)); i++) {
+            textShape.setContent(text);
+        }
+
         this.setTextStyle(node, textGroup);
 
         return function() {

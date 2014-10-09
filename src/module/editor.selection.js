@@ -45,7 +45,8 @@ Minder.Selection = kity.createClass( 'Selection', {
                         if(i === 0 || cIndex === startOffset){
                             tmpOffset.x = o.x;
                             tmpOffset.y = o.y;
-                            tmpOffset.width = i === 0 && offset && offset.x <= o.x && cIndex != startOffset ? 0 : o.width;
+                            tmpOffset.width =  o.width;
+                            //i === 0 && offset && offset.x <= o.x && cIndex != startOffset ? 0 :
                         }else if(cIndex < endOffset){
                             tmpOffset.width += o.width;
                         }else if(cIndex === endOffset){
@@ -54,7 +55,6 @@ Minder.Selection = kity.createClass( 'Selection', {
 
                     }
                     cIndex++;
-
                 });
                 if(tmpOffset.x !== undefined) {
                     arrOffset.push(tmpOffset);
