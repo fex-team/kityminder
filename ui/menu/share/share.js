@@ -58,7 +58,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     });
 
     function getShareByPath(path) {
-        if (!path) return null;
+        if (!path || !shareList) return null;
 
         var i = shareList.length;
         while (i--) {
@@ -329,7 +329,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
             }).then(function(result) {
 
-                return (shareList = result.list || null);
+                return (shareList = result.list || []);
 
             }).then(renderShareList);
         });
@@ -413,6 +413,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         if (window.ZeroClipboard) {
             ZeroClipboard.config({
+                swfPath: 'lib/ZeroClipboard.swf',
                 hoverClass: 'hover',
                 activeClass: 'active'
             });

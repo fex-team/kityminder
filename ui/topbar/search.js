@@ -43,6 +43,8 @@ KityMinder.registerUI('topbar/search', function(minder) {
             return;
         }
 
+        keyword = keyword.toLowerCase();
+
         var newSearch = doSearch.lastKeyword != keyword;
 
         doSearch.lastKeyword = keyword;
@@ -52,7 +54,7 @@ KityMinder.registerUI('topbar/search', function(minder) {
 
         for (var i = startIndex; i <= endIndex; i++) {
             var node = nodeSequence[i % nodeSequence.length];
-            var text = node.getText();
+            var text = node.getText().toLowerCase();
             if (text.indexOf(keyword) != -1) {
                 setSearchResult(node);
                 doSearch.lastIndex = i;
