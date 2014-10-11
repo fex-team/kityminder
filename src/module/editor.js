@@ -16,7 +16,7 @@ KityMinder.registerModule('TextEditModule', function() {
     //当前是否有选区存在
     var selectionReadyShow = false;
 
-    var mousedownNode,mouseupTimer;
+    var mousedownNode,mouseupTimer,mousedownTimer;
 
     var lastMinderNode;
     function inputStatusReady(node){
@@ -117,8 +117,13 @@ KityMinder.registerModule('TextEditModule', function() {
 
 
                             sel.setShowStatus();
-                            setTimeout(function() {
+                            clearTimeout(mousedownTimer);
 
+                            mousedownTimer = setTimeout(function() {
+                                if(dblclickEvent){
+                                    dblclickEvent = false;
+                                    return;
+                                }
                                 sel.collapse(true)
                                     .updatePosition(receiver.getOffsetByIndex())
                                     .setShow();
