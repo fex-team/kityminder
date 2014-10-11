@@ -123,8 +123,6 @@
         { path: 'ui/memory.js',                         pack: 'edit|share|m-share' },
         { path: 'ui/fuix.js',                           pack: 'edit|share|m-share' },
         { path: 'ui/fiox.js',                           pack: 'edit' },
-        { path: 'ui/doc.js',                            pack: 'edit|share|m-share' },
-        { path: 'ui/contextmenu.js',                    pack: 'edit' },
 
         /* UI 组件 */
         { path: 'ui/widget/commandbutton.js',           pack: 'edit|share' },
@@ -135,6 +133,11 @@
         { path: 'ui/widget/locallist.js',               pack: 'edit' },
         { path: 'ui/widget/netdiskfinder.js',           pack: 'edit' },
         { path: 'ui/widget/menutab.js',                 pack: 'edit|share|m-share' },
+        { path: 'ui/widget/notice.js',                  pack: 'edit|share|m-share' },
+
+        /* 基本业务 */
+        { path: 'ui/doc.js',                            pack: 'edit|share|m-share' },
+        { path: 'ui/contextmenu.js',                    pack: 'edit|share' },
 
         /* 视野导航 */
         { path: 'ui/nav.js',                            pack: 'edit|share' },

@@ -44,23 +44,25 @@ KityMinder.registerModule('Zoom', function() {
 
         if (minder.getRoot().getComplex() > 200) {
             minder._zoomValue = value;
-            return minder.zoom(value);
-        }
-        var animator = new kity.Animator({
-            beginValue: minder._zoomValue,
-            finishValue: value,
-            setter: function(target, value) {
-                target.zoom(value);
-            }
-        });
-        minder._zoomValue = value;
-        if (timeline) {
-            timeline.pause();
-        }
-        timeline = animator.start(minder, 300, 'easeInOutSine', function() {});
-        timeline.on('finish', function() {
+            minder.zoom(value);
             minder.fire('viewchange');
-        });
+        } else {
+            var animator = new kity.Animator({
+                beginValue: minder._zoomValue,
+                finishValue: value,
+                setter: function(target, value) {
+                    target.zoom(value);
+                }
+            });
+            minder._zoomValue = value;
+            if (timeline) {
+                timeline.pause();
+            }
+            timeline = animator.start(minder, 300, 'easeInOutSine');
+            timeline.on('finish', function() {
+                minder.fire('viewchange');
+            });
+        }
         minder.fire('zoom', { zoom: value });
     }
 

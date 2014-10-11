@@ -120,7 +120,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                         if (e.detail && e.detail.error_code == 31061) {
                             e.message = '已存在同名目录';
                         }
-                        window.alert('创建目录失败：' + e.message);
+                        var notice = minder.getUI('widget/notice');
+                        notice.error('err_mkdir', e);
                         $li.remove();
                     }).then(function() {
                         $container.removeClass('loading');
@@ -188,7 +189,9 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             updateNav();
 
             return Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
-                window.alert('加载目录发生错误：' + error);
+
+                var notice = minder.getUI('widget/notice');
+                notice.error('err_ls', error);
             });
         }
 

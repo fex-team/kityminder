@@ -21,6 +21,8 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
         $share = btn('share'),
         $feedback = btn('feedback');
 
+    var ret = {};
+
     minder.on('uiready', function quickVisit() {
 
         $('#panel #search').after($feedback);
@@ -71,5 +73,13 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
         });
         minder.addShortcut('f1', quickFeedback);
 
+        ret.ready = true;
+        ret.quickNew = quickNew;
+        ret.quickSave = quickSave;
+        ret.quickShare = quickShare;
+        ret.quickFeedback = quickFeedback;
+
     });
+
+    return ret;
 });

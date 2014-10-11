@@ -15,6 +15,7 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
     var $eve = minder.getUI('eve');
     var $doc = minder.getUI('doc');
     var ret = $eve.setup({});
+    var notice = minder.getUI('widget/notice');
 
     /* 网盘面板 */
     var $panel = $($open.createSub('netdisk'));
@@ -43,17 +44,22 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
     function open(path) {
 
         $menu.hide();
+
         $(minder.getRenderTarget()).addClass('loading');
 
         var info = fio.file.anlysisPath(path);
         var protocol = supports[info.extension];
 
-        return fio.file.read({
+        function read() {
+            return fio.file.read({
 
-            path: path,
-            dataType: protocol.dataType
+                path: path,
+                dataType: protocol.dataType
 
-        }).then(function(file) {
+            });
+        }
+
+        function load(file) {
 
             var doc = {
                 protocol: supports[file.extension].name,
@@ -65,12 +71,13 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
             };
 
             return $doc.load(doc);
+        }
 
-        })['catch'](function(error) {
+        function error(e) {
+            return notice.error('err_load', e);
+        }
 
-            window.alert(minder.getLang('ui.errorloading', error.message || minder.getLang('unknownreason')));
-
-        }).then(function() {
+        return read().then(load, error).then(function() {
 
             $(minder.getRenderTarget()).removeClass('loading');
 

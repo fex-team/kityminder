@@ -172,9 +172,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 dataType: 'json'
 
             })['catch'](function(e) {
-
-                window.alert(minder.getLang('remove_share_failed', e.message));
-
+                var notice = minder.getUI('widget/notice');
+                notice.error('err_remove_share', e);
             });
         });
     }
@@ -249,7 +248,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
             })['catch'](function(e) {
 
-                window.alert(minder.getLang('create_share_failed', e.message));
+                var notice = minder.getUI('widget/notice');
+                notice.error('err_create_share', e);
 
             });
         })
@@ -297,9 +297,9 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             height: 128,
             correctLevel : window.QRCode.CorrectLevel.M
         });
-
-        var shareConfig = window._bd_share_config.common,
-            resetShare = window._bd_share_main.init;
+        
+        var shareConfig = window._bd_share_config && window._bd_share_config.common,
+            resetShare = window._bd_share_main && window._bd_share_main.init;
 
         if (shareConfig && resetShare) {
             shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();

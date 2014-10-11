@@ -12,6 +12,7 @@ KityMinder.registerUI('doc', function(minder) {
     var ret = minder.getUI('eve').setup({});
     var current = { saved: true };
     var loading = false;
+    var notice = minder.getUI('widget/notice');
 
     /**
      * 加载文档
@@ -53,9 +54,11 @@ KityMinder.registerUI('doc', function(minder) {
 
         })['catch'](function(e) {
             current = restore;
-            window.alert('加载文档失败：' + doc.title);
+            notice.error('err_doc_resolve', e);
         }).then(function(doc) {
             loading = false;
+            if (doc)
+                notice.info( '<b>' + doc.title + '</b> 加载完成');
             return doc;
         });
     }
