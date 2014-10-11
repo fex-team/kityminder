@@ -95,7 +95,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
                 me.inputTextTimer = setTimeout(function(){
                     me.km.layout(300);
-                },250);
+                },300);
             }
 
             me.re.updateTextOffsetData()
@@ -104,8 +104,13 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             me.selection
                 .updateOffsetByTextData(me.re.textData)
-                .updatePosition()
-                .setHoldShow();
+                .updatePosition();
+
+
+            //当然inputready状态时，如果输入文字，节点内文本会被先选中然后再消失，体验不好
+            if(me.km.getStatus() != 'inputready'){
+                me.selection.setHoldShow();
+            }
 
 
             me.timer = setTimeout(function() {
@@ -232,6 +237,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             //针对不能连续删除做处理
             //if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
             //    me._setTextToContainer(keyCode);
+
             me._setTextToContainer(keyCode);
         },
         _beforeKeyup:function(e){

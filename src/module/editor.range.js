@@ -7,7 +7,12 @@ Minder.Range = kity.createClass('Range',function(){
         if(node.nodeType == 1){
             //默认不会出现得不到子节点的情况
             node = node.childNodes[offset];
-            if(node.nodeType == 3){
+            if(!node && rng.startContainer && rng.startContainer.nodeName == 'DIV' ) {
+                rng.startContainer.innerHTML = '<p></p>';
+
+                offset = 0;
+
+            }else if(node.nodeType == 3){
                 offset = 0;
             }
         }
