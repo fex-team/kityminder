@@ -230,8 +230,9 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             this.isShortcutCopyKey = false;
             //针对不能连续删除做处理
-            if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
-                me._setTextToContainer(keyCode);
+            //if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
+            //    me._setTextToContainer(keyCode);
+            me._setTextToContainer(keyCode);
         },
         _beforeKeyup:function(e){
 
