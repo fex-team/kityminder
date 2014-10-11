@@ -137,7 +137,9 @@ KityMinder.LANG['zh-cn'] = {
             'editnode': '编辑',
             'arrangeup': '上移',
             'arrangedown': '下移',
-            'resetlayout': '整理布局'
+            'resetlayout': '整理布局',
+            'expandtoleave': '展开全部节点',
+            'collapsetolevel1': '收起到一级节点'
         },
 
         'back': '返回',

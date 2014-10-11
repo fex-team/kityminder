@@ -9,9 +9,17 @@ var keymap = KityMinder.keymap = (function(origin) {
     var aKeyCode = 65;
     var aCharCode = 'a'.charCodeAt(0);
 
+    // letters
     'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(letter) {
         ret[letter] = aKeyCode + (letter.charCodeAt(0) - aCharCode);
     });
+
+    // numbers
+    var n = 9;
+    do {
+        ret[n.toString()] = n + 48;
+    } while(--n);
+
     return ret;
 })({
     'Backspace': 8,
@@ -65,6 +73,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'F11': 121,
     'F12': 122,
 
+    '`': 192,
     '=': 187,
     '-': 189,
 
