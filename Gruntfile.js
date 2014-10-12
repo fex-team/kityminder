@@ -36,14 +36,8 @@ module.exports = function(grunt) {
             options: {
                 banner: banner + '(function(window) {\n\n',
                 footer: '\n\n})(window)',
-                process: function(src, filepath) {
-                    return ['\n',
-                        '/* ' + filepath + ' */',
-                        src.replace(/^.+$/mg, '    $&'),
-                        '/* ' + filepath + ' end */',
-                        '\n',
-                    ].join('\n');
-                }
+                sourceMap: true,
+                sourceMapStyle: 'link'
             },
             src: sources.filter(function(source) {
                 return source.pack == '*' || source.pack.split('|').indexOf(pack) !== -1;
@@ -67,7 +61,8 @@ module.exports = function(grunt) {
         uglify: {
             minimize: {
                 options: {
-                    banner: banner
+                    banner: banner,
+                    sourceMap: true
                 },
                 files: (function() {
                     var files = {};
@@ -90,6 +85,7 @@ module.exports = function(grunt) {
                         'static/**/*',
                         'lib/ZeroClipboard.swf',
                         'lib/inflate.js',
+                        'lib/source-map.min.js',
                         'index.html',
                         'edit.html',
                         'viewshare.html',

@@ -27,9 +27,83 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
     var $error_body = $($error.getBodyElement());
 
+    var isBuilded = (function() {
+        var scripts = [].slice.apply(document.getElementsByTagName('script'));
+        var s, m;
+        while( (s = scripts.pop()) ) {
+            if ( (m = /kityminder.*\.min\.js/.exec(s.src))) return m[0];
+        }
+        return false;
+
+    })();
+
+    // concatMap: sperate files -> join file
+    // minMap: join file -> min file
+    var concatMap, minMap;
+    function fixSourceSymbol($ta, $mask) {
+
+        function fix() {
+            var text = $ta.text();
+            var pattern = new RegExp('at.+' + isBuilded + '.+\\:(\\d+)\\:(\\d+)\\)?', 'g');
+            var match;
+
+            $ta.text(text.replace(pattern, function(match, $1, $2) {
+                var lookup = {line: +$1, column: +$2};
+                var info = minMap.originalPositionFor(lookup);
+                var name = info.name;
+                lookup = {line: info.line, column: info.column};
+                info = concatMap.originalPositionFor(lookup);
+                name = name || '<Anonymous>';
+                var replaced = 'at ' + name + ' (' + 
+                    info.source.replace('../', '') + ':' + info.line + ':' + info.column + ')';
+                if (replaced.indexOf('promise') != -1) {
+                    replaced = 'at <async> Promise.' + name;
+                }
+                return replaced;
+            }));
+        }
+
+        if (isBuilded) {
+
+            if (concatMap) return fix();
+
+            $mask.addClass('loading');
+
+            setTimeout(function() {
+                $mask.removeClass('loading');
+            }, 5000);
+
+            var script = document.createElement('script');
+            script.onload = function() {
+                Promise.all([
+
+                    $.pajax({
+                        url: isBuilded.replace('min.js', 'js.map'),
+                        dataType: 'json'
+                    }), 
+
+                    $.pajax({
+                        url: isBuilded.replace('.js', '.map'),
+                        dataType: 'json'
+                    })
+
+                ]).then(function(files) {
+                    concatMap = new window.sourceMap.SourceMapConsumer(files[0]);
+                    minMap = new window.sourceMap.SourceMapConsumer(files[1]);
+                    fix();
+                    $mask.removeClass('loading');
+                });
+            };
+            script.src = 'lib/source-map.min.js';
+            document.head.appendChild(script);
+        }
+    }
+
     $error_body.delegate('.error-detail a.expander', 'click', function(e) {
         var $detail = $(e.target).closest('.error-detail').toggleClass('expanded');
-        memory.set('show-error-detail', $detail.hasClass('expanded'));
+        var showDetail = $detail.hasClass('expanded');
+
+        memory.set('show-error-detail', showDetail);
     });
 
     function info(msg, warn) {
@@ -58,6 +132,8 @@ KityMinder.registerUI('widget/notice', function (minder) {
         if (typeof(e) == 'string') {
             e = new Error(e);
         }
+
+        if (e.getDetail) return e;
 
         // 文件访问错误
         if (e instanceof fio.FileRequestError) {
@@ -103,14 +179,22 @@ KityMinder.registerUI('widget/notice', function (minder) {
                     .addClass('error-detail')
                     .append($('<a class="expander"></a>').text(minder.getLang('ui.error_detail')))
                     .appendTo($error_body);
+
+            var $detailContent = $('<div>')
+                    .addClass('error-detail-wrapper')
+                    .appendTo($detail);
+
             var $textarea = $('<textarea>')
                     .attr('id', 'error-detail-content')
                     .text(e.getDetail())
-                    .appendTo($detail);
+                    .appendTo($detailContent);
+
+            fixSourceSymbol($textarea, $detailContent);
+
             var $copy = $('<button>')
                     .addClass('copy-and-feedback')
                     .text(minder.getLang('ui.copy_and_feedback'))
-                    .appendTo($detail);
+                    .appendTo($detailContent);
 
             $copy.attr('data-clipboard-target', 'error-detail-content');
 
@@ -145,7 +229,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
             $target.remove();
         }
     }
-
+    
     return {
         info: info,
         error: error,

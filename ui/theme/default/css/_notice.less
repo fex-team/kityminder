@@ -60,17 +60,6 @@
         }
 
         .error-detail {
-            textarea {
-                box-sizing: border-box;
-                width: 100%;
-                height: 200px;
-                border: 1px solid #EEE;
-                background: #fcfcfc;
-                outline: none;
-                padding: 6px;
-                color: #666;
-                display: none;
-            }
             position: relative;
             a.expander {
                 display: block;
@@ -85,13 +74,8 @@
                     text-decoration: underline;
                 }
             }
-            .copy-and-feedback {
-                display: none;
-                float: right;
-                margin-top: 10px;
-            }
             &.expanded {
-                textarea, .copy-and-feedback {
+                .error-detail-wrapper {
                     display: block;
                 }
                 a.expander:before {
@@ -110,6 +94,24 @@
                 right: 0;
                 font-size: 12px;
                 color: #AAA;
+            }
+            
+            .error-detail-wrapper {
+                display: none;
+                textarea {
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 200px;
+                    border: 1px solid #EEE;
+                    background: #fcfcfc;
+                    outline: none;
+                    padding: 6px;
+                    color: #666;
+                }
+                .copy-and-feedback {
+                    float: right;
+                    margin-top: 10px;
+                }
             }
         }
     }

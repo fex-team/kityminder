@@ -1361,17 +1361,6 @@ input[type=search]::-ms-clear {
 #content-wrapper .error-dialog .fui-dialog-body .error-detail {
   position: relative;
 }
-#content-wrapper .error-dialog .fui-dialog-body .error-detail textarea {
-  box-sizing: border-box;
-  width: 100%;
-  height: 200px;
-  border: 1px solid #EEE;
-  background: #fcfcfc;
-  outline: none;
-  padding: 6px;
-  color: #666;
-  display: none;
-}
 #content-wrapper .error-dialog .fui-dialog-body .error-detail a.expander {
   display: block;
   margin: 8px 0;
@@ -1395,13 +1384,7 @@ input[type=search]::-ms-clear {
 #content-wrapper .error-dialog .fui-dialog-body .error-detail a.expander:hover {
   text-decoration: underline;
 }
-#content-wrapper .error-dialog .fui-dialog-body .error-detail .copy-and-feedback {
-  display: none;
-  float: right;
-  margin-top: 10px;
-}
-#content-wrapper .error-dialog .fui-dialog-body .error-detail.expanded textarea,
-#content-wrapper .error-dialog .fui-dialog-body .error-detail.expanded .copy-and-feedback {
+#content-wrapper .error-dialog .fui-dialog-body .error-detail.expanded .error-detail-wrapper {
   display: block;
 }
 #content-wrapper .error-dialog .fui-dialog-body .error-detail.expanded a.expander:before {
@@ -1429,6 +1412,23 @@ input[type=search]::-ms-clear {
   right: 0;
   font-size: 12px;
   color: #AAA;
+}
+#content-wrapper .error-dialog .fui-dialog-body .error-detail .error-detail-wrapper {
+  display: none;
+}
+#content-wrapper .error-dialog .fui-dialog-body .error-detail .error-detail-wrapper textarea {
+  box-sizing: border-box;
+  width: 100%;
+  height: 200px;
+  border: 1px solid #EEE;
+  background: #fcfcfc;
+  outline: none;
+  padding: 6px;
+  color: #666;
+}
+#content-wrapper .error-dialog .fui-dialog-body .error-detail .error-detail-wrapper .copy-and-feedback {
+  float: right;
+  margin-top: 10px;
 }
 #content-wrapper .error-dialog .fui-dialog-foot {
   position: static;
