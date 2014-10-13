@@ -1,3 +1,7 @@
+.fullscreen .preview-navigator {
+    .transform(translate(-20px, 10px));
+}
+
 .preview-navigator {
     background: white;
     width: 140px;
@@ -10,6 +14,7 @@
     padding: 1px;
     z-index: 9;
     cursor: crosshair;
+    transition: transform .7s 0.1s ease;
     
     &.grab {
         cursor: move;
@@ -18,7 +23,9 @@
         cursor: grabbing;
     }
 }
-
+.fullscreen .nav-bar {
+    .transform(translate(-60px, 0));
+}
 .nav-bar {
     position: absolute;
     width: 35px;
@@ -30,6 +37,7 @@
     border-radius: 4px;
     z-index: 10;
     box-shadow: 3px 3px 10px rgba(0, 0, 0, .2);
+    transition: transform .7s 0.1s ease;
     
     .command-button {
         width: 35px;

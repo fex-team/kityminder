@@ -110,6 +110,8 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
         if (!$notice.hasClass('show')) $notice.empty();
 
+        clearTimeout(info.ttl2);
+
         if (warn) $notice.addClass('warn');
         else $notice.removeClass('warn');
 
@@ -118,7 +120,10 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
         clearTimeout(info.ttl);
         info.ttl = setTimeout(function() {
-           $notice.removeClass('show');
+            $notice.removeClass('show');
+            info.ttl2 = setTimeout(function() {
+                $notice.empty();
+            }, 1000);
         }, warn ? 5000 : 3000);
     }
 

@@ -203,6 +203,7 @@
         { path: 'ui/ribbon/appearence/color.js',        pack: 'edit' },
 
         /* UI Ribbon「视图」面板 */
+        { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
         { path: 'ui/ribbon/view/level.js',              pack: 'edit' }
     ];
 

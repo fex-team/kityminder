@@ -44,7 +44,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         if (shared) {
             fio.user.check().then(function(user) {
-                $.pajax(BACKEND_URL, {
+                $.pajax({
+                    url: BACKEND_URL,
                     type: 'POST',
                     data: {
                         action: 'update',
@@ -74,7 +75,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function renderCreatePanel() {
         // render template
-        return $.pajax('static/pages/createshare.html').then(function(html) {
+        return $.pajax({ url: 'static/pages/createshare.html' }).then(function(html) {
             /* global jhtmls: true */
             var render = jhtmls.render(html);
             $create_menu.html(render({

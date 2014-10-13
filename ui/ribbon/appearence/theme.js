@@ -39,5 +39,9 @@ KityMinder.registerUI('ribbon/appearence/theme', function(minder) {
     $tabs.appearence.appendWidget($themePanel);
     $themePanel.appendWidget($themeSelect);
 
+    minder.on('themechange', function(e) {
+        $('#content-wrapper').css('background', minder.getStyle('background'));
+    });
+
     return $themePanel;
 });

@@ -1,6 +1,7 @@
 #tab-select {
     height: @panel-height;
     line-height: @panel-height;
+    min-width: 200px;
     margin-left: 10px;
     float: left;
 
@@ -69,6 +70,10 @@
     }
 }
 
+.fullscreen #tab-container {
+    transform: translate(0, -101px) !important;
+}
+
 #tab-container {
     position: absolute;
     top: @panel-height;
@@ -107,8 +112,8 @@
         }
     }
     
-
-    .transition(all 0.15s ease);
+    transition: transform 0.7s ease, 
+                opacity,height .5s ease;
 
     &.collapsed {
         opacity: 0;

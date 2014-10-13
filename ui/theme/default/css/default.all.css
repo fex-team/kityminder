@@ -1496,12 +1496,21 @@ body {
 #panel + #kityminder {
   top: 40px;
 }
+.fullscreen #panel {
+  transform: translate(0, -101px);
+}
+.fullscreen #kityminder {
+  top: 0 !important;
+}
 #panel {
   background: #393f4f;
   font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
   height: 40px;
-  overflow: visible;
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
   position: relative;
+  transition: transform .7s ease;
+  z-index: 11;
 }
 #panel h1 {
   font-size: 14px;
@@ -2031,6 +2040,7 @@ body {
 #tab-select {
   height: 40px;
   line-height: 40px;
+  min-width: 200px;
   margin-left: 10px;
   float: left;
 }
@@ -2087,6 +2097,9 @@ body {
 #tab-select.collapsed .fui-button.fui-selected:after {
   display: none;
 }
+.fullscreen #tab-container {
+  transform: translate(0, -101px) !important;
+}
 #tab-container {
   position: absolute;
   top: 40px;
@@ -2099,11 +2112,8 @@ body {
   box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.05);
   overflow: visible;
   /* 每一个 Tab 面板 */
-  -webkit-transition: all 0.15s ease;
-  -moz-transition: all 0.15s ease;
-  -ms-transition: all 0.15s ease;
-  -o-transition: all 0.15s ease;
-  transition: all 0.15s ease;
+  transition: transform 0.7s ease, 
+                opacity,height .5s ease;
 }
 #tab-container > .fui-panel {
   display: block;
@@ -3080,6 +3090,18 @@ ul.resource-list li {
 /**
  * 页面下方 “关于” 面板的样式
  */
+.fullscreen #about #km-cat {
+  -webkit-transform: translate(0, 0);
+  -moz-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  -o-transform: translate(0, 0);
+  tranform: translate(0, 0);
+  -webkit-transition: transform 0.7s 0.2s ease;
+  -moz-transition: transform 0.7s 0.2s ease;
+  -ms-transition: transform 0.7s 0.2s ease;
+  -o-transition: transform 0.7s 0.2s ease;
+  transition: transform 0.7s 0.2s ease;
+}
 #about {
   position: absolute;
   bottom: 0;
@@ -3575,6 +3597,16 @@ ul.resource-list li {
 .collapsetolevel1.command-button .fui-icon {
   background-position: 0 -1015px;
 }
+.fullscreen.command-button .fui-icon {
+  background-position: 0 -1035px;
+}
+.fullscreen .preview-navigator {
+  -webkit-transform: translate(-20px, 10px);
+  -moz-transform: translate(-20px, 10px);
+  -ms-transform: translate(-20px, 10px);
+  -o-transform: translate(-20px, 10px);
+  tranform: translate(-20px, 10px);
+}
 .preview-navigator {
   background: white;
   width: 140px;
@@ -3587,12 +3619,20 @@ ul.resource-list li {
   padding: 1px;
   z-index: 9;
   cursor: crosshair;
+  transition: transform .7s 0.1s ease;
 }
 .preview-navigator.grab {
   cursor: move;
   cursor: -webkit-grabbing;
   cursor: -moz-grabbing;
   cursor: grabbing;
+}
+.fullscreen .nav-bar {
+  -webkit-transform: translate(-60px, 0);
+  -moz-transform: translate(-60px, 0);
+  -ms-transform: translate(-60px, 0);
+  -o-transform: translate(-60px, 0);
+  tranform: translate(-60px, 0);
 }
 .nav-bar {
   position: absolute;
@@ -3605,6 +3645,7 @@ ul.resource-list li {
   border-radius: 4px;
   z-index: 10;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  transition: transform .7s 0.1s ease;
 }
 .nav-bar .command-button {
   width: 35px;

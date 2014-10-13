@@ -127,6 +127,8 @@ KityMinder.LANG['zh-cn'] = {
     },
     'ui': {
 
+        'fullscreen_exit_hint': '按 F11 退出全屏',
+
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
 
@@ -139,7 +141,8 @@ KityMinder.LANG['zh-cn'] = {
             'arrangedown': '下移',
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
-            'collapsetolevel1': '收起到一级节点'
+            'collapsetolevel1': '收起到一级节点',
+            'fullscreen': '全屏'
         },
 
         'back': '返回',
