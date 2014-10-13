@@ -171,9 +171,9 @@ KityMinder.registerModule('Expand', function() {
 
         constructor: function(node) {
             this.callBase();
-            this.radius = 5;
+            this.radius = 6;
             this.outline = new kity.Circle(this.radius).stroke('gray').fill('white');
-            this.sign = new kity.Path().stroke('black');
+            this.sign = new kity.Path().stroke('gray');
             this.addShapes([this.outline, this.sign]);
             this.initEvent(node);
             this.setId(KityMinder.uuid('node_expander'));
