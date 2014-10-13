@@ -86,7 +86,7 @@ Minder.Selection = kity.createClass( 'Selection', {
                 'z'];
         };
 
-        offset = offset || this.offset;
+        offset = offset !== undefined ? offset : this.offset;
 
         if(this.collapsed){
             if (isNaN(offset.x) || isNaN(offset.y)) {
