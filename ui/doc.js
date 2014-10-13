@@ -58,7 +58,7 @@ KityMinder.registerUI('doc', function(minder) {
         }).then(function(doc) {
             loading = false;
             if (doc)
-                notice.info( '<b>' + doc.title + '</b> 加载完成');
+                notice.info( minder.getLang('ui.load_success', doc.title ) );
             return doc;
         });
     }

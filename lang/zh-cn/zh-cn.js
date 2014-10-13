@@ -312,8 +312,9 @@ KityMinder.LANG['zh-cn'] = {
 
         'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制',
 
-        'save_success': '文档已保存',
-        'autosave_success': '文档已自动保存'
+        'load_success': '<b>{0}</b> 加载成功',
+        'save_success': '<b>{0}</b> 已保存于 {1}',
+        'autosave_success': '<b>{0}</b> 已自动保存于 {1}'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

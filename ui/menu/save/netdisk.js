@@ -183,10 +183,6 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
             if (!file.modifyTime) throw new Error('File Save Error');
 
-            saving = false;
-
-            if ($mask) $mask.removeClass('loading');
-
             if (!leaveTheMenu) {
                 $menu.hide();
             }
@@ -198,7 +194,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
             $doc.save(doc);
 
-            notice.info(msg || minder.getLang('ui.save_success'));
+            notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
 
             setTimeout(function() {
                 $finder.list($finder.pwd(), true);
@@ -210,7 +206,10 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             notice.error('err_save', e);
         }
 
-        return minder.exportData(protocol).then(upload).then(finish, error);
+        return minder.exportData(protocol).then(upload).then(finish, error).then(function() {
+            if ($mask) $mask.removeClass('loading');
+            saving = false;
+        });
     }
 
     function setFileName() {

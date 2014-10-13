@@ -60,10 +60,18 @@
     });
 
     $.extend($, {
-        pajax: function() {
-            var defered = $.ajax.apply($, arguments);
-            return Promise.resolve(defered);
+        pajax: function(opt) {
+            opt.cache = false;
+            return Promise.resolve($.ajax(opt));
         }
+    });
+
+    // preload css images
+    $(function() {
+        var list = ["kmcat_warn.png", "kmcat_sad.png", "icons.png", "template_large.png", "history.png", "feedback.png", "iconpriority.png", "iconprogress.png", "template.png", "layout.png", "next-level.png", "prev-level.png"];
+        list.forEach(function(item) {
+            (new Image()).src = 'ui/theme/default/images/' + item;
+        });
     });
 
 })();
