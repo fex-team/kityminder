@@ -279,10 +279,6 @@
         }
     
     </style>
-
-    <!-- ~~~~~~~~~~~~~~~~~~~ DP Code ~~~~~~~~~~~~~~~~~~~ -->
-    <script> alog('speed.set', 'ht', +new Date); </script>
-    <!-- ~~~~~~~~~~~~~~~~~~~ DP Code ~~~~~~~~~~~~~~~~~~~ -->
 </head>
 <body>
     <div class="background"></div>
@@ -296,60 +292,6 @@
         <a>马上开启</a>
         <span>使用百度账号登录</span>
     </p>
-    <script>
-    void function(e,t){for(var n=t.getElementsByTagName("img"),a=+new Date,i=[],o=function(){this.removeEventListener&&this.removeEventListener("load",o,!1),i.push({img:this,time:+new Date})},s=0;s< n.length;s++)!function(){var e=n[s];e.addEventListener?!e.complete&&e.addEventListener("load",o,!1):e.attachEvent&&e.attachEvent("onreadystatechange",function(){"complete"==e.readyState&&o.call(e,o)})}();alog("speed.set",{fsItems:i,fs:a})}(window,document);
-    </script>
-
-    <script>
-        /* 配置需要统计的模块，不需要的模块不配置即可（如不需要csp，下面的csp部分删除即可） */
-        window.alogObjectConfig = {
-            product: '612',  // 必须, DP平台产品线id
-            page: 'index_html',  // 必须, DP平台页面id
-
-            monkey_page: '',  // 如果页面已经有hunter平台的monkey，则为monkey的pageId, 否侧无需该字段
-            speed_page: '',  // 如果页面已经有webspeed平台的性能监控，则为性能的page_id,否侧无需该字段
-
-            // 性能-------------------------------------------------------------------------------------------------------
-            speed: {
-                sample: 1   // 抽样率, 0~1，建议使采样的pv控制在100万以内，必须要设定，否则统计不会生效
-                //custom_metrics: ['c_item1','p_item3']  //自定义的性能指标，自动上报，只有这些指标都统计完毕之后数据才会发送
-                //special_pages: [{id:34, sample:1}]  // 特殊页面，和老的性能配置一致
-            },
-
-            // 访问和点击-------------------------------------------------------------------------------------------------
-            monkey: {
-                sample: 1   // 抽样率, 0~1  建议使采样的pv控制在50万以内，必须要设定，否则统计不会生效
-                //hid: ''       // 兼容hunter的monkey，monkey实验的ID
-                //pageflag: ''  // 个别特殊产品线使用hunter的monkey的pageflag
-            },
-
-            // js异常，除window.onerror外，配合FIS插件还可以自动加try/catch监控，见下面的“高级功能”部分-----------------------
-            exception: { 
-                sample: 1   // 抽样率, 0~1  建议使采样的pv控制在50万以内，必须要设定，否则统计不会生效
-            },
-
-            // 浏览器新特性(H5/CSS3)--------------------------------------------------------------------------------------
-            feature: {
-                sample: 1   // 抽样率, 0~1  建议使采样的pv控制在50万以内，必须要设定，否则统计不会生效
-            },
-
-            // 跨站资源监控-----------------------------------------------------------------------------------------------
-            csp: {
-                sample: 1,  // 抽样率, 0~1  建议使采样的pv控制在100万以内，必须要设定，否则统计不会生效
-                
-                // 默认的跨站策略, 产品线可以根据自己的实际情况进行修改,Warn表示匹配的资源被算作跨域资源
-                'default-src': [
-                    {match: '*bae.baidu.com', target: 'Accept,Warn'},
-                    {match: '*.baidu.com,*.bdstatic.com,*.bdimg.com,localhost,*.hao123.com,*.hao123img.com', target: 'Accept'},
-                    {match: /^(127|172|192|10)(\.\d+){3}$/, target: 'Accept'},
-                    {match: '*', target: 'Accept,Warn'}
-                ]
-            }
-        };
-
-        // pc和mobile端会稍有不同，必须严格按照该文档来部署，该段代码必须放在上面的window.alogObjectConfig配置之后
-        void function(e,t,n,a,r,o){function c(t){e.attachEvent?e.attachEvent("onload",t,!1):e.addEventListener&&e.addEventListener("load",t)}function i(e,n,a){a=a||15;var r=new Date;r.setTime((new Date).getTime()+1e3*a),t.cookie=e+"="+escape(n)+";path=/;expires="+r.toGMTString()}function s(e){var n=t.cookie.match(new RegExp("(^| )"+e+"=([^;]*)(;|$)"));return null!=n?unescape(n[2]):null}function d(){var e=s("PMS_JT");if(e){i("PMS_JT","",-1);try{e=eval(e)}catch(n){e={}}e.r&&t.referrer.replace(/#.*/,"")!=e.r||alog("speed.set","wt",e.s)}}c(function(){alog("speed.set","lt",+new Date),r=t.createElement(n),r.async=!0,r.src=a+"?v="+~(new Date/864e5),o=t.getElementsByTagName(n)[0],o.parentNode.insertBefore(r,o)}),d()}(window,document,"script","http://img.baidu.com/hunter/alog/dp.min.js");
-    </script>
 </body>
 
 <!--Baidu Tongji Code-->
