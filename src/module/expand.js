@@ -241,7 +241,7 @@ KityMinder.registerModule('Expand', function() {
     });
     return {
         commands: {
-            'expandtoleave': ExpandNodeCommand,
+            'expandtoleaf': ExpandNodeCommand,
             'collapsetolevel1': CollapseNodeCommand
         },
         events: {
@@ -278,14 +278,14 @@ KityMinder.registerModule('Expand', function() {
             outside: ExpanderRenderer
         },
         contextmenu: [{
-            command: 'expandtoleave'
+            command: 'expandtoleaf'
         }, {
             command: 'collapsetolevel1'
         }, {
             divider: true
         }],
         commandShortcutKeys: {
-            'expandtoleave': 'Alt+`',
+            'expandtoleaf': 'Alt+`',
             'collapsetolevel1': 'Alt+1'
         }
     };

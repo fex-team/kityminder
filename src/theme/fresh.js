@@ -27,7 +27,7 @@
             'main-space': 5,
 
             'sub-color': 'black',
-            'sub-background': 'none',
+            'sub-background': 'transparent',
             'sub-stroke': 'none',
             'sub-font-size': 12,
             'sub-padding': compat ? [3, 5] : [5, 10],

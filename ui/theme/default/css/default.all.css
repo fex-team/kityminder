@@ -3569,6 +3569,12 @@ ul.resource-list li {
 .arrangedown.command-button .fui-icon {
   background-position: 0 -300px;
 }
+.expandtoleaf.command-button .fui-icon {
+  background-position: 0 -995px;
+}
+.collapsetolevel1.command-button .fui-icon {
+  background-position: 0 -1015px;
+}
 .preview-navigator {
   background: white;
   width: 140px;
