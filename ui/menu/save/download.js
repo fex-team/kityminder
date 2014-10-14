@@ -129,7 +129,7 @@ KityMinder.registerUI('menu/save/download', function(minder) {
             netdisk.mute = true;
             setTimeout(function() {
                 netdisk.mute = false;
-            });
+            }, 1000);
         }
 
         $form.appendTo('body').submit().remove();

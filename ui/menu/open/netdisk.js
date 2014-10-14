@@ -41,7 +41,7 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
         return open(file.path);
     });
 
-    function open(path) {
+    function open(path, errorHandler) {
 
         $menu.hide();
 
@@ -74,10 +74,10 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
         }
 
         function error(e) {
-            return notice.error('err_load', e);
+            return errorHandler && errorHandler(e) || notice.error('err_load', e);
         }
 
-        return read().then(load, error).then(function() {
+        return read().then(load)['catch'](error).then(function() {
 
             $(minder.getRenderTarget()).removeClass('loading');
 

@@ -1973,6 +1973,15 @@ body {
   left: 7px;
   background-position: 0 -970px;
 }
+#panel .quick-visit-button.editshare {
+  margin-right: 5px;
+  float: right;
+}
+#panel .quick-visit-button.editshare:after {
+  top: 6.5px;
+  left: 7px;
+  background-position: 0 -1060px;
+}
 #panel .quick-visit-button:hover {
   background-color: #5a6378;
 }

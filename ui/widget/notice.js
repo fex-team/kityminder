@@ -25,6 +25,10 @@ KityMinder.registerUI('widget/notice', function (minder) {
         className: 'error-dialog'
     }).appendTo(document.getElementById('content-wrapper'));
 
+    $error.on('ok cancel', function(e) {
+        if (error.resolve) error.resolve(e);
+    });
+
     var $error_body = $($error.getBodyElement());
 
     var isBuilded = (function() {
@@ -205,6 +209,10 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
         $error.show();
         $error.getElement().style.top = '180px';
+
+        return new Promise(function(resolve) {
+            error.resolve = resolve;
+        });
     }
 
 
