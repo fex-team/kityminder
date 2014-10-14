@@ -110,9 +110,11 @@ KityMinder.registerUI('widget/notice', function (minder) {
         memory.set('show-error-detail', showDetail);
     });
 
-    function info(msg, warn) {
+    function info(msg, warn, time) {
 
         if (!$notice.hasClass('show')) $notice.empty();
+
+        clearTimeout(info.ttl2);
 
         if (warn) $notice.addClass('warn');
         else $notice.removeClass('warn');
@@ -121,9 +123,14 @@ KityMinder.registerUI('widget/notice', function (minder) {
         $notice.addClass('show');
 
         clearTimeout(info.ttl);
+
+        time = time || (warn ? 5000 : 3000);
         info.ttl = setTimeout(function() {
-           $notice.removeClass('show');
-        }, warn ? 5000 : 3000);
+            $notice.removeClass('show');
+            info.ttl2 = setTimeout(function() {
+                $notice.empty();
+            }, 1000);
+        }, time);
     }
 
     function warn(msg) {

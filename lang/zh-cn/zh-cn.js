@@ -131,6 +131,8 @@ KityMinder.LANG['zh-cn'] = {
         'load_share_for_edit': '正在加载分享的文件...',
         'share_sync_success': '分享内容已同步',
 
+        'fullscreen_exit_hint': '按 F11 退出全屏',
+
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
 
@@ -143,7 +145,8 @@ KityMinder.LANG['zh-cn'] = {
             'arrangedown': '下移',
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
-            'collapsetolevel1': '收起到一级节点'
+            'collapsetolevel1': '收起到一级节点',
+            'fullscreen': '全屏'
         },
 
         'back': '返回',
