@@ -55,12 +55,18 @@
                 height: 30px;
             }
         }
-        &.login-button .fui-icon {
-            width: 25px;
-            height: 25px;
-            margin-right: 3px;
-            vertical-align: baseline;
-            background: url(../images/icons.png) 0 -320px;
+        &.login-button {
+            .fui-icon {
+                border-radius: 100%;
+                width: 25px;
+                height: 25px;
+                margin-right: 3px;
+                vertical-align: baseline;
+                background: url(../images/icons.png) 0 -320px;
+            }
+            .fui-label {
+                display: none;
+            }
         }
     }
 }

@@ -140,7 +140,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
         if (e.getDetail) return e;
 
         // 文件访问错误
-        if (e instanceof fio.FileRequestError) {
+        if (typeof(fio) != 'undefined' && (e instanceof fio.FileRequestError)) {
             if (!e.status) {
                 e.description = errorMessage.err_network;
             } else {

@@ -8,24 +8,33 @@
  */
 KityMinder.registerUI('topbar/quickvisit', function (minder) {
 
-    function btn(name) {
-        return $('<a class="quick-visit-button"></a>')
+    var rightDocks = [];
+
+    function btn(name, dockRight) {
+        var $btn = $('<a class="quick-visit-button"></a>')
             .text(minder.getLang('ui.quickvisit.' + name))
             .attr('title', minder.getLang('ui.quickvisit.' + name))
-            .addClass(name)
-            .appendTo('#panel');
+            .addClass(name);
+
+        if (dockRight) rightDocks.push($btn);
+        else $btn.appendTo('#panel');
+
+        return $btn;
     }
 
     var $new = btn('new'),
         $save = btn('save'),
-        $share = btn('share'),
-        $feedback = btn('feedback');
+        $share = btn('share');
 
-    var ret = {};
+    var ret = {
+        $new: $new,
+        $save: $save,
+        $share: $share
+    };
 
     minder.on('uiready', function quickVisit() {
 
-        $('#panel #search').after($feedback);
+        while (rightDocks.length) $('#panel #search').after(rightDocks.shift());
 
         function quickNew() {
             var $doc = minder.getUI('doc');
@@ -52,16 +61,10 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
             $menu.show();
         }
 
-        function quickFeedback() {
-            var $menu = minder.getUI('menu/menu');
-            $menu.$tabs.select(5);
-            $menu.show();
-        }
 
         $new.click(quickNew);
         $save.click(quickSave);
         $share.click(quickShare);
-        $feedback.click(quickFeedback);
 
         minder.addShortcut('ctrl+alt+n', quickNew);
         minder.addShortcut('ctrl+s', quickSave);
@@ -71,15 +74,15 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
             $menu.$tabs.select(2);
             $menu.show();
         });
-        minder.addShortcut('f1', quickFeedback);
 
         ret.ready = true;
         ret.quickNew = quickNew;
         ret.quickSave = quickSave;
         ret.quickShare = quickShare;
-        ret.quickFeedback = quickFeedback;
 
     });
+
+    ret.add = btn;
 
     return ret;
 });
