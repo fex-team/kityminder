@@ -24,7 +24,7 @@ KityMinder.registerUI('ribbon/view/fullscreen', function(minder) {
 
     function fullscreen() {
         if ($('#content-wrapper').toggleClass('fullscreen').hasClass('fullscreen')) {
-            notice.info(minder.getLang('ui.fullscreen_exit_hint'));
+            notice.info(minder.getLang('ui.fullscreen_exit_hint'), false, 4000);
         }
     }
 

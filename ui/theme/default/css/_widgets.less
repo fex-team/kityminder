@@ -1,5 +1,5 @@
 .fui-button, li {
-    .transition(background-color .2s ease);
+    transition: background-color .2s ease;
 }
 
 .fui-disabled,
@@ -78,7 +78,7 @@ input[type=search]::-ms-clear {
             }
         }
         &:active {
-            .transform(scale(0.9));
+            transform: scale(0.9);
             &:hover {
                 background-color: @button-active;
                 .fui-disabled& {
@@ -398,7 +398,7 @@ input[type=search]::-ms-clear {
         font-size: 12px;
         overflow: hidden;
         
-        .transition(none);
+        transition: none;
         
         &:hover, :focus {
             background: #0099f2; /* Old browsers */

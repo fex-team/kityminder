@@ -1,18 +1,3 @@
-.transition(@value) {
-    -webkit-transition: @value;
-    -moz-transition: @value;
-    -ms-transition: @value;
-    -o-transition: @value;
-    transition: @value;
-}
-
-.transform(@value) {
-    -webkit-transform: @value;
-    -moz-transform: @value;
-    -ms-transform: @value;
-    -o-transform: @value;
-    tranform: @value;
-}
 
 .animation(@value) {
     -webkit-animation: @value;
@@ -133,18 +118,18 @@ input[type=url] {
 
 @-webkit-keyframes rotate {
     from { 
-        .transform(rotate(0)); 
+        transform: rotate(0);
     }
     to { 
-        .transform(rotate(360deg));
+        transform: rotate(360deg);
     }
 }
 @keyframes rotate {
     from { 
-        .transform(rotate(0));
+        transform: rotate(0);
     }
     to { 
-        .transform(rotate(360deg));
+        transform: rotate(360deg);
     }
 }
 
@@ -188,7 +173,7 @@ input[type=url] {
         padding-bottom: 4px;
         box-shadow: inset 0 -1px hsl(0, 0%, 92%), inset 0 -2px hsl(0, 100%, 100%), 0 1px 1px rgba(255, 255, 255, 0.3);
         &:after {
-            .transform(translate(0, 1px));
+            transform: translate(0, 1px);
         }
     }
 

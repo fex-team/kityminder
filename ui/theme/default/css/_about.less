@@ -3,8 +3,8 @@
  */
 
 .fullscreen #about #km-cat {
-    .transform(translate(0, 0));
-    .transition(transform 0.7s 0.2s ease);
+    transform: translate(0, 0);
+    transition: transform 0.7s 0.2s ease;
 }
 #about {
     position: absolute;
@@ -23,8 +23,8 @@
     border-bottom: 5px solid #393F4F;
     overflow: visible;
     
-    .transition(all ease .3s 0.3s);
-    .transform(translate(100%));
+    transition: all ease .3s 0.3s;
+    transform: translate(100%);
     a {
         color: #eee;
     }
@@ -33,8 +33,8 @@
         position: absolute;
         left: 15px;
         top: 5px;
-        .transition(all ease 1.3s 0.3s);
-        .transform(translate(-60px, 0));
+        transition: all ease 1.3s 0.3s;
+        transform: translate(-60px, 0);
         cursor: pointer;
     }
 
@@ -43,7 +43,7 @@
     }
 
     &:hover, &:hover #km-cat {
-        .transform(translate(0));
+        transform: translate(0);
     }
 
     #km-version.new-version{
@@ -62,7 +62,7 @@
             border-radius: 4px;
             text-shadow: none;
             box-shadow: -1px 1px 3px rgba(0,0,0,0.3);
-            .transform(scale(.6))
+            transform: scale(.6);
         }
     }
 }

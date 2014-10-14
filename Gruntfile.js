@@ -9,6 +9,18 @@ var path = require('path');
  *-----------------------------------------------------*/
 module.exports = function(grunt) {
 
+    // These plugins provide necessary tasks.
+    /* [Build plugin & task ] ------------------------------------*/
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-postcss');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+
     var banner = '/*!\n' +
         ' * ====================================================\n' +
         ' * <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
@@ -131,7 +143,7 @@ module.exports = function(grunt) {
         watch: {
             less: {
                 files: ['ui/theme/**/*.less'],
-                tasks: ['less:compile']
+                tasks: ['less:compile', 'autoprefixer']
             }
         },
 
@@ -146,26 +158,25 @@ module.exports = function(grunt) {
                     sourceMap: true,
                     sourceMapFilename: 'ui/theme/default/css/default.all.css.map',
                     sourceMapBasepath: 'ui/theme/default/css/'
-                    // compress: true,
-                    // cleancss: true
                 }
             }
         },
 
+        autoprefixer: {
+            all: {
+                options: {
+                    map: true
+                },
+                src: 'ui/theme/default/css/default.all.css',
+                dest: 'ui/theme/default/css/default.all.css'
+            }
+        }
+
     });
 
-    // These plugins provide necessary tasks.
-    /* [Build plugin & task ] ------------------------------------*/
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-text-replace');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-less');
 
     // Build task(s).
-    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'less', 'copy', 'replace']);
-    grunt.registerTask('dev', ['less', 'watch']);
+    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'less', 'autoprefixer', 'copy', 'replace']);
+    grunt.registerTask('dev', ['less', 'autoprefixer', 'watch']);
 
 };
