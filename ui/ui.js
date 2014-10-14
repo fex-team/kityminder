@@ -58,11 +58,11 @@
             return this._ui[id];
         }
     });
-
+    
+    $.ajaxSetup({ cache: false });
     $.extend($, {
-        pajax: function(opt) {
-            opt.cache = false;
-            return Promise.resolve($.ajax(opt));
+        pajax: function() {
+            return Promise.resolve($.ajax.apply($, arguments));
         }
     });
 

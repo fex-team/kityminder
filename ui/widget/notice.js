@@ -25,6 +25,10 @@ KityMinder.registerUI('widget/notice', function (minder) {
         className: 'error-dialog'
     }).appendTo(document.getElementById('content-wrapper'));
 
+    $error.on('ok cancel', function(e) {
+        if (error.resolve) error.resolve(e);
+    });
+
     var $error_body = $($error.getBodyElement());
 
     var isBuilded = (function() {
@@ -136,7 +140,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
         if (e.getDetail) return e;
 
         // 文件访问错误
-        if (e instanceof fio.FileRequestError) {
+        if (typeof(fio) != 'undefined' && (e instanceof fio.FileRequestError)) {
             if (!e.status) {
                 e.description = errorMessage.err_network;
             } else {
@@ -205,6 +209,10 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
         $error.show();
         $error.getElement().style.top = '180px';
+
+        return new Promise(function(resolve) {
+            error.resolve = resolve;
+        });
     }
 
 

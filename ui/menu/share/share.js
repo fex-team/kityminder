@@ -12,6 +12,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     var $create_menu = $($share_menu.createSub('createshare'));
     var $manage_menu = $($share_menu.createSub('manageshare'));
     var $doc = minder.getUI('doc');
+    var notice = minder.getUI('widget/notice');
 
     var BACKEND_URL = 'http://naotu.baidu.com/share.php';
 
@@ -20,7 +21,11 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     renderCreatePanel().then(bindCreatePanelEvent);
     renderManagePanel();
-    var shareListLoaded = loadShareList().then(bindManageActions);
+
+    var shareListLoaded = loadShareList();
+
+    shareListLoaded.then(renderShareList);
+    shareListLoaded.then(bindManageActions);
 
     minder.on('uiready', function() {
         minder.getUI('topbar/user').requireLogin($manage_menu);
@@ -52,10 +57,93 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                         id: shared.id || shared.shareMinder.id,
                         record: doc.json
                     }
+                }).then(function() {
+                    notice.info(minder.getLang('ui.share_sync_success', doc.title));
+                })['catch'](function(e) {
+                    notice.error('err_share_sync_failed', e);
                 });
             });
         }
     });
+
+    function loadShareFile() {
+
+        var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
+        var match = pattern.exec(window.location) || pattern.exec(document.referrer);
+        
+        if (!match) return Promise.resolve(null);
+
+        var shareId = match[1];
+
+        $(minder.getRenderTarget()).addClass('loading');
+
+        shareListLoaded.then(function(list) {
+            for (var i = 0; i < list.length; i++) {
+                var id = list[i].id || list[i].shareMinder.id;
+                if (id == shareId && list[i].path) {
+                    return loadOriginFile(list[i]);
+                }
+            }
+            return loadShare(shareId);
+
+        });
+
+    }
+
+    function loadOriginFile(share) {
+
+        var $netdisk = minder.getUI('menu/open/netdisk');
+        notice.info(minder.getLang('ui.load_share_for_edit', share.title));
+        return $netdisk.open(share.path, function() {
+            // 网盘加载失败
+            return loadShare(share);
+        });
+    }
+
+    function loadShare(shareId) {
+
+        function renderShareData(data) {
+
+            if (data.error) {
+                notice.error('err_share_data', data.error);
+                return;
+            }
+
+            var content = data.shareMinder.data;
+
+            return $doc.load({
+
+                source: 'share',
+                content: content,
+                protocol: 'json',
+                saved: true,
+                ownerId: data.uid,
+                ownerName: data.uname
+
+            });
+        }
+
+        var $container = $(minder.getRenderTarget()).addClass('loading');
+
+        return $.pajax({
+
+            url: 'http://naotu.baidu.com/share.php',
+
+            data: {
+                action: 'find',
+                id: shareId
+            },
+
+            dataType: 'json'
+
+        }).then(renderShareData)['catch'](function(e) {
+
+            notice.error('err_share_data', e);
+
+        }).then(function() {
+            $container.removeClass('loading');
+        });
+    }
 
     function getShareByPath(path) {
         if (!path || !shareList) return null;
@@ -151,9 +239,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                     return;
 
                 case $target.hasClass('edit-action'):
-                    var $netdisk = minder.getUI('menu/open/netdisk');
-                    $netdisk.open(share.path);
-
+                    loadOriginFile(share);
                     return;
             }
         });
@@ -316,7 +402,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         return fio.user.check().then(function(user) {
             if (!user) return;
-            $.pajax(BACKEND_URL, {
+            return $.pajax(BACKEND_URL, {
 
                 type: 'GET',
 
@@ -331,7 +417,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
                 return (shareList = result.list || []);
 
-            }).then(renderShareList);
+            });
         });
     }
 
@@ -431,5 +517,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
         }
     }
 
-    return $share_menu;
+    return {
+        $menu: $share_menu,
+        loadShareFile: loadShareFile
+    };
 });

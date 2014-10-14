@@ -172,9 +172,10 @@
         { path: 'ui/menu/help/feedback.js',             pack: 'edit|share'},
 
         /* UI Top Bar */
-        { path: 'ui/topbar/quickvisit.js',              pack: 'edit' },
+        { path: 'ui/topbar/quickvisit.js',              pack: 'edit|share' },
         { path: 'ui/topbar/history.js',                 pack: 'edit' },
         { path: 'ui/topbar/user.js',                    pack: 'edit' },
+        { path: 'ui/topbar/feedback.js',                pack: 'edit|share' },
         { path: 'ui/topbar/search.js',                  pack: 'edit|share' },
         { path: 'ui/topbar/switch-view.js',             pack: 'm-share' },
         { path: 'ui/topbar/m-logo.js',                  pack: 'm-share' },

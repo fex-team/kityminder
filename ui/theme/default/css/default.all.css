@@ -1973,6 +1973,15 @@ body {
   left: 7px;
   background-position: 0 -970px;
 }
+#panel .quick-visit-button.editshare {
+  margin-right: 5px;
+  float: right;
+}
+#panel .quick-visit-button.editshare:after {
+  top: 6.5px;
+  left: 7px;
+  background-position: 0 -1060px;
+}
 #panel .quick-visit-button:hover {
   background-color: #5a6378;
 }
@@ -2240,11 +2249,15 @@ body {
   height: 30px;
 }
 #panel div.user-panel .fui-button.login-button .fui-icon {
+  border-radius: 100%;
   width: 25px;
   height: 25px;
   margin-right: 3px;
   vertical-align: baseline;
   background: url(../images/icons.png) 0 -320px;
+}
+#panel div.user-panel .fui-button.login-button .fui-label {
+  display: none;
 }
 .login-tip {
   display: none;

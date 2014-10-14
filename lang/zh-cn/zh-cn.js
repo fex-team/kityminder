@@ -54,6 +54,8 @@ KityMinder.LANG['zh-cn'] = {
         'err_create_share': '分享失败',
         'err_mkdir': '目录创建失败',
         'err_ls': '读取目录失败',
+        'err_share_data': '加载分享内容出错',
+        'err_share_sync_fail': '分享内容同步失败',
 
         'unknownreason': '可能是外星人篡改了代码...',
         'pcs_code': {
@@ -126,6 +128,8 @@ KityMinder.LANG['zh-cn'] = {
         }
     },
     'ui': {
+        'load_share_for_edit': '正在加载分享的文件...',
+        'share_sync_success': '分享内容已同步',
 
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
@@ -157,7 +161,8 @@ KityMinder.LANG['zh-cn'] = {
             'new': '新建 (Ctrl + Alt + N)',
             'save': '保存 (Ctrl + S)',
             'share': '分享 (Ctrl + Alt + S)',
-            'feedback': '反馈问题（F1）'
+            'feedback': '反馈问题（F1）',
+            'editshare': '编辑'
         },
 
         'menu': {
@@ -212,7 +217,7 @@ KityMinder.LANG['zh-cn'] = {
         'email_share': '邮件邀请',
         'url_share': '脑图 URL 地址：',
         'sns_share': '社交网络分享：',
-        'sns_share_text': '“{0}” - 我用「百度脑图」制作的思维导图，快看看吧！（地址：{1}）',
+        'sns_share_text': '“{0}” - 我用百度脑图制作的思维导图，快看看吧！（地址：{1}）',
         'none_share_description': '不分享当前脑图',
         'public_share_description': '创建任何人可见的分享',
         'share_button_text': '创建',
