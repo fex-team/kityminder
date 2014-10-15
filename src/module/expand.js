@@ -233,8 +233,8 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var vector = node.getLayoutVectorOut().normalize(expander.radius + node.getStyle('stroke-width'));
-            var position = node.getVertexOut().offset(vector);
+            var vector = node.getLayoutVectorIn().normalize(expander.radius + node.getStyle('stroke-width'));
+            var position = node.getVertexIn().offset(vector.reverse());
 
             this.expander.setTranslate(position);
         }
