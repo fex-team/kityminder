@@ -129,7 +129,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
         fio.user.login({
             remember: 7 * 24 * 60 * 60, // remember 7 days
             force: true
-        }).then(check);
+        });
     }
 
     function requireLogin($element) {
