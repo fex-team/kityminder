@@ -197,7 +197,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
             var $textarea = $('<textarea>')
                     .attr('id', 'error-detail-content')
-                    .text(e.getDetail())
+                    .text(e.getDetail() + '\n\n浏览器信息：' + navigator.userAgent)
                     .appendTo($detailContent);
 
             fixSourceSymbol($textarea, $detailContent);
@@ -237,7 +237,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
             clip.on('ready', function () {
                 clip.on('aftercopy', function() {
                     $error.hide();
-                    minder.getUI('topbar/quickvisit').quickFeedback();
+                    minder.getUI('topbar/feedback').click();
                 });
             });
         } else {
