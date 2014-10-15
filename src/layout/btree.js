@@ -79,10 +79,6 @@ layouts.forEach(function(name) {
 
         doLayout: function(parent, children) {
 
-            if (!children.length) {
-                return false;
-            }
-
             var pbox = parent.getContentBox();
 
             if (axis == 'x') {
@@ -91,6 +87,10 @@ layouts.forEach(function(name) {
             } else {
                 parent.setVertexOut(new kity.Point(pbox.cx, pbox[name]));
                 parent.setLayoutVectorOut(new kity.Vector(0, dir));
+            }
+
+            if (!children.length) {
+                return false;
             }
 
             children.forEach(function(child) {
