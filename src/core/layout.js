@@ -243,7 +243,7 @@ kity.extendClass(Minder, {
 
             // layout all children first
             // 剪枝：收起的节点无需计算
-            if (node.isExpanded()) {
+            if (node.isExpanded() || true) {
                 node.children.forEach(function(child) {
                     layoutNode(child);
                 });
