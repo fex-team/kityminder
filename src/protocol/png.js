@@ -51,7 +51,6 @@ if (!kity.Browser.ie) {
                 height: renderBox.height + 1,
                 style: 'font-family: Arial, "Microsoft Yahei","Heiti SC";'
             });
-            $svg.removeAttr('id').find('*[id]').removeAttr('id');
 
             svgXml = $('<div></div>').append($svg).html();
 
@@ -72,7 +71,8 @@ if (!kity.Browser.ie) {
             return {
                 width: width,
                 height: height,
-                dataUrl: svgUrl
+                dataUrl: svgUrl,
+                xml: svgXml
             };
         }
 
@@ -116,11 +116,27 @@ if (!kity.Browser.ie) {
             }
 
             function drawSVG() {
-                return loadImage(svgDataUrl).then(function(svgImage) {
-                    drawImage(ctx, svgImage, padding, padding);
-                    DomURL.revokeObjectURL(svgDataUrl);
-                    return generateDataUrl(canvas);
-                });
+                if (typeof(window.canvg) != 'undefined') {
+                    return new Promise(function(resolve) {
+                        window.canvg(canvas, svgInfo.xml, {
+                            ignoreMouse: true, 
+                            ignoreAnimation: true, 
+                            ignoreDimensions: true, 
+                            ignoreClear: true, 
+                            offsetX: padding, 
+                            offsetY: padding,
+                            renderCallback: function() {
+                                resolve(generateDataUrl(canvas));
+                            } 
+                        });
+                    });
+                } else {
+                    return loadImage(svgDataUrl).then(function(svgImage) {
+                        drawImage(ctx, svgImage, padding, padding);
+                        DomURL.revokeObjectURL(svgDataUrl);
+                        return generateDataUrl(canvas);
+                    });
+                }
             }
 
             if (bgUrl) {
