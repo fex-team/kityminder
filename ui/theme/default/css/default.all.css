@@ -1167,9 +1167,10 @@ input[type=search]::-ms-clear {
   border: 1px solid #ccc;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
 }
-.fui-popup-menu {
+.fui-popup-menu,
+.fui-menu.fui-ppanel-position {
   position: absolute;
-  z-index: 9999;
+  z-index: 100000;
   min-width: 160px;
   padding: 5px 0;
   font-size: 12px;
@@ -1181,15 +1182,19 @@ input[type=search]::-ms-clear {
   font-family: Arial, "Heiti SC", "Microsoft Yahei";
   overflow: hidden;
 }
-.fui-popup-menu:empty {
+.fui-popup-menu:empty,
+.fui-menu.fui-ppanel-position:empty {
   display: none !important;
 }
 .fui-popup-menu .fui-panel-content,
-.fui-popup-menu .fui-menu {
+.fui-menu.fui-ppanel-position .fui-panel-content,
+.fui-popup-menu .fui-menu,
+.fui-menu.fui-ppanel-position .fui-menu {
   border: none;
   display: block;
 }
-.fui-popup-menu .fui-item {
+.fui-popup-menu .fui-item,
+.fui-menu.fui-ppanel-position .fui-item {
   display: block;
   padding: 2px 15px 2px 30px;
   height: 25px;
@@ -1205,12 +1210,16 @@ input[type=search]::-ms-clear {
           transition: none;
 }
 .fui-popup-menu .fui-item .fui-label,
-.fui-popup-menu .fui-item .fui-icon {
+.fui-menu.fui-ppanel-position .fui-item .fui-label,
+.fui-popup-menu .fui-item .fui-icon,
+.fui-menu.fui-ppanel-position .fui-item .fui-icon {
   height: 25px;
   line-height: 25px;
 }
 .fui-popup-menu .fui-item:hover,
-.fui-popup-menu .fui-item :focus {
+.fui-menu.fui-ppanel-position .fui-item:hover,
+.fui-popup-menu .fui-item :focus,
+.fui-menu.fui-ppanel-position .fui-item :focus {
   background: #0099f2;
   /* Old browsers */
   /* IE9 SVG, needs conditional override of 'filter' to 'none' */
@@ -1229,30 +1238,38 @@ input[type=search]::-ms-clear {
   color: white;
 }
 .fui-popup-menu .fui-item:hover .fui-label,
-.fui-popup-menu .fui-item :focus .fui-label {
+.fui-menu.fui-ppanel-position .fui-item:hover .fui-label,
+.fui-popup-menu .fui-item :focus .fui-label,
+.fui-menu.fui-ppanel-position .fui-item :focus .fui-label {
   color: white;
 }
-.fui-popup-menu .fui-item .menu-label {
+.fui-popup-menu .fui-item .menu-label,
+.fui-menu.fui-ppanel-position .fui-item .menu-label {
   display: inline-block;
 }
-.fui-popup-menu .fui-item .shortcut {
+.fui-popup-menu .fui-item .shortcut,
+.fui-menu.fui-ppanel-position .fui-item .shortcut {
   float: right;
   margin-left: 20px;
 }
-.fui-popup-menu .fui-item .shortcut .shortcut-key {
+.fui-popup-menu .fui-item .shortcut .shortcut-key,
+.fui-menu.fui-ppanel-position .fui-item .shortcut .shortcut-key {
   font-size: 12px;
   border: 1px solid #CCC;
   height: 10px;
   line-height: 10px;
   margin-left: 3px;
 }
-.fui-popup-menu .fui-item .shortcut + .shortcut:after {
+.fui-popup-menu .fui-item .shortcut + .shortcut:after,
+.fui-menu.fui-ppanel-position .fui-item .shortcut + .shortcut:after {
   content: 'or';
   position: relative;
   left: 10px;
 }
 .fui-popup-menu .divider,
-.fui-popup-menu .fui-spliter {
+.fui-menu.fui-ppanel-position .divider,
+.fui-popup-menu .fui-spliter,
+.fui-menu.fui-ppanel-position .fui-spliter {
   height: 1px;
   margin: 5px 0;
   overflow: hidden;
@@ -1260,9 +1277,13 @@ input[type=search]::-ms-clear {
   padding: 0;
 }
 .fui-popup-menu .divider:first-child,
+.fui-menu.fui-ppanel-position .divider:first-child,
 .fui-popup-menu .fui-spliter:first-child,
+.fui-menu.fui-ppanel-position .fui-spliter:first-child,
 .fui-popup-menu .divider:last-child,
-.fui-popup-menu .fui-spliter:last-child {
+.fui-menu.fui-ppanel-position .divider:last-child,
+.fui-popup-menu .fui-spliter:last-child,
+.fui-menu.fui-ppanel-position .fui-spliter:last-child {
   display: none;
 }
 .notice-widget {
