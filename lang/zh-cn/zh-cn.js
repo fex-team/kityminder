@@ -131,7 +131,7 @@ KityMinder.LANG['zh-cn'] = {
         'load_share_for_edit': '正在加载分享的文件...',
         'share_sync_success': '分享内容已同步',
 
-        'fullscreen_exit_hint': '按 F11 退出全屏',
+        'fullscreen_exit_hint': '按 Esc 或 F11 退出全屏',
 
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
@@ -309,7 +309,7 @@ KityMinder.LANG['zh-cn'] = {
         'redirect': '您正在打开连接 {0}，百度脑图不能保证连接的安全性，是否要继续？',
         'navigator': '导航器',
 
-        'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n确定要继续操作么？（未保存的数据会缓存在草稿箱）',
+        'unsavedcontent': '当前文件还没有保存到网盘：\n\n{0}\n\n虽然未保存的数据会缓存在草稿箱，但是清除浏览器缓存会导致草稿箱清除。',
 
         'shortcuts': '快捷键',
         'contact': '联系与反馈',

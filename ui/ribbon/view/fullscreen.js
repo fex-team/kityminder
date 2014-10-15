@@ -29,6 +29,11 @@ KityMinder.registerUI('ribbon/view/fullscreen', function(minder) {
     }
 
     minder.addShortcut('F11', fullscreen);
+    minder.addShortcut('Esc', function () {
+        if ($('#content-wrapper').hasClass('fullscreen')) {
+            $('#content-wrapper').removeClass('fullscreen');
+        }
+    });
 
     return $fullscreenButton;
 });
