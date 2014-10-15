@@ -48,28 +48,42 @@ KityMinder.registerUI('menu/default', function(minder) {
             var match = pattern.exec(window.location) || pattern.exec(document.referrer);
 
             if (match) {
-                $share.loadShareFile();
+                return $share.loadShareFile();
             }
-            else if ($draft.hasDraft()) {
-                // 草稿箱有草稿，默认选中「草稿箱」，并打开最近编辑的文件
-                $open.$tabs.select(3);
-                $draft.openLast();
-            } else {
-                // 没有草稿，但用户登陆了
-                fio.user.check().then(function(user) {
-                    if (user) {
-                        // 有最近文件选中「最近文件」
-                        if ($recent.hasRecent()) {
-                            $open.$tabs.select(0);
-                            $recent.loadLast();
+
+            // 检查登录状态
+            fio.user.check().then(function(user) {
+                var draft = $draft.last();
+                var recent = $recent.last();
+
+                // 登录
+                if (user) {
+                    if (recent) {
+                        if (draft) {
+                            if (recent.time > draft.time) openRecent();
+                            else openDraft();
+                        } else {
+                            openRecent();
                         }
-                        // 否则选中网盘目录
-                        else {
-                            $open.$tabs.select(1);
-                        }
+                    } else {
+                        if (draft) openDraft();
+                        else $open.$tabs.select(1); // locale netdisk
                     }
-                });
-            }
+                } else {
+                    if (draft) openDraft();
+                    else $open.$tabs.select(2); // locale local
+                }
+
+                function openDraft() {
+                    $open.$tabs.select(3);
+                    $draft.openLast();
+                }
+
+                function openRecent() {
+                    $open.$tabs.select(0);
+                    $recent.loadLast();
+                }
+            });
         }
     });
 });

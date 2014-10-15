@@ -114,6 +114,9 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
         },
         loadLast: function() {
             $ul.find('.recent-file-item').eq(0).click();
+        },
+        last: function() {
+            return recentList.get(0) || null;
         }
     };
 
