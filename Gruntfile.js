@@ -150,13 +150,13 @@ module.exports = function(grunt) {
         less: {
             compile: {
                 files: {
-                    'ui/theme/default/css/default.all.css': [
+                    'ui/theme/default/css/default.all.temp.css': [
                         'ui/theme/default/css/import.less'
                     ]
                 },
                 options: {
                     sourceMap: true,
-                    sourceMapFilename: 'ui/theme/default/css/default.all.css.map',
+                    sourceMapFilename: 'ui/theme/default/css/default.all.temp.css.map',
                     sourceMapBasepath: 'ui/theme/default/css/'
                 }
             }
@@ -167,7 +167,7 @@ module.exports = function(grunt) {
                 options: {
                     map: true
                 },
-                src: 'ui/theme/default/css/default.all.css',
+                src: 'ui/theme/default/css/default.all.temp.css',
                 dest: 'ui/theme/default/css/default.all.css'
             }
         }

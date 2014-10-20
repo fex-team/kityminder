@@ -18,10 +18,13 @@ KityMinder.registerUI('menu/default', function(minder) {
         var $draft = minder.getUI('menu/open/draft');
 
         setMenuDefaults();
-        loadLandingFile();
+        
         // $menu.show();
-        // $menu.$tabs.select(5);
+        // $menu.$tabs.select(1);
+        // $open.$tabs.select(1);
+        // return;
 
+        loadLandingFile();
         function setMenuDefaults() {
 
             // 主菜单默认选中「打开」

@@ -1749,6 +1749,12 @@ body {
   bottom: 0;
   left: 40px;
   /* 面板内容 */
+  -webkit-animation: slideRight 0.3s ease;
+          animation: slideRight 0.3s ease;
+  -webkit-animation-fill-mode: backward;
+          animation-fill-mode: backward;
+  -webkit-animation-direction: reverse;
+          animation-direction: reverse;
 }
 #main-menu .main-menu-level1 > .fui-tabs-panel-wrap > .fui-panel > .fui-panel-content {
   position: absolute;
@@ -1838,6 +1844,46 @@ body {
   font-weight: normal;
   margin: 0;
   padding-left: 38px;
+}
+#main-menu .main-menu-level1 > .fui-tabs-panel-wrap > .fui-panel.fui-hide {
+  -webkit-animation-fill-mode: forward;
+          animation-fill-mode: forward;
+  -webkit-animation-direction: normal;
+          animation-direction: normal;
+}
+@-webkit-keyframes slideLeft {
+  
+}
+@keyframes slideLeft {
+  
+}
+@-webkit-keyframes slideRight {
+  0% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+    opacity: 1;
+    display: block !important;
+  }
+  100% {
+    -webkit-transform: translate(50px, 0);
+            transform: translate(50px, 0);
+    opacity: 0;
+    display: none !important;
+  }
+}
+@keyframes slideRight {
+  0% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+    opacity: 1;
+    display: block !important;
+  }
+  100% {
+    -webkit-transform: translate(50px, 0);
+            transform: translate(50px, 0);
+    opacity: 0;
+    display: none !important;
+  }
 }
 .new-file-template-select {
   margin: 0;
@@ -2319,14 +2365,106 @@ body {
   font-size: 12px;
   color: #999;
 }
-.netdisk-finder-container .netdisk-nav {
+@-webkit-keyframes shake {
+  0% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+  15% {
+    -webkit-transform: translate(-2px, -2px);
+            transform: translate(-2px, -2px);
+  }
+  35% {
+    -webkit-transform: translate(2px, -2px);
+            transform: translate(2px, -2px);
+  }
+  65% {
+    -webkit-transform: translate(-2px, 2px);
+            transform: translate(-2px, 2px);
+  }
+  85% {
+    -webkit-transform: translate(2px, 2px);
+            transform: translate(2px, 2px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+}
+@keyframes shake {
+  0% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+  15% {
+    -webkit-transform: translate(-2px, -2px);
+            transform: translate(-2px, -2px);
+  }
+  35% {
+    -webkit-transform: translate(2px, -2px);
+            transform: translate(2px, -2px);
+  }
+  65% {
+    -webkit-transform: translate(-2px, 2px);
+            transform: translate(-2px, 2px);
+  }
+  85% {
+    -webkit-transform: translate(2px, 2px);
+            transform: translate(2px, 2px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+}
+.netdisk-finder .dir.drag-enter {
+  border: 1px dashed #717B94 !important;
+  background: #F9F9F9;
+}
+.netdisk-finder.drop-mode .dir {
+  -webkit-animation: shake .3s ease;
+          animation: shake .3s ease;
+}
+.netdisk-finder.drop-mode .recycle {
+  -webkit-animation: shake .3s ease;
+          animation: shake .3s ease;
+}
+.netdisk-finder .head {
   padding-bottom: 10px;
   height: 30px;
   border-bottom: 1px solid #eee;
+}
+.netdisk-finder .head .control {
+  float: right;
+}
+.netdisk-finder .head .control .button {
+  vertical-align: middle;
+  font-size: 0;
+  background: url(../images/finder.svg) no-repeat;
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+}
+.netdisk-finder .head .control .button.recycle {
+  background-position: -30px 0;
+}
+.netdisk-finder .head .control .button.recycle.drag-enter {
+  background-position: -60px 0 !important;
+}
+.netdisk-finder .head .control .button:hover {
+  border: 1px solid #c8ccd6;
+}
+.netdisk-finder .head .control .button:active {
+  box-shadow: inset 0 1px 3px rgba(113, 123, 148, 0.2);
+}
+.netdisk-finder .head .nav {
   font-size: 18px;
 }
-.netdisk-finder-container .netdisk-nav span,
-.netdisk-finder-container .netdisk-nav a {
+.netdisk-finder .head .nav span,
+.netdisk-finder .head .nav a {
   display: inline-block;
   height: 20px;
   line-height: 20px;
@@ -2335,7 +2473,7 @@ body {
   cursor: default;
   vertical-align: middle;
 }
-.netdisk-finder-container .netdisk-nav span.my-document {
+.netdisk-finder .head .nav span.my-document {
   width: 25px;
   height: 25px;
   padding: 0;
@@ -2344,7 +2482,7 @@ body {
   top: -2px;
   background: url(../images/icons.png) 0 -470px;
 }
-.netdisk-finder-container .netdisk-nav a.dir-back {
+.netdisk-finder .head .nav a.dir-back {
   border-radius: 100%;
   width: 23px;
   height: 23px;
@@ -2355,7 +2493,7 @@ body {
   top: -1px;
   background: url(../images/icons.png) -2px -396px no-repeat;
 }
-.netdisk-finder-container .netdisk-nav span.spliter {
+.netdisk-finder .head .nav span.spliter {
   content: ' ';
   display: block;
   width: 0;
@@ -2370,54 +2508,63 @@ body {
   display: inline-block;
   margin-left: 4px;
 }
-.netdisk-finder-container .netdisk-nav a:hover {
+.netdisk-finder .head .nav a {
+  border: 1px solid transparent;
+}
+.netdisk-finder .head .nav a:hover {
   background-color: #f4f5f7;
 }
-.netdisk-finder-container .netdisk-nav a:active {
+.netdisk-finder .head .nav a:active {
   background-color: #d7dae1;
 }
-.netdisk-finder-container .netdisk-file-list {
+.netdisk-finder .file-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  position: absolute;
-  top: 40px;
-  right: 0;
-  bottom: 0;
-  left: 0;
   overflow: auto;
 }
-.netdisk-finder-container .netdisk-file-list .empty {
+.netdisk-finder .file-list .empty {
   height: 50px;
   line-height: 50px;
   text-align: center;
   font-size: 18px;
   color: #ccc;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item {
+.netdisk-finder .file-list .file-list-item {
   font-size: 14px;
   line-height: 20px;
   padding: 10px 20px 10px 40px;
   cursor: default;
+  -webkit-user-drag: element;
+  -khtml-user-drag: element;
+  border: 1px solid transparent;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item:hover {
-  background-color: #f4f5f7;
+.netdisk-finder .file-list .file-list-item:hover {
+  /*                 background-color: lighten(@tab-hover, 55%); */
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item:active {
+.netdisk-finder .file-list .file-list-item:active {
   background-color: #e5e7ec;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.selected {
+.netdisk-finder .file-list .file-list-item.selected {
   background-color: #717b94;
   color: white;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.selected.file:before {
-  background-position: 0 -545px;
+.netdisk-finder .file-list .file-list-item.selected.dir .icon {
+  background: #717b94 url(../images/icons.png) 0 -1085px;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.file {
+.netdisk-finder .file-list .file-list-item.selected.dir:after {
+  border-left-color: white;
+}
+.netdisk-finder .file-list .file-list-item.selected.file .icon {
+  background: #717b94 url(../images/icons.png) 0 -545px;
+}
+.netdisk-finder .file-list .file-list-item.dragging {
+  border: 1px solid #717B94;
+}
+.netdisk-finder .file-list .file-list-item.file {
   position: relative;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.file:before {
-  content: ' ';
+.netdisk-finder .file-list .file-list-item.file .icon {
   display: block;
   position: absolute;
   width: 25px;
@@ -2426,11 +2573,10 @@ body {
   top: 7px;
   background: url(../images/icons.png) 0 -445px no-repeat;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.dir {
+.netdisk-finder .file-list .file-list-item.dir {
   position: relative;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.dir:before {
-  content: ' ';
+.netdisk-finder .file-list .file-list-item.dir .icon {
   display: block;
   position: absolute;
   width: 25px;
@@ -2439,7 +2585,7 @@ body {
   top: 7px;
   background: url(../images/icons.png) 0 -420px no-repeat;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.dir:after {
+.netdisk-finder .file-list .file-list-item.dir:after {
   content: ' ';
   display: block;
   width: 0;
@@ -2456,15 +2602,10 @@ body {
   top: 20px;
   margin-top: -4px;
 }
-.netdisk-finder-container .netdisk-file-list .netdisk-file-list-item.dir input {
+.netdisk-finder .file-list .file-list-item.dir input {
   margin: 0;
   outline: none;
   width: 61.80%;
-}
-.netdisk-finder-container .netdisk-mkdir {
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 .netdisk-save-panel .netdisk-file-list {
   bottom: 50px;

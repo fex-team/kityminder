@@ -56,6 +56,7 @@ KityMinder.LANG['zh-cn'] = {
         'err_ls': '读取目录失败',
         'err_share_data': '加载分享内容出错',
         'err_share_sync_fail': '分享内容同步失败',
+        'err_move_file': '文件移动失败',
 
         'unknownreason': '可能是外星人篡改了代码...',
         'pcs_code': {
@@ -135,6 +136,7 @@ KityMinder.LANG['zh-cn'] = {
 
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
+        'move_file_confirm': '确定把 "{0}" 移动到 "{1}" 吗？',
 
         'command': {
             'appendsiblingnode': '插入同级主题',
@@ -249,6 +251,7 @@ KityMinder.LANG['zh-cn'] = {
         'fileformat': '保存格式',
         'save': '保存',
         'mkdir': '新建目录',
+        'recycle': '回收站',
         'newdir': '未命名目录',
 
         'bold': '加粗',

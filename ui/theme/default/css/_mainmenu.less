@@ -268,9 +268,34 @@
                                 
                             }
                         }
+
+                        animation: slideRight 0.3s ease;
+                        animation-fill-mode: backward;
+                        animation-direction: reverse;
+
+                        &.fui-hide {
+                            animation-fill-mode: forward;
+                            animation-direction: normal;
+                        }
                     }
                 }
             }
         }
+    }
+}
+@keyframes slideLeft {
+
+}
+@keyframes slideRight {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+        display: block !important;
+    }
+
+    100% {
+        transform: translate(50px, 0);
+        opacity: 0;
+        display: none !important;
     }
 }

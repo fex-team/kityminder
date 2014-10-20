@@ -10,6 +10,8 @@
 KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
     var eve = minder.getUI('eve');
+    var notice = minder.getUI('widget/notice');
+    var recycleReady = null;
 
     var instances = [];
 
@@ -26,46 +28,40 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         instances.push(finder);
 
         var base = '/apps/kityminder';
+        var recyclePath = base + '/.recycle';
         var currentPath = base;
 
-        /* 路径导航 */
-        var $nav = $('<div class="netdisk-nav"></div>')
-            .appendTo($container);
+        var $finder = $('<div class="netdisk-finder"></div>').appendTo($container);
+
+        /* 顶部工具栏 */
+        var $headbar = $('<div class="head"></div>').appendTo($finder);
+
+            /* 控制按钮 */
+            var $control = $('<div class="control"></div>').appendTo($headbar);
+
+                var $mkdir = $('<a></a>')
+                    .text(minder.getLang('ui.mkdir'))
+                    .attr('title', minder.getLang('ui.mkdir'))
+                    .addClass('button mkdir')
+                    .appendTo($control)
+                    .click(mkdir);
+
+                var $recycle = $('<a></a>')
+                    .text(minder.getLang('ui.recycle'))
+                    .attr('title', minder.getLang('ui.recycle'))
+                    .addClass('button recycle dir')
+                    .data('file', { path: recyclePath, filename: minder.getLang('ui.recycle')})
+                    .appendTo($control)
+                    .click(recycle);
+
+            /* 路径导航 */
+            var $nav = $('<div class="nav"></div>').appendTo($headbar);
 
         /* 显示当前目录文件列表 */
-        var $list = $('<ul class="netdisk-file-list"></ul>')
-            .appendTo($container);
-
-        var $mkdir = $('<a></a>')
-            .text(minder.getLang('ui.mkdir'))
-            .addClass('button netdisk-mkdir')
-            .click(mkdir);
+        var $list = $('<ul class="file-list"></ul>')
+            .appendTo($finder);
 
         var selected = null;
-
-        $nav.after($mkdir);
-
-        $container.addClass('netdisk-finder-container');
-
-        /* 点击目录中的项目时打开项目 */
-        $list.delegate('.netdisk-file-list-item', 'click', function(e) {
-            if (mkdir.onprogress) return mkdir.onprogress.select();
-            var $file = $(e.target),
-                file = $file.data('file');
-            if (file) open(file);
-        });
-
-        /* 点击导航处，切换路径 */
-        $nav.delegate('a', 'click', function(e) {
-            if (mkdir.onprogress) return mkdir.onprogress.select();
-            if ($(e.target).hasClass('dir-back')) {
-                var parts = currentPath.split('/');
-                parts.pop(); // 有一个无效部分
-                parts.pop();
-                return list(parts.join('/'));
-            }
-            list($(e.target).data('path'));
-        });
 
         minder.on('uiready', function() {
             var $user = minder.getUI('topbar/user');
@@ -75,12 +71,139 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             });
         });
 
+        handleClick();
+        handleDrag();
+        handleNav();
+
+        function handleClick() {
+            /* 点击目录中的项目时打开项目 */
+            $list.delegate('.file-list-item', 'dblclick', function(e) {
+                if (mkdir.onprogress) return mkdir.onprogress.select();
+                var $file = $(e.target),
+                    file = $file.data('file');
+                if (file) open(file);
+            });
+            $list.delegate('.file-list-item', 'mousedown', function(e) {
+                if (mkdir.onprogress) return mkdir.onprogress.select();
+                var $file = $(e.target),
+                    file = $file.data('file');
+                select(file && file.path);
+            });
+        }
+
+        function handleNav() {
+            /* 点击导航处，切换路径 */
+            $nav.delegate('a', 'click', function(e) {
+                if (mkdir.onprogress) return mkdir.onprogress.select();
+                if ($(e.target).hasClass('dir-back')) {
+                    var parts = currentPath.split('/');
+                    parts.pop(); // 有一个无效部分
+                    parts.pop();
+                    return list(parts.join('/'));
+                }
+                list($(e.target).data('path'));
+            });
+        }
+
+        function handleDrag() {
+
+            var fileItemSelector = '.file-list-item';
+            var dirSelector = '.dir';
+            var $dragging = null;
+
+            $list.delegate(fileItemSelector, 'dragstart', itemDragStart)
+                .delegate(fileItemSelector, 'dragend', itemDragEnd)
+                .delegate(dirSelector, 'dragover', dragOver)
+                .delegate(dirSelector, 'dragenter', dirDragEnter)
+                .delegate(dirSelector, 'dragleave', dirDragLeave)
+                .delegate(dirSelector, 'drop', dirDrop);
+
+            $headbar.delegate(dirSelector, 'dragover', dragOver)
+                .delegate(dirSelector, 'dragenter', dirDragEnter)
+                .delegate(dirSelector, 'dragleave', dirDragLeave)
+                .delegate(dirSelector, 'drop', dirDrop);
+
+            function itemDragStart(e) {
+                var $target = $(e.target);
+                if (!$target.hasClass('file-list-item')) {
+                    return;
+                }
+                event.dataTransfer.effectAllowed = "move";
+                event.dataTransfer.setDragImage($target.find('.icon').get(0), 12, 12);
+                $dragging = $target.addClass('dragging');
+                $finder.addClass('drop-mode');
+            }
+
+            function itemDragEnd(e) {
+                $(e.target).removeClass('dragging');
+                event.dataTransfer.dropEffect = 'move';
+                e.preventDefault();
+                $finder.removeClass('drop-mode');
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+            }
+
+            function dirDragEnter(e) {
+                if (!$(e.target).hasClass('dir')) return;
+                $(e.target).addClass('drag-enter');
+            }
+
+            function dirDragLeave(e) {
+                $(e.target).removeClass('drag-enter');
+            }
+
+            function dirDrop(e) {
+                var $target = $(e.target).removeClass('drag-enter');
+
+                if (!$target.hasClass('dir')) return;
+
+                var source = $dragging.data('file');
+                var destination = $target.data('file');
+
+                var destinationPath = destination.path + '/' + source.filename;
+                var sourcePath = source.path;
+
+                if (destinationPath.indexOf(sourcePath) === 0) return;
+
+
+                if (window.confirm(minder.getLang('ui.move_file_confirm', source.filename, destination.filename))) {
+                    $container.addClass('loading');
+                    recycleReady.then(doMove);
+                }
+
+                function doMove() {
+                    mv(sourcePath, destinationPath).then(function() {
+                        $dragging.remove();
+                    })['catch'](function(e) {
+                        notice.error('err_move_file', e);
+                    }).then(function() {
+                        $container.removeClass('loading');
+                    });
+                }
+            }
+        }
+
+        function recycle() {
+            list(recyclePath);
+        }
+
+        function mv(source, destination) {
+            return fio.file.move({
+                path: source,
+                newPath: destination
+            });
+        }
+
         function mkdir() {
             if (mkdir.onprogress) {
                 return mkdir.onprogress.select();
             }
 
-            var $li = $('<li>').addClass('netdisk-file-list-item dir').prependTo($list);
+            var $li = $('<li>').addClass('file-list-item dir').prependTo($list);
+
+            $li.append('<span class="icon"></span>');
 
             var $input = $('<input>')
                 .attr('type', 'text')
@@ -188,7 +311,21 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
             updateNav();
 
-            return Promise.all([listPromise, transitPromise]).then(renderList, function(error) {
+            return Promise.all([listPromise, transitPromise]).then(function(values) {
+                var files = values[0];
+                if (!recycleReady && path == base) {
+                    for (var i = 0; i < files.length; i++) {
+                        if (files[i].path == recyclePath) {
+                            recycleReady = Promise.resolve(true);
+                        }
+                        break;
+                    }
+                    recycleReady = recycleReady || fio.file.mkdir({
+                        path: base + '/.recycle'
+                    });
+                }
+                return renderList(files);
+            }, function(error) {
 
                 var notice = minder.getUI('widget/notice');
                 notice.error('err_ls', error);
@@ -201,15 +338,17 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             if (!files.length) {
                 $list.append('<li class="empty" disabled="disabled">' + minder.getLang('ui.emptydir') + '</li>');
             } else {
-
                 files.forEach(function(file) {
                     if (!file.isDir && (!listFilter || !listFilter(file))) return;
+                    if (file.path == recyclePath) return;
 
                     $('<li></li>')
-                        .text(file.filename)
-                        .addClass('netdisk-file-list-item')
+                        .append('<span class="icon"></span>')
+                        .append(file.filename)
+                        .addClass('file-list-item')
                         .addClass(file.isDir ? 'dir' : 'file')
                         .data('file', file)
+                        .attr('draggable', true)
                         .appendTo($list);
                 });
             }
@@ -217,9 +356,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
         finder._renderFileList = renderFileList;
 
-        function renderList(values) {
-
-            var files = values[0];
+        function renderList(files) {
 
             files.sort(function(a, b) {
                 if (a.isDir > b.isDir) {
@@ -257,13 +394,17 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
             function pathButton(part) {
                 processPath += part + '/';
-                var $a = $('<a></a>');
+                var $a = $('<a></a>').addClass('dir');
                 if (part == base) {
                     $a.text(minder.getLang('ui.mydocument'));
+                } else if (part == '.recycle') {
+                    $a.text(minder.getLang('ui.recycle'));
                 } else {
                     $a.text(part);
                 }
-                return $a.data('path', processPath);
+                return $a.data('path', processPath).data('file', {
+                    path: processPath.substr(0, processPath.length - 1)
+                });
             }
 
             $nav.append(pathButton(base));
@@ -282,7 +423,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
         function checkSelect() {
             var hasSelect = false;
-            $list.find('.netdisk-file-list-item').removeClass('selected').each(function() {
+            $list.find('.file-list-item').removeClass('selected').each(function() {
                 var file = $(this).data('file');
                 if (file && file.path == selected) {
                     $(this).addClass('selected');

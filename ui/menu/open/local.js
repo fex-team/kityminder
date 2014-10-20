@@ -72,14 +72,12 @@ KityMinder.registerUI('menu/open/local', function(minder) {
     }, false);
 
     cwrapper.addEventListener('drop', function(e) {
-        e.preventDefault();
-
-        if (!$doc.checkSaved()) return;
-
         if (e.dataTransfer.files.length) {
+            e.preventDefault();
+            if (!$doc.checkSaved()) return;
             read(e.dataTransfer.files[0]);
+            $menu.hide();
         }
-        $menu.hide();
     }, false);
 
     function read(domfile) {

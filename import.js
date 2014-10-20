@@ -129,11 +129,11 @@
         { path: 'ui/widget/commandbuttonset.js',        pack: 'edit' },
         { path: 'ui/widget/commandinputmenu.js',        pack: 'edit' },
         { path: 'ui/widget/commandselectmenu.js',       pack: 'edit' },
+        { path: 'ui/widget/notice.js',                  pack: 'edit|share|m-share' },
         { path: 'ui/widget/friendlytimespan.js',        pack: 'edit' },
         { path: 'ui/widget/locallist.js',               pack: 'edit' },
         { path: 'ui/widget/netdiskfinder.js',           pack: 'edit' },
         { path: 'ui/widget/menutab.js',                 pack: 'edit|share|m-share' },
-        { path: 'ui/widget/notice.js',                  pack: 'edit|share|m-share' },
 
         /* 基本业务 */
         { path: 'ui/doc.js',                            pack: 'edit|share|m-share' },
