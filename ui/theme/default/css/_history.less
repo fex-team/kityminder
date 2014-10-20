@@ -1,0 +1,50 @@
+.command-button {
+    &.undo, &.redo {
+        float: left;
+        border: none;
+        width: @panel-height;
+        height: @panel-height;
+        line-height: @panel-height;
+        padding: 0;
+        margin: 0;
+
+        .fui-label {
+            display: none;
+        }
+
+        .fui-icon {
+            display: block;
+            width: @panel-height;
+            height: @panel-height;
+            background: url(../images/history.png) no-repeat;
+        }
+
+        &:hover {
+            background: @tab-hover;
+            .fui-icon {
+                background-position-y: -40px;
+            }
+        }
+        &:active {
+            background: @tab-active;
+        }
+
+        &.fui-disabled {
+            &:hover, &:active {
+                background: none;
+            }
+            .fui-icon {
+                background-position-y: 0;
+            }
+        }
+    }
+
+    &.undo {
+    }
+
+    &.redo {
+        .fui-icon {
+            background-position-x: -40px;
+        }
+    }
+}

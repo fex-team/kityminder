@@ -1,61 +1,40 @@
 /* global Layout:true */
-window.layoutSwitch = true;
 KityMinder.registerLayout('filetree', kity.createClass({
     base: Layout,
 
-    doLayout: function(node) {
-        var layout = this;
+    doLayout: function(parent, children) {
+        var pBox = parent.getContentBox();
+        var indent = 20;
 
-        if (node.isLayoutRoot()) {
-            this.doLayoutRoot(node);
-        } else {
-            this.arrange(node);
-        }
+        parent.setVertexOut(new kity.Point(pBox.left + indent, pBox.bottom));
+        parent.setLayoutVectorOut(new kity.Vector(0, 1));
+
+        if (!children.length) return;
+
+        children.forEach(function(child) {
+            var cbox = child.getContentBox();
+            child.setLayoutTransform(new kity.Matrix());
+
+            child.setVertexIn(new kity.Point(cbox.left, cbox.cy));
+            child.setLayoutVectorIn(new kity.Vector(1, 0));
+        });
+
+        this.align(children, 'left');
+        this.stack(children, 'y');
+
+        var xAdjust = 0;
+        xAdjust += pBox.left;
+        xAdjust += indent;
+        xAdjust += children[0].getStyle('margin-left');
+        var yAdjust = 0;
+        yAdjust += pBox.bottom;
+        yAdjust += parent.getStyle('margin-bottom');
+        yAdjust += children[0].getStyle('margin-top');
+
+        this.move(children, xAdjust, yAdjust);
+
     },
-    doLayoutRoot: function(root) {
-        this.arrange(root);
-    },
-    arrange: function(node) {
-        var children = node.getChildren();
-        var _this = this;
-        if (!children.length) {
-            return false;
-        } else {
-            // 计算每个 child 的树所占的矩形区域
-            var childTreeBoxes = children.map(function(node, index, children) {
-                var box = _this.getTreeBox([node]);
-                return box;
-            });
-            var nodeContentBox = node.getContentBox();
-            var i, x, y, child, childTreeBox, childContentBox;
-            var transform = new kity.Matrix();
 
-            node.setVertexOut(new kity.Point(0, nodeContentBox.bottom));
-            node.setLayoutVector(new kity.Vector(0, 1));
-
-            y = nodeContentBox.bottom + node.getStyle('margin-bottom');
-
-            for (i = 0; i < children.length; i++) {
-                child = children[i];
-                childTreeBox = childTreeBoxes[i];
-                childContentBox = child.getContentBox();
-
-                x = child.getStyle('margin-left') - childContentBox.left;
-
-                if (!childContentBox.width) continue;
-
-                y += child.getStyle('margin-top');
-                y -= childTreeBox.top;
-
-                // 设置布局结果
-                transform = new kity.Matrix().translate(x, y);
-
-                child.setLayoutTransform(transform);
-
-                y += childTreeBox.bottom + child.getStyle('margin-bottom');
-            }
-        }
-    },
     getOrderHint: function(node) {
         var hint = [];
         var box = node.getLayoutBox();
@@ -87,15 +66,3 @@ KityMinder.registerLayout('filetree', kity.createClass({
         return hint;
     }
 }));
-
-KityMinder.registerConnectProvider('filetree', function(node, parent, connection) {
-    var box = node.getLayoutBox(),
-        pBox = parent.getLayoutBox();
-    var pathData = [];
-    var left = parent.getLayoutPoint().x;
-    var r = Math.round;
-    pathData.push('M', new kity.Point(r(left), r(pBox.bottom)));
-    pathData.push('L', new kity.Point(r(left), r(box.cy)));
-    pathData.push('L', new kity.Point(r(box.left), r(box.cy)));
-    connection.setPathData(pathData);
-});

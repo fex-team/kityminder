@@ -3,22 +3,72 @@ var ViewDragger = kity.createClass("ViewDragger", {
         this._minder = minder;
         this._enabled = false;
         this._bind();
+        var me = this;
+        this._minder.getViewDragger = function() {
+            return me;
+        };
     },
+
     isEnabled: function() {
         return this._enabled;
     },
+
     setEnabled: function(value) {
         var paper = this._minder.getPaper();
         paper.setStyle('cursor', value ? 'pointer' : 'default');
         paper.setStyle('cursor', value ? '-webkit-grab' : 'default');
         this._enabled = value;
     },
+
     move: function(offset, duration) {
-        if (!duration) {
-            this._minder.getRenderContainer().translate(offset.x | 0, offset.y | 0);
-        } else {
-            this._minder.getRenderContainer().fxTranslate(offset.x | 0, offset.y | 0, duration, 'easeOutCubic');
+        var minder = this._minder;
+
+        var targetPosition = this.getMovement().offset(offset);
+
+        this.moveTo(targetPosition, duration);
+    },
+
+    moveTo: function(position, duration) {
+
+        if (duration) {
+            var dragger = this;
+
+            if (this._moveTimeline) this._moveTimeline.stop();
+
+            this._moveTimeline = this._minder.getRenderContainer().animate(new kity.Animator(
+                this.getMovement(),
+                position,
+                function(target, value) {
+                    dragger.moveTo(value);
+                }
+            ), duration, 'easeOutCubic');
+
+            this._moveTimeline.on('finish', function() {
+                dragger._moveTimeline = null;
+            });
+
+            return this;
         }
+
+        this._minder.getRenderContainer().setTranslate(position.round());
+        this._minder.fire('viewchange');
+    },
+
+    getMovement: function() {
+        var translate = this._minder.getRenderContainer().transform.translate;
+        return translate ? translate[0] : new kity.Point();
+    },
+
+    getView: function() {
+        var minder = this._minder;
+        var c = {
+            width: minder.getRenderTarget().clientWidth,
+            height: minder.getRenderTarget().clientHeight
+        };
+        var m = this.getMovement();
+        var box = new kity.Box(0, 0, c.width, c.height);
+        var viewMatrix = minder.getPaper().getViewPortMatrix();
+        return viewMatrix.inverse().translate(-m.x, -m.y).transformBox(box);
     },
 
     _bind: function() {
@@ -39,6 +89,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
                 if (dragger._minder.getStatus() == 'hand')
                     dragger._minder.rollbackStatus();
             }
+            var paper = dragger._minder.getPaper();
+            paper.setStyle('cursor', dragger._minder.getStatus() == 'hand' ? '-webkit-grab' : 'default');
         }
 
         this._minder.on('normal.mousedown normal.touchstart ' +
@@ -48,18 +100,25 @@ var ViewDragger = kity.createClass("ViewDragger", {
                     e.originEvent.preventDefault(); // 阻止中键拉动
                 }
                 // 点击未选中的根节点临时开启
-                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2) {
+                if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2 || e.originEvent.altKey) {
                     lastPosition = e.getPosition();
                     isTempDrag = true;
                 }
             })
 
         .on('normal.mousemove normal.touchmove ' +
-            'readonly.touchmove readonly.mousemove ' +
+            'readonly.mousemove readonly.touchmove ' +
             'inputready.mousemove inputready.touchmove', function(e) {
+                if (e.type == 'touchmove') {
+                    e.preventDefault(); // 阻止浏览器的后退事件
+                }
                 if (!isTempDrag) return;
                 var offset = kity.Vector.fromPoints(lastPosition, e.getPosition());
-                if (offset.length() > 3) this.setStatus('hand');
+                if (offset.length() > 10) {
+                    this.setStatus('hand', true);
+                    var paper = dragger._minder.getPaper();
+                    paper.setStyle('cursor', '-webkit-grabbing');
+                }
             })
 
         .on('hand.beforemousedown hand.beforetouchstart', function(e) {
@@ -67,6 +126,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
             if (dragger.isEnabled()) {
                 lastPosition = e.getPosition();
                 e.stopPropagation();
+                var paper = dragger._minder.getPaper();
+                paper.setStyle('cursor', '-webkit-grabbing');
             }
         })
 
@@ -87,6 +148,9 @@ var ViewDragger = kity.createClass("ViewDragger", {
         .on('mouseup touchend', dragEnd);
 
         window.addEventListener('mouseup', dragEnd);
+        this._minder.on('contextmenu', function(e) {
+            e.preventDefault();
+        });
     }
 });
 
@@ -99,7 +163,7 @@ KityMinder.registerModule('View', function() {
         execute: function(minder) {
 
             if (minder.getStatus() != 'hand') {
-                minder.setStatus('hand');
+                minder.setStatus('hand', true);
             } else {
                 minder.rollbackStatus();
             }
@@ -109,12 +173,13 @@ KityMinder.registerModule('View', function() {
         queryState: function(minder) {
             return minder.getStatus() == 'hand' ? 1 : 0;
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     var CameraCommand = kity.createClass('CameraCommand', {
         base: Command,
         execute: function(km, focusNode, duration) {
+
             focusNode = focusNode || km.getRoot();
             var viewport = km.getPaper().getViewPort();
             var offset = focusNode.getRenderContainer().getRenderBox('view');
@@ -125,30 +190,32 @@ KityMinder.registerModule('View', function() {
             dragger.move(new kity.Point(dx, dy), duration);
             this.setContentChanged(false);
         },
-        enableReadOnly: false
+        enableReadOnly: true
     });
 
     var MoveCommand = kity.createClass('MoveCommand', {
         base: Command,
 
-        execute: function(km, dir) {
-            var dragger = this._viewDragger;
+        execute: function(km, dir, duration) {
+            var dragger = km._viewDragger;
             var size = km._lastClientSize;
             switch (dir) {
                 case 'up':
-                    dragger.move(new kity.Point(0, -size.height / 2));
+                    dragger.move(new kity.Point(0, size.height / 2), duration);
                     break;
                 case 'down':
-                    dragger.move(new kity.Point(0, size.height / 2));
+                    dragger.move(new kity.Point(0, -size.height / 2), duration);
                     break;
                 case 'left':
-                    dragger.move(new kity.Point(-size.width / 2, 0));
+                    dragger.move(new kity.Point(size.width / 2, 0), duration);
                     break;
                 case 'right':
-                    dragger.move(new kity.Point(size.width / 2, 0));
+                    dragger.move(new kity.Point(-size.width / 2, 0), duration);
                     break;
             }
-        }
+        },
+
+        enableReadOnly: true
     });
 
     return {
@@ -161,10 +228,18 @@ KityMinder.registerModule('View', function() {
             'move': MoveCommand
         },
         events: {
-            keyup: function(e) {
-                if (e.originEvent.keyCode == keymap.Spacebar && this.getSelectedNodes().length === 0) {
-                    this.execCommand('hand');
-                    e.preventDefault();
+            keydown: function(e) {
+                var minder = this;
+
+                ['up', 'down', 'left', 'right'].forEach(function(name) {
+                    if (e.isShortcutKey('ctrl+' + name)) {
+                        minder.removeAllSelectedNodes();
+                        minder.execCommand('move', name, 100);
+                        e.preventDefault();
+                    }
+                });
+                if (e.isShortcutKey('ctrl+enter')) {
+                    minder.execCommand('camera', minder.getRoot(), 100);
                 }
             },
             statuschange: function(e) {
@@ -211,9 +286,36 @@ KityMinder.registerModule('View', function() {
                         height: this.getRenderTarget().clientHeight
                     },
                     b = this._lastClientSize;
-                this.getRenderContainer().translate(
-                    (a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0);
+                this._viewDragger.move(
+                    new kity.Point((a.width - b.width) / 2 | 0, (a.height - b.height) / 2 | 0));
                 this._lastClientSize = a;
+            },
+            'selectionchange layoutallfinish': function(e) {
+                var selected = this.getSelectedNode();
+
+                if (!selected) return;
+
+                var dragger = this._viewDragger;
+                var view = dragger.getView();
+                var focus = selected.getLayoutBox();
+                var space = 50;
+                var dx = 0, dy = 0;
+
+                if (focus.right > view.right) {
+                    dx += view.right - focus.right - space;
+                }
+                else if (focus.left < view.left) {
+                    dx += view.left - focus.left + space;
+                }
+
+                if (focus.bottom > view.bottom) {
+                    dy += view.bottom - focus.bottom - space;
+                }
+                if (focus.top < view.top) {
+                    dy += view.top - focus.top + space;
+                }
+                
+                if (dx || dy) dragger.move(new kity.Point(dx, dy), 100);
             }
         }
     };

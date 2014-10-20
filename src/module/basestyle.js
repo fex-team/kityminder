@@ -5,11 +5,19 @@ KityMinder.registerModule('basestylemodule', function() {
         return node.getData(name) || node.getStyle(name);
     }
 
-    KityMinder.TextRenderer.registerStyleHook(function(node, text) {
-        text.setFont({
-            weight: getNodeDataOrStyle(node, 'font-weight'),
-            style: getNodeDataOrStyle(node, 'font-style')
+    KityMinder.TextRenderer.registerStyleHook(function(node, textGroup) {
+
+        var fontWeight = getNodeDataOrStyle(node,'font-weight');
+        var fontStyle = getNodeDataOrStyle(node, 'font-style');
+        var styleHash = [fontWeight, fontStyle].join('/');
+
+        textGroup.eachItem(function(index,item){
+            item.setFont({
+                'weight': fontWeight,
+                'style': fontStyle
+            });
         });
+
     });
     return {
         'commands': {
@@ -79,7 +87,7 @@ KityMinder.registerModule('basestylemodule', function() {
                 }
             })
         },
-        addShortcutKeys: {
+        commandShortcutKeys: {
             'bold': 'ctrl+b', //bold
             'italic': 'ctrl+i' //italic
         }

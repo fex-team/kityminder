@@ -1,0 +1,64 @@
+/**
+ * 页面下方 “关于” 面板的样式
+ */
+#about {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 40px;
+    line-height: 40px;
+    background: #5d697a;
+    color: #eee;
+    font-family:Arial;
+    font-size: 13px;
+    font-weight:normal;
+    margin:0;
+    text-align: right;
+    padding: 0 15px 0 60px;
+    border-bottom: 5px solid #393F4F;
+    overflow: visible;
+    
+    .transition(all ease .3s 0.3s);
+    .transform(translate(100%));
+    a {
+        color: #eee;
+    }
+
+    #km-cat {
+        position: absolute;
+        left: 15px;
+        top: 5px;
+        .transition(all ease 1.3s 0.3s);
+        .transform(translate(-60px, 0));
+        cursor: pointer;
+    }
+
+    #cat-face {
+        fill: #393F4F;
+    }
+
+    &:hover, &:hover #km-cat {
+        .transform(translate(0));
+    }
+
+    #km-version.new-version{
+        position: relative;
+        padding-right: 30px;
+
+        &:after {
+            content: 'NEW';
+            color: #ff0;
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            display: block;
+            background: #f00;
+            padding: 0 5px;
+            border-radius: 4px;
+            text-shadow: none;
+            box-shadow: -1px 1px 3px rgba(0,0,0,0.3);
+            .transform(scale(.6))
+        }
+    }
+}
+

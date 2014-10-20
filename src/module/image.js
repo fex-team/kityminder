@@ -15,12 +15,12 @@ KityMinder.registerModule('image', function() {
             fitRatio = maxWidth / maxHeight;
 
         // 宽高比大于最大尺寸的宽高比，以宽度为标准适应
-        if (ratio > fitRatio && width > maxWidth) {
+        if (width > maxWidth && ratio > fitRatio) {
             width = maxWidth;
-            height = maxWidth / ratio;
+            height = width / ratio;
         } else if (height > maxHeight) {
             height = maxHeight;
-            width = maxHeight / ratio;
+            width = height * ratio;
         }
 
         return {
@@ -32,7 +32,7 @@ KityMinder.registerModule('image', function() {
     var ImageCommand = kity.createClass('ImageCommand', {
         base: Command,
 
-        execute: function(km, url) {
+        execute: function(km, url, title) {
             var nodes = km.getSelectedNodes();
 
             loadImageSize(url, function(width, height) {
@@ -43,6 +43,7 @@ KityMinder.registerModule('image', function() {
                         km.getOptions('maxImageWidth'),
                         km.getOptions('maxImageHeight'));
                     n.setData('image', url);
+                    n.setData('imageTitle', title);
                     n.setData('imageSize', size);
                     n.render();
                 });
@@ -67,7 +68,10 @@ KityMinder.registerModule('image', function() {
         },
         queryValue: function(km) {
             var node = km.getSelectedNode();
-            return node.getData('image');
+            return {
+                url: node.getData('image'),
+                title: node.getData('imageTitle')
+            };
         }
     });
 
@@ -114,10 +118,15 @@ KityMinder.registerModule('image', function() {
 
         update: function(image, node, box) {
             var url = node.getData('image');
+            var title = node.getData('imageTitle');
             var size = node.getData('imageSize');
             var spaceTop = node.getStyle('space-top');
 
             if (!size) return;
+
+            if (title) {
+                image.node.setAttributeNS('http://www.w3.org/1999/xlink', 'title', title);
+            }
 
             var x = box.cx - size.width / 2;
             var y = box.y - size.height - spaceTop;

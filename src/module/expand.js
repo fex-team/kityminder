@@ -70,10 +70,40 @@ KityMinder.registerModule('Expand', function() {
     };
 
     function setExpandState(node, state, policy) {
+        var changed = node.isExpanded() ? (state == STATE_COLLAPSE) : (state == STATE_EXPAND);
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        node.renderTree();
-        node.getMinder().layout(100);
+        
+        if (!changed) return;
+
+        node.renderTree().getMinder().layout(100);
+
+        /* 如何加展开效果：
+
+        var vo = node.getVertexOut();
+        
+        if (state == STATE_EXPAND) {
+
+            var m = node.getGlobalLayoutTransform().clone().translate(vo.x, vo.y);
+            node.traverse(function(child) {
+                child.setGlobalLayoutTransform(m);
+                child.getRenderContainer().setOpacity(0).fadeIn();
+            }, true);
+            node.renderTree().getMinder().layout(300);
+
+        } else {
+
+            node.traverse(function(child) {
+                child.setLayoutTransform(child.parent == node ? new kity.Matrix().translate(vo.x, vo.y) : null);
+                child.getRenderContainer().fadeOut(100);
+            }, true);
+
+            node.getMinder().applyLayoutResult(node, 150).then(function() {
+                node.renderTree().getMinder().layout(150);
+            });
+
+        }
+        */
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
@@ -175,7 +205,7 @@ KityMinder.registerModule('Expand', function() {
             var pathData = ['M', 1.5 - this.radius, 0, 'L', this.radius - 1.5, 0];
             if (state == STATE_COLLAPSE) {
                 pathData.push(['M', 0, 1.5 - this.radius, 'L', 0, this.radius - 1.5]);
-            }       
+            }
             this.sign.setPathData(pathData);
         }
     });
@@ -203,7 +233,7 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var vector = node.getLayoutVector().normalize(expander.radius + node.getStyle('stroke-width'));
+            var vector = node.getLayoutVectorOut().normalize(expander.radius + node.getStyle('stroke-width'));
             var position = node.getVertexOut().offset(vector);
 
             this.expander.setTranslate(position);

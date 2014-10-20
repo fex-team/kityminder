@@ -108,6 +108,9 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * @param {String} text 文本数据
      */
     setText: function(text) {
+        if(utils.isArray(text)){
+            text = text.join('\n');
+        }
         return this.setData('text', text);
     },
 
@@ -115,8 +118,14 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      * 获取节点的文本数据
      * @return {String}
      */
-    getText: function() {
-        return this.getData('text');
+    getText: function(str2arr) {
+        var text = this.getData('text') || '';
+
+        if(str2arr){
+            text = text.split('\n');
+        }
+
+        return text;
     },
 
     /**
@@ -343,7 +352,7 @@ MinderNode.getCommonAncestor = function(nodeA, nodeB) {
     }
     switch (arguments.length) {
         case 1:
-            return nodeA.parent;
+            return nodeA.parent || nodeA;
 
         case 2:
             if (nodeA.isAncestorOf(nodeB)) {
@@ -364,3 +373,70 @@ MinderNode.getCommonAncestor = function(nodeA, nodeB) {
             }, nodeA);
     }
 };
+
+kity.extendClass(Minder, {
+
+    getRoot: function() {
+        return this._root;
+    },
+
+    setRoot: function(root) {
+        this._root = root;
+        root.minder = this;
+    },
+
+    createNode: function(unknown, parent, index) {
+        var node = new MinderNode(unknown);
+        this.fire('nodecreate', { node: node, parent: parent, index: index });
+        this.appendNode(node, parent, index);
+        return node;
+    },
+
+    appendNode: function(node, parent, index) {
+        if (parent) parent.insertChild(node, index);
+        this.attachNode(node);
+        return this;
+    },
+
+    removeNode: function(node) {
+        if (node.parent) {
+            node.parent.removeChild(node);
+            this.detachNode(node);
+            this.fire('noderemove', { node: node });
+        }
+    },
+
+    attachNode: function(node) {
+        var rc = this._rc;
+        node.traverse(function(current) {
+            current.attached = true;
+            rc.addShape(current.getRenderContainer());
+        });
+        rc.addShape(node.getRenderContainer());
+        this.fire('nodeattach', {
+            node: node
+        });
+    },
+
+    detachNode: function(node) {
+        var rc = this._rc;
+        node.traverse(function(current) {
+            current.attached = false;
+            rc.removeShape(current.getRenderContainer());
+        });
+        this.fire('nodedetach', {
+            node: node
+        });
+    },
+
+    getMinderTitle: function() {
+        return this.getRoot().getText();
+    }
+
+});
+
+kity.extendClass(MinderNode, {
+    getMinder: function() {
+        return this.getRoot().minder;
+    }
+});

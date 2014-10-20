@@ -90,6 +90,9 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
         if (!this._startPosition) return;
 
+        var movement = kity.Vector.fromPoints(this._dragPosition || this._startPosition, position);
+        var minder = this._minder;
+
         this._dragPosition = position;
 
         if (!this._dragMode) {
@@ -102,14 +105,11 @@ var TreeDragger = kity.createClass('TreeDragger', {
             }
         }
 
-        var movement = kity.Vector.fromPoints(this._startPosition, this._dragPosition);
-        var minder = this._minder;
-
         for (var i = 0; i < this._dragSources.length; i++) {
-            this._dragSources[i].setLayoutOffset(this._dragSourceOffsets[i].offset(movement));
+            this._dragSources[i].setLayoutOffset(this._dragSources[i].getLayoutOffset().offset(movement));
             minder.applyLayoutResult(this._dragSources[i]);
         }
-
+        
         if (!this._dropTest()) {
             this._orderTest();
         } else {
@@ -119,6 +119,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
 
     dragEnd: function() {
         this._startPosition = null;
+        this._dragPosition = null;
 
         if (!this._dragMode) {
             return;
@@ -131,6 +132,8 @@ var TreeDragger = kity.createClass('TreeDragger', {
             this._dragSources.forEach(function(source) {
                 source.setLayoutOffset(null);
             });
+            
+            this._minder.layout(-1);
 
             this._minder.execCommand('movetoparent', this._dragSources, this._dropSucceedTarget);
 
@@ -158,6 +161,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         } else {
             this._minder.fire('savescene');
         }
+        this._minder.layout(300);
         this._leaveDragMode();
         this._minder.fire('contentchange');
     },
@@ -189,15 +193,12 @@ var TreeDragger = kity.createClass('TreeDragger', {
     //          则排除枚举目标作为拖放源，否则加入拖放源
     _calcDragSources: function() {
         this._dragSources = this._minder.getSelectedAncestors();
-        this._dragSourceOffsets = this._dragSources.map(function(src) {
-            return src.getLayoutOffset();
-        });
     },
 
     _fadeDragSources: function(opacity) {
         var minder = this._minder;
         this._dragSources.forEach(function(source) {
-            source.getRenderContainer().fxOpacity(opacity, 200);
+            source.getRenderContainer().setOpacity(opacity, 200);
             source.traverse(function(node) {
                 if (opacity < 1) {
                     minder.detachNode(node);
@@ -368,7 +369,6 @@ KityMinder.registerModule('DragTree', function() {
                 dragger.dragEnd();
                 //e.stopPropagation();
                 e.preventDefault();
-                this.fire('contentchange');
             },
             'statuschange': function(e) {
                 if (e.lastStatus == 'textedit' && e.currentStatus == 'normal') {

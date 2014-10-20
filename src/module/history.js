@@ -90,7 +90,6 @@ KityMinder.registerModule("HistoryModule", function() {
                     selectedNodes.push(child);
                 }
                 km.appendNode(child, parent);
-                child._lastLayoutTransform = parent._lastLayoutTransform;
                 child.render();
 
                 var children = utils.cloneArr(child.children);
@@ -219,9 +218,9 @@ KityMinder.registerModule("HistoryModule", function() {
                 }
             })
         },
-        addShortcutKeys: {
-            "Undo": "ctrl+z", //undo
-            "Redo": "ctrl+y" //redo
+        commandShortcutKeys: {
+            "undo": "ctrl+z", //undo
+            "redo": "ctrl+y" //redo
         },
         "events": {
             "saveScene": function(e) {
@@ -229,7 +228,6 @@ KityMinder.registerModule("HistoryModule", function() {
             },
             "import": function() {
                 this.historyManager.reset();
-//                this.historyManager.saveScene();
             }
         }
     };

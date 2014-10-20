@@ -1,0 +1,91 @@
+#panel div.user-panel {
+    float: right;
+    height: @panel-height;
+    line-height: @panel-height;
+    font-size: 14px;
+    color: @ui-fore;
+    vertical-align: baseline;
+
+    .loading-tip {
+        text-indent: 100000px;
+        display: inline-block;
+        width: 50px;
+        height: @panel-height;
+        line-height: @panel-height;
+        position: relative;
+        
+        &:before {
+            content: ' ';
+            display: block;
+            position: absolute;
+            left: 9px;
+            top: 7px;
+            .loading-circle(16px);
+            box-shadow: none;
+        }
+    }
+
+    .fui-button {
+
+        padding: 5px 10px;
+        height: @panel-height - 10px;
+        line-height: @panel-height - 10px;
+
+        &:hover {
+            background-color: @tab-hover;
+        }
+        &:active {
+            background-color: @tab-active;
+        }
+
+        .fui-label {
+            font-size: 14px;
+            color: @ui-fore;
+            vertical-align: baseline;
+        }
+        &.user-button .fui-label {
+            display: none;
+        }
+
+        .fui-icon {
+            vertical-align: baseline;
+            border-radius: 100%;
+            img {
+                width: 30px;
+                height: 30px;
+            }
+        }
+        &.login-button .fui-icon {
+            width: 25px;
+            height: 25px;
+            margin-right: 3px;
+            vertical-align: baseline;
+            background: url(../images/icons.png) 0 -320px;
+        }
+    }
+}
+.login-tip {
+    display: none;
+}
+.login-required {
+    & > * {
+        display: none;
+    } 
+    & > .login-tip {
+        display: block;
+        text-align: center;
+        font-size:  16px;
+        color: #999;
+        margin-top: 30px;
+        
+        a {
+            text-decoration: underline;
+            color: @main-menu-theme-color;
+            cursor: pointer;
+            
+            &:hover {
+                color: lighten(@main-menu-theme-color, 10%);
+            }
+        }
+    }
+}

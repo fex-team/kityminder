@@ -1,0 +1,31 @@
+.priority-sprite(@count) when (@count >= 0) {
+    .priority-sprite(@count - 1);
+    &.priority-@{count} .fui-icon {
+        background-position: 0 (-20px * (@count - 1));
+    }
+}
+
+#tab-container .command-buttonset.priority {
+    width: 130px;
+    .fui-button {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+        .fui-label {
+            display: none;
+        }
+        .fui-icon {
+            display: block;
+            height: 20px;
+            width: 20px;
+            background: url(../images/iconpriority.png) repeat-y;
+            background-color: transparent;
+        }
+        padding: 2px;
+        border-radius: 4px;
+        .priority-sprite(9);
+        &.fui-button-pressed {
+            background-color: @button-active;
+        }
+    }
+}

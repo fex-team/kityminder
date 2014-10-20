@@ -9,6 +9,17 @@ Utils.extend(KityMinder, {
         if (!KityMinder._defaultLayout) {
             KityMinder._defaultLayout = name;
         }
+    },
+
+    getLayoutList: function() {
+        return this._layout;
+    },
+
+    getLayoutInstance: function(name) {
+        var LayoutClass = KityMinder._layout[name];
+        var layout = new LayoutClass();
+        if (!layout) throw new Error('Missing Layout: ' + name);
+        return layout;
     }
 });
 
@@ -30,12 +41,26 @@ kity.extendClass(MinderNode, {
         return layout;
     },
 
-    getOrder: function() {
-        return this.getData('order') || this.getIndex();
+    setLayout: function(name) {
+        if (name) {
+            if (name == 'inherit') {
+                this.setData('layout');
+            } else {
+                this.setData('layout', name);
+            }
+        }
+        return this;
     },
 
-    setOrder: function(order) {
-        return this.setData('order', order);
+    layout: function(name, duration) {
+
+        this.setLayout(name).getMinder().layout(duration);
+
+        return this;
+    },
+
+    getLayoutInstance: function() {
+        return KityMinder.getLayoutInstance(this.getLayout());
     },
 
     getOrderHint: function(refer) {
@@ -46,19 +71,6 @@ kity.extendClass(MinderNode, {
         return this.getLayoutInstance().getExpandPosition();
     },
 
-    getLayoutInstance: function() {
-        var LayoutClass = KityMinder._layout[this.getLayout()];
-        var layout = new LayoutClass();
-        return layout;
-    },
-
-    /**
-     * 设置当前节点相对于父节点的布局变换
-     */
-    setLayoutTransform: function(matrix) {
-        this._layoutTransform = matrix;
-    },
-
     /**
      * 获取当前节点相对于父节点的布局变换
      */
@@ -67,48 +79,50 @@ kity.extendClass(MinderNode, {
     },
 
     /**
-     * 设置当前节点相对于父节点的布局向量
+     * 第一轮布局计算后，获得的全局布局位置
+     *
+     * @return {[type]} [description]
      */
-    setLayoutVector: function(vector) {
-        this._layoutVector = vector;
-        return this;
+    getGlobalLayoutTransformPreview: function() {
+        var pMatrix = this.parent ? this.parent.getLayoutTransform() : new kity.Matrix();
+        var matrix = this.getLayoutTransform();
+        var offset = this.getLayoutOffset();
+        if (offset) {
+            matrix.translate(offset.x, offset.y);
+        }
+        return pMatrix.merge(matrix);
     },
 
-    /**
-     * 获取当前节点相对于父节点的布局向量
-     */
-    getLayoutVector: function(vector) {
-        return this._layoutVector || new kity.Vector();
+    getLayoutPointPreview: function() {
+        return this.getGlobalLayoutTransformPreview().transformPoint(new kity.Point());
     },
 
     /**
      * 获取节点相对于全局的布局变换
      */
     getGlobalLayoutTransform: function() {
-        return this._lastLayoutTransform || new kity.Matrix();
+        if (this._globalLayoutTransform) {
+            return this._globalLayoutTransform;
+        } else if (this.parent) {
+            return this.parent.getGlobalLayoutTransform();
+        } else {
+            return new kity.Matrix();
+        }
     },
 
-    getLayoutBox: function() {
-        var matrix = this.getGlobalLayoutTransform();
-        return matrix.transformBox(this.getContentBox());
+    /**
+     * 设置当前节点相对于父节点的布局变换
+     */
+    setLayoutTransform: function(matrix) {
+        this._layoutTransform = matrix;
+        return this;
     },
 
-    getLayoutPoint: function() {
-        var matrix = this.getGlobalLayoutTransform();
-        return matrix.transformPoint(new kity.Point());
-    },
-
-    getLayoutOffset: function() {
-        var data = this.getData('layout_' + this.getLayout() + '_offset');
-        if (data) return new kity.Point(data.x, data.y);
-        return new kity.Point();
-    },
-
-    setLayoutOffset: function(p) {
-        this.setData('layout_' + this.getLayout() + '_offset', p ? {
-            x: p.x,
-            y: p.y
-        } : null);
+    /**
+     * 设置当前节点相对于全局的布局变换（冗余优化）
+     */
+    setGlobalLayoutTransform: function(matrix) {
+        this.getRenderContainer().setMatrix(this._globalLayoutTransform = matrix);
         return this;
     },
 
@@ -136,6 +150,70 @@ kity.extendClass(MinderNode, {
         return this.getGlobalLayoutTransform().transformPoint(this.getVertexOut());
     },
 
+    setLayoutVectorIn: function(v) {
+        this._layoutVectorIn = v;
+        return this;
+    },
+
+    setLayoutVectorOut: function(v) {
+        this._layoutVectorOut = v;
+        return this;
+    },
+
+    getLayoutVectorIn: function() {
+        return this._layoutVectorIn || new kity.Vector();
+    },
+
+    getLayoutVectorOut: function() {
+        return this._layoutVectorOut || new kity.Vector();
+    },
+
+    getLayoutBox: function() {
+        var matrix = this.getGlobalLayoutTransform();
+        return matrix.transformBox(this.getContentBox());
+    },
+
+    getLayoutPoint: function() {
+        var matrix = this.getGlobalLayoutTransform();
+        return matrix.transformPoint(new kity.Point());
+    },
+
+    getLayoutOffset: function() {
+        if (!this.parent) return new kity.Point();
+
+        // 影响当前节点位置的是父节点的布局
+        var data = this.getData('layout_' + this.parent.getLayout() + '_offset');
+
+        if (data) return new kity.Point(data.x, data.y);
+
+        return new kity.Point();
+    },
+
+    setLayoutOffset: function(p) {
+        if (!this.parent) return this;
+
+        if (p && !this.hasLayoutOffset()) {
+            var m = this.getLayoutTransform().m;
+            p = p.offset(m.e, m.f);
+            this.setLayoutTransform(null);
+        }
+
+        this.setData('layout_' + this.parent.getLayout() + '_offset', p ? {
+            x: p.x,
+            y: p.y
+        } : null);
+
+        return this;
+    },
+
+    hasLayoutOffset: function() {
+        return !!this.getData('layout_' + this.parent.getLayout() + '_offset');
+    },
+
+    resetLayoutOffset: function() {
+        return this.setLayoutOffset(null);
+    },
+
     getLayoutRoot: function() {
         if (this.isLayoutRoot()) {
             return this;
@@ -145,21 +223,11 @@ kity.extendClass(MinderNode, {
 
     isLayoutRoot: function() {
         return this.getData('layout') || this.isRoot();
-    },
-
-    layout: function(name, duration) {
-        if (name) {
-            if (name == 'inherit') {
-                this.setData('layout');
-            } else {
-                this.setData('layout', name);
-            }
-        }
-
-        this.getMinder().layout(duration);
-
-        return this;
     }
+});
+
+Minder.registerInit(function(options) {
+    this.refresh();
 });
 
 kity.extendClass(Minder, {
@@ -167,6 +235,7 @@ kity.extendClass(Minder, {
     layout: function(duration) {
 
         this.getRoot().traverse(function(node) {
+            // clear last results
             node.setLayoutTransform(null);
         });
 
@@ -181,36 +250,57 @@ kity.extendClass(Minder, {
             }
 
             var layout = node.getLayoutInstance();
-            layout.doLayout(node);
+            layout.doLayout(node, node.getChildren().filter(function(child) {
+                return !child.hasLayoutOffset();
+            }));
         }
 
+        // 第一轮布局
         layoutNode(this.getRoot());
 
-        this.applyLayoutResult(this.getRoot(), duration);
+        // 第二轮布局
+        layoutNode(this.getRoot());
+
+        duration = duration ? 300 : 0;
+
+        var minder = this;
+        this.applyLayoutResult(this.getRoot(), duration).then(function() {
+            minder.fire('layoutallfinish');
+        });
 
         return this.fire('layout');
     },
 
     refresh: function(duration) {
         this.getRoot().renderTree();
-        this.layout(duration).fire('contentchange').fire('interactchange');
+        this.layout(duration).fire('contentchange')._interactChange();
         return this;
     },
 
     applyLayoutResult: function(root, duration) {
         root = root || this.getRoot();
         var me = this;
+        var deffered = {};
+
+        var promise = new Promise(function(resolve, reject) {
+            deffered.resolve = resolve;
+            deffered.reject = reject;
+        });
+
         var complex = root.getComplex();
 
         function consume() {
-            if (!--complex) me.fire('layoutallfinish');
+            if (!--complex) {
+                deffered.resolve();
+            }
         }
 
         // 节点复杂度大于 100，关闭动画
         if (complex > 300) duration = 0;
 
         function applyMatrix(node, matrix) {
-            node.getRenderContainer().setMatrix(node._lastLayoutTransform = matrix);
+            node.setGlobalLayoutTransform(matrix);
+
             me.fire('layoutapply', {
                 node: node,
                 matrix: matrix
@@ -219,7 +309,7 @@ kity.extendClass(Minder, {
 
         function apply(node, pMatrix) {
             var matrix = node.getLayoutTransform().merge(pMatrix);
-            var lastMatrix = node._lastLayoutTransform || new kity.Matrix();
+            var lastMatrix = node.getGlobalLayoutTransform() || new kity.Matrix();
 
             var offset = node.getLayoutOffset();
             matrix.translate(offset.x, offset.y);
@@ -237,17 +327,17 @@ kity.extendClass(Minder, {
             // 如果要求以动画形式来更新，创建动画
             if (duration) {
                 node._layoutTimeline = new kity.Animator(lastMatrix, matrix, applyMatrix)
-                    .start(node, duration + 300, 'ease')
+                    .start(node, duration, 'ease')
                     .on('finish', function() {
                         //可能性能低的时候会丢帧，手动添加一帧
-                        kity.Timeline.requestFrame(function() {
+                        setTimeout(function() {
                             applyMatrix(node, matrix);
                             me.fire('layoutfinish', {
                                 node: node,
                                 matrix: matrix
                             });
                             consume();
-                        });
+                        }, 150);
                     });
             }
 
@@ -267,7 +357,7 @@ kity.extendClass(Minder, {
         }
 
         apply(root, root.parent ? root.parent.getGlobalLayoutTransform() : new kity.Matrix());
-        return this;
+        return promise;
     },
 });
 
@@ -297,6 +387,79 @@ var Layout = kity.createClass('Layout', {
     },
 
     /**
+     * 对齐指定的节点
+     *
+     * @param {Array<MinderNode>} nodes 要对齐的节点
+     * @param {string} border 对齐边界，允许取值 left, right, top, bottom
+     *
+     */
+    align: function(nodes, border, offset) {
+        var me = this;
+        offset = offset || 0;
+        nodes.forEach(function(node) {
+            var tbox = me.getTreeBox([node]);
+            var matrix = node.getLayoutTransform();
+            switch (border) {
+                case 'left':
+                    return matrix.translate(offset - tbox.left, 0);
+                case 'right':
+                    return matrix.translate(offset - tbox.right, 0);
+                case 'top':
+                    return matrix.translate(0, offset - tbox.top);
+                case 'bottom':
+                    return matrix.translate(0, offset - tbox.bottom);
+            }
+        });
+    },
+
+    stack: function(nodes, axis, distance) {
+        var me = this;
+
+        var position = 0;
+
+        distance = distance || function(node, next, axis) {
+            return node.getStyle({
+                x: 'margin-right',
+                y: 'margin-bottom'
+            }[axis]) + next.getStyle({
+                x: 'margin-left',
+                y: 'margin-top'
+            }[axis]);
+        };
+
+        nodes.forEach(function(node, index, nodes) {
+            var tbox = me.getTreeBox([node]);
+
+            var size = {
+                x: tbox.width,
+                y: tbox.height
+            }[axis];
+            var offset = {
+                x: tbox.left,
+                y: tbox.top
+            }[axis];
+
+            var matrix = node.getLayoutTransform();
+
+            if (axis == 'x') {
+                matrix.translate(position - offset, 0);
+            } else {
+                matrix.translate(0, position - offset);
+            }
+            position += size;
+            if (nodes[index + 1])
+                position += distance(node, nodes[index + 1], axis);
+        });
+        return position;
+    },
+
+    move: function(nodes, dx, dy) {
+        nodes.forEach(function(node) {
+            node.getLayoutTransform().translate(dx, dy);
+        });
+    },
+
+    /**
      * 工具方法：获取给点的节点所占的布局区域
      *
      * @param  {MinderNode[]} nodes 需要计算的节点
@@ -304,19 +467,13 @@ var Layout = kity.createClass('Layout', {
      * @return {Box} 计算结果
      */
     getBranchBox: function(nodes) {
-        var box = {
-            x: 0,
-            y: 0,
-            height: 0,
-            width: 0
-        };
-        var g = KityMinder.Geometry;
+        var box = new kity.Box();
         var i, node, matrix, contentBox;
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             matrix = node.getLayoutTransform();
             contentBox = node.getContentBox();
-            box = g.mergeBox(box, matrix.transformBox(contentBox));
+            box = box.merge(matrix.transformBox(contentBox));
         }
 
         return box;
@@ -350,7 +507,7 @@ var Layout = kity.createClass('Layout', {
 
             treeBox = node.getContentBox();
 
-            if (node.children.length) {
+            if (node.isExpanded() && node.children.length) {
                 treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
             }
 
@@ -362,5 +519,63 @@ var Layout = kity.createClass('Layout', {
 
     getOrderHint: function(node) {
         return [];
+    }
+});
+
+var LayoutCommand = kity.createClass('LayoutCommand', {
+    base: Command,
+
+    execute: function(minder, name) {
+        var nodes = minder.getSelectedNodes();
+        nodes.forEach(function(node) {
+            node.layout(name);
+        });
+    },
+
+    queryValue: function(minder) {
+        var node = minder.getSelectedNode();
+        if (node) {
+            return node.getData('layout');
+        }
+    },
+
+    queryState: function(minder) {
+        return minder.getSelectedNode() ? 0 : -1;
+    }
+});
+
+var ResetLayoutCommand = kity.createClass('ResetLayoutCommand', {
+    base: Command,
+
+    execute: function(minder, name) {
+        var nodes = minder.getSelectedNodes();
+
+        if (!nodes.length) nodes = [minder.getRoot()];
+
+        nodes.forEach(function(node) {
+            node.traverse(function(child) {
+                child.resetLayoutOffset();
+                if (!child.isRoot()) {
+                    child.setData('layout', null);
+                }
+            });
+        });
+        minder.layout(300);
+    }
+});
+
+KityMinder.registerModule('LayoutModule', {
+    commands: {
+        'layout': LayoutCommand,
+        'resetlayout': ResetLayoutCommand
+    },
+    contextmenu: [{
+        command: 'resetlayout'
+    }, {
+        divider: true
+    }],
+
+    commandShortcutKeys: {
+        'resetlayout': 'Ctrl+Shift+L'
     }
 });

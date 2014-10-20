@@ -1,0 +1,88 @@
+#help-panel, #feedback-panel {
+    .dock(50px, 0, 0, 0);
+    overflow-y: auto;
+    
+    h2 {
+        font-weight: normal;
+        color: @theme-color;
+        margin: 10px 0;
+    }
+    
+    .shortcut-content {
+        font-family: 'Microsoft Yahei';
+        margin-left: 50px;
+        section {
+            min-width: 300px;
+            margin: 0 20px 20px 0;
+            float: left;
+            
+            h3 {
+                border-bottom: 1px solid #EEE;
+            }
+            
+            div.shortcut-group {
+                margin: 5px auto;
+                
+                span.shortcut {
+                    display: inline-block;
+                    width: 220px;
+                    text-align: right;
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+    
+    .contact-content {
+        list-style: none;
+        padding-left: 0;
+
+        li {
+            display: block;
+            float: left;
+            padding: 0;
+            width: 150px;
+            height: 150px;
+            margin: 20px;
+            text-align: center;
+            position: relative;
+            
+            a {
+                -webkit-user-select: initial;
+                cursor: text;
+                color: @theme-color;
+
+                &[href] {
+                    cursor: pointer;
+                }
+            }
+
+            &:before {
+                .transition(all .3s ease);
+                opacity: 0.6;
+                content: ' ';
+                display: block;
+                width: 150px;
+                height: 150px;
+                background: white url(../images/feedback.png) no-repeat;
+            }
+
+            &:hover:before {
+                .transform(translate3d(0, -5px, 0));
+                opacity: 1;
+            }
+
+            &.email:before {
+                background-position: -150px 0;
+            }
+
+            &.github:before {
+                background-position: -300px 0;
+            }
+
+            &.tieba:before {
+                background-position: -450px 0;
+            }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+/**
+ * 基本页面样式
+ */
+
+html, body, div {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body, svg {
+    font-family: "Microsoft Yahei", "Heiti SC", Arial, sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+#content-wrapper {
+    overflow: hidden;
+    .dock;
+    position: fixed;
+    
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    cursor: default;
+}
+
+#kityminder {
+    .dock(100px, 0, 0, 0);
+    &.maximize {
+        top: 40px;
+    }
+    &:focus {
+/*         box-shadow: inset 0 0 10px fadeOut(black, 0.5); */
+    }
+    -moz-user-select: none;
+}
+#tab-container.collapsed + #kityminder,
+#panel + #kityminder{
+    top: 40px;
+}
+
+#panel {
+    background: @ui-color;
+    font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
+    height: @panel-height;
+    overflow: visible;
+    position: relative;
+
+    h1 {
+        font-size: 14px;
+        height: @panel-height;
+        line-height: @panel-height;
+        margin: 0;
+        text-align: center;
+        font-weight: normal;
+        color: @ui-fore;
+    
+        &.loading {
+            &:before {
+                position: relative;
+                display: inline-block;
+                .loading-circle(12px, 3px);
+                left: -6px;
+                top: 3px;
+                box-shadow: none;
+            }
+            &:after {
+                display: none;
+            }
+        }
+    }
+}
+
+.fui-widget {
+    -webkit-font-smoothing: auto;
+}

@@ -1,0 +1,24 @@
+@iconsize: 20px;
+
+.sprite(@index, @size:@iconsize) {
+    background-position: 0 (-@index * @iconsize);
+}
+
+.command-button .fui-icon {
+    background: url(../images/icons.png) no-repeat;
+
+    .sprite(-1);
+
+    .appendchildnode& { .sprite(0); }
+    .appendsiblingnode& { .sprite(1); }
+    .editnode& { .sprite(3); }
+    .removenode& { .sprite(4); }
+    .resetlayout& { background-position: 0 -150px; }
+    .clearstyle& { background-position: 0 -175px; }
+    .copystyle& { .sprite(10); }
+    .pastestyle& { .sprite(11); }
+    .bold& { .sprite(12); }
+    .italic& { .sprite(13); }
+    .arrangeup& { .sprite(14); }
+    .arrangedown& { .sprite(15); }
+}

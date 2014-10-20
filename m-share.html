@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="title" content="百度脑图（KityMinder）">
+    <meta name="keyword" content="kityminder,脑图,思维导图,kity,svg,minder,百度,fex,前端,在线">
+    <meta name="description" content="百度脑图，便捷的脑图编辑工具。让您在线上直接创建、保存并分享你的思路。">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>百度脑图 - 便捷的思维导图工具</title>
+
+    <script src="import.js?pack=m-share" charset="utf-8"></script>
+    <script src="kityminder.config.js" charset="utf-8"></script>
+    <script src="lang/zh-cn/zh-cn.js" charset="utf-8"></script>
+
+    <link href="ui/theme/default/css/default.all.css" type="text/css" rel="stylesheet" />
+
+    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link href="favicon.ico" type="image/x-icon" rel="apple-touch-icon-precomposed">
+</head>
+
+<body>
+<div id="content-wrapper" class="shared-content">
+    <div id="panel"><div id="m-logo" class="m-logo"></div></div>
+
+    <div id="kityminder" onselectstart="return false"></div>
+    <div id="km-list-view" onselectstart="return false"></div>
+
+</div>
+</body>
+<script>
+
+    /* global km:true, ZeroClipboard:true, zip:true */
+    /* jshint browser:true */
+
+    $(function() {
+
+// create km instance
+        km = KM.getMinder('kityminder', window.KITYMINDER_CONFIG);
+
+// init ui for instance
+        km.initUI();
+
+    });
+
+</script>
+
+<!--Baidu Tongji Code-->
+<script type="text/javascript">
+    if (document.domain == 'naotu.baidu.com') {
+        var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+        document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F0703917f224067c887f3664479a03887' type='text/javascript'%3E%3C/script%3E"));
+    }
+</script>
+</html>

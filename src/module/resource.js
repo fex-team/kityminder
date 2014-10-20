@@ -253,12 +253,12 @@ KityMinder.registerModule('Resource', function() {
 
             container.setTranslate(box.right, 0);
 
-            return {
+            return new kity.Box({
                 x: box.right,
                 y: Math.round(-overlays[0].height / 2),
                 width: x,
                 height: overlays[0].height
-            };
+            });
         }
     });
 

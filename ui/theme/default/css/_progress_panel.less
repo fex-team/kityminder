@@ -1,0 +1,31 @@
+.progress-sprite(@count) when (@count >= 0) {
+    .progress-sprite(@count - 1);
+    &.progress-@{count} .fui-icon {
+        background-position: 0 (-20px * (@count - 1));
+    }
+}
+
+#tab-container .command-buttonset.progress {
+    width: 130px;
+    .fui-button {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
+        .fui-label {
+            display: none;
+        }
+        .fui-icon {
+            display: block;
+            height: 20px;
+            width: 20px;
+            background: url(../images/iconprogress.png) repeat-y;
+            background-color: transparent;
+        }
+        padding: 2px;
+        border-radius: 4px;
+        .progress-sprite(9);
+        &.fui-button-pressed {
+            background-color: @button-active;
+        }
+    }
+}

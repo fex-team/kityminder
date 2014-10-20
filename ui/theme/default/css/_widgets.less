@@ -1,0 +1,456 @@
+.fui-button, li {
+    .transition(background-color .2s ease);
+}
+
+.fui-disabled,
+.fui-disabled .fui-widget {
+    &:hover, &:active {
+        background-color: transparent;
+    }
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+input[type=search]::-ms-clear {
+    display: inline-block;
+}
+
+#tab-container .fui-button {
+    display: inline-block;
+    padding: 2px 5px 2px 3px;
+
+    .fui-label {
+        color: @button-text;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+    
+    &.command-button {
+        margin-bottom: 3px;
+        .fui-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 3px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        &.large {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+
+            .fui-icon {
+                width: 25px;
+                height: 25px;
+                margin-left: 12px;
+                margin-bottom: 3px;
+                margin-top: 4px;
+            }
+            .fui-label {
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+    &:hover {
+        background-color: @button-hover;
+    }
+    &:active {
+        background-color: @button-active;
+    }
+    &.fui-disabled:hover,
+    &.fui-disabled:active {
+        background-color: transparent;
+    }
+    &.active {
+        background-color: @button-pressed;
+    }
+}
+
+.command-buttonset {
+    .fui-toggle-button {
+        &:hover {
+            background-color: @button-hover;
+            .fui-disabled& {
+                background-color: transparent;
+            }
+        }
+        &:active {
+            .transform(scale(0.9));
+            &:hover {
+                background-color: @button-active;
+                .fui-disabled& {
+                    background-color: transparent;
+                }
+            }
+        }
+        &.fui-button-pressed {
+            background-color: @button-pressed;
+        }
+    }
+}
+
+.command-inputmenu, .fui-input-menu {
+    & > .fui-input-button {
+        position: relative;
+        .fui-input {
+            width: 100px;
+        }
+        border-color: @border-color;
+        margin: 2px 0;
+        & > .fui-button {
+            position: absolute;
+            left: auto;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            border-left: 1px solid @border-color;
+            padding: 0 !important;
+            .fui-icon {
+                position: absolute;
+                left: auto;
+                right: 6px;
+                top: 50%;
+                margin-top: -2px;
+                .triangle-top(@button-text, 8px, 4px);
+            }
+        }
+    }
+}
+
+#tab-container .fui-drop-panel {
+    padding-right: 10px;
+    border-color: @border-color;
+    & > .fui-button {
+        position: absolute;
+        display: block;
+        right: 1px;
+        left: auto;
+        top: 1px;
+        bottom: 1px;
+        width: 10px;
+        padding: 0;
+
+        &:hover {
+            background: @button-hover;
+        }
+        &:active {
+            background: @button-active;
+        }
+
+        & > .fui-icon {
+            position: absolute;
+            .triangle-top(@button-text, 6px, 4px);
+            top: auto;
+            bottom: 2px;
+            left: 2px;
+        }
+    }
+}
+
+.fui-drop-panel-popup {
+    background: white;
+    box-shadow: 0 0 3px rgba(0,0,0,.3);
+    padding-right: 5px;
+    padding-bottom: 5px;
+    max-width: 300px;
+}
+
+#tab-container .fui-button-menu {
+    border: 1px solid transparent;
+    width: 40px;
+    height: 50px;
+    display: inline-block;
+    margin-top: 2px;
+    
+    &:hover {
+        border-color: @button-hover;
+    }
+    &.fui-disabled:hover {
+        border-color: transparent;
+    }
+
+    .fui-button:first-child {
+        display: block;
+        width: 40px;
+        height: 25px;
+        padding: 0;
+    }
+
+    .fui-button:last-child {
+        display: block;
+        width: 40px;
+        height: 25px;
+        padding: 0;
+
+        .fui-label {
+            font-size: 12px;
+        }
+
+        .fui-icon {
+            .triangle-top(@button-text, 6px, 4px);
+            display: block;
+            position: absolute;
+            top: auto;
+            bottom: -2px;
+            left: 50%;
+            margin-left: -3px;
+        }
+    }
+}
+
+.fui-dialog {
+    & > .fui-panel-content {
+        padding: 0;
+    }
+    box-shadow: 0 0 5px rgba(0,0,0, .15);
+    border: none;
+    .fui-dialog-head {
+        background-color: @ui-color;
+        color: white;
+        h1 {
+            font-size: 14px;
+            font-weight: normal;
+        }
+        padding: 5px;
+
+        .fui-close-button {
+            .fui-close-button-icon { 
+                display: none; 
+                background: none;
+            }
+            position: absolute;
+            right: 6px;
+            top: 7px;
+            left: auto;
+            display: block;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 100%;
+            &:hover {
+                background-color: hsl(0, 73%, 64%);
+            }
+            &:active {
+                background-color: hsl(0, 73%, 60%);
+            }
+            &:after {
+                content: 'x';
+                display: block;
+                width: 16px;
+                height: 16px;
+                font-family: inherit;
+                color: white;
+                font-size: 14px;
+                position: absolute;
+                left: 2px;
+                top: 1px;
+                line-height: 16px;
+                text-align: center;
+            }
+        }
+    }
+    .fui-dialog-body {
+        padding: 20px;
+
+        p {
+            margin: 0;
+            height: 40px;
+        }
+
+        input[type=text],
+        input[type=url] {
+            border: 1px solid @border-color;
+            outline: none;
+            height: 20px;
+            padding: 2px 4px;
+            width: 300px;
+            vertical-align: middle;
+        }
+    }
+    .fui-dialog-foot {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        height: 50px;
+        border-top: 1px solid @border-color;
+        text-align: right;
+
+        .fui-button {
+            width: 80px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            
+            &:hover {
+                background: lighten(@ui-color, 60%);
+            }
+            &:active {
+                background: lighten(@ui-color, 55%);
+            }
+
+            &.fui-xdialog-ok-btn {
+                background: @ui-color;
+                &:hover {
+                    background: lighten(@ui-color, 5%);
+                }
+                &:active {
+                    background: darken(@ui-color, 3%);
+                }
+                border-color: transparent;
+                .fui-label {
+                    color: white;
+                }
+            }
+            border: 1px solid @border-color;
+            border-radius: 4px;
+            margin: 8px 8px 0 0;
+            .fui-label {
+                font-size: 14px;
+                line-height: 30px;
+                height: 30px;
+            }
+        }
+    }
+}
+
+#tab-container .fui-select-menu.command-selectmenu > .fui-panel-content {
+    padding-right: 10px;
+    border: 1px solid transparent;
+    width: auto;
+    
+    &:hover {
+        border-color: @border-color;
+    }
+    & > .fui-button {
+        position: absolute;
+        display: block;
+        .dock;
+        padding: 0;
+
+        &:hover {
+            background: fadeOut(@button-hover, 90%);
+        }
+        &:active {
+            background: fadeOut(@button-active, 50%);
+        }
+
+        & > .fui-icon {
+            position: absolute;
+            .triangle-top(@button-text, 6px, 4px);
+            top: auto;
+            bottom: 2px;
+            right: 2px;
+            left: auto;
+        }
+    }
+    
+    & > .fui-select-menu-container {
+        border: 1px solid #ccc;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, .3);
+    }
+}
+
+.fui-popup-menu {
+    position: absolute;
+    z-index: 9999;
+    min-width: 160px;
+    padding: 5px 0;
+    font-size: 12px;
+    list-style: none;
+    background-color: #ffffff;
+    border-radius: 0;
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.3);
+    background-clip: padding-box;
+    font-family: Arial, "Heiti SC", "Microsoft Yahei";
+    overflow: hidden;
+    
+    &:empty {
+        display: none !important;
+    }
+    
+    .fui-panel-content, .fui-menu {
+        border: none;
+        display: block;
+    }
+    
+    .fui-item {
+        
+        .fui-label, .fui-icon {
+            height: 25px;
+            line-height: 25px;
+        }
+        
+        display: block;
+        padding: 2px 15px 2px 30px;
+        height: 25px;
+        line-height: 25px;
+        clear: both;
+        font-weight: normal;
+        color: #333333;
+        white-space: nowrap;
+        text-decoration: none;
+        font-size: 12px;
+        overflow: hidden;
+        
+        .transition(none);
+        
+        &:hover, :focus {
+            background: #0099f2; /* Old browsers */
+            /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+            background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwOTlmMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNDA5NmVlIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAwNzZkZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=);
+            background: -moz-linear-gradient(top,  #0099f2 0%, #4096ee 0%, #0076dd 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0099f2), color-stop(0%,#4096ee), color-stop(100%,#0076dd)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #0099f2 0%,#4096ee 0%,#0076dd 100%); /* IE10+ */
+            background: hsl(222, 14%, 41%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0099f2', endColorstr='#0076dd',GradientType=0 ); /* IE6-8 */
+
+            color: white;
+            
+            .fui-label {
+                color: white;
+            }
+        }
+
+        .menu-label {
+            display: inline-block;
+        }
+        
+        .shortcut {
+            float: right;
+            margin-left: 20px;
+            
+            .shortcut-key {
+                font-size: 12px;
+                border: 1px solid #CCC;
+                height: 10px;
+                line-height: 10px;
+                margin-left: 3px;
+            }
+            
+            + .shortcut:after {
+                content: 'or';
+                position: relative;
+                left: 10px;
+            }
+        }
+    }
+    
+    .divider, .fui-spliter {
+        height: 1px;
+        margin: 5px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        padding: 0;
+        &:first-child, &:last-child {
+            display: none;
+        }
+    }
+}

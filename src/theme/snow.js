@@ -1,5 +1,5 @@
 KityMinder.registerTheme('snow', {
-    'background': '#3A4144 url(themes/default/images/grid.png) repeat',
+    'background': '#3A4144 url(ui/theme/default/images/grid.png) repeat',
 
     'root-color': '#430',
     'root-background': '#e9df98',
@@ -32,6 +32,7 @@ KityMinder.registerTheme('snow', {
 
     'connect-color': 'white',
     'connect-width': 2,
+    'main-connect-width': 3,
     'connect-radius': 5,
 
     'selected-background': 'rgb(254, 219, 0)',
@@ -47,5 +48,6 @@ KityMinder.registerTheme('snow', {
     'order-hint-path-color': '#0f0',
     'order-hint-path-width': 1,
 
-    'text-selection-color': 'rgb(27,171,255)'
+    'text-selection-color': 'rgb(27,171,255)',
+    'line-height':1.5
 });

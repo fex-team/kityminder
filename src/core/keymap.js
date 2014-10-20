@@ -6,6 +6,12 @@ var keymap = KityMinder.keymap = (function(origin) {
             ret[key.toLowerCase()] = origin[key];
         }
     }
+    var aKeyCode = 65;
+    var aCharCode = 'a'.charCodeAt(0);
+
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(letter) {
+        ret[letter] = aKeyCode + (letter.charCodeAt(0) - aCharCode);
+    });
     return ret;
 })({
     'Backspace': 8,
@@ -26,56 +32,51 @@ var keymap = KityMinder.keymap = (function(origin) {
     'End': 35,
     'Home': 36,
 
+    'Insert': 45,
 
     'Left': 37,
     'Up': 38,
     'Right': 39,
     'Down': 40,
 
-    'direction':{
-        37:1,
-        38:1,
-        39:1,
-        40:1
+    'direction': {
+        37: 1,
+        38: 1,
+        39: 1,
+        40: 1
     },
-    'Insert': 45,
 
     'Del': 46,
 
     'NumLock': 144,
 
     'Cmd': 91,
-    'CmdFF':224,
+    'CmdFF': 224,
+    'F1': 112,
     'F2': 113,
     'F3': 114,
     'F4': 115,
+    'F5': 115,
+    'F6': 116,
+    'F7': 117,
+    'F8': 118,
+    'F9': 119,
+    'F10': 120,
+    'F11': 121,
+    'F12': 122,
 
     '=': 187,
     '-': 189,
 
-    'b': 66,
-    'i': 73,
-    //回退
-    'z': 90,
-    'y': 89,
-
-    //复制粘贴
-    'v': 86,
-    'x': 88,
-    'c': 67,
-
-    's': 83,
-
-    'n': 78,
     '/': 191,
     '.': 190,
-    controlKeys:{
-        16:1,
-        17:1,
-        18:1,
-        20:1,
-        91:1,
-        224:1
+    controlKeys: {
+        16: 1,
+        17: 1,
+        18: 1,
+        20: 1,
+        91: 1,
+        224: 1
     },
     'notContentChange': {
         13: 1,
@@ -113,7 +114,6 @@ var keymap = KityMinder.keymap = (function(origin) {
         40: 1,
         13: 1,
         9: 1
-    },
-    'a':65
+    }
 
 });

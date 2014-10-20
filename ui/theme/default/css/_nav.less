@@ -1,0 +1,153 @@
+.preview-navigator {
+    background: white;
+    width: 140px;
+    height: 120px;
+    position: absolute;
+    left: 45px;
+    bottom: 30px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .2);
+    border-radius: 0 2px 2px 0;
+    padding: 1px;
+    z-index: 9;
+    cursor: crosshair;
+    
+    &.grab {
+        cursor: move;
+        cursor: -webkit-grabbing;
+        cursor: -moz-grabbing;
+        cursor: grabbing;
+    }
+}
+
+.nav-bar {
+    position: absolute;
+    width: 35px;
+    height: 240px;
+    padding: 5px 0;
+    left: 10px;
+    bottom: 10px;
+    background: @theme-color;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, .2);
+    
+    .command-button {
+        width: 35px;
+        height: 24px;
+        text-align: center;
+        line-height: 30px;
+        
+        .fui-label {
+            display: none;
+        }
+        
+        .fui-icon {
+            background: url(../images/icons.png);
+            width: 20px;
+            height: 20px;
+            margin: 2px auto;
+            display: block;
+        }
+        
+        &:hover {
+            background: lighten(@theme-color, 10%);
+        }
+        
+        &:active {
+            background: darken(@theme-color, 3%);
+        }
+        
+        &.active {
+            background: #5A6378;
+        }
+        
+        &.hand, &.nav-trigger, &.camera {
+            height: 25px;
+            margin: 3px 0;
+            .fui-icon {
+                margin: 0 auto;
+                width: 25px;
+                height: 25px;
+            }
+        }
+        
+        &.zoom-in .fui-icon {
+            background-position: 0 -730px;
+        }
+        
+        &.zoom-out .fui-icon {
+            background-position: 0 -750px;
+        }
+        
+        &.hand {
+            margin-top: 10px;
+            .fui-icon {
+                background-position: 0 -770px;
+            }
+            &.active .fui-icon {
+                background-position: 0 -795px;
+            }
+        }
+        
+        &.nav-trigger {
+            .fui-icon {
+                background-position: 0 -820px;
+            }
+            &.active .fui-icon {
+                background-position: 0 -845px;
+            }
+        }
+        
+        &.camera {
+            .fui-icon {
+                background-position: 0 -870px;
+            }
+            margin-bottom: 0;
+        }
+        
+    }
+    
+    .zoom-pan {
+        width: 2px;
+        height: 70px;
+        box-shadow: 0 1px #E50000;
+        position: relative;
+        background: white;
+        margin: 3px auto;
+        overflow: visible;
+        
+        .origin {
+            position: absolute;
+            width: 20px;
+            height: 8px;
+            left: -9px;
+            margin-top: -4px;
+            background: transparent;
+            
+            &:after {
+                content: ' ';
+                display: block;
+                width: 6px;
+                height: 2px;
+                background: white;
+                left: 7px;
+                top: 3px;
+                position: absolute;
+            }
+            
+            &:hover:after {
+                box-shadow: 0 0 5px rgba(255, 255, 255, 1);
+            }
+        }
+        
+        .indicator {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            left: -3px;
+            background: white;
+            border-radius: 100%;
+            margin-top: -4px;
+        }
+    }
+}

@@ -5,10 +5,11 @@ KityMinder.registerModule("hyperlink", function() {
             "hyperlink": kity.createClass("hyperlink", {
                 base: Command,
 
-                execute: function(km, url) {
+                execute: function(km, url, title) {
                     var nodes = km.getSelectedNodes();
                     utils.each(nodes, function(i, n) {
                         n.setData('hyperlink', url);
+                        n.setData('hyperlinkTitle', title);
                         n.render();
                     });
                     km.layout();
@@ -29,7 +30,10 @@ KityMinder.registerModule("hyperlink", function() {
                 },
                 queryValue: function(km) {
                     var node = km.getSelectedNode();
-                    return node.getData('hyperlink');
+                    return {
+                        url: node.getData('hyperlink'),
+                        title: node.getData('hyperlinkTitle')
+                    };
                 }
             }),
             "unhyperlink": kity.createClass("hyperlink", {
@@ -80,7 +84,6 @@ KityMinder.registerModule("hyperlink", function() {
                     link.setTarget('_blank');
                     link.setStyle('cursor', 'pointer');
 
-
                     link.on('mouseover', function() {
                         outline.fill('rgba(255, 255, 200, .8)');
                     }).on('mouseout', function() {
@@ -90,7 +93,6 @@ KityMinder.registerModule("hyperlink", function() {
                 },
 
                 shouldRender: function(node) {
-
                     return node.getData('hyperlink');
                 },
 
@@ -98,16 +100,25 @@ KityMinder.registerModule("hyperlink", function() {
 
                     var href = node.getData('hyperlink');
                     link.setHref(href);
-                    link.setAttr('xlink:title', href);
+                    var title = node.getData('hyperlinkTitle');
+
+                    if (title) {
+                        title = [title, '(', href, ')'].join('');
+                    } else {
+                        title = href;
+                    }
+
+                    link.node.setAttributeNS('http://www.w3.org/1999/xlink', 'title', title);
+
                     var spaceRight = node.getStyle('space-right');
 
                     link.setTranslate(box.right + spaceRight + 2, -5);
-                    return {
+                    return new kity.Box({
                         x: box.right + spaceRight,
                         y: -11,
                         width: 24,
                         height: 22
-                    };
+                    });
                 }
             })
         }
