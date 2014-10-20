@@ -27,7 +27,9 @@ class FreeMindParser {
             'topic' => $data
         ) );
 
-        $filepath = getcwd() . '/upload/' . $data[ 'meta' ][ 'id' ] . '.mm';
+        $savepath = self::getSavePath();
+
+        $filepath = $savepath . '/' . $data[ 'meta' ][ 'id' ] . '.mm';
         file_put_contents( $filepath, $content );
 
         return $filepath;
@@ -69,6 +71,19 @@ class FreeMindParser {
         }
 
         return $source;
+
+    }
+
+    private static function getSavePath () {
+
+        $config = require( dirname(__FILE__) . '/../config.php' );
+        $savepath = $config[ 'savepath' ];
+
+        if ( !file_exists( $savepath ) ) {
+            mkdir( $savepath, 0770, true );
+        }
+
+        return pathinfo( $savepath . '/test', PATHINFO_DIRNAME );
 
     }
 
