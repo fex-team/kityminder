@@ -18,11 +18,11 @@ class Tpl {
 
         $dir = dirname( __FILE__ ) . '/';
 
-        $smarty->config_dir = $dir . "tmp/configs";
+        $smarty->config_dir = self::createDir( $dir . "tmp/configs" );
         $smarty->caching = false;
-        $smarty->template_dir = $dir . "tpl";
-        $smarty->compile_dir = $dir . "tmp/templates_c";
-        $smarty->cache_dir = $dir . "tmp/cahce";
+        $smarty->template_dir = self::createDir( $dir . "tpl" );
+        $smarty->compile_dir = self::createDir( $dir . "tmp/templates_c" );
+        $smarty->cache_dir = self::createDir( $dir . "tmp/cahce" );
 
         if ( !empty( $data ) ) {
             foreach ( $data as $k=>$v ) {
@@ -31,6 +31,20 @@ class Tpl {
         }
 
         return $smarty->fetch( $tplName );
+
+    }
+
+    private static function createDir ( $path ) {
+
+        if ( file_exists( $path ) ) {
+            return $path;
+        }
+
+        if ( !mkdir( $path, 0700, true ) ) {
+            throw new Exception( "directory creation failed: " . $path );
+        }
+
+        return $path;
 
     }
 
