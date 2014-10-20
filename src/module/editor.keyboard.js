@@ -53,7 +53,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     this._keyup(e);
             }
         },
-        _setTextToContainer : function(keyCode){
+        _setTextToContainer : function(keyCode,iskeyUp){
             var me = this;
             //同步节点
             me.minderNode = me.re.minderNode;
@@ -65,7 +65,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             }
 
 
-            if(keymap.controlKeys[keyCode]){
+            if(keymap.controlKeys[keyCode] && !iskeyUp ){
                 return;
             }
             //当第一次输入内容时进行保存
@@ -95,8 +95,9 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
                 me.inputTextTimer = setTimeout(function(){
                     me.km.layout(300);
-                },250);
+                },300);
             }
+
 
             me.re.updateTextOffsetData()
                 .updateRange()
@@ -104,8 +105,13 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             me.selection
                 .updateOffsetByTextData(me.re.textData)
-                .updatePosition()
-                .setHoldShow();
+                .updatePosition();
+
+
+            //当然inputready状态时，如果输入文字，节点内文本会被先选中然后再消失，体验不好
+            if(me.km.getStatus() != 'inputready'){
+                me.selection.setHoldShow();
+            }
 
 
             me.timer = setTimeout(function() {
@@ -134,12 +140,13 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             switch (keyCode) {
                 case keymap.Enter:
-                    if(e.originEvent.shiftKey){
+                    if(e.originEvent.shiftKey && me.selection.isShow()){
                         me._handlerEnterkey();
                         e.preventDefault();
                         return false;
                     };
                 case keymap.Tab:
+                case keymap.Insert:
                     if(this.selection.isShow()){
                         this.re.clear();
                         this.km.setStatus('inputready');
@@ -159,6 +166,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                 case keymap.Del:
                 case keymap['/']:
                 case keymap.F2:
+                case keymap.Insert:
                     if(this.selection.isHide()){
                         this.km.setStatus('normal');
                         return;
@@ -186,7 +194,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     //修正在cvs方式下_keyup会把节点文字选中
                     this.isShortcutCopyKey = true;
                     this.km.setStatus('normal');
-
                     return;
                 }
 
@@ -228,11 +235,12 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
 
             this.isShortcutCopyKey = false;
             //针对不能连续删除做处理
-            if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
-                me._setTextToContainer(keyCode);
+            //if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
+            //    me._setTextToContainer(keyCode);
+
+            me._setTextToContainer(keyCode);
         },
         _beforeKeyup:function(e){
-
             var me = this;
             var orgEvt = e.originEvent;
             var keyCode = orgEvt.keyCode;
@@ -240,6 +248,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             switch (keyCode) {
                 case keymap.Enter:
                 case keymap.Tab:
+                case keymap.Insert:
                 case keymap.F2:
                     if(browser.ipad){
                         if(this.selection.isShow()){
@@ -255,7 +264,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     }
 
                     if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
-                        me._setTextToContainer(keyCode);
+                        me._setTextToContainer(keyCode,true);
                     }
                     if (this.re.keydownNode === this.re.minderNode) {
                         this.km.rollbackStatus();
@@ -273,19 +282,20 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         }
 
                     }
-                    me._setTextToContainer(keyCode);
+                    me._setTextToContainer(keyCode,true);
                     return;
             }
 
             if (this.isTypeText) {
-                me._setTextToContainer(keyCode);
+                me._setTextToContainer(keyCode,true);
                 return;
             }
             if (browser.mac && browser.gecko){
-                me._setTextToContainer(keyCode);
+                me._setTextToContainer(keyCode,true);
                 return;
             }
-            me._setTextToContainer(keyCode);
+
+            me._setTextToContainer(keyCode,true);
 
             return true;
         },
@@ -296,7 +306,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             if(this.km.getStatus() == 'normal' && node && this.selection.isHide()){
 
                 if(this.isShortcutCopyKey){
-                    console.log(this.km.getStatus())
                     return;
                 }
 

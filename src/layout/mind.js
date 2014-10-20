@@ -4,9 +4,14 @@ KityMinder.registerLayout('mind', kity.createClass({
 
     doLayout: function(node, children) {
         var layout = this;
-        var half = Math.ceil(children.length / 2);
-        var right = children.slice(0, half);
-        var left = children.slice(half);
+        var half = Math.ceil(node.children.length / 2);
+        var right = [];
+        var left = [];
+
+        children.forEach(function(child) {
+            if (child.getIndex() < half) right.push(child);
+            else left.push(child);
+        });
 
         var leftLayout = KityMinder.getLayoutInstance('left');
         var rightLayout = KityMinder.getLayoutInstance('right');

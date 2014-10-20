@@ -20,14 +20,14 @@ kity.extendClass(Minder, {
         me.bkqueryCommandValue = me.queryCommandValue;
         me.queryCommandState = function(type) {
             var cmd = this._getCommand(type);
-            if (cmd && cmd.enableReadOnly === false) {
+            if (cmd && cmd.enableReadOnly) {
                 return me.bkqueryCommandState.apply(me, arguments);
             }
             return -1;
         };
         me.queryCommandValue = function(type) {
             var cmd = this._getCommand(type);
-            if (cmd && cmd.enableReadOnly === false) {
+            if (cmd && cmd.enableReadOnly) {
                 return me.bkqueryCommandValue.apply(me, arguments);
             }
             return null;
@@ -48,7 +48,7 @@ kity.extendClass(Minder, {
             delete me.bkqueryCommandValue;
         }
 
-        this.rollbackStatus();
+        this.setStatus('normal');
 
         me._interactChange();
     }

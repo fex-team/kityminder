@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="title" content="百度脑图（KityMinder）">
+    <meta name="title" content="百度脑图（KityMinder） - 控制创意，如此简单">
     <meta name="keyword" content="kityminder,脑图,思维导图,kity,svg,minder,百度,fex,前端,在线">
-    <meta name="description" content="百度脑图，便捷的脑图编辑工具。让您在线上直接创建、保存并分享你的思路。">
+    <meta name="description" content="百度脑图，便捷的脑图编辑工具 - 控制创意，如此简单。让您在线上直接创建、保存并分享你的思路。免安装 云存储 易分享 体验舒适 功能丰富">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>百度脑图 - 便捷的思维编辑工具</title>
     
@@ -27,9 +27,21 @@
                 apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
             });
 
-            $('hr').addClass('loading');
-
             var $a = $('p.login a').hide();
+
+            function loadingAnimate(on) {
+                if (on) {
+                    $('hr').addClass('loading');
+                    loadingAnimate.timer = setTimeout(function() {
+                        $('hr').addClass('animated');
+                    }, 660);
+                } else {
+                    clearTimeout(loadingAnimate.timer);
+                    $('hr').removeClass('loading animated');
+                }
+            }
+
+            loadingAnimate(true);
 
             fio.user.check().then(function(user) {
                 if (user) {
@@ -37,7 +49,7 @@
                 }
                 else {
                     $a.fadeIn(800);
-                    $('hr').removeClass('loading');
+                    loadingAnimate(false);
                 }
             });
             
@@ -46,9 +58,23 @@
                 urlparts.pop();
                 urlparts = urlparts.join('/');
                 fio.user.login({
-                    redirectUrl: urlparts + '/edit.html'
+                    redirectUrl: urlparts + '/edit.html',
+                    remember: 7 * 24 * 60 * 60
                 });
-                $('hr').addClass('loading');
+                loadingAnimate(true);
+            });
+
+            function preload(url) {
+                return new Promise(function(resolve, reject) {
+                    var img = new Image();
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+
+            preload('ui/theme/default/images/indexbackground.jpg').then(function() {
+                $('div.background').addClass('loaded');
             });
         });
 
@@ -62,11 +88,36 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            -webkit-user-select: none;
+            height: 100%;
+            font-size: 0;
+            line-height: 0;
+            z-index: -2;
         }
 
-        h1:before {
-            content: ' ';
+        body {
+            background: #99806B;
+            overflow: auto;
+        }
+
+        ::-webkit-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::-moz-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::-ms-selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+        ::selection {
+            background: #FFEFEF;
+            color: #4A4F5D;
+        }
+
+        div.background {
+            opacity: 0;
             display: block;
             background: url(ui/theme/default/images/indexbackground.jpg) no-repeat;
             background-size: cover;
@@ -82,9 +133,15 @@
             -o-filter: blur(5px);
             filter: url(ui/theme/default/images/blur.svg#blur);
             filter: blur(5px);
+            -webkit-transition: opacity 1.5s ease;
+            transition: opacity 1.5s ease;
         }
 
-        h1:after {
+        div.background.loaded {
+            opacity: 1;
+        }
+
+        h1:before {
             content: ' ';
             display: block;
             position: absolute;
@@ -92,7 +149,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, .75);
+            background: rgba(0, 0, 0, .5);
             z-index: -1;
         }
 
@@ -106,10 +163,22 @@
 
         h1 {
             margin: 0;
-            margin-top: 200px;
+            margin-top: 100px;
             color: white;
             font-size: 50px;
             line-height: 1.4em;
+        }
+
+        h1 span {
+            font-size: 0.6em;
+        }
+
+        p span {
+            font-size: 12px;
+            display: block;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, .7);
+            text-shadow: 0 0 1px rgba(0, 0, 0, .5);
         }
 
         hr {
@@ -118,22 +187,41 @@
             border-bottom: 1px solid #F98183;
             width: 110px;
             margin: 40px auto;
-            transition: transform 0.5s ease;
+            -webkit-transition: -webkit-transform 0.66s ease;
+            transition: transform 0.66s ease;
+            -webkit-backface-visibility: hidden;
         }
 
         hr.loading {
+            -webkit-transform: translate3d(100px, 0, 0);
+            transform: translate3d(100px, 0, 0);
+        }
+
+        hr.animated {
             -webkit-animation: slide 1.33s ease-in-out infinite alternate;
             animation: slide 1.33s ease-in-out infinite alternate;
         }
 
         @-webkit-keyframes slide {
-            0% { transform: translate3d(-100px, 0, 0); }
-            100% { transform: translate3d(100px, 0, 0); }
+            0% { 
+                -webkit-transform: translate3d(100px, 0, 0);
+                transform: translate3d(100px, 0, 0); 
+            }
+            100% { 
+                -webkit-transform: translate3d(-100px, 0, 0);
+                transform: translate3d(-100px, 0, 0); 
+            }
         }
 
         @keyframes slide {
-            0% { transform: translate3d(-100px, 0, 0); }
-            100% { transform: translate3d(100px, 0, 0); }
+            0% { 
+                -webkit-transform: translate3d(100px, 0, 0);
+                transform: translate3d(100px, 0, 0); 
+            }
+            100% { 
+                -webkit-transform: translate3d(-100px, 0, 0);
+                transform: translate3d(-100px, 0, 0); 
+            }
         }
 
         p.description {
@@ -157,10 +245,15 @@
             position: relative;
             overflow: hidden;
             margin-top: 50px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -mz-user-select: none;
+            user-select: none;
         }
 
         p.login a:active {
             background: #FF6161;
+            -webkit-transform: scale(0.95);
             transform: scale(0.95);
         }
 
@@ -175,24 +268,29 @@
             bottom: 0;
             border-radius: 30px;
             transform: scale(0, 1);
+            -webkit-transform: scale(0, 1);
             transition: transform 0.3s ease;
+            -webkit-transition: -webkit-transform 0.3s ease;
         }
 
         p.login a:hover:before {
             transform: scale(1, 1);
+            -webkit-transform: scale(1, 1);
         }
     
     </style>
 </head>
 <body>
-    <h1>百度脑图 <br/> 便捷的思维编辑工具</h1>
+    <div class="background"></div>
+    <h1>百度脑图 <br/> <span>控制创意，如此简单</span></h1>
     <hr /> 
     <p class="description">
-        线上直接创建、保存并分享您的思路<br />
-        更加高效地工作或学习
+        免安装 云存储 易分享<br/>
+        舒适的体验 丰富的功能<br/>
     </p>
     <p class="login">
-        <a>立即体验</a>
+        <a>马上开启</a>
+        <span>使用百度账号登录</span>
     </p>
 </body>
 

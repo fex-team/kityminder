@@ -142,7 +142,9 @@ KityMinder.registerModule('KeyboardModule', function() {
 
         queryState: function(km) {
             return km.getSelectedNode() ? 0 : -1;
-        }
+        },
+
+        enableReadOnly: true
     });
 
     // 稀释用
@@ -159,7 +161,7 @@ KityMinder.registerModule('KeyboardModule', function() {
                 var root = this.getRoot();
                 buildPositionNetwork(root);
             },
-            'normal.keydown': function(e) {
+            'normal.keydown readonly.keydown': function(e) {
                 var minder = this;
                 ['left', 'right', 'up', 'down'].forEach(function(key) {
                     if (e.isShortcutKey(key)) {

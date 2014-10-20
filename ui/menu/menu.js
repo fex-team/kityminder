@@ -47,6 +47,7 @@ KityMinder.registerUI('menu/menu', function(minder) {
     }
 
     function toggle() {
+        if ($('#content-wrapper').hasClass('fullscreen')) return;
         (isVisible() ? hide : show)();
     }
 
@@ -71,10 +72,7 @@ KityMinder.registerUI('menu/menu', function(minder) {
 
     $button.on('click', toggle);
 
-    $(window).keydown(function(e) {
-        // ESC Pressed
-        if (e.keyCode == 27) toggle();
-    });
+    minder.addShortcut('esc', toggle);
 
     // expose
     ret.show = show;

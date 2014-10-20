@@ -220,7 +220,7 @@ Minder.Receiver = kity.createClass('Receiver', {
         this.selection.setHeight((this.minderNode.getData('font-size') || this.minderNode.getStyle('font-size')) * 1);
         return this;
     },
-    updateSelectionByMousePosition: function(offset,dir) {
+    updateSelectionByMousePosition: function(offset) {
 
         var me = this;
         var result = 0;
@@ -240,7 +240,6 @@ Minder.Receiver = kity.createClass('Receiver', {
 
                         result += i;
                         if (offset.x - v.x > v.width / 2) {
-
                             result += 1;
                         }
 
@@ -257,6 +256,13 @@ Minder.Receiver = kity.createClass('Receiver', {
                 return false;
             }else{
 
+                if(first.y > offset.y && l === 0){
+                    result = 0;
+                    return false;
+                }else if(l == me.textData.length - 1 && first.y  + lineHeight < offset.y){
+                    result += arr.length + 1;
+                    return false;
+                }
                 result += arr.length + (arr.length == 1 && arr[0].width === 0 ? 0 : 1);
                 return;
             }

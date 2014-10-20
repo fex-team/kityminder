@@ -1,5 +1,5 @@
 .fui-button, li {
-    .transition(background-color .2s ease);
+    transition: background-color .2s ease;
 }
 
 .fui-disabled,
@@ -9,6 +9,14 @@
     }
 }
 
+input::-ms-clear {
+    display: none;
+}
+
+input[type=search]::-ms-clear {
+    display: inline-block;
+}
+
 #tab-container .fui-button {
     display: inline-block;
     padding: 2px 5px 2px 3px;
@@ -16,7 +24,7 @@
     .fui-label {
         color: @button-text;
         font-size: 12px;
-        vertical-align: baseline;
+        vertical-align: middle;
     }
     
     &.command-button {
@@ -26,7 +34,7 @@
             height: 20px;
             margin-right: 3px;
             display: inline-block;
-            vertical-align: baseline;
+            vertical-align: middle;
         }
         &.large {
             width: 50px;
@@ -70,7 +78,7 @@
             }
         }
         &:active {
-            .transform(scale(0.9));
+            transform: scale(0.9);
             &:hover {
                 background-color: @button-active;
                 .fui-disabled& {
@@ -260,6 +268,7 @@
             height: 20px;
             padding: 2px 4px;
             width: 300px;
+            vertical-align: middle;
         }
     }
     .fui-dialog-foot {
@@ -347,9 +356,9 @@
     }
 }
 
-.fui-popup-menu {
+.fui-popup-menu, .fui-menu.fui-ppanel-position {
     position: absolute;
-    z-index: 9999;
+    z-index: 100000;
     min-width: 160px;
     padding: 5px 0;
     font-size: 12px;
@@ -389,7 +398,7 @@
         font-size: 12px;
         overflow: hidden;
         
-        .transition(none);
+        transition: none;
         
         &:hover, :focus {
             background: #0099f2; /* Old browsers */
@@ -408,6 +417,10 @@
             .fui-label {
                 color: white;
             }
+        }
+
+        .menu-label {
+            display: inline-block;
         }
         
         .shortcut {

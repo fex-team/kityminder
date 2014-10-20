@@ -6,6 +6,25 @@
     color: @ui-fore;
     vertical-align: baseline;
 
+    .loading-tip {
+        text-indent: 100000px;
+        display: inline-block;
+        width: 50px;
+        height: @panel-height;
+        line-height: @panel-height;
+        position: relative;
+        
+        &:before {
+            content: ' ';
+            display: block;
+            position: absolute;
+            left: 9px;
+            top: 7px;
+            .loading-circle(16px);
+            box-shadow: none;
+        }
+    }
+
     .fui-button {
 
         padding: 5px 10px;
@@ -36,12 +55,18 @@
                 height: 30px;
             }
         }
-        &.login-button .fui-icon {
-            width: 25px;
-            height: 25px;
-            margin-right: 3px;
-            vertical-align: baseline;
-            background: url(../images/icons.png) 0 -320px;
+        &.login-button {
+            .fui-icon {
+                border-radius: 100%;
+                width: 25px;
+                height: 25px;
+                margin-right: 3px;
+                vertical-align: baseline;
+                background: url(../images/icons.png) 0 -320px;
+            }
+            .fui-label {
+                display: none;
+            }
         }
     }
 }

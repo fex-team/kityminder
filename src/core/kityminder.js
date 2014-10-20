@@ -3,7 +3,7 @@ var KityMinder = window.KM = window.KityMinder = function() {
         instanceId = 0,
         uuidMap = {};
     return {
-        version: '1.3.0',
+        version: '1.3.1',
         uuid: function(name) {
             name = name || 'unknown';
             uuidMap[name] = uuidMap[name] || 0;

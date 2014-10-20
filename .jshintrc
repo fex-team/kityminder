@@ -8,6 +8,7 @@
     "white": false,
     "quotmark": false,
     "browser": true,
+    "boss": true,
     "predef" : [
         "module",
         "require",

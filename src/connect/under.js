@@ -24,13 +24,13 @@ KityMinder.registerConnectProvider('under', function(node, parent, connection, w
     var p1, p2, p3, mx;
 
     if (side == 'right') {
-        p1 = new kity.Point(pBox.right + 10, startY);
-        p2 = new kity.Point(box.left, underY);
-        p3 = new kity.Point(box.right + 10, underY);
+        p1 = new kity.Point(pBox.right, startY);
+        p2 = new kity.Point(box.left - 10, underY);
+        p3 = new kity.Point(box.right, underY);
     } else {
-        p1 = new kity.Point(pBox.left - 10, startY);
-        p2 = new kity.Point(box.right, underY);
-        p3 = new kity.Point(box.left - 10, underY);
+        p1 = new kity.Point(pBox.left, startY);
+        p2 = new kity.Point(box.right + 10, underY);
+        p3 = new kity.Point(box.left, underY);
     }
 
     mx = (p1.x + p2.x) / 2;

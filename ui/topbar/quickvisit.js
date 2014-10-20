@@ -8,19 +8,33 @@
  */
 KityMinder.registerUI('topbar/quickvisit', function (minder) {
 
-    function btn(name) {
-        return $('<a class="quick-visit-button"></a>')
+    var rightDocks = [];
+
+    function btn(name, dockRight) {
+        var $btn = $('<a class="quick-visit-button"></a>')
             .text(minder.getLang('ui.quickvisit.' + name))
             .attr('title', minder.getLang('ui.quickvisit.' + name))
-            .addClass(name)
-            .appendTo('#panel');
+            .addClass(name);
+
+        if (dockRight) rightDocks.push($btn);
+        else $btn.appendTo('#panel');
+
+        return $btn;
     }
 
     var $new = btn('new'),
         $save = btn('save'),
         $share = btn('share');
 
+    var ret = {
+        $new: $new,
+        $save: $save,
+        $share: $share
+    };
+
     minder.on('uiready', function quickVisit() {
+
+        while (rightDocks.length) $('#panel #search').after(rightDocks.shift());
 
         function quickNew() {
             var $doc = minder.getUI('doc');
@@ -47,6 +61,7 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
             $menu.show();
         }
 
+
         $new.click(quickNew);
         $save.click(quickSave);
         $share.click(quickShare);
@@ -60,5 +75,14 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
             $menu.show();
         });
 
+        ret.ready = true;
+        ret.quickNew = quickNew;
+        ret.quickSave = quickSave;
+        ret.quickShare = quickShare;
+
     });
+
+    ret.add = btn;
+
+    return ret;
 });

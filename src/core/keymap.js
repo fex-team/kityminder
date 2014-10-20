@@ -9,9 +9,17 @@ var keymap = KityMinder.keymap = (function(origin) {
     var aKeyCode = 65;
     var aCharCode = 'a'.charCodeAt(0);
 
+    // letters
     'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(letter) {
         ret[letter] = aKeyCode + (letter.charCodeAt(0) - aCharCode);
     });
+
+    // numbers
+    var n = 9;
+    do {
+        ret[n.toString()] = n + 48;
+    } while(--n);
+
     return ret;
 })({
     'Backspace': 8,
@@ -32,6 +40,7 @@ var keymap = KityMinder.keymap = (function(origin) {
     'End': 35,
     'Home': 36,
 
+    'Insert': 45,
 
     'Left': 37,
     'Up': 38,
@@ -44,7 +53,6 @@ var keymap = KityMinder.keymap = (function(origin) {
         39: 1,
         40: 1
     },
-    'Insert': 45,
 
     'Del': 46,
 
@@ -52,10 +60,20 @@ var keymap = KityMinder.keymap = (function(origin) {
 
     'Cmd': 91,
     'CmdFF': 224,
+    'F1': 112,
     'F2': 113,
     'F3': 114,
     'F4': 115,
+    'F5': 116,
+    'F6': 117,
+    'F7': 118,
+    'F8': 119,
+    'F9': 120,
+    'F10': 121,
+    'F11': 122,
+    'F12': 123,
 
+    '`': 192,
     '=': 187,
     '-': 189,
 

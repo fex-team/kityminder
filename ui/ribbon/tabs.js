@@ -11,7 +11,7 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
     var memory = minder.getUI('memory');
 
     var $tab = new FUI.Tabs({
-        buttons: ['idea', 'appearence'/*, 'view'*/].map(function(key) {
+        buttons: ['idea', 'appearence', 'view'].map(function(key) {
             return minder.getLang('ui.tabs.' + key);
         })
     });
@@ -28,6 +28,7 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
 
     // 隐藏效果
     var lastIndex = 0;
+    var muteRemember = false;
     $tab.on('tabsselect', function(e, info) {
         if (info.index == lastIndex) {
             $container.toggleClass('collapsed');
@@ -36,8 +37,10 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
             $container.removeClass('collapsed');
             $header.removeClass('collapsed');
         }
-        memory.set('ribbon-tab-collapsed', $container.hasClass('collapsed'));
-        memory.set('ribbon-tab-index', info.index);
+        if (!muteRemember) {
+            memory.set('ribbon-tab-collapsed', $container.hasClass('collapsed'));
+            memory.set('ribbon-tab-index', info.index);
+        }
         lastIndex = info.index;
     });
 
@@ -48,7 +51,9 @@ KityMinder.registerUI('ribbon/tabs', function(minder) {
     var rememberIndex = memory.get('ribbon-tab-index');
     var rememberCollapse = memory.get('ribbon-tab-collapsed');
     
+    muteRemember = true;
     $tab.select(rememberIndex || 0);
+    muteRemember = false;
 
     if (rememberCollapse) {
         $container.addClass('collapsed');

@@ -15,6 +15,7 @@
         { path: 'lib/jquery.blob.js',                   pack: 'edit' },
         { path: 'lib/zip.js',                           pack: 'edit' },
         { path: 'lib/ZeroClipboard.min.js',             pack: 'edit' },
+        { path: 'lib/qrcode.js',                        pack: 'edit' },
         { path: 'lib/fui/dev-lib/jhtmls.min.js',        pack: 'edit|share|m-share' },
         { path: 'lib/fui/dist/fui.all.js',              pack: 'edit|share|m-share' },
         { path: 'lib/fio/src/fio.js',                   pack: 'index|edit' },
@@ -122,18 +123,21 @@
         { path: 'ui/memory.js',                         pack: 'edit|share|m-share' },
         { path: 'ui/fuix.js',                           pack: 'edit|share|m-share' },
         { path: 'ui/fiox.js',                           pack: 'edit' },
-        { path: 'ui/doc.js',                            pack: 'edit|share|m-share' },
-        { path: 'ui/contextmenu.js',                    pack: 'edit' },
 
         /* UI 组件 */
         { path: 'ui/widget/commandbutton.js',           pack: 'edit|share' },
         { path: 'ui/widget/commandbuttonset.js',        pack: 'edit' },
         { path: 'ui/widget/commandinputmenu.js',        pack: 'edit' },
         { path: 'ui/widget/commandselectmenu.js',       pack: 'edit' },
+        { path: 'ui/widget/notice.js',                  pack: 'edit|share|m-share' },
         { path: 'ui/widget/friendlytimespan.js',        pack: 'edit' },
         { path: 'ui/widget/locallist.js',               pack: 'edit' },
         { path: 'ui/widget/netdiskfinder.js',           pack: 'edit' },
         { path: 'ui/widget/menutab.js',                 pack: 'edit|share|m-share' },
+
+        /* 基本业务 */
+        { path: 'ui/doc.js',                            pack: 'edit|share|m-share' },
+        { path: 'ui/contextmenu.js',                    pack: 'edit|share' },
 
         /* 视野导航 */
         { path: 'ui/nav.js',                            pack: 'edit|share' },
@@ -165,11 +169,13 @@
 
         /* UI 菜单 - 帮助 */
         { path: 'ui/menu/help/help.js',                 pack: 'edit|share'},
+        { path: 'ui/menu/help/feedback.js',             pack: 'edit|share'},
 
         /* UI Top Bar */
-        { path: 'ui/topbar/quickvisit.js',              pack: 'edit' },
+        { path: 'ui/topbar/quickvisit.js',              pack: 'edit|share' },
         { path: 'ui/topbar/history.js',                 pack: 'edit' },
         { path: 'ui/topbar/user.js',                    pack: 'edit' },
+        { path: 'ui/topbar/feedback.js',                pack: 'edit|share' },
         { path: 'ui/topbar/search.js',                  pack: 'edit|share' },
         { path: 'ui/topbar/switch-view.js',             pack: 'm-share' },
         { path: 'ui/topbar/m-logo.js',                  pack: 'm-share' },
@@ -198,6 +204,7 @@
         { path: 'ui/ribbon/appearence/color.js',        pack: 'edit' },
 
         /* UI Ribbon「视图」面板 */
+        { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
         { path: 'ui/ribbon/view/level.js',              pack: 'edit' }
     ];
 

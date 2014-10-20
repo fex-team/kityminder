@@ -20,7 +20,7 @@ KityMinder.registerModule('Select', function() {
         return {
             selectStart: function(e) {
                 // 只接受左键
-                if (e.originEvent.button) return;
+                if (e.originEvent.button || e.originEvent.altKey) return;
 
                 // 清理不正确状态
                 if (startPosition) {
@@ -107,7 +107,7 @@ KityMinder.registerModule('Select', function() {
             });
         },
         'events': {
-            'normal.mousedown textedit.mousedown inputready.mousedown': function(e) {
+            'mousedown': function(e) {
 
                 var downNode = e.getTargetNode();
 
@@ -140,8 +140,8 @@ KityMinder.registerModule('Select', function() {
                     lastDownPosition = e.getPosition(this.getRenderContainer());
                 }
             },
-            'normal.mousemove textedit.mousemove inputready.mousemove': marqueeActivator.selectMove,
-            'normal.mouseup textedit.mouseup inputready.mouseup': function(e) {
+            'mousemove': marqueeActivator.selectMove,
+            'mouseup': function(e) {
                 var upNode = e.getTargetNode();
 
                 // 如果 mouseup 发生在 lastDownNode 外，是无需理会的
@@ -158,10 +158,7 @@ KityMinder.registerModule('Select', function() {
             //全选操作
             'normal.keydown inputready.keydown':function(e){
 
-
-                var keyEvent = e.originEvent;
-
-                if ( (keyEvent.ctrlKey || keyEvent.metaKey) && keymap.a == keyEvent.keyCode){
+                if ( e.isShortcutKey('ctrl+a') ){
                     var selectedNodes = [];
 
                     this.getRoot().traverse(function(node){

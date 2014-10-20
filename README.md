@@ -12,43 +12,29 @@ KityMinder 基于 SVG 技术实现，支持绝大多数的主流浏览器，包�
 1. Chrome
 2. Firefox
 3. Safari
-4. IE9+<sup>*</sup>
-
-*: IE9 不支持部分导出功能。
+4. Internet Explorer 10 或以上
 
 ## 线上版本
 
 产品地址：[http://naotu.baidu.com](http://naotu.baidu.com)
 
-注意：由于历史原因，有三个发布过的公开地址：
-
-1. [~~http://fex-team.baidu.com/kityminder/dist~~](http://fex-team.baidu.com/kityminder/dist)
-2. [~~http://kitygraph.github.io/kityminder/dist~~](http://kitygraph.github.io/kityminder/dist)
-3. [http://fex.baidu.com/kityminder/dist](http://fex.baidu.com/kityminder/dist)
-
-第 1 个地址已经失效;
-
-第 2 个地址不再维护更新（原因是我们项目地址迁移到了 fex-team）;
-
-第 3 个地址是更新频率最高的地址，新功能可以在这里尝鲜;
-
-[产品地址](http://naotu.baidu.com)已经稳定，请大家放心使用。地址变动频繁带来的不便，请谅解。
-
 ## 依赖说明
 
-KityMinder 依赖 Kity 库。刚下载的压缩包或者刚从 github 拉下来的代码会有一个空的 Kity 目录。要运行调试，必须加载 Kity 的依赖：
-
-1. 如果你下载的是 KityMinder 的压缩包，那么需要手动下载 [Kity](http://fex.baidu.com/kityminder/kity/dist/kity.js) 库到 kity/dist/kity.js
-
-2. 如果你是从 github 上拉源代码下来的，那么可以更新一下子模块：
+KityMinder 依赖 Kity、FIO、FUI 库。需要二次开发 KityMinder，需要先从 Github 上拉代码下来：
 
 ```bash
-cd YOUR_KITYMINDER_PATH
+git clone https://github.com/fex-team/kityminder.git
+```
+
+紧接着，需要初始化并更新子模块：
+
+```bash
 git submodule init
 git submodule update
 ```
 
 ## 联系我们
 
+问题和建议反馈：[Github Issues](https://github.com/fex-team/kityminder/issues/new)
 邮件组: kity@baidu.com
-讨论群: 374918234
+QQ 讨论群: 374918234

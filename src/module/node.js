@@ -106,7 +106,7 @@ KityMinder.registerModule('NodeModule', function() {
             'appendsiblingnode': 'normal::Enter',
             'appendchildnode': 'normal::Insert|Tab',
             'editnode': 'normal::F2',
-            'removenode': 'normal::Delete|Backspace'
+            'removenode': 'normal::Del|Backspace'
         }
     };
 });

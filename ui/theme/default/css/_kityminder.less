@@ -35,6 +35,9 @@ html, body {
     &.maximize {
         top: 40px;
     }
+    &:focus {
+/*         box-shadow: inset 0 0 10px fadeOut(black, 0.5); */
+    }
     -moz-user-select: none;
 }
 #tab-container.collapsed + #kityminder,
@@ -42,12 +45,23 @@ html, body {
     top: 40px;
 }
 
+.fullscreen #panel {
+    transform: translate(0, -101px);
+}
+
+.fullscreen #kityminder {
+    top: 0 !important;
+}
+
 #panel {
     background: @ui-color;
     font-family: 'Hiragino Sans GB', 'Arial', 'Microsoft Yahei';
     height: @panel-height;
-    overflow: visible;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
     position: relative;
+    transition: transform .7s ease;
+    z-index: 11;
 
     h1 {
         font-size: 14px;

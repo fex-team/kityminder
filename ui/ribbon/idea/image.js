@@ -28,31 +28,35 @@ KityMinder.registerUI('image', function(minder) {
     var $imageDialog = new FUI.Dialog({
         width: 500,
         height: 400,
+        prompt: true,
         caption: minder.getLang('ui.image')
     }).appendTo(document.getElementById('content-wrapper'));
-
-    $imageDialog.on('ok', function() {
-        minder.execCommand('image', $url.val());
-    });
-
-    $imageDialog.on('open', function() {
-        $url.val(minder.queryCommandValue('image'));
-        $preview.attr('src', '');
-        error(false);
-    });
 
     var $dialogBody = $($imageDialog.getBodyElement());
 
     $dialogBody.html([
-        '<p><label>图片地址：</label><input type="url" class="image-url" /></p>',
-        '<p><label>提示文本：</label><input type="text" class="image-title /"></p>',
+        '<p><label>图片地址：</label><input type="url" class="image-url fui-widget fui-selectable" /></p>',
+        '<p><label>提示文本：</label><input type="text" class="image-title fui-widget fui-selectable" /></p>',
         '<img class="image-preview" src="" style="max-height: 200px;" />'
     ].join(''));
 
     var $url = $dialogBody.find('.image-url');
+    var $title = $dialogBody.find('.image-title');
     var $preview = $dialogBody.find('.image-preview');
     var $ok = $imageDialog.getButton(0);
     var $errorMsg = $('<span class="validate-error"></span>');
+
+    $imageDialog.on('ok', function() {
+        minder.execCommand('image', $url.val(), $title.val());
+    });
+
+    $imageDialog.on('open', function() {
+        var image = minder.queryCommandValue('image');
+        $url.val(image.url);
+        $title.val(image.title);
+        $preview.attr('src', image.url || '');
+        error(false);
+    });
 
     function error(value) {
         if (value) {

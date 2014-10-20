@@ -13,6 +13,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     var $eve = minder.getUI('eve');
     var $doc = minder.getUI('doc');
     var ret = $eve.setup({});
+    var notice = minder.getUI('widget/notice');
 
     /* extension => protocol */
     var supports = {};
@@ -39,6 +40,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     /* 文件名 */
     var $filename = $('<input>')
+        .addClass('fui-widget fui-selectable')
         .attr('type', 'text')
         .attr('placeholder', minder.getLang('ui.filename'))
         .attr('title', minder.getLang('ui.filename'))
@@ -81,20 +83,26 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     ret.quickSave = quickSave;
 
     window.onbeforeunload = function() {
-        var noask = window.location.href.indexOf('noask') > 0;
-        if (!$doc.checkSaved() && !noask)
+        var noask = ret.mute || window.location.href.indexOf('noask') > 0;
+        if (!$doc.checkSaved(true) && !noask)
             return minder.getLang('ui.unsavedcontent', '* ' + $doc.current().title);
     };
 
-    var autoSaveDuration = minder.getOptions('autoSave') || 10;
+    var autoSaveDuration = minder.getOptions('autoSave');
 
+    if (autoSaveDuration !== false) {
+        autoSaveDuration = isNaN(autoSaveDuration) ? 3000 : (autoSaveDuration * 1000);
+        autoSave();
+    }
 
-    setTimeout(autoSave, autoSaveDuration * 1000);
+    var autoSaveTimer = 0;
 
     function autoSave() {
-        saveCurrent().then(function() {
-            setTimeout(autoSave, autoSaveDuration * 1000);
-        });
+        function lazySave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(saveCurrent, autoSaveDuration);
+        }
+        $doc.on('docchange', lazySave);
     }
 
     // 快速保存
@@ -112,11 +120,11 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     function saveCurrent() {
         var doc = $doc.current();
 
-        if (doc.source != 'netdisk' || doc.saved) return Promise.resolve();
+        if (doc.source != 'netdisk' || doc.saved ) return Promise.resolve();
 
         var $title = minder.getUI('topbar/title').$title;
         $filename.val(doc.title);
-        return doSave(doc.path, doc.protocol, doc, $title);
+        return doSave(doc.path, doc.protocol, doc, $title, 'leaveTheMenu');
     }
 
     function getSaveContext() {
@@ -153,42 +161,53 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         }
     }
 
-    var saving = false;
+    var saving = 0;
 
-    function doSave(path, protocol, doc, $mask) {
+    function doSave(path, protocol, doc, $mask, leaveTheMenu, msg) {
 
-        // if (saving) return;
+        if (saving) return;
 
         saving = true;
 
         if ($mask) $mask.addClass('loading');
 
-        return minder.exportData(protocol).then(function(data) {
-
+        function upload(data) {
             return fio.file.write({
                 path: path,
                 content: data,
                 ondup: fio.file.DUP_OVERWRITE
             });
+        }
 
-        }).then(function() {
+        function finish(file) {
 
-            if ($mask) $mask.removeClass('loading');
+            if (!file.modifyTime) throw new Error('File Save Error');
 
-            $menu.hide();
+            if (!leaveTheMenu) {
+                $menu.hide();
+            }
 
-            doc.path = path;
-            doc.title = $filename.val();
+            doc.path = file.path;
+            doc.title = file.filename;
             doc.source = 'netdisk';
+            doc.protocol = protocol;
 
             $doc.save(doc);
 
-            setTimeout($finder.list, 500);
+            notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
 
-        })['catch'](function(e) {
-            window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
+            setTimeout(function() {
+                $finder.list($finder.pwd(), true);
+            }, 1499);
 
-        }).then(function(e) {
+        }
+
+        function error(e) {
+            notice.error('err_save', e);
+        }
+
+        return minder.exportData(protocol).then(upload).then(finish, error).then(function() {
+            if ($mask) $mask.removeClass('loading');
             saving = false;
         });
     }

@@ -42,7 +42,7 @@
     
     .dock;
     overflow: hidden;
-    .transform(translate3d(0, -100%, 0));
+    transform: translate3d(0, -100%, 0);
     transform-origin: 0 0;
     opacity: 0;
     -webkit-transition: opacity .2s ease, -webkit-transform .2s ease;
@@ -51,16 +51,16 @@
 
     &.show {
         opacity: 1;
-        .transform(translate3d(0, 0, 0));
+        transform: translate3d(0, 0, 0);
     }
     
     .slide-in() {
-        .transform(translateX(-(@left-width)) translateZ(0));
+        transform: translateX(-(@left-width)) translateZ(0);
         -webkit-transition: -webkit-transform .7s ease, opacity .5s ease;
         transition: transform .7s ease, opacity .5s ease;
 
         .show& {
-            .transform(translateX(0) translateZ(0));
+            transform: translateX(0) translateZ(0);
             -webkit-transition: -webkit-transform .7s ease, opacity .5s ease;
             transition: transform .7s ease, opacity .5s ease;
         }
@@ -268,9 +268,34 @@
                                 
                             }
                         }
+
+                        animation: slideRight 0.3s ease;
+                        animation-fill-mode: backward;
+                        animation-direction: reverse;
+
+                        &.fui-hide {
+                            animation-fill-mode: forward;
+                            animation-direction: normal;
+                        }
                     }
                 }
             }
         }
+    }
+}
+@keyframes slideLeft {
+
+}
+@keyframes slideRight {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+        display: block !important;
+    }
+
+    100% {
+        transform: translate(50px, 0);
+        opacity: 0;
+        display: none !important;
     }
 }

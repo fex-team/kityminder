@@ -15,7 +15,7 @@ KityMinder.registerUI('nav', function(minder) {
     var $commandbutton = minder.getUI('widget/commandbutton');
 
     var $zoomIn = $commandbutton.generate('zoom-in').appendTo($navBar[0]);
-    var $zoomPan = createZoomPan().appendTo($navBar);
+    var $zoomPan = createZoomPan($navBar);
     var $zoomOut = $commandbutton.generate('zoom-out').appendTo($navBar[0]);
 
     var $previewNavigator = createViewNavigator();
@@ -27,31 +27,36 @@ KityMinder.registerUI('nav', function(minder) {
 
     var $previewTrigger = createPreviewTrigger($previewNavigator).appendTo($navBar);
 
-    function createZoomPan() {
-        var $pan = $('<div>').addClass('zoom-pan');
+    function createZoomPan($parent) {
+        var $pan = $('<div>').addClass('zoom-pan').appendTo($parent);
         var zoomStack = minder.getOptions('zoom');
         var minValue = zoomStack[0];
         var maxValue = zoomStack[zoomStack.length - 1];
         var valueRange = maxValue - minValue;
 
+        var totalHeight = $pan.height();
         function getHeight(value) {
-            return (100 - (value - minValue) / valueRange * 100) + '%';
+            return (1 - (value - minValue) / valueRange) * totalHeight;
         }
 
         var $origin = $('<div>')
             .addClass('origin')
             .appendTo($pan)
-            .css('top', getHeight(100));
+            .css('y', getHeight(100));
 
         var $indicator = $('<div>')
             .addClass('indicator')
             .appendTo($pan)
-            .css('top', getHeight(100));
+            .css('y', getHeight(100));
+
+        function indicate(value) {
+            $indicator.animate({
+                'y': getHeight(value)
+            }, 200);
+        }
 
         minder.on('zoom', function(e) {
-            $indicator.animate({
-                'top': getHeight(e.zoom)
-            }, 100);
+            indicate(e.zoom);
         });
 
         $origin.click(function() {
@@ -86,6 +91,7 @@ KityMinder.registerUI('nav', function(minder) {
         $previewNavigator.show = function() {
             $.fn.show.call(this);
             bind();
+            updateContentView();
             updateVisibleView();
         };
 

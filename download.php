@@ -20,12 +20,20 @@ if (isset($_REQUEST['content'])) {
     if (!$filename) {
         $filename = "kikyminder";
     }
+    if (isset($_REQUEST['iehack'])) {
+        $filename = urlencode($filename);
+    }
 
     header("Content-type: application/octet-stream; charset=utf8; name=".urlencode($filename));
     header("Accept-Length: ".strlen($content));
     header("Content-Length: ".strlen($content));
-    header("Content-Disposition: attachment; filename=".urlencode($filename));
+    header("Content-Disposition: attachment; filename=".$filename);
     header('Content-Description: File Transfer');
+
+    if (isset($_REQUEST['stamp'])) {
+        setcookie($_REQUEST['stamp'], 1, time() + 30);
+    }
+
     echo $content;
 
 } else {

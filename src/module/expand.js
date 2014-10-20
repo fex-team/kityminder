@@ -76,8 +76,12 @@ KityMinder.registerModule('Expand', function() {
         
         if (!changed) return;
 
-        var vo = node.getVertexOut();
+        node.renderTree().getMinder().layout(100);
 
+        /* 如何加展开效果：
+
+        var vo = node.getVertexOut();
+        
         if (state == STATE_EXPAND) {
 
             var m = node.getGlobalLayoutTransform().clone().translate(vo.x, vo.y);
@@ -99,6 +103,7 @@ KityMinder.registerModule('Expand', function() {
             });
 
         }
+        */
     }
 
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
@@ -146,7 +151,7 @@ KityMinder.registerModule('Expand', function() {
             });
         },
         queryState: function(km) {
-            return 0;
+            return !km.getSelectedNode() ? 0 : -1;
         }
     });
     var CollapseNodeCommand = kity.createClass('CollapseNodeCommand', {
@@ -158,7 +163,7 @@ KityMinder.registerModule('Expand', function() {
             });
         },
         queryState: function(km) {
-            return 0;
+            return !km.getSelectedNode() ? 0 : -1;
         }
     });
     var Expander = kity.createClass('Expander', {
@@ -166,9 +171,9 @@ KityMinder.registerModule('Expand', function() {
 
         constructor: function(node) {
             this.callBase();
-            this.radius = 5;
+            this.radius = 6;
             this.outline = new kity.Circle(this.radius).stroke('gray').fill('white');
-            this.sign = new kity.Path().stroke('black');
+            this.sign = new kity.Path().stroke('gray');
             this.addShapes([this.outline, this.sign]);
             this.initEvent(node);
             this.setId(KityMinder.uuid('node_expander'));
@@ -228,16 +233,16 @@ KityMinder.registerModule('Expand', function() {
 
             expander.setState(visible && node.children.length ? node.getData(EXPAND_STATE_DATA) : 'hide');
 
-            var vector = node.getLayoutVectorOut().normalize(expander.radius + node.getStyle('stroke-width'));
-            var position = node.getVertexOut().offset(vector);
+            var vector = node.getLayoutVectorIn().normalize(expander.radius + node.getStyle('stroke-width'));
+            var position = node.getVertexIn().offset(vector.reverse());
 
             this.expander.setTranslate(position);
         }
     });
     return {
         commands: {
-            'ExpandNode': ExpandNodeCommand,
-            'CollapseNode': CollapseNodeCommand
+            'expandtoleaf': ExpandNodeCommand,
+            'collapsetolevel1': CollapseNodeCommand
         },
         events: {
             'layoutapply': function(e) {
@@ -271,6 +276,17 @@ KityMinder.registerModule('Expand', function() {
         },
         renderers: {
             outside: ExpanderRenderer
+        },
+        contextmenu: [{
+            command: 'expandtoleaf'
+        }, {
+            command: 'collapsetolevel1'
+        }, {
+            divider: true
+        }],
+        commandShortcutKeys: {
+            'expandtoleaf': 'Alt+`',
+            'collapsetolevel1': 'Alt+1'
         }
     };
 });

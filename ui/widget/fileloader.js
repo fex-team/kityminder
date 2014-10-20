@@ -45,7 +45,8 @@ KityMinder.registerUI('widget/fileloader', function(minder) {
     }
 
     function error(err) {
-        window.alert('加载文件失败：' + err.message);
+        var notice = minder.getUI('widget/notice');
+        notice.error('err_localfile_read', err);
         $container.removeClass('loading');
     }
 

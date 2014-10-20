@@ -17,7 +17,7 @@ kity.extendClass(Minder, (function() {
         },
 
         getTemplate: function() {
-            return this._template || null;
+            return this._template || 'default';
         },
 
         setTemplate: function(name) {
@@ -25,7 +25,7 @@ kity.extendClass(Minder, (function() {
         },
 
         getTemplateSupport: function(method) {
-            var supports = KityMinder._templates[this._template];
+            var supports = KityMinder._templates[this.getTemplate()];
             return supports && supports[method];
         },
 

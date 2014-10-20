@@ -13,7 +13,12 @@ Utils.extend(KityMinder, {
 
         /* 脑图数据升级 */
         function c_120_130(json) {
-
+            traverse(json, function(node) {
+                var data = node.data;
+                delete data.layout_bottom_offset;
+                delete data.layout_default_offset;
+                delete data.layout_filetree_offset;
+            });
         }
 
         /**
@@ -57,6 +62,8 @@ Utils.extend(KityMinder, {
             case '1.1.3':
                 c_113_120(json);
             case '1.2.0':
+            case '1.2.1':
+                c_120_130(json);
         }
 
         return json;

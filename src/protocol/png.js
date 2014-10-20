@@ -13,6 +13,7 @@ if (!kity.Browser.ie) {
                 image.onerror = function(err) {
                     reject(err);
                 };
+                image.crossOrigin = '';
                 image.src = url;
             });
         }
@@ -53,19 +54,25 @@ if (!kity.Browser.ie) {
 
             svgXml = $('<div></div>').append($svg).html();
 
+            // Dummy IE
+            svgXml = svgXml.replace(' xmlns="http://www.w3.org/2000/svg" xmlns:NS1="" NS1:ns1:xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:NS2="" NS2:xmlns:ns1=""', '');
+
             // svg 含有 &nbsp; 符号导出报错 Entity 'nbsp' not defined
             svgXml = svgXml.replace(/&nbsp;/g, '&#xa0;');
 
             blob = new Blob([svgXml], {
-                type: 'image/svg+xml;charset=utf-8'
+                type: 'image/svg+xml'
             });
 
             svgUrl = DomURL.createObjectURL(blob);
 
+            //svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
+
             return {
                 width: width,
                 height: height,
-                dataUrl: svgUrl
+                dataUrl: svgUrl,
+                xml: svgXml
             };
         }
 
@@ -109,11 +116,27 @@ if (!kity.Browser.ie) {
             }
 
             function drawSVG() {
-                return loadImage(svgDataUrl).then(function(svgImage) {
-                    drawImage(ctx, svgImage, padding, padding);
-                    DomURL.revokeObjectURL(svgDataUrl);
-                    return generateDataUrl(canvas);
-                });
+                if (typeof(window.canvg) != 'undefined') {
+                    return new Promise(function(resolve) {
+                        window.canvg(canvas, svgInfo.xml, {
+                            ignoreMouse: true, 
+                            ignoreAnimation: true, 
+                            ignoreDimensions: true, 
+                            ignoreClear: true, 
+                            offsetX: padding, 
+                            offsetY: padding,
+                            renderCallback: function() {
+                                resolve(generateDataUrl(canvas));
+                            } 
+                        });
+                    });
+                } else {
+                    return loadImage(svgDataUrl).then(function(svgImage) {
+                        drawImage(ctx, svgImage, padding, padding);
+                        DomURL.revokeObjectURL(svgDataUrl);
+                        return generateDataUrl(canvas);
+                    });
+                }
             }
 
             if (bgUrl) {

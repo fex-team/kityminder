@@ -12,6 +12,7 @@ KityMinder.registerUI('doc', function(minder) {
     var ret = minder.getUI('eve').setup({});
     var current = { saved: true };
     var loading = false;
+    var notice = minder.getUI('widget/notice');
 
     /**
      * 加载文档
@@ -53,10 +54,11 @@ KityMinder.registerUI('doc', function(minder) {
 
         })['catch'](function(e) {
             current = restore;
-            alert('加载文件失败：' + doc.title);
-            console.error((new Error()).stack);
+            notice.error('err_doc_resolve', e);
         }).then(function(doc) {
             loading = false;
+            if (doc)
+                notice.info( minder.getLang('ui.load_success', doc.title ) );
             return doc;
         });
     }
@@ -74,8 +76,9 @@ KityMinder.registerUI('doc', function(minder) {
         return current;
     }
 
-    function checkSaved() {
+    function checkSaved(noConfirm) {
         if (!fio.user.current()) return true;
+        if (noConfirm) return current.saved;
         return current.saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
     }
 

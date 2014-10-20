@@ -19,6 +19,8 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
 
     var $addInput = new FUI.Input().appendTo($resourcePanel);
 
+    $addInput.getElement().type = 'text';
+
     var $addButton = new FUI.Button({
         label: '添加'
     }).appendTo($resourcePanel);
@@ -31,8 +33,9 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
     function addResource() {
         var resource = $addInput.getValue();
         var origin = minder.queryCommandValue('resource');
-        if (resource) {
-            origin.push(resource);
+        if (/\S/.test(resource)) {
+            if (!~origin.indexOf(resource)) origin.push(resource);
+            origin.sort();
             minder.execCommand('resource', origin);
         }
         $addInput.setValue(null);
@@ -68,6 +71,23 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
         var resource = minder.queryCommandValue('resource');
         var used = minder.getUsedResource();
 
+        used.sort();
+
+        switch (minder.queryCommandState('resource')) {
+            case 0:
+                $addInput.enable();
+                $addButton.enable();
+                $resourceDrop.enable();
+                $ul.find('input[type=checkbox]').removeAttr('disabled');
+                break;
+            case -1:
+                $addInput.disable();
+                $addButton.disable();
+                $resourceDrop.disable();
+                $ul.find('input[type=checkbox]').attr('disabled', true);
+                break;
+        }
+
         if (!changed(resource, used)) return;
 
         var delta = used.length - $ul.children().length;
@@ -91,20 +111,6 @@ KityMinder.registerUI('ribbon/idea/resource', function(minder) {
                 backgroundColor: ~resource.indexOf(name) ? color : color.dec('a', 0.85).toRGBA()
             });
         });
-
-        switch (minder.queryCommandState('resource')) {
-            case 0:
-                $addInput.enable();
-                $addButton.enable();
-                $resourceDrop.enable();
-                $ul.find('input[type=checkbox]').removeProp('disabled');
-                break;
-            case -1:
-                $addInput.disable();
-                $addButton.disable();
-                $resourceDrop.disable();
-                $ul.find('input[type=checkbox]').prop('disabled', 'disabled');
-        }
     }
 
     minder.on('interactchange', update);
