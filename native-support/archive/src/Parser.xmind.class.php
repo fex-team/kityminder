@@ -198,7 +198,7 @@ class XMindParser {
 
     private static function move ( $meta, $path ) {
 
-        $config = require( diranme( __FILE__ ) . '/../config.php' );
+        $config = require( dirname( __FILE__ ) . '/../config.php' );
         $savepath = $config[ 'savepath' ];
 
         if ( !file_exists( $savepath ) ) {
