@@ -2901,6 +2901,152 @@ ul.resource-list li {
   border-radius: 4px;
   margin: 3px;
 }
+#img_panels {
+  top: -1px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 240px;
+  position: relative;
+  clear: both;
+  z-index: 60;
+  padding-left: 5px;
+  padding-top: 20px;
+}
+#img_panels .fui-container {
+  width: 450px;
+}
+#img_panels .searchBar {
+  width: 100%;
+  height: 30px;
+  margin-bottom: 5px;
+  padding: 0px;
+}
+#img_searchTxt {
+  margin-left: 5px;
+  padding-left: 5px;
+  width: 300px;
+  height: 21px;
+  line-height: 21px;
+  padding: 3px 6px;
+  font-size: 14px;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+          transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  float: left;
+}
+#img_searchBtn {
+  color: white;
+  border-color: #285e8e;
+  background-color: #3b97d7;
+  display: inline-block;
+  margin: 0 5px;
+  padding: 4px 10px;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  font-size: 14px;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  vertical-align: top;
+  float: right;
+}
+#img_buttons {
+  height: 26px;
+  position: relative;
+  z-index: 70;
+}
+#img_buttons .fui-button {
+  padding: 0px 5px;
+  margin-right: 5px;
+  height: 24px;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 30px;
+  cursor: pointer;
+  background: #ccc;
+}
+#img_buttons .fui-button.fui-selected {
+  height: 26px;
+  background: #fff;
+}
+#img_searchList {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  clear: both;
+}
+#img_searchListUl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  clear: both;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  zoom: 1;
+  position: relative;
+}
+#img_searchListUl li {
+  list-style: none;
+  float: left;
+  display: block;
+  width: 115px;
+  margin: 5px 10px 5px 20px;
+  padding: 0;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: relative;
+  vertical-align: top;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+  filter: alpha(opacity=100);
+  -moz-opacity: 1;
+  opacity: 1;
+  border: 2px solid #eee;
+}
+#img_searchListUl li.selected {
+  opacity: 0.4;
+  border: 2px solid #00a0e9;
+}
+#img_searchListUl li p {
+  background-color: #eee;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  height: 115px;
+  overflow: hidden;
+}
+#img_searchListUl li a {
+  color: #999;
+  border-top: 1px solid #F2F2F2;
+  background: #FAFAFA;
+  text-align: center;
+  display: block;
+  padding: 0 5px;
+  width: 105px;
+  height: 32px;
+  line-height: 32px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  overflow: hidden;
+  word-break: break-all;
+}
 #template-panel > .fui-panel-content > .fui-label-panel-content > .fui-drop-panel {
   width: 65px;
   height: 50px;
