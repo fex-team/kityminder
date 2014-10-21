@@ -179,6 +179,8 @@ KityMinder.registerProtocol('xmind', function(minder) {
                 }
             }
 
+            return download();
+
             if (options && options.download) {
                 return download();
             } else {
