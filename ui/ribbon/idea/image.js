@@ -26,9 +26,10 @@ KityMinder.registerUI('image', function(minder) {
     $imageButtonMenu.bindCommandState(minder, 'image');
 
     var $imageDialog = new FUI.Dialog({
-        width: 500,
-        height: 400,
+        width: 600,
+        height: 600,
         prompt: true,
+        className: 'image-dialog',
         caption: minder.getLang('ui.image')
     }).appendTo(document.getElementById('content-wrapper'));
 
@@ -36,7 +37,7 @@ KityMinder.registerUI('image', function(minder) {
 
     // writed by yangxiaohu 2014-10-20
     var tabs = new FUI.Tabs( {
-        buttons: [ " 插入图片", "图片搜索" ]
+        buttons: [ "图片搜索", "插入图片" ]
     } );
 
     $dialogBody.html([
@@ -45,14 +46,15 @@ KityMinder.registerUI('image', function(minder) {
         ].join(''));
     tabs.appendButtonTo( document.getElementById( 'img_buttons') );
     tabs.appendPanelTo( document.getElementById( 'img_panels'));
-    tabs.getPanel(0).getContentElement().innerHTML =  ['<p><label>图片地址：</label><input type="url" class="image-url fui-widget fui-selectable" /></p>',
-        '<p><label>提示文本：</label><input type="text" class="image-title fui-widget fui-selectable" /></p>',
-        '<img class="image-preview" src="" style="max-height: 200px;" />'].join('');
 
-    tabs.getPanel(1).getContentElement().innerHTML =  ['<div class="searchBar"><input id="img_searchTxt" type="text" placeholder="请输入搜索关键词">',
-        '<input id="img_searchBtn" type="button" value="百度一下"></div>',
+    tabs.getPanel(0).getContentElement().innerHTML =  ['<div class="searchBar"><label>关键字：</label><input id="img_searchTxt" type="text" placeholder="请输入搜索关键词">',
+        '<button id="img_searchBtn">百度一下</button></div>',
         '<div id="img_searchList"><ul id="img_searchListUl"></ul></div>'
         ].join('');
+
+    tabs.getPanel(1).getContentElement().innerHTML =  ['<p><label>图片地址：</label><input type="url" class="image-url fui-widget fui-selectable" /></p>',
+        '<p><label>提示文本：</label><input type="text" class="image-title fui-widget fui-selectable" /></p>',
+        '<img class="image-preview" src="" style="max-height: 200px;" />'].join('');
 
     //the content below is from xujinquan's ueditor
     /*搜索图片 */
@@ -108,20 +110,13 @@ KityMinder.registerUI('image', function(minder) {
 
             $('#img_searchList').on('click', function(e){
                 var target = e.target || e.srcElement,
-                    li = target.parentNode.parentNode,
-                    curIndex = $(li).index();
+                    $li = $(target).closest('li');
 
-                _this.data.imgUrl = $(li).find('img').attr('src');
-                _this.data.imgTitle = $(li).find('a').attr('title');
+                _this.data.imgUrl = $li.find('img').attr('src');
+                _this.data.imgTitle = $li.find('span').attr('title');
 
-                if (li.tagName.toLowerCase() == 'li') {
-
-                    if ( ! $(li).hasClass('selected')) {
-                        $(li).siblings().removeClass('selected');
-                        $(li).addClass('selected');
-                    }
-
-                }
+                $li.siblings('.selected').removeClass('selected');
+                $li.addClass('selected');
             });
         },
         /* 改变图片大小 */
@@ -171,37 +166,26 @@ KityMinder.registerUI('image', function(minder) {
         },
         /* 添加图片到列表界面上 */
         setList: function (list) {
-            var i, item, p, img, link, _this = this,
+            var i, item, p, img, title, _this = this,
                 listUl = $G('img_searchListUl');
 
             listUl.innerHTML = '';
             if(list.length) {
                 for (i = 0; i < list.length; i++) {
                     item = document.createElement('li');
-                    p = document.createElement('p');
                     img = document.createElement('img');
-                    link = document.createElement('a');
+                    title = document.createElement('span');
 
-                    img.onload = function () {
-                        _this.scale(this, 113, 113);
-                    };
-                    img.width = 113;
                     img.setAttribute('src', list[i].src);
+                    title.innerHTML = list[i].title;
 
-                    link.href = list[i].url;
-                    link.target = '_blank';
-                    link.title = list[i].title;
-                    link.innerHTML = list[i].title;
-
-                    p.appendChild(img);
-                    item.appendChild(p);
-                    item.appendChild(link);
+                    item.appendChild(img);
+                    item.appendChild(title);
                     listUl.appendChild(item);
 
                     img.onerror = function() {
-                        // $(this).parent('li').remove();
-                        $(this).parent().parent().remove();
-                    }
+                        $(this).closest('li').remove();
+                    };
                 }
             } else {
                 listUl.innerHTML = _this.lang.searchRetry;
@@ -241,10 +225,10 @@ KityMinder.registerUI('image', function(minder) {
         var index = tabs.getSelectedIndex();
 
         switch(index) {
-            case 0:
+            case 1:
                 minder.execCommand('image', $url.val(), $title.val());
                 break;
-            case 1:
+            case 0:
                 minder.execCommand('image', searchImage.data.imgUrl, searchImage.data.imgTitle);
                 break;
         }
