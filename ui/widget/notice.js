@@ -13,7 +13,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
 
     var $notice = $('<div>')
             .addClass('notice-widget')
-            .appendTo('#kityminder');
+            .appendTo('#content-wrapper');
     var $mask = $('<div>')
             .addClass('error-mask');
 
@@ -119,6 +119,9 @@ KityMinder.registerUI('widget/notice', function (minder) {
         if (warn) $notice.addClass('warn');
         else $notice.removeClass('warn');
 
+        $notice.css({
+            top: minder.getUI('menu/menu').isVisible() ? $('#main-menu .main-menu-level1').offset().top : $('#kityminder').offset().top + 20
+        });
         $notice.append('<p>' + msg + '</p>');
         $notice.addClass('show');
 
