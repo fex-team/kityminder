@@ -46,8 +46,15 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
             var content = data.shareMinder.data;
 
+            var title = data.path ? data.path.split('/').pop() : data.title;
+
+            title = title || JSON.parse(content).data.text;
+
+            title = minder.getLang('ui.shared_file_title', title);
+
             return $doc.load({
 
+                title: title,
                 source: 'share',
                 content: content,
                 protocol: 'json',
@@ -55,9 +62,6 @@ KityMinder.registerUI('menu/share/view', function (minder) {
                 ownerId: data.uid,
                 ownerName: data.uname
 
-            }).then(function(doc) {
-                var $title = minder.getUI('topbar/title');
-                $title.setTitle('[分享的] ' + $title.getTitle() + ' (只读)');
             });
         }
 

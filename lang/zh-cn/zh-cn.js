@@ -130,6 +130,7 @@ KityMinder.LANG['zh-cn'] = {
         }
     },
     'ui': {
+        'shared_file_title': '[分享的] {0} (只读)',
         'load_share_for_edit': '正在加载分享的文件...',
         'share_sync_success': '分享内容已同步',
         'recycle_clear_confirm': '确认清空回收站么？清空后的文件无法恢复。',
