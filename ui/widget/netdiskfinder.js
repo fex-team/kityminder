@@ -240,15 +240,16 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 if (!$target.hasClass('file-list-item')) {
                     return;
                 }
-                event.dataTransfer.effectAllowed = "move";
-                event.dataTransfer.setDragImage($target.find('.icon').get(0), 12, 12);
+                e.originalEvent.dataTransfer.effectAllowed = "move";
+                e.originalEvent.dataTransfer.setData('text/plain', 'test');
+                e.originalEvent.dataTransfer.setDragImage($target.find('.icon').get(0), 12, 12);
                 $dragging = $target.addClass('dragging');
                 $finder.addClass('drop-mode');
             }
 
             function itemDragEnd(e) {
                 $(e.target).removeClass('dragging');
-                event.dataTransfer.dropEffect = 'move';
+                e.originalEvent.dataTransfer.dropEffect = 'move';
                 e.preventDefault();
                 $finder.removeClass('drop-mode');
             }
