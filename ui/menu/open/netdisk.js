@@ -18,7 +18,7 @@ KityMinder.registerUI('menu/open/netdisk', function(minder) {
     var notice = minder.getUI('widget/notice');
 
     /* 网盘面板 */
-    var $panel = $($open.createSub('netdisk'));
+    var $panel = $($open.createSub('netdisk')).addClass('netdisk-open-panel');
 
     /* extension => protocol */
     var supports = {};

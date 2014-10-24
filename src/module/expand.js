@@ -73,8 +73,6 @@ KityMinder.registerModule('Expand', function() {
         var changed = node.isExpanded() ? (state == STATE_COLLAPSE) : (state == STATE_EXPAND);
         policy = policy || EXPAND_POLICY.KEEP_STATE;
         policy(node, state, policy);
-        
-        if (!changed) return;
 
         node.renderTree().getMinder().layout(100);
 

@@ -13,6 +13,33 @@ KityMinder.registerUI('doc', function(minder) {
     var current = { saved: true };
     var loading = false;
     var notice = minder.getUI('widget/notice');
+    var finder = minder.getUI('widget/netdiskfinder');
+
+    finder.on('mv', trackFileMove);
+
+    function trackFileMove(from, to) {
+
+        if (current.source != 'netdisk') return;
+
+        var fromPath = from.split('/');
+        var toPath = to.split('/');
+
+        function preCommonLength(a, b) {
+            var i = 0;
+            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            return (i in b) ? 0 : i;
+        }
+
+
+        var originPath = current.path.split('/');
+        var clen = preCommonLength(originPath, fromPath);
+        if (clen) {
+            var movedPath = toPath.concat(originPath.slice(clen));
+            current.path = movedPath.join('/');
+            current.title = movedPath.pop();
+            ret.fire('docchange', current);
+        }
+    }
 
     /**
      * 加载文档
@@ -46,9 +73,8 @@ KityMinder.registerUI('doc', function(minder) {
             doc.data = data;
             doc.json = JSON.stringify(data);
 
-            minder.getUI('topbar/title').setTitle(doc.title, doc.saved);
-
             ret.fire('docload', doc);
+            ret.fire('docchange', doc);
 
             return doc;
 
@@ -67,9 +93,10 @@ KityMinder.registerUI('doc', function(minder) {
         current = doc;
         doc.data = minder.exportJson();
         doc.json = JSON.stringify(doc.data);
-        
-        minder.getUI('topbar/title').setTitle(doc.title, doc.saved = true);
+        doc.saved = true;
+
         ret.fire('docsave', doc);
+        ret.fire('docchange', doc);
     }
 
     function getCurrent() {
@@ -87,24 +114,16 @@ KityMinder.registerUI('doc', function(minder) {
         minder.on('contentchange', function() {
             if (loading) return;
 
-            var $title = minder.getUI('topbar/title');
-
             if (current.source != 'netdisk') {
 
                 current.title = minder.getMinderTitle();
-                $title.setTitle(current.title, current.saved = false);
-                ret.fire('docchange', current);
+                current.saved = false;
 
             } else {
-
-                if (current.json != JSON.stringify(minder.exportJson())) {
-                    $title.setSaved(current.saved = false);
-                    ret.fire('docchange', current);
-                } else {
-                    $title.setSaved(current.saved = true);
-                }
-
+                current.saved = current.json == JSON.stringify(minder.exportJson());
             }
+
+            ret.fire('docchange', current);
         });
     }, 1000);
 

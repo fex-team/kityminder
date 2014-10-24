@@ -96,6 +96,7 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
     renderList();
 
     function pushDraft(doc) {
+        if (doc.saved) return;
         if (doc == lastDoc) {
             if (current) {
                 draftList.remove(0);

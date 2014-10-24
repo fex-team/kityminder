@@ -71,6 +71,47 @@ html, body {
         text-align: center;
         font-weight: normal;
         color: @ui-fore;
+        vertical-align: middle;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        span {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        input {
+            outline: none;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            box-shadow: 0 0 3px black;
+            padding: 3px 2px 3px 5px;
+            background: white;
+        }
+
+        &.rename-enabled{
+            cursor: text;
+            &:after {
+                content: ' ';
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                background: url(../images/icons.png) 1px -1110px;
+                vertical-align: middle;
+                position: relative;
+                top: -1px;
+                margin-left: 5px;
+                opacity: 0;
+                transition: opacity ease .3s;
+            }
+        }
+
+        &.rename-enabled:hover:after {
+            opacity: 0.6;
+        }
     
         &.loading {
             &:before {

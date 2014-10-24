@@ -15,6 +15,7 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
     var frdTime = minder.getUI('widget/friendlytimespan');
     var doc = minder.getUI('doc');
     var recentList = minder.getUI('widget/locallist').use('recent');
+    var finder = minder.getUI('widget/netdiskfinder');
 
     /* 网盘面板 */
     var $panel = $($open.createSub('recent')).addClass('recent-file-panel');
@@ -59,7 +60,32 @@ KityMinder.registerUI('menu/open/recent', function(minder) {
     doc.on('docload', addToList);
     doc.on('docsave', addToList);
 
+    finder.on('mv', trackFileMove);
+
     renderList();
+
+    function trackFileMove(from, to) {
+        var fromPath = from.split('/');
+        var toPath = to.split('/');
+
+        function preCommonLength(a, b) {
+            var i = 0;
+            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            return (i in b) ? 0 : i;
+        }
+
+        recentList.forEach(function(item) {
+            var originPath = item.path.split('/');
+            var clen = preCommonLength(originPath, fromPath);
+            if (clen) {
+                var movedPath = toPath.concat(originPath.slice(clen));
+                item.path = movedPath.join('/');
+                item.filename = toPath.pop();
+            }
+        });
+
+        renderList();
+    }
 
     function addToList(doc) {
 

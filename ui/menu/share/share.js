@@ -11,10 +11,18 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     var $share_menu = minder.getUI('menu/menu').createSubMenu('share');
     var $create_menu = $($share_menu.createSub('createshare'));
     var $manage_menu = $($share_menu.createSub('manageshare'));
+    var $share_list = $('<ul>')
+        .attr('id', 'manage-share-list')
+        .appendTo($manage_menu);
     var $doc = minder.getUI('doc');
     var notice = minder.getUI('widget/notice');
+    var finder = minder.getUI('widget/netdiskfinder');
 
     var BACKEND_URL = 'http://naotu.baidu.com/share.php';
+
+    if (window.location.host == 'local.host') {
+        BACKEND_URL = 'http://naotu.baidu.com/share_debug.php'; // 测试环境
+    }
 
     var currentShare = null;
     var shareList = [];
@@ -66,6 +74,51 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             });
         }
     });
+
+    finder.on('mv', trackFileMove);
+
+    function trackFileMove(from, to) {
+        var fromPath = from.split('/');
+        var toPath = to.split('/');
+
+        function preCommonLength(a, b) {
+            var i = 0;
+            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            return (i in b) ? 0 : i;
+        }
+
+        shareListLoaded.then(function(list) {
+            var userChecked = fio.user.check();
+            list.forEach(function(item) {
+                var originPath = item.path.split('/');
+                var clen = preCommonLength(originPath, fromPath);
+                if (clen) {
+
+                    var movedPath = toPath.concat(originPath.slice(clen));
+
+                    userChecked.then(function(user) {
+                        $.pajax({
+                            url: BACKEND_URL,
+                            type: 'POST',
+                            data: {
+                                action: 'move',
+                                ak: user.access_token,
+                                id: item.id || item.shareMinder.id,
+                                path: movedPath.join('/')
+                            }
+                        }).then(function() {
+                            notice.info(minder.getLang('ui.share_sync_success', item.title));
+                        })['catch'](function(e) {
+                            notice.error('err_share_sync_failed', e);
+                        });
+                    });
+                    item.path = movedPath.join('/');
+                }
+            });
+            renderShareList(list);
+
+        });
+    }
 
     function loadShareFile() {
 
@@ -424,12 +477,10 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function renderShareList(list) {
         var frdTime = minder.getUI('widget/friendlytimespan');
-        var $list = $('<ul>')
-            .attr('id', 'manage-share-list')
-            .appendTo($manage_menu);
         if (!list) return;
+        $share_list.empty();
         list.forEach(function(share) {
-            $list.append(buildShareItem(share));
+            $share_list.append(buildShareItem(share));
         });
     }
 

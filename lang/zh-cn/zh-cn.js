@@ -57,6 +57,7 @@ KityMinder.LANG['zh-cn'] = {
         'err_share_data': '加载分享内容出错',
         'err_share_sync_fail': '分享内容同步失败',
         'err_move_file': '文件移动失败',
+        'err_rename': '重命名失败',
 
         'unknownreason': '可能是外星人篡改了代码...',
         'pcs_code': {
@@ -131,12 +132,16 @@ KityMinder.LANG['zh-cn'] = {
     'ui': {
         'load_share_for_edit': '正在加载分享的文件...',
         'share_sync_success': '分享内容已同步',
+        'recycle_clear_confirm': '确认清空回收站么？清空后的文件无法恢复。',
 
         'fullscreen_exit_hint': '按 Esc 或 F11 退出全屏',
 
         'error_detail': '详细信息',
         'copy_and_feedback': '复制并反馈',
         'move_file_confirm': '确定把 "{0}" 移动到 "{1}" 吗？',
+        'rename': '重命名',
+        'rename_success': '<b>{0}</b> 重命名成功',
+        'move_success': '<b>{0}</b> 移动成功',
 
         'command': {
             'appendsiblingnode': '插入同级主题',

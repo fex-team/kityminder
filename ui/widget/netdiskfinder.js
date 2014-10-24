@@ -12,8 +12,23 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
     var eve = minder.getUI('eve');
     var notice = minder.getUI('widget/notice');
     var recycleReady = null;
-
+    var base = '/apps/kityminder';
+    var recyclePath = base + '/.recycle';
+    var moveConfirm = true;
     var instances = [];
+    var Finder = eve.setup({});
+
+    Finder.BASE_PATH = base + '/';
+    Finder.RECYCLE_PATH = recyclePath + '/';
+
+    var SIGNATURE = +new Date();
+
+    Finder.on('mv', function(from, to, signature) {
+        if (signature == SIGNATURE) return;
+        instances.forEach(function(instance) {
+            instance.refresh();
+        });
+    });
 
     /**
      * 生成一个网盘的目录访问组件
@@ -27,8 +42,6 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
         instances.push(finder);
 
-        var base = '/apps/kityminder';
-        var recyclePath = base + '/.recycle';
         var currentPath = base;
 
         var $finder = $('<div class="netdisk-finder"></div>').appendTo($container);
@@ -36,26 +49,37 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         /* 顶部工具栏 */
         var $headbar = $('<div class="head"></div>').appendTo($finder);
 
-            /* 控制按钮 */
-            var $control = $('<div class="control"></div>').appendTo($headbar);
+        /* 控制按钮 */
+        var $control = $('<div class="control"></div>').appendTo($headbar);
 
-                var $mkdir = $('<a></a>')
-                    .text(minder.getLang('ui.mkdir'))
-                    .attr('title', minder.getLang('ui.mkdir'))
-                    .addClass('button mkdir')
-                    .appendTo($control)
-                    .click(mkdir);
+        var $mkdir = $('<a></a>')
+            .text(minder.getLang('ui.mkdir'))
+            .attr('title', minder.getLang('ui.mkdir'))
+            .addClass('button mkdir')
+            .appendTo($control)
+            .click(mkdir);
 
-                var $recycle = $('<a></a>')
-                    .text(minder.getLang('ui.recycle'))
-                    .attr('title', minder.getLang('ui.recycle'))
-                    .addClass('button recycle dir')
-                    .data('file', { path: recyclePath, filename: minder.getLang('ui.recycle')})
-                    .appendTo($control)
-                    .click(recycle);
+        var $recycle = $('<a></a>')
+            .text(minder.getLang('ui.recycle'))
+            .attr('title', minder.getLang('ui.recycle'))
+            .addClass('button recycle dir')
+            .data('file', {
+                path: recyclePath,
+                filename: minder.getLang('ui.recycle')
+            })
+            .appendTo($control)
+            .click(recycle);
 
-            /* 路径导航 */
-            var $nav = $('<div class="nav"></div>').appendTo($headbar);
+        var $recycleClear = $('<a></a>')
+            .text(minder.getLang('ui.recycle_clear'))
+            .attr('title', minder.getLang('ui.recycle_clear'))
+            .addClass('button recycle-clear')
+            .appendTo($control)
+            .click(clearRecycle);
+
+
+        /* 路径导航 */
+        var $nav = $('<div class="nav"></div>').appendTo($headbar);
 
         /* 显示当前目录文件列表 */
         var $list = $('<ul class="file-list"></ul>')
@@ -74,19 +98,102 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         handleClick();
         handleDrag();
         handleNav();
+        handleRename();
+
+        function handleRename() {
+
+            $list.delegate('.file-list-item a.rename-button', 'click', function(e) {
+                var $li = $(e.target).closest('li');
+                $li.find('span.filename').remove();
+                rename($li);
+                $li.addClass('renaming');
+                e.stopPropagation();
+            });
+
+            function rename($li) {
+                rename.onprogress = true;
+                var file = $li.data('file');
+
+                var $input = $('<input>')
+                    .attr('type', 'text')
+                    .addClass('new-dir-name fui-widget fui-selectable')
+                    .val(file.filename)
+                    .appendTo($li);
+
+                $input.on('keydown', function (e) {
+                    if (e.keyCode == 13) return confirm();
+                    if (e.keyCode == 27) {
+                        e.stopPropagation();
+                        return cancel();
+                    }
+                }).on('blur', cancel);
+
+                setTimeout(function() {
+                    $input[0].select();
+                });
+
+                function reset(filename) {
+                    $input.remove();
+                    $li.find('.icon').after('<span class="filename">' + filename + '</span>');
+                    $li.removeClass('renaming');
+                }
+
+                function cancel() {
+                    reset(file.filename);
+                }
+
+                function confirm() {
+                    var newFilename = $input.val();
+                    var newPath = file.parentPath + newFilename;
+
+                    if (file.filename == newFilename) return cancel();
+                    if (fio.file.anlysisPath(newFilename).extension != file.extension) {
+                        $input.addClass('invalid-name');
+                        setTimeout(function () {
+                            $input.removeClass('invalid-name'); 
+                        }, 500);
+                        return $input.select();
+                    }
+
+                    $container.addClass('loading');
+
+                    mv(file.path, newPath).then(function () {
+
+                        var oldPath = file.path;
+                        file.filename = newFilename;
+                        file.path = newPath;
+                        reset(newFilename);
+                        Finder.fire('mv', oldPath, newPath, SIGNATURE);
+                        notice.info(minder.getLang('ui.rename_success', newFilename));
+
+                    })['catch'](function(e) {
+
+                        notice.error('err_rename', e);
+                        cancel();
+
+                    }).then(function() {
+
+                        $container.removeClass('loading');
+                        
+                    });
+                }
+            }
+        }
 
         function handleClick() {
             /* 点击目录中的项目时打开项目 */
             $list.delegate('.file-list-item', 'dblclick', function(e) {
+                if (currentPath == recyclePath + '/') return;
                 if (mkdir.onprogress) return mkdir.onprogress.select();
-                var $file = $(e.target),
+                var $file = $(e.target).closest('li'),
                     file = $file.data('file');
                 if (file) open(file);
             });
             $list.delegate('.file-list-item', 'mousedown', function(e) {
                 if (mkdir.onprogress) return mkdir.onprogress.select();
-                var $file = $(e.target),
+                var $file = $(e.target).closest('li'),
                     file = $file.data('file');
+                if (!file) return;
                 select(file && file.path);
             });
         }
@@ -122,6 +229,11 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 .delegate(dirSelector, 'dragenter', dirDragEnter)
                 .delegate(dirSelector, 'dragleave', dirDragLeave)
                 .delegate(dirSelector, 'drop', dirDrop);
+
+            $list.delegate(fileItemSelector + ' input', 'dragstart', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
 
             function itemDragStart(e) {
                 var $target = $(e.target);
@@ -168,14 +280,17 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 if (destinationPath.indexOf(sourcePath) === 0) return;
 
 
-                if (window.confirm(minder.getLang('ui.move_file_confirm', source.filename, destination.filename))) {
+                if (!moveConfirm || window.confirm(minder.getLang('ui.move_file_confirm', source.filename, destination.filename))) {
                     $container.addClass('loading');
                     recycleReady.then(doMove);
+                    moveConfirm = false;
                 }
 
                 function doMove() {
                     mv(sourcePath, destinationPath).then(function() {
                         $dragging.remove();
+                        Finder.fire('mv', sourcePath, destinationPath, SIGNATURE);
+                        notice.info(minder.getLang('ui.move_success', destination.filename));
                     })['catch'](function(e) {
                         notice.error('err_move_file', e);
                     }).then(function() {
@@ -189,10 +304,32 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             list(recyclePath);
         }
 
+        function createRecycleBin() {
+            return fio.file.mkdir({
+                path: recyclePath
+            });
+        }
+
+        function clearRecycle() {
+            if (!window.confirm(minder.getLang('ui.recycle_clear_confirm'))) return;
+
+            $container.addClass('loading');
+
+            fio.file['delete']({
+                path: recyclePath
+            }).then(function() {
+                return recycleReady = createRecycleBin();
+            }).then(function() {
+                renderList([]);
+                $container.removeClass('loading');
+            });
+        }
+
         function mv(source, destination) {
             return fio.file.move({
                 path: source,
-                newPath: destination
+                newPath: destination,
+                ondup: destination.indexOf(recyclePath) === 0 ? fio.file.DUP_RENAME : fio.file.DUP_FAIL
             });
         }
 
@@ -236,7 +373,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     }).then(function() {
                         return new Promise(function(resolve) {
                             setTimeout(function() {
-                                resolve(list(currentPath, true));
+                                resolve(refresh());
                             }, 200);
                         });
                     }, function(e) {
@@ -294,6 +431,10 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             });
         }
 
+        function refresh() {
+            return list(currentPath, true);
+        }
+
         /**
          * 列出指定目录的文件
          */
@@ -311,8 +452,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
             updateNav();
 
-            return Promise.all([listPromise, transitPromise]).then(function(values) {
-                var files = values[0];
+            function checkRecycleBin(files) {
                 if (!recycleReady && path == base) {
                     for (var i = 0; i < files.length; i++) {
                         if (files[i].path == recyclePath) {
@@ -320,11 +460,16 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                         }
                         break;
                     }
-                    recycleReady = recycleReady || fio.file.mkdir({
-                        path: base + '/.recycle'
-                    });
+                    recycleReady = recycleReady || createRecycleBin();
                 }
+            }
+
+            return Promise.all([listPromise, transitPromise]).then(function(values) {
+
+                var files = values[0];
+                checkRecycleBin(files);
                 return renderList(files);
+
             }, function(error) {
 
                 var notice = minder.getUI('widget/notice');
@@ -344,7 +489,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
 
                     $('<li></li>')
                         .append('<span class="icon"></span>')
-                        .append(file.filename)
+                        .append('<span class="filename">' + file.filename + '</span>')
+                        .append('<a class="rename-button" title="' + minder.getLang('ui.rename') + '">"' + minder.getLang('ui.rename') + '"</a>')
                         .addClass('file-list-item')
                         .addClass(file.isDir ? 'dir' : 'file')
                         .data('file', file)
@@ -399,13 +545,17 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     $a.text(minder.getLang('ui.mydocument'));
                 } else if (part == '.recycle') {
                     $a.text(minder.getLang('ui.recycle'));
+                    $finder.addClass('recycle-bin');
                 } else {
                     $a.text(part);
                 }
                 return $a.data('path', processPath).data('file', {
-                    path: processPath.substr(0, processPath.length - 1)
+                    path: processPath.substr(0, processPath.length - 1),
+                    filename: part == base ? minder.getLang('ui.mydocument') : part
                 });
             }
+
+            $finder.removeClass('recycle-bin');
 
             $nav.append(pathButton(base));
 
@@ -428,6 +578,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 if (file && file.path == selected) {
                     $(this).addClass('selected');
                     hasSelect = true;
+                    $list[0].focus();
+                    finder.fire('select', file, this);
                 }
             });
             if (!hasSelect) selected = false;
@@ -441,11 +593,11 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
         finder.list = list;
         finder.select = select;
         finder.pwd = pwd;
+        finder.refresh = refresh;
 
         return finder;
     }
 
-    return {
-        generate: generate
-    };
+    Finder.generate = generate;
+    return Finder;
 });

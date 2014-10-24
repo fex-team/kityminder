@@ -66,6 +66,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     $format.val('.km');
 
+    $format.on('change', normalizeFilename);
+
     /* 保存按钮 */
     var $saveBtn = $('<button></button>')
         .addClass('save-button')
@@ -73,7 +75,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         .click(save)
         .appendTo($selects);
 
-    $menu.on('show', setFileName);
+    $menu.on('show', setFilename);
 
     $finder.on('fileclick', function(file) {
         $finder.select(file.path);
@@ -98,7 +100,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     var autoSaveTimer = 0;
 
     function autoSave() {
-        function lazySave() {
+        function lazySave(doc) {
+            if (doc.saved) return;
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(saveCurrent, autoSaveDuration);
         }
@@ -127,12 +130,25 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         return doSave(doc.path, doc.protocol, doc, $title, 'leaveTheMenu');
     }
 
-    function getSaveContext() {
+    function normalizeFilename() {
         var filename = $filename.val();
+        var info = fio.file.anlysisPath(filename);
+        var ext = info.extension;
 
-        if (fio.file.anlysisPath(filename).extension != $format.val()) {
-            $filename.val(filename += $format.val())[0].select();
+        if (ext != $format.val()) {
+            if (ext in supports) {
+                $filename.val(info.name + $format.val());
+            } else {
+                $filename.val(filename + $format.val());
+            }
+            $filename[0].select();
         }
+
+        return $filename.val();
+    }
+
+    function getSaveContext() {
+        var filename = normalizeFilename();
 
         var path = $finder.pwd() + filename;
         var doc = $doc.current();
@@ -212,22 +228,27 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         });
     }
 
-    function setFileName() {
+    function setFilename() {
         var doc = $doc.current();
 
         switch (doc.source) {
             case 'netdisk':
-                setFileNameForNetDiskSource(doc);
+                setFilenameForNetDiskSource(doc);
                 break;
             default:
-                setFileNameForOtherSource(doc);
+                setFilenameForOtherSource(doc);
                 break;
         }
 
         $filename[0].select();
     }
 
-    function setFileNameForNetDiskSource(doc) {
+    function setFilenameInputValue(filename) {
+        $filename.val(filename);
+        normalizeFilename(filename);
+    }
+
+    function setFilenameForNetDiskSource(doc) {
         if (!fio.user.current()) return;
 
         var path = doc.path;
@@ -242,11 +263,11 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             $finder.select(path);
         }
 
-        $filename.val(pathInfo.filename);
+        setFilenameInputValue(pathInfo.filename);
     }
 
-    function setFileNameForOtherSource(doc) {
-        $filename.val(doc.title);
+    function setFilenameForOtherSource(doc) {
+        setFilenameInputValue(doc.title);
         $finder.select(null);
     }
 
