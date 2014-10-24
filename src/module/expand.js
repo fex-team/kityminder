@@ -75,6 +75,7 @@ KityMinder.registerModule('Expand', function() {
         policy(node, state, policy);
 
         node.renderTree().getMinder().layout(100);
+        node.getMinder().fire('contentchange');
 
         /* 如何加展开效果：
 
