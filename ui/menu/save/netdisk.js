@@ -123,7 +123,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     function saveCurrent() {
         var doc = $doc.current();
 
-        if (doc.source != 'netdisk' || doc.saved ) return Promise.resolve();
+        if (doc.source != 'netdisk') return Promise.resolve();
 
         var $title = minder.getUI('topbar/title').$title;
         $filename.val(doc.title);
