@@ -141,7 +141,7 @@ KityMinder.LANG['zh-cn'] = {
         'move_file_confirm': '确定把 "{0}" 移动到 "{1}" 吗？',
         'rename': '重命名',
         'rename_success': '<b>{0}</b> 重命名成功',
-        'move_success': '<b>{0}</b> 移动成功',
+        'move_success': '<b>{0}</b> 移动成功到 <b>{1}</b>',
 
         'command': {
             'appendsiblingnode': '插入同级主题',

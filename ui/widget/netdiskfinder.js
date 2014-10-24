@@ -254,20 +254,26 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             }
 
             function dragOver(e) {
-                e.preventDefault();
+                if ($(e.target).hasClass('filename')) e.preventDefault();
             }
 
             function dirDragEnter(e) {
-                if (!$(e.target).hasClass('dir')) return;
-                $(e.target).addClass('drag-enter');
+                var $target = $(e.target).closest('.dir');
+                $target.addClass('drag-enter');
+                if (e.target != $target[0]) $target.addClass('enter-child');
             }
 
             function dirDragLeave(e) {
-                $(e.target).removeClass('drag-enter');
+                if ($(e.target).hasClass('dir')) {
+                    if ($(e.target).hasClass('enter-child')) {
+                        return $(e.target).removeClass('enter-child');
+                    }
+                    $(e.target).removeClass('drag-enter');
+                }
             }
 
             function dirDrop(e) {
-                var $target = $(e.target).removeClass('drag-enter');
+                var $target = $(e.target).closest('.dir').removeClass('drag-enter');
 
                 if (!$target.hasClass('dir')) return;
 
@@ -290,7 +296,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     mv(sourcePath, destinationPath).then(function() {
                         $dragging.remove();
                         Finder.fire('mv', sourcePath, destinationPath, SIGNATURE);
-                        notice.info(minder.getLang('ui.move_success', destination.filename));
+                        notice.info(minder.getLang('ui.move_success', source.filename, destination.filename));
                     })['catch'](function(e) {
                         notice.error('err_move_file', e);
                     }).then(function() {
