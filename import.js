@@ -205,7 +205,8 @@
 
         /* UI Ribbon「视图」面板 */
         { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
-        { path: 'ui/ribbon/view/level.js',              pack: 'edit' }
+        { path: 'ui/ribbon/view/level.js',              pack: 'edit' },
+        { path: 'ui/ribbon/view/outline.js',            pack: 'edit' }
     ];
 
     if (typeof(module) === 'object' && module.exports) {

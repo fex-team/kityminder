@@ -3673,4 +3673,43 @@ ul.resource-list li {
   border-radius: 100%;
   margin-top: -4px;
 }
+.outlineView {
+  display: block;
+  width: 180px;
+  height: 226px;
+  overflow: auto;
+  font-size: 12px;
+}
+.outlineView ul,
+.outlineView li {
+  list-style: none;
+  padding-left: 7px;
+}
+.outlineView > ul {
+  margin: 0px;
+  padding-left: 0px;
+}
+.outlineView li div.sign {
+  width: 12px;
+  height: 12px;
+  text-align: center;
+  line-height: 12px;
+  float: left;
+  border: 1px solid grey;
+}
+.outlineView li div.text {
+  padding-left: 8px;
+}
+.outlineView div.text.text1 {
+  background: #b0b0b0;
+}
+.outlineView li div.text:hover {
+  background: #555;
+}
+.outlineView ul.item-child {
+  display: block;
+}
+.outlineView ul.item-child.expand {
+  display: none;
+}
 /*# sourceMappingURL=default.all.css.map */

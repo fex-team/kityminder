@@ -141,7 +141,7 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
     },
 
     /**
-     * 后序遍历当前节点树
+     * 后序遍历当前节点树if
      * @param  {Function} fn 遍历函数
      */
     postTraverse: function(fn, excludeThis) {
