@@ -141,7 +141,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
     }
 
     function descriptReason(e) {
-        e = e || {};
+        e = e || new Error();
 
         if (typeof(e) == 'string') {
             e = new Error(e);
