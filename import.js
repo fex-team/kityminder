@@ -68,6 +68,7 @@
         { path: 'src/connect/arc.js',                   pack: 'edit|share|m-share' },
         { path: 'src/connect/under.js',                 pack: 'edit|share|m-share' },
         { path: 'src/connect/l.js',                     pack: 'edit|share|m-share' },
+        { path: 'src/connect/fish-bone-master.js',      pack: 'edit|share|m-share' },
 
         /* 皮肤 */
         { path: 'src/theme/default.js',                 pack: 'edit|share|m-share' },

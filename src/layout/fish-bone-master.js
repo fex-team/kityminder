@@ -22,6 +22,7 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
 
         if (!child) return;
 
+        var cBox = child.getContentBox();
         var pMarginRight = parent.getStyle('margin-right');
         var cMarginLeft = child.getStyle('margin-left');
         var cMarginTop = child.getStyle('margin-top');
@@ -50,8 +51,9 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         this.align(upPart, 'bottom');
         this.align(downPart, 'top');
 
-        this.move(upPart, pMarginRight + cMarginLeft, -cMarginBottom);
-        this.move(downPart, pMarginRight + cMarginLeft + cMarginLeft, +cMarginTop);
+        var xAdjust = pBox.right + pMarginRight + cMarginLeft;
+        this.move(upPart, xAdjust, -cBox.bottom - cMarginBottom);
+        this.move(downPart, xAdjust + cMarginLeft, -cBox.top + cMarginTop);
 
     }
 }));
