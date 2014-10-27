@@ -60,6 +60,7 @@
         { path: 'src/layout/mind.js',                   pack: 'edit|share|m-share' },
         { path: 'src/layout/filetree.js',               pack: 'edit|share|m-share' },
         { path: 'src/layout/btree.js',                  pack: 'edit|share|m-share' },
+        { path: 'src/layout/fish-bone-master.js',       pack: 'edit|share|m-share' },
 
         /* 连线 */
         { path: 'src/connect/bezier.js',                pack: 'edit|share|m-share' },
@@ -78,6 +79,7 @@
         { path: 'src/template/structure.js',            pack: 'edit|share|m-share' },
         { path: 'src/template/filetree.js',             pack: 'edit|share|m-share' },
         { path: 'src/template/right.js',                pack: 'edit|share|m-share' },
+        { path: 'src/template/fish-bone.js',            pack: 'edit|share|m-share' },
 
         /* 模块 */
         { path: 'src/module/node.js',                   pack: 'edit|share|m-share' },
