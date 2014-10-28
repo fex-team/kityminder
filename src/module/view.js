@@ -78,6 +78,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
             currentPosition = null;
 
         function dragEnd(e) {
+            if (!lastPosition) return;
+            
             lastPosition = null;
 
             e.stopPropagation();

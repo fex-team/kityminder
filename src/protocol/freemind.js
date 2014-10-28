@@ -95,10 +95,11 @@ KityMinder.registerProtocol('freemind', function(minder) {
             function fetch() {
                 return new Promise(function(resolve, reject) {
                     var xhr = new XMLHttpRequest();
+                    xhr.open('POST', url);
+                    
                     xhr.responseType = 'blob';
                     xhr.onload = resolve;
                     xhr.onerror = reject;
-                    xhr.open('POST', url);
 
                     var form = new FormData();
                     form.append('type', 'freemind');
@@ -120,7 +121,9 @@ KityMinder.registerProtocol('freemind', function(minder) {
                 form.appendChild(field('type', 'freemind'));
                 form.appendChild(field('data', data));
                 form.appendChild(field('download', '1'));
+                document.body.appendChild(form);
                 form.submit();
+                document.body.removeChild(form);
 
                 function field(name, content) {
                     var input = document.createElement('input');

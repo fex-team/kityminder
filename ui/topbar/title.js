@@ -103,7 +103,7 @@ KityMinder.registerUI('topbar/title', function(minder) {
 
         function setTitle(title) {
             title = title || minder.getLang('ui.untitleddoc');
-            $title.empty().append('<span class="title-content">' + title + '</span>');
+            $title.html('<span class="title-content">' + title + '</span>');
             document.title = title ? title + ' - 百度脑图' : '百度脑图';
         }
 

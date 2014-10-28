@@ -15,6 +15,7 @@ KityMinder.registerUI('menu/menu', function(minder) {
     // 主菜单容器
     var $panel = $('<div>')
         .attr('id', 'main-menu')
+        .css('display', 'none')
         .appendTo('#content-wrapper');
 
     // 主菜单按钮
@@ -30,16 +31,24 @@ KityMinder.registerUI('menu/menu', function(minder) {
         className: 'main-menu-level1'
     }).appendTo($panel[0]);
 
+    var timer;
 
     function show() {
-        $panel.addClass('show');
-        ret.fire('show');
+        $panel.css('display', 'block');
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            $panel.addClass('show');
+            ret.fire('show');
+        });
     }
 
     function hide() {
+        ret.fire('hide');
         $panel.removeClass('show');
         minder.getRenderTarget().focus();
-        ret.fire('hide');
+        timer = setTimeout(function() {
+            $panel.css('display', 'none');
+        });
     }
 
     function isVisible() {

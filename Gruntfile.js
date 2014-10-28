@@ -66,7 +66,7 @@ module.exports = function(grunt) {
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
 
-        clean: ['dist'],
+        clean: ['dist', 'native-support/upload', 'native-support/src/tmp'],
 
         concat: concatConfigs,
 
@@ -95,6 +95,7 @@ module.exports = function(grunt) {
                         'ui/theme/**/images/*',
                         'lang/**/*',
                         'static/**/*',
+                        'native-support/**/*',
                         'lib/ZeroClipboard.swf',
                         'lib/inflate.js',
                         'lib/source-map.min.js',

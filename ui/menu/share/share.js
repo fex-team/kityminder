@@ -116,7 +116,6 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 }
             });
             renderShareList(list);
-
         });
     }
 

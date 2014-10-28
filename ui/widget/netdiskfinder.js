@@ -21,12 +21,9 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
     Finder.BASE_PATH = base + '/';
     Finder.RECYCLE_PATH = recyclePath + '/';
 
-    var SIGNATURE = +new Date();
-
-    Finder.on('mv', function(from, to, signature) {
-        if (signature == SIGNATURE) return;
+    Finder.on('mv', function(from, to, source) {
         instances.forEach(function(instance) {
-            instance.refresh();
+            if (source != instance) instance.refresh();
         });
     });
 
@@ -120,6 +117,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     .val(file.filename)
                     .appendTo($li);
 
+                $li.removeAttr('draggable');
+
                 $input.on('keydown', function (e) {
                     if (e.keyCode == 13) return confirm();
                     if (e.keyCode == 27) {
@@ -127,6 +126,10 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                         return cancel();
                     }
                 }).on('blur', cancel);
+
+                $input.on('dragstart mousedown mouseup click dblclick', function(e) {
+                    e.stopPropagation();
+                });
 
                 setTimeout(function() {
                     $input[0].select();
@@ -136,6 +139,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                     $input.remove();
                     $li.find('.icon').after('<span class="filename">' + filename + '</span>');
                     $li.removeClass('renaming');
+                    $li.attr('draggable', true);
                 }
 
                 function cancel() {
@@ -163,7 +167,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                         file.filename = newFilename;
                         file.path = newPath;
                         reset(newFilename);
-                        Finder.fire('mv', oldPath, newPath, SIGNATURE);
+                        Finder.fire('mv', oldPath, newPath, finder);
                         notice.info(minder.getLang('ui.rename_success', newFilename));
 
                     })['catch'](function(e) {
@@ -240,9 +244,15 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 if (!$target.hasClass('file-list-item')) {
                     return;
                 }
-                e.originalEvent.dataTransfer.effectAllowed = "move";
-                e.originalEvent.dataTransfer.setData('text/plain', 'test');
-                e.originalEvent.dataTransfer.setDragImage($target.find('.icon').get(0), 12, 12);
+                // e.originalEvent.dataTransfer.effectAllowed = "move";
+                // e.originalEvent.dataTransfer.dropEffect = 'move';
+
+                try {
+                    var dataType = kity.Browser.ie && kity.Browser.version == 10 ? 'text' : 'text/plain';
+                    e.originalEvent.dataTransfer.setData(dataType, 'FEX');
+                    e.originalEvent.dataTransfer.setDragImage($target.find('.icon').get(0), 12, 12);
+                } catch (ignore) {}
+
                 $dragging = $target.addClass('dragging');
                 $finder.addClass('drop-mode');
             }
@@ -274,6 +284,8 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
             }
 
             function dirDrop(e) {
+                e.preventDefault();
+                
                 var $target = $(e.target).closest('.dir').removeClass('drag-enter');
 
                 if (!$target.hasClass('dir')) return;
@@ -296,7 +308,7 @@ KityMinder.registerUI('widget/netdiskfinder', function(minder) {
                 function doMove() {
                     mv(sourcePath, destinationPath).then(function() {
                         $dragging.remove();
-                        Finder.fire('mv', sourcePath, destinationPath, SIGNATURE);
+                        Finder.fire('mv', sourcePath, destinationPath, finder);
                         notice.info(minder.getLang('ui.move_success', source.filename, destination.filename));
                     })['catch'](function(e) {
                         notice.error('err_move_file', e);
