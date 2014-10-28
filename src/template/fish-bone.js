@@ -22,14 +22,17 @@ KityMinder.registerTemplate('fish-bone', {
 
         // 一级节点
         if (level === 1) {
-            return 'filetree';
+            return 'fish-bone-slave';
         }
 
-        return node.parent.getLayout();
+        return 'right';
     },
 
     getConnect: function(node) {
-        if (node.getLevel() == 1) return 'fish-bone-master';
-        return 'under';
+        switch (node.getLevel()) {
+            case 1: return 'fish-bone-master';
+            case 2: return 'line';
+            default: return 'under';
+        }
     }
 });

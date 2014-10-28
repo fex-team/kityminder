@@ -62,6 +62,15 @@ var ShadowRenderer = kity.createClass('ShadowRenderer', {
     }
 });
 
+var marker = new kity.Marker();
+
+marker.setWidth(10);
+marker.setHeight(12);
+marker.setRef(0, 0);
+marker.setViewBox(-6, -4, 8, 10);
+
+marker.addShape(new kity.Path().setPathData('M-5-3l5,3,-5,3').stroke('rgb(0, 220, 255)'));
+
 var wireframeOption = /wire/.test(window.location.href);
 var WireframeRenderer = kity.createClass('WireframeRenderer', {
     base: Renderer,
@@ -75,7 +84,15 @@ var WireframeRenderer = kity.createClass('WireframeRenderer', {
         var box = this.wireframe = new kity.Rect()
             .stroke('lightgreen');
 
-        return wireframe.addShapes([oxy, box]);
+        var vectorIn = this.vectorIn = new kity.Line()
+            .stroke('rgb(0, 220, 255)');
+        var vectorOut = this.vectorOut = new kity.Line()
+            .stroke('rgb(0, 220, 255)');
+
+        vectorIn.setMarker(marker, 'end');
+        vectorOut.setMarker(marker, 'end');
+
+        return wireframe.addShapes([oxy, box, vectorIn]);
     },
 
     shouldRender: function() {
@@ -86,11 +103,25 @@ var WireframeRenderer = kity.createClass('WireframeRenderer', {
         this.wireframe
             .setPosition(box.x, box.y)
             .setSize(box.width, box.height);
+        var pin = node.getLayoutVectorIn().normalize(50);
+        var pout = node.getLayoutVectorOut().normalize(50);
+        this.vectorIn.setPoint1(-pin.x, -pin.y);
+        this.vectorOut.setPoint2(pout.x, pout.y);
     }
 });
 
 KityMinder.registerModule('OutlineModule', function() {
     return {
+        events: (!wireframeOption ? null : {
+            'ready': function() {
+                this.getPaper().addResource(marker);
+            },
+            'layoutallfinish': function() {
+                this.getRoot().traverse(function(node) {
+                    node.getRenderer('WireframeRenderer').update(null, node, node.getContentBox());
+                });
+            }
+        }),
         renderers: {
             outline: OutlineRenderer,
             outside: [ShadowRenderer, WireframeRenderer]

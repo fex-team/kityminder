@@ -61,6 +61,7 @@
         { path: 'src/layout/filetree.js',               pack: 'edit|share|m-share' },
         { path: 'src/layout/btree.js',                  pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-master.js',       pack: 'edit|share|m-share' },
+        { path: 'src/layout/fish-bone-slave.js',        pack: 'edit|share|m-share' },
 
         /* 连线 */
         { path: 'src/connect/bezier.js',                pack: 'edit|share|m-share' },

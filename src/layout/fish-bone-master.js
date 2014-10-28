@@ -35,7 +35,7 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
             if (index % 2) {
                 downPart.push(child);
                 child.setVertexIn(new kity.Point(cBox.left, cBox.top));
-                child.setLayoutVectorIn(new kity.Vector(cMarginLeft, cMarginTop));
+                child.setLayoutVectorIn(new kity.Vector(1, 1));
             }
             else {
                 upPart.push(child);
@@ -54,6 +54,16 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         var xAdjust = pBox.right + pMarginRight + cMarginLeft;
         this.move(upPart, xAdjust, -cBox.bottom - cMarginBottom);
         this.move(downPart, xAdjust + cMarginLeft, -cBox.top + cMarginTop);
+
+        // children.forEach(function(child, index) {
+        //     var matrix = child.getLayoutTransform();
+        //     var dx, dy;
+        //     dx = matrix.getMatrix().e;
+        //     dy = matrix.getMatrix().f;
+        //     matrix.translate(-dx, -dy);
+        //     matrix.rotate(index % 2 ? 45 : -45);
+        //     matrix.translate(dx, dy);
+        // });
 
     }
 }));

@@ -6,8 +6,10 @@ KityMinder.registerLayout('filetree', kity.createClass({
         var pBox = parent.getContentBox();
         var indent = 20;
 
+        var vectorIn = parent.getLayoutVectorIn();
+
         parent.setVertexOut(new kity.Point(pBox.left + indent, pBox.bottom));
-        parent.setLayoutVectorOut(new kity.Vector(0, 1));
+        parent.setLayoutVectorOut(new kity.Vector(0, vectorIn.y > 0 ? 1 : -1));
 
         if (!children.length) return;
 
@@ -26,10 +28,19 @@ KityMinder.registerLayout('filetree', kity.createClass({
         xAdjust += pBox.left;
         xAdjust += indent;
         xAdjust += children[0].getStyle('margin-left');
+
         var yAdjust = 0;
-        yAdjust += pBox.bottom;
-        yAdjust += parent.getStyle('margin-bottom');
-        yAdjust += children[0].getStyle('margin-top');
+
+        if (vectorIn.y > 0) {
+            yAdjust += pBox.bottom;
+            yAdjust += parent.getStyle('margin-bottom');
+            yAdjust += children[0].getStyle('margin-top');
+        } else {
+            yAdjust -= this.getTreeBox(children).bottom;
+            yAdjust += pBox.top;
+            yAdjust -= parent.getStyle('margin-top');
+            yAdjust -= children[0].getStyle('margin-bottom');
+        }
 
         this.move(children, xAdjust, yAdjust);
 
