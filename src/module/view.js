@@ -78,6 +78,8 @@ var ViewDragger = kity.createClass("ViewDragger", {
             currentPosition = null;
 
         function dragEnd(e) {
+            if (!lastPosition) return;
+            
             lastPosition = null;
 
             e.stopPropagation();
@@ -232,7 +234,7 @@ KityMinder.registerModule('View', function() {
                 var minder = this;
 
                 ['up', 'down', 'left', 'right'].forEach(function(name) {
-                    if (e.isShortcutKey('ctrl+' + name)) {
+                    if (e.isShortcutKey('ctrl+' + name) && minder.getStatus() != 'textedit') {
                         minder.removeAllSelectedNodes();
                         minder.execCommand('move', name, 100);
                         e.preventDefault();

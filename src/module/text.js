@@ -68,6 +68,12 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         this.setTextStyle(node, textGroup);
 
+        var textHash = node.getText() + [s('font-size'), s('font-name'), s('font-weight'), s('font-style')].join('/');
+
+        if (node._currentTextHash == textHash && node._currentTextGroupBox) return node._currentTextGroupBox;
+
+        node._currentTextHash = textHash;
+
         return function() {
             textGroup.eachItem(function(i, textShape) {
                 var y = yStart + i * fontSize * lineHeight;

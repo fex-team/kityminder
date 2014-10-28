@@ -12,6 +12,7 @@ KityMinder.registerUI('menu/open/local', function(minder) {
     var $menu = minder.getUI('menu/menu');
     var $open = minder.getUI('menu/open/open');
     var $doc = minder.getUI('doc');
+    var notice = minder.getUI('widget/notice');
 
     /* extension => protocol */
     var supports = {};
@@ -71,14 +72,12 @@ KityMinder.registerUI('menu/open/local', function(minder) {
     }, false);
 
     cwrapper.addEventListener('drop', function(e) {
-        e.preventDefault();
-
-        if (!$doc.checkSaved()) return;
-
         if (e.dataTransfer.files.length) {
+            e.preventDefault();
+            if (!$doc.checkSaved()) return;
             read(e.dataTransfer.files[0]);
+            $menu.hide();
         }
-        $menu.hide();
     }, false);
 
     function read(domfile) {
@@ -88,34 +87,36 @@ KityMinder.registerUI('menu/open/local', function(minder) {
         var protocol = supports[info.extension];
 
         if (!protocol || !protocol.decode) {
-            window.alert(minder.getLang('ui.unsupportedfile'));
+            notice.warn(minder.getLang('ui.unsupportedfile'));
             return Promise.reject();
         }
 
-        var dataPromise = new Promise(function(resolve, reject) {
+        function loadFile(file, protocol) {
+            return new Promise(function(resolve, reject) {
+                var reader;
 
-            var reader;
+                if (protocol.dataType == 'blob') {
 
-            if (protocol.dataType == 'blob') {
+                    resolve(new fio.file.Data(domfile));
 
-                resolve(new fio.file.Data(domfile));
+                } else {
 
-            } else {
+                    reader = new FileReader();
+                    reader.onload = function() {
+                        resolve(new fio.file.Data(this.result));
+                    };
+                    reader.onerror = reject;
+                    reader.readAsText(domfile, 'utf-8');
+                }
+            });
+        }
 
-                reader = new FileReader();
-                reader.onload = function() {
-                    resolve(new fio.file.Data(this.result));
-                };
-                reader.onerror = reject;
-                reader.readAsText(domfile, 'utf-8');
-            }
+        function loadFileError() {
+            var notice = minder.getUI('widget/notice');
+            notice.error('err_localfile_read');
+        }
 
-        });
-
-        $(minder.getRenderTarget()).addClass('loading');
-
-        return dataPromise.then(function(data) {
-
+        function loadDoc(data) {
             var doc = {
                 content: data.content,
                 protocol: protocol.name,
@@ -124,12 +125,11 @@ KityMinder.registerUI('menu/open/local', function(minder) {
             };
 
             return $doc.load(doc);
+        }
 
-        })['catch'](function(error) {
+        $(minder.getRenderTarget()).addClass('loading');
 
-            window.alert(minder.getLang('ui.errorloading', error.message || minder.getLang('ui.unknownreason')));
-
-        }).then(function() {
+        return loadFile(domfile, protocol).then(loadDoc, loadFileError).then(function() {
 
             $(minder.getRenderTarget()).removeClass('loading');
 

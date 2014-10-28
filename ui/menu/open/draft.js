@@ -96,6 +96,7 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
     renderList();
 
     function pushDraft(doc) {
+        if (doc.saved) return;
         if (doc == lastDoc) {
             if (current) {
                 draftList.remove(0);
@@ -150,6 +151,9 @@ KityMinder.registerUI('menu/open/draft', function(minder) {
         },
         openLast: function() {
             $ul.find('.draft-list-item').eq(0).click();
+        },
+        last: function() {
+            return draftList.get(0) || null;
         }
     };
 });

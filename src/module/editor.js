@@ -112,7 +112,6 @@ KityMinder.registerModule('TextEditModule', function() {
                             .setRange(range)
                             .setReady();
 
-
                         if(selectionReadyShow){
 
 
@@ -124,12 +123,13 @@ KityMinder.registerModule('TextEditModule', function() {
                                     dblclickEvent = false;
                                     return;
                                 }
+
                                 sel.collapse(true)
                                     .updatePosition(receiver.getOffsetByIndex())
                                     .setShow();
                                 textGroup.setStyle('cursor','text');
 
-                            }, 200);
+                            },200);
                             km.setStatus('textedit');
 
                         }

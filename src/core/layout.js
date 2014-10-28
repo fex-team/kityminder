@@ -243,7 +243,7 @@ kity.extendClass(Minder, {
 
             // layout all children first
             // 剪枝：收起的节点无需计算
-            if (node.isExpanded()) {
+            if (node.isExpanded() || true) {
                 node.children.forEach(function(child) {
                     layoutNode(child);
                 });
@@ -296,7 +296,7 @@ kity.extendClass(Minder, {
         }
 
         // 节点复杂度大于 100，关闭动画
-        if (complex > 300) duration = 0;
+        if (complex > 200) duration = 0;
 
         function applyMatrix(node, matrix) {
             node.setGlobalLayoutTransform(matrix);
@@ -561,7 +561,9 @@ var ResetLayoutCommand = kity.createClass('ResetLayoutCommand', {
             });
         });
         minder.layout(300);
-    }
+    },
+
+    enableReadOnly: true
 });
 
 KityMinder.registerModule('LayoutModule', {

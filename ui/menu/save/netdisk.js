@@ -13,6 +13,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     var $eve = minder.getUI('eve');
     var $doc = minder.getUI('doc');
     var ret = $eve.setup({});
+    var notice = minder.getUI('widget/notice');
 
     /* extension => protocol */
     var supports = {};
@@ -65,6 +66,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     $format.val('.km');
 
+    $format.on('change', normalizeFilename);
+
     /* 保存按钮 */
     var $saveBtn = $('<button></button>')
         .addClass('save-button')
@@ -72,7 +75,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         .click(save)
         .appendTo($selects);
 
-    $menu.on('show', setFileName);
+    $menu.on('show', setFilename);
 
     $finder.on('fileclick', function(file) {
         $finder.select(file.path);
@@ -97,7 +100,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     var autoSaveTimer = 0;
 
     function autoSave() {
-        function lazySave() {
+        function lazySave(doc) {
+            if (doc.saved) return;
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(saveCurrent, autoSaveDuration);
         }
@@ -119,19 +123,32 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     function saveCurrent() {
         var doc = $doc.current();
 
-        if (doc.source != 'netdisk' || doc.saved ) return Promise.resolve();
+        if (doc.source != 'netdisk') return Promise.resolve();
 
         var $title = minder.getUI('topbar/title').$title;
         $filename.val(doc.title);
         return doSave(doc.path, doc.protocol, doc, $title, 'leaveTheMenu');
     }
 
-    function getSaveContext() {
+    function normalizeFilename() {
         var filename = $filename.val();
+        var info = fio.file.anlysisPath(filename);
+        var ext = info.extension;
 
-        if (fio.file.anlysisPath(filename).extension != $format.val()) {
-            $filename.val(filename += $format.val())[0].select();
+        if (ext != $format.val()) {
+            if (ext in supports) {
+                $filename.val(info.name + $format.val());
+            } else {
+                $filename.val(filename + $format.val());
+            }
+            $filename[0].select();
         }
+
+        return $filename.val();
+    }
+
+    function getSaveContext() {
+        var filename = normalizeFilename();
 
         var path = $finder.pwd() + filename;
         var doc = $doc.current();
@@ -162,7 +179,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
     var saving = 0;
 
-    function doSave(path, protocol, doc, $mask, leaveTheMenu) {
+    function doSave(path, protocol, doc, $mask, leaveTheMenu, msg) {
 
         if (saving) return;
 
@@ -170,10 +187,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
         if ($mask) $mask.addClass('loading');
 
-        function tryUpload(data) {
-            if (tryUpload.tried++ > 3) {
-                throw new Error('超过最大重试次数，网盘服务可能当前不可用');
-            }
+        function upload(data) {
             return fio.file.write({
                 path: path,
                 content: data,
@@ -181,61 +195,60 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             });
         }
 
-        tryUpload.tried = 0;
+        function finish(file) {
 
-        var dataExported = minder.exportData(protocol);
-
-        return dataExported.then(tryUpload)['catch'](function(e) {
-            if (e.message == 'Netdisk Request Error') {
-                if (console && console.warn) console.warn(e);
-                // 网盘抽风失败，重试即可
-                return new Promise(function(resolve, reject) {
-                    setTimeout(function() {
-                        resolve(dataExported.then(tryUpload));
-                    }, 200);
-                });
-            }
-            window.alert('保存文件失败：' + (e.message || minder.getLang('ui.unknownreason')));
-        }).then(function() {
-
-            saving = false;
-
-            if ($mask) $mask.removeClass('loading');
+            if (!file.modifyTime) throw new Error('File Save Error');
 
             if (!leaveTheMenu) {
                 $menu.hide();
             }
 
-            doc.path = path;
-            doc.title = $filename.val();
+            doc.path = file.path;
+            doc.title = file.filename;
             doc.source = 'netdisk';
             doc.protocol = protocol;
 
             $doc.save(doc);
 
+            notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
+
             setTimeout(function() {
                 $finder.list($finder.pwd(), true);
             }, 1499);
 
+        }
+
+        function error(e) {
+            notice.error('err_save', e);
+        }
+
+        return minder.exportData(protocol).then(upload).then(finish, error).then(function() {
+            if ($mask) $mask.removeClass('loading');
+            saving = false;
         });
     }
 
-    function setFileName() {
+    function setFilename() {
         var doc = $doc.current();
 
         switch (doc.source) {
             case 'netdisk':
-                setFileNameForNetDiskSource(doc);
+                setFilenameForNetDiskSource(doc);
                 break;
             default:
-                setFileNameForOtherSource(doc);
+                setFilenameForOtherSource(doc);
                 break;
         }
 
         $filename[0].select();
     }
 
-    function setFileNameForNetDiskSource(doc) {
+    function setFilenameInputValue(filename) {
+        $filename.val(filename);
+        normalizeFilename(filename);
+    }
+
+    function setFilenameForNetDiskSource(doc) {
         if (!fio.user.current()) return;
 
         var path = doc.path;
@@ -250,11 +263,11 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             $finder.select(path);
         }
 
-        $filename.val(pathInfo.filename);
+        setFilenameInputValue(pathInfo.filename);
     }
 
-    function setFileNameForOtherSource(doc) {
-        $filename.val(doc.title);
+    function setFilenameForOtherSource(doc) {
+        setFilenameInputValue(doc.title);
         $finder.select(null);
     }
 

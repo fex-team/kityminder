@@ -9,22 +9,111 @@
 
 KityMinder.registerUI('topbar/title', function(minder) {
     var $title = $('<h1>').appendTo('#panel');
+    var $doc = minder.getUI('doc');
+    var finder = minder.getUI('widget/netdiskfinder');
+    var notice = minder.getUI('widget/notice');
+    var renameEnabled = false;
+    var renameMode = false;
 
-    var _title = minder.getLang('ui.untitleddoc');
-    var _saved = false;
+    $doc.on('docchange', update);
+
+    $title.on('click', rename);
+
+    function rename() {
+        if (!renameEnabled || renameMode) return;
+
+        var doc = $doc.current();
+
+        var $input = $('<input>').width($title.find('.title-content').width());
+        var oldFilename = doc.title;
+        var oldPath = doc.path;
+
+        $input.val(oldFilename);
+        setTimeout(function() {
+            $input[0].select();
+        });
+
+        $title.addClass('rename-mode');
+        $title.empty();
+        $title.append($input);
+
+        renameMode = true;
+
+        $input.on('keydown', function(e) {
+            if (e.keyCode == 13) confirm();
+            else if (e.keyCode == 27) {
+                cancel();
+                e.stopPropagation();
+            }
+        }).on('blur', cancel);
+
+        function exit() {
+            setTimeout(function() {
+                renameMode = false;
+            });
+        }
+
+        function cancel() {
+            update();
+            exit();
+        }
+
+        function confirm() {
+            var newFilename = $input.val();
+            var oldFilenameInfo = fio.file.anlysisPath(oldFilename);
+            var newFilenameInfo = fio.file.anlysisPath(newFilename);
+
+            if (!newFilenameInfo.name.length) return cancel();
+
+            newFilename = newFilenameInfo.name + oldFilenameInfo.extension;
+
+            var newPath = fio.file.anlysisPath(oldPath).parentPath + newFilename;
+
+            if (newPath == oldPath) return cancel();
+
+            $title.addClass('loading');
+
+            fio.file.move({
+                path: oldPath,
+                newPath: newPath
+            }).then(function() {
+                doc.path = newPath;
+                doc.title = newFilename;
+                finder.fire('mv', oldPath, newPath);
+                notice.info(minder.getLang('ui.rename_success', newFilename));
+            })['catch'](function(e) {
+                notice.error('err_rename', e);
+            }).then(function() {
+                $title.removeClass('loading');
+                update();
+                exit();
+            });
+        }
+    }
+
+    function enableRename(enabled) {
+        renameEnabled = enabled;
+        if (enabled) $title.addClass('rename-enabled');
+        else $title.removeClass('rename-enabled');
+    }
 
     function update() {
 
+        var doc = $doc.current();
+
         function setTitle(title) {
-            $title.text(title);
-            document.title = title + ' - 百度脑图';
+            title = title || minder.getLang('ui.untitleddoc');
+            $title.html('<span class="title-content">' + title + '</span>');
+            document.title = title ? title + ' - 百度脑图' : '百度脑图';
         }
 
-        if (_saved) {
-            setTitle(_title);
+        if (doc.saved) {
+            setTitle(doc.title);
         } else {
-            setTitle('* ' + _title);
+            setTitle('* ' + doc.title);
         }
+
+        enableRename(doc.source == 'netdisk' && doc.saved);
     }
 
     update();
@@ -32,23 +121,8 @@ KityMinder.registerUI('topbar/title', function(minder) {
     return {
         $title: $title,
 
-        setTitle: function(title, saved) {
-            _title = title;
-
-            return this.setSaved(saved);
-        },
-
         getTitle: function() {
-            return _title;
-        },
-
-        setSaved: function(saved) {
-
-            _saved = saved !== false;
-
-            update();
-
-            return this;
+            return $doc.current().title;
         }
     };
 });

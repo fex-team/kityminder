@@ -49,28 +49,35 @@ KityMinder.registerUI('menu/save/download', function(minder) {
 
         $panel.addClass('loading');
 
-        minder.exportData(protocol.name).then(function(data) {
+        var options = {
+            download: true,
+            filename: filename
+        };
 
-            if (typeof(data) != 'string') return;
+        minder.exportData(protocol.name, options).then(function(data) {
+
+            if (protocol.name == 'freemind') return;
 
             switch (protocol.dataType) {
                 case 'text':
                     return doDownload(buildDataUrl(mineType, data), filename, 'text');
                 case 'base64':
                     return doDownload(data, filename, 'base64');
+                case 'blob':
+                    return null;
             }
 
             return null;
 
         })['catch'](function exportError(e) {
-            window.alert('下载失败：' + e.message);
+            var notice = minder.getUI('widget/notice');
+            return notice.error('err_download', e);
         })
 
         .then(function done(tick) {
             $panel.removeClass('loading');
         });
     }
-
     function doDownload(url, filename, type) {
         var stamp = +new Date() * 1e5 + Math.floor(Math.random() * (1e5 - 1));
 
@@ -124,11 +131,14 @@ KityMinder.registerUI('menu/save/download', function(minder) {
         $('<input name="stamp" />').val(stamp).appendTo($form);
 
         var netdisk = minder.getUI('menu/save/netdisk');
-        netdisk.mute = true;
+        if (netdisk) {
+            netdisk.mute = true;
+            setTimeout(function() {
+                netdisk.mute = false;
+            }, 1000);
+        }
+
         $form.appendTo('body').submit().remove();
-        setTimeout(function() {
-            netdisk.mute = false;
-        });
 
         return ret;
     }

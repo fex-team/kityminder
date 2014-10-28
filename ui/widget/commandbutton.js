@@ -12,8 +12,8 @@ KityMinder.registerUI('widget/commandbutton', function(minder) {
 
         generate: function(command, onclick) {
             var $button = new FUI.Button({
-                label: minder.getLang('ui.' + command),
-                text: minder.getLang('ui.' + command),
+                label: minder.getLang('ui.command.' + command) || minder.getLang('ui.' + command),
+                text: minder.getLang('ui.command.' + command) || minder.getLang('ui.' + command),
                 className: ['command-widget', 'command-button', command]
             });
 

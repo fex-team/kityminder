@@ -70,6 +70,7 @@ KityMinder.registerUI('widget/locallist', function() {
 
         function forEach(callback) {
             list.forEach(callback);
+            save();
         }
 
         load.call(this);

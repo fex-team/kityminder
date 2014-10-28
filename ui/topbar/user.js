@@ -101,7 +101,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
             fio.user.fire('login', user);
         } else {
             if (window.location.href.indexOf('nocheck') == -1) {
-                logout();
+                return login();
             } else {
                 $loginButton.show();
             }
@@ -122,14 +122,14 @@ KityMinder.registerUI('topbar/user', function(minder) {
         $loginButton.setLabel(minder.getLang('ui.loggingin'));
         fio.user.login({
             remember: 7 * 24 * 60 * 60 // remember 7 days
-        }).then(check);
+        });
     }
 
     function switchUser() {
         fio.user.login({
             remember: 7 * 24 * 60 * 60, // remember 7 days
             force: true
-        }).then(check);
+        });
     }
 
     function requireLogin($element) {

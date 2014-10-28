@@ -20,6 +20,13 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
     var downPosition;
 
+    function distance(p1, p2) {
+        var dx = p1[0] - p2[0];
+        var dy = p1[1] - p2[1];
+        var ds = Math.sqrt(dx * dx + dy * dy);
+        return ds;
+    }
+
     $menu.delegate('li', 'mousedown', function(e, info) {
         var item = $(e.target).closest('li').data('menu');
         if (item.command) {
@@ -34,7 +41,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
     $('#content-wrapper').on('mousedown', function(e) {
         $menu.hide();
         if (e.button == 2) {
-            downPosition = [e.pageX, e.pageY].join(',');
+            downPosition = [e.pageX, e.pageY];
         } else {
             downPosition = null;
         }
@@ -46,8 +53,9 @@ KityMinder.registerUI('contextmenu', function(minder) {
         if (!e.isRightMB()) return;
 
         e = e.originEvent;
-
-        if (downPosition != [e.pageX, e.pageY].join(',')) return;
+        
+        var d = distance(downPosition, [e.pageX, e.pageY]);
+        if (isNaN(d) || d > 5) return;
 
         $menu.empty();
 

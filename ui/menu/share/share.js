@@ -11,16 +11,29 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     var $share_menu = minder.getUI('menu/menu').createSubMenu('share');
     var $create_menu = $($share_menu.createSub('createshare'));
     var $manage_menu = $($share_menu.createSub('manageshare'));
+    var $share_list = $('<ul>')
+        .attr('id', 'manage-share-list')
+        .appendTo($manage_menu);
     var $doc = minder.getUI('doc');
+    var notice = minder.getUI('widget/notice');
+    var finder = minder.getUI('widget/netdiskfinder');
 
     var BACKEND_URL = 'http://naotu.baidu.com/share.php';
+
+    if (window.location.host == 'local.host') {
+        BACKEND_URL = 'http://naotu.baidu.com/share_debug.php'; // 测试环境
+    }
 
     var currentShare = null;
     var shareList = [];
 
     renderCreatePanel().then(bindCreatePanelEvent);
     renderManagePanel();
-    var shareListLoaded = loadShareList().then(bindManageActions);
+
+    var shareListLoaded = loadShareList();
+
+    shareListLoaded.then(renderShareList);
+    shareListLoaded.then(bindManageActions);
 
     minder.on('uiready', function() {
         minder.getUI('topbar/user').requireLogin($manage_menu);
@@ -44,7 +57,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         if (shared) {
             fio.user.check().then(function(user) {
-                $.pajax(BACKEND_URL, {
+                $.pajax({
+                    url: BACKEND_URL,
                     type: 'POST',
                     data: {
                         action: 'update',
@@ -52,13 +66,140 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                         id: shared.id || shared.shareMinder.id,
                         record: doc.json
                     }
+                }).then(function() {
+                    notice.info(minder.getLang('ui.share_sync_success', doc.title));
+                })['catch'](function(e) {
+                    notice.error('err_share_sync_failed', e);
                 });
             });
         }
     });
 
+    finder.on('mv', trackFileMove);
+
+    function trackFileMove(from, to) {
+        var fromPath = from.split('/');
+        var toPath = to.split('/');
+
+        function preCommonLength(a, b) {
+            var i = 0;
+            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            return (i in b) ? 0 : i;
+        }
+
+        shareListLoaded.then(function(list) {
+            var userChecked = fio.user.check();
+            list.forEach(function(item) {
+                var originPath = item.path.split('/');
+                var clen = preCommonLength(originPath, fromPath);
+                if (clen) {
+
+                    var movedPath = toPath.concat(originPath.slice(clen));
+
+                    userChecked.then(function(user) {
+                        $.pajax({
+                            url: BACKEND_URL,
+                            type: 'POST',
+                            data: {
+                                action: 'move',
+                                ak: user.access_token,
+                                id: item.id || item.shareMinder.id,
+                                path: movedPath.join('/')
+                            }
+                        }).then(function() {
+                            notice.info(minder.getLang('ui.share_sync_success', item.title));
+                        })['catch'](function(e) {
+                            notice.error('err_share_sync_failed', e);
+                        });
+                    });
+                    item.path = movedPath.join('/');
+                }
+            });
+            renderShareList(list);
+        });
+    }
+
+    function loadShareFile() {
+
+        var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
+        var match = pattern.exec(window.location) || pattern.exec(document.referrer);
+        
+        if (!match) return Promise.resolve(null);
+
+        var shareId = match[1];
+
+        $(minder.getRenderTarget()).addClass('loading');
+
+        shareListLoaded.then(function(list) {
+            for (var i = 0; i < list.length; i++) {
+                var id = list[i].id || list[i].shareMinder.id;
+                if (id == shareId && list[i].path) {
+                    return loadOriginFile(list[i]);
+                }
+            }
+            return loadShare(shareId);
+
+        });
+
+    }
+
+    function loadOriginFile(share) {
+
+        var $netdisk = minder.getUI('menu/open/netdisk');
+        notice.info(minder.getLang('ui.load_share_for_edit', share.title));
+        return $netdisk.open(share.path, function() {
+            // 网盘加载失败
+            return loadShare(share);
+        });
+    }
+
+    function loadShare(shareId) {
+
+        function renderShareData(data) {
+
+            if (data.error) {
+                notice.error('err_share_data', data.error);
+                return;
+            }
+
+            var content = data.shareMinder.data;
+
+            return $doc.load({
+
+                source: 'share',
+                content: content,
+                protocol: 'json',
+                saved: true,
+                ownerId: data.uid,
+                ownerName: data.uname
+
+            });
+        }
+
+        var $container = $(minder.getRenderTarget()).addClass('loading');
+
+        return $.pajax({
+
+            url: 'http://naotu.baidu.com/share.php',
+
+            data: {
+                action: 'find',
+                id: shareId
+            },
+
+            dataType: 'json'
+
+        }).then(renderShareData)['catch'](function(e) {
+
+            notice.error('err_share_data', e);
+
+        }).then(function() {
+            $container.removeClass('loading');
+        });
+    }
+
     function getShareByPath(path) {
-        if (!path) return null;
+        if (!path || !shareList) return null;
 
         var i = shareList.length;
         while (i--) {
@@ -74,7 +215,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function renderCreatePanel() {
         // render template
-        return $.pajax('static/pages/createshare.html').then(function(html) {
+        return $.pajax({ url: 'static/pages/createshare.html' }).then(function(html) {
             /* global jhtmls: true */
             var render = jhtmls.render(html);
             $create_menu.html(render({
@@ -151,9 +292,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                     return;
 
                 case $target.hasClass('edit-action'):
-                    var $netdisk = minder.getUI('menu/open/netdisk');
-                    $netdisk.open(share.path);
-
+                    loadOriginFile(share);
                     return;
             }
         });
@@ -172,9 +311,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 dataType: 'json'
 
             })['catch'](function(e) {
-
-                window.alert(minder.getLang('remove_share_failed', e.message));
-
+                var notice = minder.getUI('widget/notice');
+                notice.error('err_remove_share', e);
             });
         });
     }
@@ -249,7 +387,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
             })['catch'](function(e) {
 
-                window.alert(minder.getLang('create_share_failed', e.message));
+                var notice = minder.getUI('widget/notice');
+                notice.error('err_create_share', e);
 
             });
         })
@@ -297,9 +436,9 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             height: 128,
             correctLevel : window.QRCode.CorrectLevel.M
         });
-
-        var shareConfig = window._bd_share_config.common,
-            resetShare = window._bd_share_main.init;
+        
+        var shareConfig = window._bd_share_config && window._bd_share_config.common,
+            resetShare = window._bd_share_main && window._bd_share_main.init;
 
         if (shareConfig && resetShare) {
             shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();
@@ -316,7 +455,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         return fio.user.check().then(function(user) {
             if (!user) return;
-            $.pajax(BACKEND_URL, {
+            return $.pajax(BACKEND_URL, {
 
                 type: 'GET',
 
@@ -329,20 +468,18 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
             }).then(function(result) {
 
-                return (shareList = result.list || null);
+                return (shareList = result.list || []);
 
-            }).then(renderShareList);
+            });
         });
     }
 
     function renderShareList(list) {
         var frdTime = minder.getUI('widget/friendlytimespan');
-        var $list = $('<ul>')
-            .attr('id', 'manage-share-list')
-            .appendTo($manage_menu);
         if (!list) return;
+        $share_list.empty();
         list.forEach(function(share) {
-            $list.append(buildShareItem(share));
+            $share_list.append(buildShareItem(share));
         });
     }
 
@@ -413,6 +550,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         if (window.ZeroClipboard) {
             ZeroClipboard.config({
+                swfPath: 'lib/ZeroClipboard.swf',
                 hoverClass: 'hover',
                 activeClass: 'active'
             });
@@ -430,5 +568,8 @@ KityMinder.registerUI('menu/share/share', function(minder) {
         }
     }
 
-    return $share_menu;
+    return {
+        $menu: $share_menu,
+        loadShareFile: loadShareFile
+    };
 });

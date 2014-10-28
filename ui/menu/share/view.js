@@ -10,9 +10,24 @@ KityMinder.registerUI('menu/share/view', function (minder) {
     var $menu = minder.getUI('menu/menu');
     var $save = minder.getUI('menu/save/save');
     var $doc = minder.getUI('doc');
+    var notice = minder.getUI('widget/notice');
+    var shareId;
 
     $menu.$tabs.select(0);
     $save.$tabs.select(0);
+
+    minder.on('uiready', function() {
+        var $quickvisit = minder.getUI('topbar/quickvisit');
+        var $edit = $quickvisit.add('editshare', 'right');
+
+        $edit.on('click', function() {
+            if (shareId) window.open('edit.html?shareId=' + shareId);
+        });
+
+        $quickvisit.$new.remove();
+        $quickvisit.$save.remove();
+        $quickvisit.$share.remove();
+    });
 
     function loadShareDoc() {
 
@@ -21,20 +36,25 @@ KityMinder.registerUI('menu/share/view', function (minder) {
         
         if (!match) return Promise.resolve(null);
 
-        var shareId = match[1];
+        shareId = match[1];
 
         function renderShareData(data) {
 
             if (data.error) {
-                window.alert(data.error);
-                window.location.href = 'index.html';
-                return;
+                return notice.error('err_share_data', data.error);
             }
 
             var content = data.shareMinder.data;
 
+            var title = data.path ? data.path.split('/').pop() : data.title;
+
+            title = title || JSON.parse(content).data.text;
+
+            title = minder.getLang('ui.shared_file_title', title);
+
             return $doc.load({
 
+                title: title,
                 source: 'share',
                 content: content,
                 protocol: 'json',
@@ -42,9 +62,6 @@ KityMinder.registerUI('menu/share/view', function (minder) {
                 ownerId: data.uid,
                 ownerName: data.uname
 
-            }).then(function(doc) {
-                var $title = minder.getUI('topbar/title');
-                $title.setTitle('[分享的] ' + $title.getTitle());
             });
         }
 
@@ -52,7 +69,7 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
         return $.pajax({
 
-            url: 'http://naotu.baidu.com/share.php', //'http://naotu.baidu.com/mongo.php',
+            url: 'http://naotu.baidu.com/share.php',
 
             data: {
                 action: 'find',
@@ -63,14 +80,14 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
         }).then(renderShareData)['catch'](function(e) {
 
-            window.alert('请求分享文件失败，请重试！');
+            notice.error('err_share_data', e);
 
         }).then(function() {
 
-            $(minder.getRenderTarget()).removeClass('loading');
             minder.disable();
             minder.execCommand('hand', true);
             $container.removeClass('loading');
+
         });
     }
 

@@ -1,66 +1,149 @@
-.netdisk-finder-container {
-    .netdisk-nav {
+@keyframes shake {
+      0% { transform: translate(0, 0); }
+     15% { transform: translate(-2px, -2px); }
+     35% { transform: translate(2px, -2px);}
+     65% { transform: translate(-2px, 2px); }
+     85% { transform: translate(2px, 2px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes shake-left-right {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 0); }
+    75% { transform: translate(3px, 0); }
+    100% { transform: translate(0, 0); }
+}
+
+.netdisk-finder {
+    
+    .dir.drag-enter {
+        border: 1px dashed #717B94 !important;
+        background: #F9F9F9;
+    }
+
+    &.drop-mode {
+        .dir {
+            animation: shake .3s ease;
+        }
+        .recycle {
+            animation: shake .3s ease;
+        }
+    }
+
+    &.recycle-bin {
+        .head .control {
+            .button.mkdir {
+                display: none;
+            }
+            .button.recycle {
+                display: none;
+            }
+            .button.recycle-clear {
+                display: block;
+            }
+        }
+        .file-list .file-list-item.dir:after {
+            display: none;
+        }
+    }
+
+    .head {
         padding-bottom: 10px;
         height: 30px;
         border-bottom: 1px solid #eee;
-        font-size: 18px;
+        .control {
+            float: right;
+            .button {
+                vertical-align: middle;
+                font-size: 0;
+                background: url(../images/finder.svg) no-repeat;
+                width: 30px;
+                height: 30px;
+                border-radius: 2px;
+                box-sizing: border-box;
+                border: 1px solid transparent;
+                &:hover {
+                    border: 1px solid lighten(#717B94, 30%);
+                }
+                &:active {
+                    box-shadow: inset 0 1px 3px fadeOut(#717B94, 80%);
+                }
 
-        span, a {
-            display: inline-block;
-            height: 20px;
-            line-height: 20px;
-            padding: 5px 10px;
-            margin: 0 3px 0 0;
-            cursor: default;
-            vertical-align: middle;
-        }
+                &.recycle {
+                    background-position: -30px 0;
+                    &.drag-enter {
+                        background-position: -60px 0 !important;
+                    }
+                }
 
-        span.my-document {
-            width: 25px;
-            height: 25px;
-            padding: 0;
-            text-indent: -1000px;
-            position: relative;
-            top: -2px;
-            background: url(../images/icons.png) 0 -470px;
-        }
+                &.recycle-clear {
+                    display: none;
+                    background-position: -90px 0;
+                }
 
-        a.dir-back {
-            border-radius: 100%;
-            width: 23px;
-            height: 23px;
-            padding: 0;
-            border: 1px solid @ui-color;
-            text-indent: -1000px;
-            position: relative;
-            top: -1px;
-            background: url(../images/icons.png) -2px -396px no-repeat;
-            
-        }
-        
-        span.spliter {
-            .triangle-left(black,4px,8px);
-            display: inline-block;
-            margin-left: 4px;
-        }
-        
-        a {
-            &:hover {
-                background-color: lighten(@tab-hover, 55%);
             }
-            &:active {
-                background-color: lighten(@tab-active, 55%)
+        }
+        .nav {
+            font-size: 18px;
+
+            span, a {
+                display: inline-block;
+                height: 20px;
+                line-height: 20px;
+                padding: 5px 10px;
+                margin: 0 3px 0 0;
+                cursor: default;
+                vertical-align: middle;
+            }
+
+            span.my-document {
+                width: 25px;
+                height: 25px;
+                padding: 0;
+                text-indent: -1000px;
+                position: relative;
+                top: -2px;
+                background: url(../images/icons.png) 0 -470px;
+            }
+
+            a.dir-back {
+                border-radius: 100%;
+                width: 23px;
+                height: 23px;
+                padding: 0;
+                border: 1px solid @ui-color;
+                text-indent: -1000px;
+                position: relative;
+                top: -1px;
+                background: url(../images/icons.png) -2px -396px no-repeat;
+                
+            }
+            
+            span.spliter {
+                .triangle-left(black,4px,8px);
+                display: inline-block;
+                margin-left: 4px;
+            }
+            
+            a {
+                border: 1px solid transparent;
+                &:hover {
+                    background-color: lighten(@tab-hover, 55%);
+                }
+                &:active {
+                    background-color: lighten(@tab-active, 55%)
+                }
             }
         }
     }
 
-    .netdisk-file-list {
+    .file-list {
+        .dock(41px, 0, 0, 0);
         margin: 0;
         padding: 0;
         list-style: none;
-        .dock(40px, 0, 0);
         overflow: auto;
-        
+        overflow-x: hidden;
         .empty {
             height: 50px;
             line-height: 50px;
@@ -68,29 +151,80 @@
             font-size: 18px;
             color: #ccc;
         }
-        .netdisk-file-list-item {
+        .file-list-item {
             font-size: 14px;
+            height: 20px;
             line-height: 20px;
             padding: 10px 20px 10px 40px;
             cursor: default;
+            -webkit-user-drag: element;
+            -khtml-user-drag: element;
+            border: 1px solid transparent;
+
+            .rename-button {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                margin-left: 10px;
+                vertical-align: middle;
+                border-radius: 2px;
+                box-sizing: border-box;
+                border: 1px solid transparent;
+                opacity: 0;
+                transition: transform,opacity ease .2s;
+                transform: scale(0);
+                font-size: 0;
+                &:hover {
+                    border: 1px solid lighten(#717B94, 30%);
+                }
+                &:active {
+                    box-shadow: inset 0 1px 3px fadeOut(#717B94, 80%);
+                }
+            }
+
+            .filename {
+                height: 20px;
+                line-height: 20px;
+                vertical-align: middle;
+            }
+
+            input {
+                margin: 0;
+                outline: none;
+                width: 61.80%;
+                -moz-user-select: default;
+            }
             
             &:hover {
-                background-color: lighten(@tab-hover, 55%);
-            }
-            &:active {
-                background-color: lighten(@tab-hover, 50%);
+                .rename-button {
+                    transition: transform,opacity ease .2s .5s;
+                    transform: scale(1);
+                    opacity: 1;
+                    background: url(../images/icons.png) 1px -1130px;
+                }
             }
             &.selected {
+                &:hover .rename-button {
+                    background: url(../images/icons.png) 1px -1110px;
+                }
                 background-color: lighten(@tab-active, 20%);
                 color: white;
-                &.file:before {
-                    background-position: 0 -545px;
+                &.dir .icon {
+                    background: lighten(@tab-active, 20%) url(../images/icons.png) 0 -1085px;
                 }
+                &.dir:after {
+                    border-left-color: white;
+                }
+                &.file .icon {
+                    background: lighten(@tab-active, 20%) url(../images/icons.png) 0 -545px;
+                }
+            }
+            &.dragging {
+                border: 1px solid #717B94;
             }
             &.file {
                 position: relative;
-                &:before {
-                    content: ' ';
+                .icon {
                     display: block;
                     position: absolute;
                     width: 25px;
@@ -100,10 +234,17 @@
                     background: url(../images/icons.png) 0 -445px no-repeat;
                 }
             }
+            &.renaming {
+                input.invalid-name {
+                    animation: shake-left-right .3s ease;
+                }
+                .rename-button {
+                    display: none !important;
+                }
+            }
             &.dir {
                 position: relative;
-                &:before {
-                    content: ' ';
+                .icon {
                     display: block;
                     position: absolute;
                     width: 25px;
@@ -119,21 +260,17 @@
                     top: 20px;
                     margin-top: -4px;
                 }
-                input {
-                    margin: 0;
-                    outline: none;
-                    width: 61.80%;
-                }
             }
         }
     }
-    
-    .netdisk-mkdir {
-        position: absolute;
-        right: 0;
-        top: 0;
-    }
-    
+}
+
+.netdisk-open-panel .netdisk-finder {
+    .dock;
+}
+
+.netdisk-save-panel .netdisk-finder {
+    .dock(0, 0, 50px, 0);
 }
 
 // for save

@@ -46,6 +46,8 @@ kity.extendClass(Minder, {
             }
             this._modules[name] = moduleDeals;
 
+            if (!moduleDeals) continue;
+
             if (moduleDeals.init) {
                 moduleDeals.init.call(me, this._options);
             }

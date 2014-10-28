@@ -88,7 +88,7 @@ KityMinder.registerProtocol('mindmanager', function(minder) {
             // 查找文档入口
             while ((entry = entries.pop())) {
 
-                if (entry.filename == 'Document.xml') break;
+                if (entry.filename.split('/').pop() == 'Document.xml') break;
 
                 entry = null;
 

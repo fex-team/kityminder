@@ -312,14 +312,18 @@ Minder.Receiver = kity.createClass('Receiver', {
     },
     setContainerTxt: function(txt) {
 
+        function encodeHtml(text) {
+            return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
         if(txt){
+            txt = encodeHtml(txt);
             txt = txt.replace(/[\n]/g,'<br\/>');
         }else{
             txt = '';
             this.textGroup.eachItem(function(i,item){
-                txt += item.getContent() + '<br/>';
+                txt += encodeHtml(item.getContent()) + '<br/>';
             });
-
         }
         this.container.innerHTML = txt;
         return this;

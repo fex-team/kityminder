@@ -38,6 +38,8 @@ KityMinder.registerModule( "ClipboardModule", function () {
         execute: function(km) {
             var ancestors = km.getSelectedAncestors();
 
+            if (ancestors.length === 0) return;
+
             sendToClipboard(ancestors);
 
             km.select(MinderNode.getCommonAncestor(ancestors), true);

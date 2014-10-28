@@ -22,7 +22,7 @@ KityMinder.registerTheme('classic', {
     'main-shadow': 'rgba(0, 0, 0, .25)',
 
     'sub-color': 'white',
-    'sub-background': 'none',
+    'sub-background': 'transparent',
     'sub-stroke': 'none',
     'sub-font-size': 12,
     'sub-padding': [5, 10],

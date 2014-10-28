@@ -35,6 +35,7 @@ KityMinder.registerProtocol('xmind', function(minder) {
         fileDescription: 'XMind 格式',
         fileExtension: '.xmind',
         dataType: 'blob',
+        mineType: 'application/octet-stream',
 
         decode: function(local) {
 
@@ -108,7 +109,7 @@ KityMinder.registerProtocol('xmind', function(minder) {
                     // 查找文档入口
                     while ((entry = entries.pop())) {
 
-                        if (entry.filename == 'content.xml') break;
+                        if (entry.filename.split('/').pop() == 'content.xml') break;
 
                         entry = null;
 
@@ -118,8 +119,12 @@ KityMinder.registerProtocol('xmind', function(minder) {
                     if (entry) {
 
                         entry.getData(new zip.TextWriter(), function(text) {
-                            json = xml2km($.parseXML(text));
-                            resolve(json);
+                            try {
+                                json = xml2km($.parseXML(text));
+                                resolve(json);
+                            } catch (e) {
+                                reject(e);
+                            }
                         });
 
                     } 
@@ -134,6 +139,62 @@ KityMinder.registerProtocol('xmind', function(minder) {
             return getEntries(local).then(readDocument);
 
         },
+
+        encode: function(json, km, options) {
+            var url = 'native-support/export.php';
+            var data = JSON.stringify(json);
+
+            function fetch() {
+                return new Promise(function(resolve, reject) {
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', url);
+
+                    xhr.responseType = 'blob';
+                    xhr.onload = resolve;
+                    xhr.onerror = reject;
+
+                    var form = new FormData();
+                    form.append('type', 'xmind');
+                    form.append('data', data);
+
+                    xhr.send(form);
+
+                }).then(function(e) {
+                    return e.target.response;
+                });
+            }
+
+            function download() {
+                var filename = options.filename || 'xmind.xmind';
+
+                var form = document.createElement('form');
+                form.setAttribute('action', url);
+                form.setAttribute('method', 'POST');
+                form.appendChild(field('filename', filename));
+                form.appendChild(field('type', 'xmind'));
+                form.appendChild(field('data', data));
+                form.appendChild(field('download', '1'));
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
+                function field(name, content) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = content;
+                    return input;
+                }
+            }
+
+            if (options && options.download) {
+                return download();
+            } else {
+                return fetch();
+            }
+        },
+
         // recognize: recognize,
         recognizePriority: -1
     };

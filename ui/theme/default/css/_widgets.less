@@ -1,11 +1,18 @@
 .fui-button, li {
-    .transition(background-color .2s ease);
+    transition: background-color .2s ease;
 }
 
 .fui-disabled,
 .fui-disabled .fui-widget {
     &:hover, &:active {
         background-color: transparent;
+    }
+}
+
+.fui-widget {
+    input[type=text],
+    textarea {
+        user-select: text;
     }
 }
 
@@ -78,7 +85,7 @@ input[type=search]::-ms-clear {
             }
         }
         &:active {
-            .transform(scale(0.9));
+            transform: scale(0.9);
             &:hover {
                 background-color: @button-active;
                 .fui-disabled& {
@@ -288,7 +295,7 @@ input[type=search]::-ms-clear {
             text-align: center;
             
             &:hover {
-                background: lighten(@ui-color, 60%);
+                background: lighten(@ui-color, 70%);
             }
             &:active {
                 background: lighten(@ui-color, 55%);
@@ -297,7 +304,7 @@ input[type=search]::-ms-clear {
             &.fui-xdialog-ok-btn {
                 background: @ui-color;
                 &:hover {
-                    background: lighten(@ui-color, 5%);
+                    background: lighten(@ui-color, 10%);
                 }
                 &:active {
                     background: darken(@ui-color, 3%);
@@ -356,9 +363,9 @@ input[type=search]::-ms-clear {
     }
 }
 
-.fui-popup-menu {
+.fui-popup-menu, .fui-menu.fui-ppanel-position {
     position: absolute;
-    z-index: 9999;
+    z-index: 100000;
     min-width: 160px;
     padding: 5px 0;
     font-size: 12px;
@@ -398,7 +405,7 @@ input[type=search]::-ms-clear {
         font-size: 12px;
         overflow: hidden;
         
-        .transition(none);
+        transition: none;
         
         &:hover, :focus {
             background: #0099f2; /* Old browsers */

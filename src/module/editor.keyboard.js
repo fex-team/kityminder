@@ -53,7 +53,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     this._keyup(e);
             }
         },
-        _setTextToContainer : function(keyCode){
+        _setTextToContainer : function(keyCode,iskeyUp){
             var me = this;
             //同步节点
             me.minderNode = me.re.minderNode;
@@ -65,7 +65,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             }
 
 
-            if(keymap.controlKeys[keyCode]){
+            if(keymap.controlKeys[keyCode] && !iskeyUp ){
                 return;
             }
             //当第一次输入内容时进行保存
@@ -97,6 +97,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     me.km.layout(300);
                 },300);
             }
+
 
             me.re.updateTextOffsetData()
                 .updateRange()
@@ -193,7 +194,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     //修正在cvs方式下_keyup会把节点文字选中
                     this.isShortcutCopyKey = true;
                     this.km.setStatus('normal');
-
                     return;
                 }
 
@@ -241,7 +241,6 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
             me._setTextToContainer(keyCode);
         },
         _beforeKeyup:function(e){
-
             var me = this;
             var orgEvt = e.originEvent;
             var keyCode = orgEvt.keyCode;
@@ -265,7 +264,7 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                     }
 
                     if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
-                        me._setTextToContainer(keyCode);
+                        me._setTextToContainer(keyCode,true);
                     }
                     if (this.re.keydownNode === this.re.minderNode) {
                         this.km.rollbackStatus();
@@ -283,19 +282,20 @@ Minder.keyboarder = kity.createClass('keyboarder', function(){
                         }
 
                     }
-                    me._setTextToContainer(keyCode);
+                    me._setTextToContainer(keyCode,true);
                     return;
             }
 
             if (this.isTypeText) {
-                me._setTextToContainer(keyCode);
+                me._setTextToContainer(keyCode,true);
                 return;
             }
             if (browser.mac && browser.gecko){
-                me._setTextToContainer(keyCode);
+                me._setTextToContainer(keyCode,true);
                 return;
             }
-            me._setTextToContainer(keyCode);
+
+            me._setTextToContainer(keyCode,true);
 
             return true;
         },
