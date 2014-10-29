@@ -32,3 +32,4 @@ if ($download) {
 }
 
 readfile( $file );
+unlink( $file );
