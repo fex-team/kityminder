@@ -75,6 +75,8 @@
         { path: 'src/theme/default.js',                 pack: 'edit|share|m-share' },
         { path: 'src/theme/snow.js',                    pack: 'edit|share|m-share' },
         { path: 'src/theme/fresh.js',                   pack: 'edit|share|m-share' },
+        { path: 'src/theme/fish.js',                    pack: 'edit|share|m-share' },
+        { path: 'src/theme/wire.js',                    pack: 'edit|share|m-share' },
 
         /* 模板 */
         { path: 'src/template/default.js',              pack: 'edit|share|m-share' },

@@ -250,9 +250,10 @@ kity.extendClass(Minder, {
             }
 
             var layout = node.getLayoutInstance();
-            layout.doLayout(node, node.getChildren().filter(function(child) {
+            var childrenInFlow = node.getChildren().filter(function(child) {
                 return !child.hasLayoutOffset();
-            }), round);
+            });
+            layout.doLayout(node, childrenInFlow, round);
         }
 
         // 第一轮布局
@@ -308,7 +309,7 @@ kity.extendClass(Minder, {
         }
 
         function apply(node, pMatrix) {
-            var matrix = node.getLayoutTransform().merge(new kity.Matrix(1, 0, 0, 1, pMatrix.m.e, pMatrix.m.f));
+            var matrix = node.getLayoutTransform().merge(pMatrix);
             var lastMatrix = node.getGlobalLayoutTransform() || new kity.Matrix();
 
             var offset = node.getLayoutOffset();

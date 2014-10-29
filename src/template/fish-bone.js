@@ -25,14 +25,14 @@ KityMinder.registerTemplate('fish-bone', {
             return 'fish-bone-slave';
         }
 
-        return 'right';
+        return node.getLayoutPointPreview().y > 0 ? 'filetree-up': 'filetree-down';
     },
 
     getConnect: function(node) {
         switch (node.getLevel()) {
             case 1: return 'fish-bone-master';
             case 2: return 'line';
-            default: return 'under';
+            default: return 'l';
         }
     }
 });

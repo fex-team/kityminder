@@ -1,79 +1,83 @@
 /* global Layout:true */
-KityMinder.registerLayout('filetree', kity.createClass({
-    base: Layout,
 
-    doLayout: function(parent, children) {
-        var pBox = parent.getContentBox();
-        var indent = 20;
+[-1, 1].forEach(function (dir) {
+    var name = 'filetree-' + (dir > 0 ? 'down' : 'up');
 
-        var vectorIn = parent.getLayoutVectorIn();
+    KityMinder.registerLayout(name, kity.createClass({
+        base: Layout,
 
-        parent.setVertexOut(new kity.Point(pBox.left + indent, pBox.bottom));
-        parent.setLayoutVectorOut(new kity.Vector(0, vectorIn.y > 0 ? 1 : -1));
+        doLayout: function(parent, children, round) {
+            var pBox = parent.getContentBox();
+            var indent = 20;
 
-        if (!children.length) return;
+            parent.setVertexOut(new kity.Point(pBox.left + indent, dir > 0 ? pBox.bottom : pBox.top));
+            parent.setLayoutVectorOut(new kity.Vector(0, dir));
 
-        children.forEach(function(child) {
-            var cbox = child.getContentBox();
-            child.setLayoutTransform(new kity.Matrix());
+            if (!children.length) return;
 
-            child.setVertexIn(new kity.Point(cbox.left, cbox.cy));
-            child.setLayoutVectorIn(new kity.Vector(1, 0));
-        });
+            children.forEach(function(child) {
+                var cbox = child.getContentBox();
+                child.setLayoutTransform(new kity.Matrix());
 
-        this.align(children, 'left');
-        this.stack(children, 'y');
+                child.setVertexIn(new kity.Point(cbox.left, cbox.cy));
+                child.setLayoutVectorIn(new kity.Vector(1, 0));
+            });
 
-        var xAdjust = 0;
-        xAdjust += pBox.left;
-        xAdjust += indent;
-        xAdjust += children[0].getStyle('margin-left');
+            this.align(children, 'left');
+            this.stack(children, 'y');
 
-        var yAdjust = 0;
+            var xAdjust = 0;
+            xAdjust += pBox.left;
+            xAdjust += indent;
+            xAdjust += children[0].getStyle('margin-left');
 
-        if (vectorIn.y > 0) {
-            yAdjust += pBox.bottom;
-            yAdjust += parent.getStyle('margin-bottom');
-            yAdjust += children[0].getStyle('margin-top');
-        } else {
-            yAdjust -= this.getTreeBox(children).bottom;
-            yAdjust += pBox.top;
-            yAdjust -= parent.getStyle('margin-top');
-            yAdjust -= children[0].getStyle('margin-bottom');
+            var yAdjust = 0;
+
+            if (dir > 0) {
+                yAdjust += pBox.bottom;
+                yAdjust += parent.getStyle('margin-bottom');
+                yAdjust += children[0].getStyle('margin-top');
+            } else {
+                yAdjust -= this.getTreeBox(children).bottom;
+                yAdjust += pBox.top;
+                yAdjust -= parent.getStyle('margin-top');
+                yAdjust -= children[0].getStyle('margin-bottom');
+            }
+
+            this.move(children, xAdjust, yAdjust);
+
+        },
+
+        getOrderHint: function(node) {
+            var hint = [];
+            var box = node.getLayoutBox();
+            var offset = node.getLevel() > 1 ? 3 : 5;
+
+            hint.push({
+                type: 'up',
+                node: node,
+                area: {
+                    x: box.x,
+                    y: box.top - node.getStyle('margin-top') - offset,
+                    width: box.width,
+                    height: node.getStyle('margin-top')
+                },
+                path: ['M', box.x, box.top - offset, 'L', box.right, box.top - offset]
+            });
+
+            hint.push({
+                type: 'down',
+                node: node,
+                area: {
+                    x: box.x,
+                    y: box.bottom + offset,
+                    width: box.width,
+                    height: node.getStyle('margin-bottom')
+                },
+                path: ['M', box.x, box.bottom + offset, 'L', box.right, box.bottom + offset]
+            });
+            return hint;
         }
+    }));
 
-        this.move(children, xAdjust, yAdjust);
-
-    },
-
-    getOrderHint: function(node) {
-        var hint = [];
-        var box = node.getLayoutBox();
-        var offset = node.getLevel() > 1 ? 3 : 5;
-
-        hint.push({
-            type: 'up',
-            node: node,
-            area: {
-                x: box.x,
-                y: box.top - node.getStyle('margin-top') - offset,
-                width: box.width,
-                height: node.getStyle('margin-top')
-            },
-            path: ['M', box.x, box.top - offset, 'L', box.right, box.top - offset]
-        });
-
-        hint.push({
-            type: 'down',
-            node: node,
-            area: {
-                x: box.x,
-                y: box.bottom + offset,
-                width: box.width,
-                height: node.getStyle('margin-bottom')
-            },
-            path: ['M', box.x, box.bottom + offset, 'L', box.right, box.bottom + offset]
-        });
-        return hint;
-    }
-}));
+});

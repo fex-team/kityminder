@@ -10,7 +10,8 @@
 KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLayout', {
     base: Layout,
 
-    doLayout: function(parent, children) {
+    doLayout: function(parent, children, round) {
+
         var upPart = [],
             downPart = [];
 
@@ -52,8 +53,11 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         this.align(downPart, 'top');
 
         var xAdjust = pBox.right + pMarginRight + cMarginLeft;
-        this.move(upPart, xAdjust, -cBox.bottom - cMarginBottom);
-        this.move(downPart, xAdjust + cMarginLeft, -cBox.top + cMarginTop);
+        var yAdjustUp = pBox.cy - cMarginBottom - parent.getStyle('margin-top');
+        var yAdjustDown = pBox.cy + cMarginTop + parent.getStyle('margin-bottom');
+
+        this.move(upPart, xAdjust, yAdjustUp);
+        this.move(downPart, xAdjust + cMarginLeft, yAdjustDown);
 
         // children.forEach(function(child, index) {
         //     var matrix = child.getLayoutTransform();

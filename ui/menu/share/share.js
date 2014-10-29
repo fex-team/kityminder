@@ -20,10 +20,6 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     var BACKEND_URL = 'http://naotu.baidu.com/share.php';
 
-    if (window.location.host == 'local.host') {
-        BACKEND_URL = 'http://naotu.baidu.com/share_debug.php'; // 测试环境
-    }
-
     var currentShare = null;
     var shareList = [];
 
