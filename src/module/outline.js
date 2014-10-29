@@ -62,6 +62,15 @@ var ShadowRenderer = kity.createClass('ShadowRenderer', {
     }
 });
 
+var marker = new kity.Marker();
+
+marker.setWidth(10);
+marker.setHeight(12);
+marker.setRef(0, 0);
+marker.setViewBox(-6, -4, 8, 10);
+
+marker.addShape(new kity.Path().setPathData('M-5-3l5,3,-5,3').stroke('#33ffff'));
+
 var wireframeOption = /wire/.test(window.location.href);
 var WireframeRenderer = kity.createClass('WireframeRenderer', {
     base: Renderer,
@@ -75,7 +84,15 @@ var WireframeRenderer = kity.createClass('WireframeRenderer', {
         var box = this.wireframe = new kity.Rect()
             .stroke('lightgreen');
 
-        return wireframe.addShapes([oxy, box]);
+        var vectorIn = this.vectorIn = new kity.Path()
+            .stroke('#66ffff');
+        var vectorOut = this.vectorOut = new kity.Path()
+            .stroke('#66ffff');
+
+        vectorIn.setMarker(marker, 'end');
+        vectorOut.setMarker(marker, 'end');
+
+        return wireframe.addShapes([oxy, box, vectorIn, vectorOut]);
     },
 
     shouldRender: function() {
@@ -86,11 +103,27 @@ var WireframeRenderer = kity.createClass('WireframeRenderer', {
         this.wireframe
             .setPosition(box.x, box.y)
             .setSize(box.width, box.height);
+        var pin = node.getVertexIn();
+        var pout = node.getVertexOut();
+        var vin = node.getLayoutVectorIn().normalize(30);
+        var vout = node.getLayoutVectorOut().normalize(30);
+        this.vectorIn.setPathData(['M', pin.offset(vin.reverse()), 'L', pin]);
+        this.vectorOut.setPathData(['M', pout, 'l', vout]);
     }
 });
 
 KityMinder.registerModule('OutlineModule', function() {
     return {
+        events: (!wireframeOption ? null : {
+            'ready': function() {
+                this.getPaper().addResource(marker);
+            },
+            'layoutallfinish': function() {
+                this.getRoot().traverse(function(node) {
+                    node.getRenderer('WireframeRenderer').update(null, node, node.getContentBox());
+                });
+            }
+        }),
         renderers: {
             outline: OutlineRenderer,
             outside: [ShadowRenderer, WireframeRenderer]
