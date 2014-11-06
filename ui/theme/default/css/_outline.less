@@ -13,7 +13,9 @@
 
 .outlineView ul, .outlineView li {
 	list-style: none;
-    padding-left: 7px;
+    padding-left: 12px;
+    min-width: 72px;
+    max-width: 200px;
 }
 
 // .outlineView ul {
@@ -23,6 +25,7 @@
 .outlineView > ul {
     margin: 0px;
     padding-left: 0px;
+    overflow: auto;
 }
 
 .outlineView li {
@@ -51,6 +54,7 @@
     // margin-left: 30px;
     // background: #a0a0a0;
     padding-left: 8px;
+    white-space:nowrap;
 }
 
 .outlineView div.text.text1{
@@ -61,10 +65,10 @@
     background: #555;
 }
 
-.outlineView ul.item-child {
-    display: block;
-}
+// .outlineView ul.item-child {
+//     display: block;
+// }
 
-.outlineView ul.item-child.expand {
-    display: none;
-}
+// .outlineView ul.item-child.expand {
+//     display: none;
+// }

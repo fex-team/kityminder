@@ -100,7 +100,7 @@ KityMinder.registerUI('ribbon/view/outline', function(minder) {
         else {
             $node.text('+');
         }
-        $node.siblings('ul').fadeToggle();
+        $node.siblings('ul').toggle('fast');
         e.stopPropagation();
     })
 
