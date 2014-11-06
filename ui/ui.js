@@ -58,7 +58,7 @@
             return this._ui[id];
         }
     });
-    
+
     $.ajaxSetup({ cache: false });
     $.extend($, {
         pajax: function() {

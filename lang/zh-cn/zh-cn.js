@@ -154,7 +154,8 @@ KityMinder.LANG['zh-cn'] = {
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
             'collapsetolevel1': '收起到一级节点',
-            'fullscreen': '全屏'
+            'fullscreen': '全屏',
+            'outline': '大纲'
         },
 
         'back': '返回',
