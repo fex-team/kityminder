@@ -13,7 +13,7 @@ KityMinder.registerTemplate('filetree', {
         if (node.getData('layout')) return node.getData('layout');
         if (node.isRoot()) return 'bottom';
 
-        return 'filetree';
+        return 'filetree-down';
     },
 
     getConnect: function(node) {

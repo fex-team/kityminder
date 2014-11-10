@@ -17,8 +17,8 @@ Utils.extend(KityMinder, {
 
     getLayoutInstance: function(name) {
         var LayoutClass = KityMinder._layout[name];
+        if (!LayoutClass) throw new Error('Missing Layout: ' + name);
         var layout = new LayoutClass();
-        if (!layout) throw new Error('Missing Layout: ' + name);
         return layout;
     }
 });
@@ -239,27 +239,28 @@ kity.extendClass(Minder, {
             node.setLayoutTransform(null);
         });
 
-        function layoutNode(node) {
+        function layoutNode(node, round) {
 
             // layout all children first
             // 剪枝：收起的节点无需计算
             if (node.isExpanded() || true) {
                 node.children.forEach(function(child) {
-                    layoutNode(child);
+                    layoutNode(child, round);
                 });
             }
 
             var layout = node.getLayoutInstance();
-            layout.doLayout(node, node.getChildren().filter(function(child) {
+            var childrenInFlow = node.getChildren().filter(function(child) {
                 return !child.hasLayoutOffset();
-            }));
+            });
+            layout.doLayout(node, childrenInFlow, round);
         }
 
         // 第一轮布局
-        layoutNode(this.getRoot());
+        layoutNode(this.getRoot(), 1);
 
         // 第二轮布局
-        layoutNode(this.getRoot());
+        layoutNode(this.getRoot(), 2);
 
         duration = duration ? 300 : 0;
 

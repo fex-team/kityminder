@@ -3,11 +3,14 @@ KityMinder.LANG['zh-cn'] = {
         'default': '思维导图',
         'structure': '组织结构图',
         'filetree': '目录组织图',
-        'right': '逻辑结构图'
+        'right': '逻辑结构图',
+        'fish-bone': '鱼骨头图'
     },
     'theme': {
         'classic': '脑图经典',
         'snow': '温柔冷光',
+        'fish': '鱼骨图',
+        'wire': '线框',
         'fresh-red': '清新红',
         'fresh-soil': '泥土黄',
         'fresh-green': '文艺绿',
@@ -154,7 +157,8 @@ KityMinder.LANG['zh-cn'] = {
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
             'collapsetolevel1': '收起到一级节点',
-            'fullscreen': '全屏'
+            'fullscreen': '全屏',
+            'outline': '大纲'
         },
 
         'back': '返回',
