@@ -7,3 +7,6 @@
 [submodule "lib/fio"]
 	path = lib/fio
 	url = https://github.com/fex-team/fio
+[submodule "lib/umeditor"]
+	path = lib/umeditor
+	url = https://github.com/fex-team/umeditor

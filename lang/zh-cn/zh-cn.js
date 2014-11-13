@@ -308,8 +308,10 @@ KityMinder.LANG['zh-cn'] = {
         },
         'link': '链接',
         'image': '图片',
+        'note': '备注',
         'removelink': '移除已有连接',
         'removeimage': '移除已有图片',
+        'removenote': '移除已有备注',
         'resetlayout': '整理',
 
         'justnow': '刚刚',
