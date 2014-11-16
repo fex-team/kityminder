@@ -17,6 +17,7 @@ KityMinder.registerModule('NoteModule', function() {
             var node = minder.getSelectedNode();
             node.setData('note', note);
             node.render();
+            node.getMinder().layout(300);
         },
 
         queryState: function(minder) {
@@ -24,7 +25,8 @@ KityMinder.registerModule('NoteModule', function() {
         },
 
         queryValue: function(minder) {
-            return minder.getSelectedNode().getData('note');
+            var node = minder.getSelectedNode();
+            return node && node.getData('note');
         }
     });
 
@@ -56,13 +58,19 @@ KityMinder.registerModule('NoteModule', function() {
             var icon = new NoteIcon();
             icon.on('mousedown', function(e) {
                 e.preventDefault();
-                node.getMinder().fire('shownoterequest');
+                node.getMinder().fire('editnoterequest');
+            });
+            icon.on('mouseover', function() {
+                node.getMinder().fire('shownoterequest', {node: node, icon: icon});
+            });
+            icon.on('mouseout', function() {
+                node.getMinder().fire('hidenoterequest', {node: node, icon: icon});
             });
             return icon;
         },
 
         shouldRender: function(node) {
-            return node.getData('detail');
+            return node.getData('note');
         },
 
         update: function(icon, node, box) {
@@ -72,7 +80,7 @@ KityMinder.registerModule('NoteModule', function() {
             icon.path.fill(node.getStyle('color'));
             icon.setTranslate(x, y);
 
-            return new kity.Box(x, y - icon.height / 2, icon.width, icon.height);
+            return new kity.Box(x, Math.round(y - icon.height / 2), icon.width, icon.height);
         }
 
     });
@@ -82,7 +90,7 @@ KityMinder.registerModule('NoteModule', function() {
             right: NoteIconRenderer
         },
         commands: {
-            'detail': NoteCommand
+            'note': NoteCommand
         }
     };
 });

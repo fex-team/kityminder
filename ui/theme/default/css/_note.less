@@ -1,8 +1,168 @@
+.gfm-render {
+    blockquote, ul, table, p, pre, hr {
+        margin: 1em 0;
+        &:first-child:last-child {
+            margin: 0;
+        }
+    }
+    
+    blockquote {
+        display: block;
+        border-left: 4px solid #E4AD91;
+        color: darken(#E4AD91, 10%);
+        padding-left: 10px;
+        font-style: italic;
+        margin-left: 2em;
+    }
+
+    ul, ol {
+        padding-left: 3em;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        th, td {
+            border: 1px solid #666;
+            padding: 2px 4px;
+        }
+        th {
+            background: rgba(45, 141, 234, 0.2);
+        }
+        tr:nth-child(even) td {
+            background: rgba(45, 141, 234, 0.03);
+        }
+        margin: 1em 0;
+    }
+
+    em {
+        color: red;
+    }
+
+    del {
+        color: #999;
+    }
+
+    pre {
+        background: rgba(45, 141, 234, 0.1);
+        padding: 5px;
+        border-radius: 5px;
+        word-break: break-all;
+        word-wrap: break-word;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #CCC;
+    }
+}
+
 #note-panel {
     width: 300px;
-    border-left: 1px solid #dbdbdb;
+    border-left: 1px solid lighten(@ui-color, 50%);
     background: white;
     .dock(100px, 0, 0, auto);
+
+    .tab {
+        height: 30px;
+        background: #EEE;
+        font-size: 12px;
+        line-height: 30px;
+        padding: 0 10px;
+        position: relative;
+        a.edit-tab, a.preview-tab {
+            display: inline-block;
+            padding: 0 10px;
+            height: 24px;
+            line-height: 24px;
+            vertical-align: bottom;
+            margin-right: 5px;
+            border-radius: 3px 3px 0 0;
+            &:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+            &.active-tab {
+                background: white;
+            }
+        }
+        a.help {
+            position: absolute;
+            right: 10px;
+            height: 30px;
+            line-height: 30px;
+            top: 0;
+        }
+    }
+    
+    .note-editor {
+        .dock(60px, 0, 0);
+        padding: 5px;
+        -webkit-user-select: text;
+
+        .CodeMirror {
+            cursor: text;
+            font-size: 14px;
+            line-height: 1.3em;
+            font-family: consolas;
+        }
+    }
+
+    .note-preview {
+        .dock(60px, 0, 0);
+        padding: 10px;
+        -webkit-user-select: text;
+        overflow-x: hidden;
+        overflow-y: auto;
+        .gfm-render;
+    }
+
+    .close {
+        .close-button;
+        position: absolute;
+        right: 5px;
+        top: 6px;
+    }
+
+    &[disabled] {
+        &:after {
+            content: ' ';
+            display: block;
+            .dock(20px, 0, 0);
+            background: rgba(100, 100, 100, .1);
+        }
+    }
+
+    & > h2 {
+        font-size: 12px;
+        margin: 0;
+        font-weight: normal;
+        background: lighten(@ui-color, 30%);
+        color: @ui-fore;
+        padding: 5px 10px;
+        height: 20px;
+        line-height: 20px;
+    }
+}
+
+#note-previewer {
+    position: absolute;
+    background: #FFD;
+    padding: 5px 15px;
+    border-radius: 5px;
+    max-width: 400px;
+    max-height: 200px;
+    overflow: auto;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.5em;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .5);
+    .gfm-render;
+}
+
+
+#content-wrapper.note-panel-visible #kityminder {
+    right: 300px;
 }
 
 #tab-container.collapsed + #kityminder + #note-panel {
