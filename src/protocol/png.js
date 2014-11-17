@@ -111,8 +111,12 @@ if (!kity.Browser.ie) {
             }
 
             function generateDataUrl(canvas) {
-                var url = canvas.toDataURL('png');
-                return url;
+                try {
+                    var url = canvas.toDataURL('png');
+                    return url;
+                } catch (e) {
+                    throw new Error('当前浏览器版本不支持导出 PNG 功能，请尝试升级到最新版本！');
+                }
             }
 
             function drawSVG() {
