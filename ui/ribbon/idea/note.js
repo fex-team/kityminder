@@ -6,7 +6,12 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+/* global marked: true */
 KityMinder.registerUI('ribbon/idea/note', function(minder) {
+
+    marked.setOptions({
+        breaks: true
+    });
 
     var $attachment = minder.getUI('ribbon/idea/attachment');
 
@@ -58,10 +63,22 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     
     minder.on('uiready', function() {
         editor.setSize('100%', '100%');
-    })
+    });
     
     var visible = false;
     var selectedNode = null;
+
+    function axss(value) {
+        var div = document.createElement('div');
+        div.innerHTML = value;
+        $(div).find('script').remove();
+        for (var name in div) {
+            if (name.indexOf('on') === 0) {
+                div.removeAttribute(name);
+            }
+        }
+        return div.innerHTML;
+    }
 
     function updateEditorView() {
         if (noteVisible && selectedNode != minder.getSelectedNode()) {
@@ -114,7 +131,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         var b = icon.getRenderBox('screen');
         var note = node.getData('note');
 
-        $previewer.html(marked(note));
+        $previewer.html(marked(axss(note)));
         
         var cw = $('#content-wrapper').width();
         var ch = $('#content-wrapper').height();
@@ -140,7 +157,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
     function editMode() {
         if ($editTab.hasClass(activeTabClass)) return;
-        $preview.hide()
+        $preview.hide();
         $previewTab.removeClass(activeTabClass);
 
         $editor.show().addClass(activeTabClass);
@@ -152,7 +169,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
         $editor.hide();
         $editTab.removeClass(activeTabClass);
-        $preview.html(marked(editor.getValue())).show();
+        $preview.html(marked(axss(editor.getValue()))).show();
         $previewTab.addClass(activeTabClass);
     }
 
