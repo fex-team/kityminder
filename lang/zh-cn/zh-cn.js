@@ -337,7 +337,14 @@ KityMinder.LANG['zh-cn'] = {
 
         'load_success': '<b>{0}</b> 加载成功',
         'save_success': '<b>{0}</b> 已保存于 {1}',
-        'autosave_success': '<b>{0}</b> 已自动保存于 {1}'
+        'autosave_success': '<b>{0}</b> 已自动保存于 {1}',
+
+        'selectall': '全选',
+        'selectrevert': '反选',
+        'selectsiblings': '选择兄弟节点',
+        'selectlevel': '选择同级节点',
+        'selectpath': '选择路径',
+        'selecttree': '选择子树'
     },
     'popupcolor': {
         'clearColor': '清空颜色',
