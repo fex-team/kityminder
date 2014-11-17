@@ -8,7 +8,9 @@ KityMinder.LANG['zh-cn'] = {
     },
     'theme': {
         'classic': '脑图经典',
+        'classic-compact': '紧凑经典',
         'snow': '温柔冷光',
+        'snow-compact': '紧凑冷光',
         'fish': '鱼骨图',
         'wire': '线框',
         'fresh-red': '清新红',
