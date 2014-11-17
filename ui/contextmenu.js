@@ -29,8 +29,11 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
     $menu.delegate('li', 'mousedown', function(e, info) {
         var item = $(e.target).closest('li').data('menu');
+        if (item.fn) {
+            return item.fn.call(minder, minder);
+        }
         if (item.command) {
-            minder.execCommand(item.command);
+            return minder.execCommand(item.command);
         }
     });
 
@@ -63,6 +66,7 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
         var lastDivider = true;
         ctxmenu.forEach(function(item) {
+            if (item.query && !item.query()) return;
             if (item.command && minder.queryCommandState(item.command) === 0) {
 
                 var label = minder.getLang('ui.command.' + item.command);

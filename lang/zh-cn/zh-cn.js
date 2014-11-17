@@ -156,10 +156,17 @@ KityMinder.LANG['zh-cn'] = {
             'arrangedown': '下移',
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
-            'collapsetolevel1': '收起到一级节点',
+            'expandtolevel1': '展开到一级节点',
+            'expandtolevel2': '展开到二级节点',
+            'expandtolevel3': '展开到三级节点',
+            'expandtolevel4': '展开到四级节点',
+            'expandtolevel5': '展开到五级节点',
+            'expandtolevel6': '展开到六级节点',
             'fullscreen': '全屏',
             'outline': '大纲'
         },
+
+        'expandtoleaf': '展开',
 
         'back': '返回',
 
