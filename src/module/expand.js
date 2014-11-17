@@ -41,6 +41,29 @@ KityMinder.registerModule('Expand', function() {
             return !this.isExpanded();
         }
     });
+
+    var ExpandCommand = kity.createClass('ExpandCommand', {
+        base: Command,
+
+        execute: function(km, justParents) {
+            var node = km.getSelectedNode();
+            if (!node) return;
+            if (justParents) {
+                node = node.parent;
+            }
+            while(node.parent) {
+                node.expand();
+                node = node.parent;
+            }
+            node.renderTree();
+            km.layout(100);
+        },
+
+        queryState: function(km) {
+            return km.getSelectedNode() ? 0 : -1;
+        }
+    });
+
     var ExpandToLevelCommand = kity.createClass('ExpandToLevelCommand', {
         base: Command,
         execute: function(km, level) {
@@ -129,6 +152,7 @@ KityMinder.registerModule('Expand', function() {
     });
     return {
         commands: {
+            'expand': ExpandCommand,
             'expandtolevel': ExpandToLevelCommand
         },
         events: {
