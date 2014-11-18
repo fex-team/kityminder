@@ -8,6 +8,7 @@
  */
 /* global marked: true */
 KityMinder.registerUI('ribbon/idea/note', function(minder) {
+    var axss = minder.getUI('axss');
 
     marked.setOptions({
         gfm: true,
@@ -48,8 +49,6 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     var $editor = $('<div class="note-editor"></div>').appendTo($notePanel);
     var $preview = $('<div class="note-preview"></div>').appendTo($notePanel);
 
-    var $previewer = $('<div id="note-previewer"></div>').appendTo('#content-wrapper');
-
     var noteVisible = false;
 
     $editor.on('keydown keyup keypress mouedown mouseup click contextmenu', function(e) {
@@ -68,18 +67,6 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     
     var visible = false;
     var selectedNode = null;
-
-    function axss(value) {
-        var div = document.createElement('div');
-        div.innerHTML = value;
-        $(div).find('script').remove();
-        for (var name in div) {
-            if (name.indexOf('on') === 0) {
-                div.removeAttribute(name);
-            }
-        }
-        return div.innerHTML;
-    }
 
     function updateEditorView() {
         if (noteVisible && selectedNode != minder.getSelectedNode()) {
@@ -112,48 +99,10 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     $noteButtonMenu.bindCommandState(minder, 'note');
     $noteButtonMenu.on('buttonclick', show);
     minder.on('editnoterequest', show);
-    minder.on('shownoterequest', preview);
-
     $('#kityminder').after($notePanel);
     
     hide();
     
-    var previewLive = false;
-    $('#kityminder').on('mousedown mousewheel DOMMouseScroll', function() {
-        if (!previewLive) return;
-        $previewer.fadeOut();
-        previewLive = false;
-    });
-
-    $previewer.hide();
-    function preview(e) {
-        var icon = e.icon;
-        var node = e.node;
-        var b = icon.getRenderBox('screen');
-        var note = node.getData('note');
-
-        $previewer.html(axss(marked(note)));
-        
-        var cw = $('#content-wrapper').width();
-        var ch = $('#content-wrapper').height();
-        var pw = $previewer.outerWidth();
-        var ph = $previewer.outerHeight();
-
-        var x = b.cx - pw / 2;
-        var y = b.bottom + 10;
-
-        if (x < 0) x = 10;
-        if (x + pw > cw) x = cw - pw - 10;
-        if (y + ph > ch) y = b.top - ph - 10;
-       
-        $previewer.css({
-            left: Math.round(x),
-            top: Math.round(y)
-        });
-        $previewer.show();
-        previewLive = true;
-    }
-
     var activeTabClass = 'active-tab';
 
     function editMode() {
