@@ -226,7 +226,10 @@
         /* UI Ribbon「视图」面板 */
         { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
         { path: 'ui/ribbon/view/level.js',              pack: 'edit' },
-        { path: 'ui/ribbon/view/select.js',             pack: 'edit' }
+        { path: 'ui/ribbon/view/select.js',             pack: 'edit' },
+
+        /* Slide Show */
+        { path: 'ui/slideshow/frame.js',                pack: 'edit' }
     ];
 
     if (typeof(module) === 'object' && module.exports) {
