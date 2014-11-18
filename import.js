@@ -129,6 +129,7 @@
         { path: 'src/protocol/freemind.js',             pack: 'edit' },
         { path: 'src/protocol/mindmanager.js',          pack: 'edit' },
         { path: 'src/protocol/plain.js',                pack: 'edit|share|m-share' },
+        { path: 'src/protocol/markdown.js',             pack: 'edit|share|m-share' },
         { path: 'src/protocol/json.js',                 pack: 'edit|share|m-share' },
         { path: 'src/protocol/png.js',                  pack: 'edit|share|m-share' },
         { path: 'src/protocol/svg.js',                  pack: 'edit|share|m-share' },

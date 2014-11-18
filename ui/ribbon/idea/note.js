@@ -10,6 +10,7 @@
 KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
     marked.setOptions({
+        gfm: true,
         breaks: true
     });
 
@@ -95,7 +96,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
             }
 
             if ($previewTab.hasClass(activeTabClass)) {
-                $preview.html(marked(note));
+                $preview.html(axss(marked(note)));
             }
         }
     }
@@ -131,7 +132,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         var b = icon.getRenderBox('screen');
         var note = node.getData('note');
 
-        $previewer.html(marked(axss(note)));
+        $previewer.html(axss(marked(note)));
         
         var cw = $('#content-wrapper').width();
         var ch = $('#content-wrapper').height();
@@ -169,7 +170,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
         $editor.hide();
         $editTab.removeClass(activeTabClass);
-        $preview.html(marked(axss(editor.getValue()))).show();
+        $preview.html(axss(marked(editor.getValue()))).show();
         $previewTab.addClass(activeTabClass);
     }
 

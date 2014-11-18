@@ -1,8 +1,26 @@
 .gfm-render {
+    
+    font-size: 12px;
+    -webkit-user-select: text;
+    color: #333;
+    line-height: 1.8em;
+
     blockquote, ul, table, p, pre, hr {
         margin: 1em 0;
+        cursor: text;
         &:first-child:last-child {
             margin: 0;
+        }
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    a {
+        color: blue;
+        &:hover {
+            color: red;
         }
     }
     
@@ -49,6 +67,17 @@
         border-radius: 5px;
         word-break: break-all;
         word-wrap: break-word;
+    }
+
+    code {
+        background: rgba(45, 141, 234, 0.1);
+/*         display: inline-block; */
+        padding: 0 5px;
+        border-radius: 3px;
+    }
+
+    pre code {
+        background: none;
     }
 
     hr {
@@ -152,9 +181,6 @@
     max-width: 400px;
     max-height: 200px;
     overflow: auto;
-    font-size: 12px;
-    color: #333;
-    line-height: 1.5em;
     z-index: 10;
     box-shadow: 0 0 15px rgba(0, 0, 0, .5);
     .gfm-render;
