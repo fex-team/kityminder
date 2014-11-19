@@ -7,7 +7,7 @@
  * @copyright: Baidu FEX, 2014
  */
 
-KityMinder.registerUI('image', function(minder) {
+KityMinder.registerUI('ribbon/idea/image', function(minder) {
 
     var $attachment = minder.getUI('ribbon/idea/attachment');
 

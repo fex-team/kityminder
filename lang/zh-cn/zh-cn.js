@@ -156,10 +156,17 @@ KityMinder.LANG['zh-cn'] = {
             'arrangedown': '下移',
             'resetlayout': '整理布局',
             'expandtoleaf': '展开全部节点',
-            'collapsetolevel1': '收起到一级节点',
+            'expandtolevel1': '展开到一级节点',
+            'expandtolevel2': '展开到二级节点',
+            'expandtolevel3': '展开到三级节点',
+            'expandtolevel4': '展开到四级节点',
+            'expandtolevel5': '展开到五级节点',
+            'expandtolevel6': '展开到六级节点',
             'fullscreen': '全屏',
             'outline': '大纲'
         },
+
+        'expandtoleaf': '展开',
 
         'back': '返回',
 
@@ -308,8 +315,10 @@ KityMinder.LANG['zh-cn'] = {
         },
         'link': '链接',
         'image': '图片',
+        'note': '备注',
         'removelink': '移除已有连接',
         'removeimage': '移除已有图片',
+        'removenote': '移除已有备注',
         'resetlayout': '整理',
 
         'justnow': '刚刚',
@@ -335,7 +344,14 @@ KityMinder.LANG['zh-cn'] = {
 
         'load_success': '<b>{0}</b> 加载成功',
         'save_success': '<b>{0}</b> 已保存于 {1}',
-        'autosave_success': '<b>{0}</b> 已自动保存于 {1}'
+        'autosave_success': '<b>{0}</b> 已自动保存于 {1}',
+
+        'selectall': '全选',
+        'selectrevert': '反选',
+        'selectsiblings': '选择兄弟节点',
+        'selectlevel': '选择同级节点',
+        'selectpath': '选择路径',
+        'selecttree': '选择子树'
     },
     'popupcolor': {
         'clearColor': '清空颜色',

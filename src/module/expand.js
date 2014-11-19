@@ -6,123 +6,23 @@ KityMinder.registerModule('Expand', function() {
         STATE_EXPAND = 'expand',
         STATE_COLLAPSE = 'collapse';
 
-    /**
-     * 该函数返回一个策略，表示递归到节点指定的层数
-     *
-     * 返回的策略表示把操作（展开/收起）进行到指定的层数
-     * 也可以给出一个策略指定超过层数的节点如何操作，默认不进行任何操作
-     *
-     * @param {int} deep_level 指定的层数
-     * @param {Function} policy_after_level 超过的层数执行的策略
-     */
-    function generateDeepPolicy(deep_level, policy_after_level) {
-
-        return function(node, state, policy, level) {
-            var children, child, i;
-
-            node.setData(EXPAND_STATE_DATA, state);
-            level = level || 1;
-
-            children = node.getChildren();
-
-            for (i = 0; i < children.length; i++) {
-                child = children[i];
-
-                if (level <= deep_level) {
-                    policy(child, state, policy, level + 1);
-                } else if (policy_after_level) {
-                    policy_after_level(child, state, policy, level + 1);
-                }
-            }
-
-        };
-    }
-
-    /**
-     * 节点展开和收缩的策略常量
-     *
-     * 策略是一个处理函数，处理函数接受 3 个参数：
-     *
-     * @param {MinderNode} node   要处理的节点
-     * @param {Enum}       state  取值为 "expand" | "collapse"，表示要对节点进行的操作是展开还是收缩
-     * @param {Function}   policy 提供当前策略的函数，方便递归调用
-     */
-    var EXPAND_POLICY = MinderNode.EXPAND_POLICY = {
-
-        /**
-         * 策略 1：只修改当前节点的状态，不递归子节点的状态
-         */
-        KEEP_STATE: function(node, state, policy) {
-            node.setData(EXPAND_STATE_DATA, state);
-        },
-
-        generateDeepPolicy: generateDeepPolicy,
-
-        /**
-         * 策略 2：把操作进行到儿子
-         */
-        DEEP_TO_CHILD: generateDeepPolicy(2),
-
-        /**
-         * 策略 3：把操作进行到叶子
-         */
-        DEEP_TO_LEAF: generateDeepPolicy(Number.MAX_VALUE)
-    };
-
-    function setExpandState(node, state, policy) {
-        var changed = node.isExpanded() ? (state == STATE_COLLAPSE) : (state == STATE_EXPAND);
-        policy = policy || EXPAND_POLICY.KEEP_STATE;
-        policy(node, state, policy);
-
-        node.renderTree().getMinder().layout(100);
-        node.getMinder().fire('contentchange');
-
-        /* 如何加展开效果：
-
-        var vo = node.getVertexOut();
-        
-        if (state == STATE_EXPAND) {
-
-            var m = node.getGlobalLayoutTransform().clone().translate(vo.x, vo.y);
-            node.traverse(function(child) {
-                child.setGlobalLayoutTransform(m);
-                child.getRenderContainer().setOpacity(0).fadeIn();
-            }, true);
-            node.renderTree().getMinder().layout(300);
-
-        } else {
-
-            node.traverse(function(child) {
-                child.setLayoutTransform(child.parent == node ? new kity.Matrix().translate(vo.x, vo.y) : null);
-                child.getRenderContainer().fadeOut(100);
-            }, true);
-
-            node.getMinder().applyLayoutResult(node, 150).then(function() {
-                node.renderTree().getMinder().layout(150);
-            });
-
-        }
-        */
-    }
-
     // 将展开的操作和状态读取接口拓展到 MinderNode 上
     kity.extendClass(MinderNode, {
 
         /**
-         * 使用指定的策略展开节点
+         * 展开节点
          * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
          */
-        expand: function(policy) {
-            setExpandState(this, STATE_EXPAND, policy);
+        expand: function() {
+            this.setData(EXPAND_STATE_DATA, STATE_EXPAND);
             return this;
         },
 
         /**
-         * 使用指定的策略收起节点
-         * @param  {Policy} policy 展开的策略，默认为 KEEP_STATE
+         * 收起节点
          */
-        collapse: function(policy) {
-            setExpandState(this, STATE_COLLAPSE, policy);
+        collapse: function() {
+            this.setData(EXPAND_STATE_DATA, STATE_COLLAPSE);
             return this;
         },
 
@@ -141,30 +41,40 @@ KityMinder.registerModule('Expand', function() {
             return !this.isExpanded();
         }
     });
-    var ExpandNodeCommand = kity.createClass('ExpandNodeCommand', {
+
+    var ExpandCommand = kity.createClass('ExpandCommand', {
         base: Command,
-        execute: function(km) {
-            var nodes = km.getRoot().getChildren();
-            nodes.forEach(function(node) {
-                node.expand(EXPAND_POLICY.DEEP_TO_LEAF);
-            });
+
+        execute: function(km, justParents) {
+            var node = km.getSelectedNode();
+            if (!node) return;
+            if (justParents) {
+                node = node.parent;
+            }
+            while(node.parent) {
+                node.expand();
+                node = node.parent;
+            }
+            node.renderTree();
+            km.layout(100);
         },
+
         queryState: function(km) {
-            return !km.getSelectedNode() ? 0 : -1;
+            return km.getSelectedNode() ? 0 : -1;
         }
     });
-    var CollapseNodeCommand = kity.createClass('CollapseNodeCommand', {
+
+    var ExpandToLevelCommand = kity.createClass('ExpandToLevelCommand', {
         base: Command,
-        execute: function(km) {
-            var nodes = km.getRoot().getChildren();
-            nodes.forEach(function(node) {
-                node.collapse();
+        execute: function(km, level) {
+            km.getRoot().traverse(function(node) {
+                if (node.getLevel() < level) node.expand();
+                if (node.getLevel() == level) node.collapse();
             });
-        },
-        queryState: function(km) {
-            return !km.getSelectedNode() ? 0 : -1;
+            km.refresh(100);
         }
     });
+
     var Expander = kity.createClass('Expander', {
         base: kity.Group,
 
@@ -186,6 +96,8 @@ KityMinder.registerModule('Expand', function() {
                 } else {
                     node.expand();
                 }
+                node.renderTree().getMinder().layout(100);
+                node.getMinder().fire('contentchange');
                 e.stopPropagation();
                 e.preventDefault();
             });
@@ -240,8 +152,8 @@ KityMinder.registerModule('Expand', function() {
     });
     return {
         commands: {
-            'expandtoleaf': ExpandNodeCommand,
-            'collapsetolevel1': CollapseNodeCommand
+            'expand': ExpandCommand,
+            'expandtolevel': ExpandToLevelCommand
         },
         events: {
             'layoutapply': function(e) {
@@ -267,9 +179,20 @@ KityMinder.registerModule('Expand', function() {
                     this.getSelectedNodes().forEach(function(node) {
                         if (expanded) node.collapse();
                         else node.expand();
+                        node.renderTree();
                     });
+                    this.layout(100);
+                    this.fire('contentchange');
                     e.preventDefault();
                     e.stopPropagationImmediately();
+                }
+                if (e.isShortcutKey('Alt+`')) {
+                    this.execCommand('expandtolevel', 9999);
+                }
+                for (var i = 1; i < 6; i++) {
+                    if (e.isShortcutKey('Alt+' + i)) {
+                        this.execCommand('expandtolevel', i);
+                    }
                 }
             }
         },
@@ -277,15 +200,39 @@ KityMinder.registerModule('Expand', function() {
             outside: ExpanderRenderer
         },
         contextmenu: [{
-            command: 'expandtoleaf'
+            command: 'expandtoleaf',
+            query: function() {
+                return !minder.getSelectedNode();
+            },
+            fn: function(minder) {
+                minder.execCommand('expandtolevel', 9999);
+            }
         }, {
-            command: 'collapsetolevel1'
+            command: 'expandtolevel1',
+            query: function() {
+                return !minder.getSelectedNode();
+            },
+            fn: function(minder) {
+                minder.execCommand('expandtolevel', 1);
+            }
+        }, {
+            command: 'expandtolevel2',
+            query: function() {
+                return !minder.getSelectedNode();
+            },
+            fn: function(minder) {
+                minder.execCommand('expandtolevel', 2);
+            }
+        },{
+            command: 'expandtolevel3',
+            query: function() {
+                return !minder.getSelectedNode();
+            },
+            fn: function(minder) {
+                minder.execCommand('expandtolevel', 3);
+            }
         }, {
             divider: true
-        }],
-        commandShortcutKeys: {
-            'expandtoleaf': 'Alt+`',
-            'collapsetolevel1': 'Alt+1'
-        }
+        }]
     };
 });

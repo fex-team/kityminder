@@ -21,6 +21,15 @@
         { path: 'lib/fio/src/fio.js',                   pack: 'index|edit' },
         { path: 'lib/fio/provider/netdisk/oauth.js',    pack: 'index|edit' },
         { path: 'lib/fio/provider/netdisk/netdisk.js',  pack: 'edit' },
+        { path: 'lib/marked/lib/marked.js',             pack: 'edit|share' },
+        { path: 'lib/bower/codemirror/lib/codemirror.js',               pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/xml/xml.js',                 pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/javascript/javascript.js',   pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/css/css.js',                 pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/htmlmixed/htmlmixed.js',     pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/markdown/markdown.js',       pack: 'edit' },
+        { path: 'lib/bower/codemirror/addon/mode/overlay.js',           pack: 'edit' },
+        { path: 'lib/bower/codemirror/mode/gfm/gfm.js',                 pack: 'edit' },
 
         /* Kity 依赖库 */
         { path: 'lib/kity/dist/kity.js',                pack: 'edit|share|m-share' },
@@ -96,6 +105,7 @@
         { path: 'src/module/priority.js',               pack: 'edit|share|m-share' },
         { path: 'src/module/image.js',                  pack: 'edit|share|m-share' },
         { path: 'src/module/resource.js',               pack: 'edit|share|m-share' },
+        { path: 'src/module/note.js',                   pack: 'edit|share|m-share' },
         { path: 'src/module/view.js',                   pack: 'edit|share|m-share' },
         { path: 'src/module/dragtree.js',               pack: 'edit|share|m-share' },
         { path: 'src/module/keynav.js',                 pack: 'edit|share|m-share' },
@@ -200,6 +210,7 @@
         { path: 'ui/ribbon/idea/attachment.js',         pack: 'edit' },
         { path: 'ui/ribbon/idea/link.js',               pack: 'edit' },
         { path: 'ui/ribbon/idea/image.js',              pack: 'edit' },
+        { path: 'ui/ribbon/idea/note.js',               pack: 'edit' },
         { path: 'ui/ribbon/idea/priority.js',           pack: 'edit' },
         { path: 'ui/ribbon/idea/progress.js',           pack: 'edit' },
         { path: 'ui/ribbon/idea/resource.js',           pack: 'edit' },
@@ -214,7 +225,8 @@
 
         /* UI Ribbon「视图」面板 */
         { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
-        { path: 'ui/ribbon/view/level.js',              pack: 'edit' }
+        { path: 'ui/ribbon/view/level.js',              pack: 'edit' },
+        { path: 'ui/ribbon/view/select.js',             pack: 'edit' }
     ];
 
     if (typeof(module) === 'object' && module.exports) {

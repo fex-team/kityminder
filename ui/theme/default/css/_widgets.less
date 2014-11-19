@@ -14,6 +14,7 @@
     textarea {
         user-select: text;
     }
+    overflow: hidden;
 }
 
 input::-ms-clear {
@@ -208,7 +209,33 @@ input[type=search]::-ms-clear {
         }
     }
 }
-
+.close-button {
+    display: block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 100%;
+    &:hover {
+        background-color: hsl(0, 73%, 64%);
+    }
+    &:active {
+        background-color: hsl(0, 73%, 60%);
+    }
+    &:after {
+        content: 'x';
+        display: block;
+        width: 16px;
+        height: 16px;
+        font-family: inherit;
+        color: white;
+        font-size: 14px;
+        position: absolute;
+        left: 2px;
+        top: 1px;
+        line-height: 16px;
+        text-align: center;
+    }
+}
 .fui-dialog {
     & > .fui-panel-content {
         padding: 0;
@@ -233,31 +260,8 @@ input[type=search]::-ms-clear {
             right: 6px;
             top: 7px;
             left: auto;
-            display: block;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            border-radius: 100%;
-            &:hover {
-                background-color: hsl(0, 73%, 64%);
-            }
-            &:active {
-                background-color: hsl(0, 73%, 60%);
-            }
-            &:after {
-                content: 'x';
-                display: block;
-                width: 16px;
-                height: 16px;
-                font-family: inherit;
-                color: white;
-                font-size: 14px;
-                position: absolute;
-                left: 2px;
-                top: 1px;
-                line-height: 16px;
-                text-align: center;
-            }
+
+            
         }
     }
     .fui-dialog-body {
@@ -406,6 +410,20 @@ input[type=search]::-ms-clear {
         overflow: hidden;
         
         transition: none;
+
+        &.fui-item-selected {
+            background-color: white;
+            position: relative;
+
+/*             .fui-icon {
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                left: 3px;
+                top: 5px;
+                background: url(../images/icons.png) 0 -1200px;
+            } */
+        }
         
         &:hover, :focus {
             background: #0099f2; /* Old browsers */

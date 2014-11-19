@@ -16,7 +16,28 @@ KityMinder.registerUI('ribbon/view/level', function(minder) {
         column: true
     }).appendTo($tabs.view);
 
-    ['expandtoleaf', 'collapsetolevel1'].forEach(function(cmd) {
-        $commandbutton.generate(cmd).appendTo($levelPanel);
+    var $levelButtonMenu = new FUI.ButtonMenu({
+        id: 'level-button-menu',
+        text: minder.getLang('ui.level'),
+        layout: 'bottom',
+        buttons: [{}, {
+            label: minder.getLang('ui.expandtoleaf')
+        }],
+        menu: {
+            items: [1, 2, 3, 4, 5, 6].map(function(level) {
+                return {
+                    label: minder.getLang('ui.command.expandtolevel' + level),
+                    value: level
+                };
+            })
+        }
+    }).appendTo($levelPanel);
+
+    $levelButtonMenu.on('buttonclick', function() {
+        minder.execCommand('expandtolevel', 9999);
+    });
+
+    $levelButtonMenu.on('select', function(e, info) {
+        minder.execCommand('expandtolevel', info.value);
     });
 });

@@ -66,6 +66,7 @@ KityMinder.registerUI('topbar/search', function(minder) {
             minder.execCommand('camera', node, 50);
             setTimeout(function() {
                 minder.select(node, true);
+                if (!node.isExpanded()) minder.execCommand('expand', true);
             }, 60);
         }
     }
