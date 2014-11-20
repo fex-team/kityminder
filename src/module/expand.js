@@ -72,7 +72,8 @@ KityMinder.registerModule('Expand', function() {
                 if (node.getLevel() == level) node.collapse();
             });
             km.refresh(100);
-        }
+        },
+        enableReadOnly: true
     });
 
     var Expander = kity.createClass('Expander', {

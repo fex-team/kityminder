@@ -129,6 +129,7 @@
         { path: 'src/protocol/freemind.js',             pack: 'edit' },
         { path: 'src/protocol/mindmanager.js',          pack: 'edit' },
         { path: 'src/protocol/plain.js',                pack: 'edit|share|m-share' },
+        { path: 'src/protocol/markdown.js',             pack: 'edit|share|m-share' },
         { path: 'src/protocol/json.js',                 pack: 'edit|share|m-share' },
         { path: 'src/protocol/png.js',                  pack: 'edit|share|m-share' },
         { path: 'src/protocol/svg.js',                  pack: 'edit|share|m-share' },
@@ -138,6 +139,7 @@
         { path: 'ui/eve.js',                            pack: 'edit|share|m-share' },
         { path: 'ui/memory.js',                         pack: 'edit|share|m-share' },
         { path: 'ui/fuix.js',                           pack: 'edit|share|m-share' },
+        { path: 'ui/axss.js',                           pack: 'edit|share|m-share' },
         { path: 'ui/fiox.js',                           pack: 'edit' },
 
         /* UI 组件 */
@@ -211,6 +213,7 @@
         { path: 'ui/ribbon/idea/link.js',               pack: 'edit' },
         { path: 'ui/ribbon/idea/image.js',              pack: 'edit' },
         { path: 'ui/ribbon/idea/note.js',               pack: 'edit' },
+        { path: 'ui/ribbon/idea/notepreview.js',        pack: 'edit|share' },
         { path: 'ui/ribbon/idea/priority.js',           pack: 'edit' },
         { path: 'ui/ribbon/idea/progress.js',           pack: 'edit' },
         { path: 'ui/ribbon/idea/resource.js',           pack: 'edit' },

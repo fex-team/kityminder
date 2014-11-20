@@ -12,11 +12,9 @@ KityMinder.registerModule("fontmodule", function() {
         var fontFamily = getNodeDataOrStyle(node, 'font-family');
         var fontSize = getNodeDataOrStyle(node, 'font-size');
         var fontHash = [fontFamily, fontSize].join('/');
-
-        if (foreColor.toString() != node.getTmpData('fore-color')) {
-            textGroup.fill(foreColor);
-            node.setTmpData('fore-color', foreColor.toString());
-        }
+        
+        textGroup.fill(foreColor);
+        node.setTmpData('fore-color', foreColor.toString());
 
         textGroup.eachItem(function(index,item){
             item.setFont({

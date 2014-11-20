@@ -66,8 +66,10 @@ KityMinder.registerUI('contextmenu', function(minder) {
 
         var lastDivider = true;
         ctxmenu.forEach(function(item) {
-            if (item.query && !item.query()) return;
-            if (item.command && minder.queryCommandState(item.command) === 0) {
+            var query = item.query || function() {
+                return item.command && minder.queryCommandState(item.command) === 0;
+            };
+            if (query()) {
 
                 var label = minder.getLang('ui.command.' + item.command);
 
