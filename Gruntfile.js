@@ -66,7 +66,7 @@ module.exports = function(grunt) {
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
 
-        clean: ['dist', 'native-support/upload', 'native-support/src/tmp'],
+        clean: ['dist', 'native-support/upload/', 'native-support/src/tmp/'],
 
         concat: concatConfigs,
 

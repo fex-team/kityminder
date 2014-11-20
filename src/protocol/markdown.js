@@ -26,13 +26,20 @@ KityMinder.registerProtocol('markdown', function() {
         var sharps = _generateHeaderSharp(level);
         lines.push(sharps + ' ' + node.data.text);
         lines.push(EMPTY_LINE);
-
-        if (node.data.note) {
-            lines.push(NOTE_MARK_START);
-            lines.push(node.date.note.replace(/^#*/g, function($0) {
-                return sharps + $0;
-            }));
-            lines.push(NOTE_MARK_CLOSE);
+        
+        var note = node.data.note;
+        if (note) {
+            var hasSharp = /^#/.test(note);
+            if (hasSharp) {
+                lines.push(NOTE_MARK_START);
+                note = note.replace(/^#+/gm, function($0) {
+                    return sharps + $0;
+                });
+            }
+            lines.push(note);
+            if (hasSharp) {
+                lines.push(NOTE_MARK_CLOSE);
+            }
             lines.push(EMPTY_LINE);
         }
 
@@ -133,6 +140,11 @@ KityMinder.registerProtocol('markdown', function() {
         if (!/\S/.test(node.data.note)) {
             node.data.note = null;
             delete node.data.note;
+        } else {
+            var notes = node.data.note.split('\n');
+            while(notes.length && !/\S/.test(notes[0])) notes.shift();
+            while(notes.length && !/\S/.test(notes[notes.length - 1])) notes.pop();
+            node.data.note = notes.join('\n');
         }
         if (node.children) node.children.forEach(_cleanUp);
     }
