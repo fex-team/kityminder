@@ -112,6 +112,8 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
         $editor.show().addClass(activeTabClass);
         $editTab.addClass(activeTabClass);
+        var note = minder.queryCommandValue('note') || '';
+        editor.setValue(note);
     }
 
     function previewMode() {
