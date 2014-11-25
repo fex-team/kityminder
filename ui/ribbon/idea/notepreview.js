@@ -20,7 +20,15 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     var visible = false;
     var selectedNode = null;
 
-    minder.on('shownoterequest', preview);
+    var previewTimer;
+    minder.on('shownoterequest', function(e) {
+        previewTimer = setTimeout(function() {
+            preview(e.icon, e.node);
+        }, 300);
+    });
+    minder.on('hidenoterequest', function() {
+        clearTimeout(previewTimer);
+    });
 
     var previewLive = false;
     $('#kityminder').on('mousedown mousewheel DOMMouseScroll', function() {
@@ -30,9 +38,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     });
 
     $previewer.hide();
-    function preview(e) {
-        var icon = e.icon;
-        var node = e.node;
+    function preview(icon, node) {
         var b = icon.getRenderBox('screen');
         var note = node.getData('note');
 
