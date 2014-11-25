@@ -66,4 +66,12 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         previewLive = true;
     }
 
+    $previewer.delegate('a', 'click', function(e) {
+        var $a = $(e.target).closest('a');
+        var href = $a.prop('href');
+        if (window.confirm(minder.getLang('ui.redirect', href))) {
+            window.open(href, '_blank');
+        }
+        e.preventDefault();
+    });
 });
