@@ -122,7 +122,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
         $notice.css({
             top: minder.getUI('menu/menu').isVisible() ? $('#main-menu .main-menu-level1').offset().top : $('#kityminder').offset().top + 20
         });
-        $notice.append('<p>' + msg + '</p>');
+        $notice.append($('<p>').text(msg));
         $notice.addClass('show');
 
         clearTimeout(info.ttl);

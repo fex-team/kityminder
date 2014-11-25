@@ -132,7 +132,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         shareListLoaded.then(function(list) {
             for (var i = 0; i < list.length; i++) {
-                var id = list[i].id || list[i].shareMinder.id;
+                var id = list[i].id || (list[i].shareMinder && list[i].shareMinder.id);
                 if (id == shareId && list[i].path) {
                     return loadOriginFile(list[i]);
                 }
@@ -484,6 +484,9 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     }
 
     function buildShareItem(share) {
+        var id = share.id || (share.shareMinder && share.shareMinder.id);
+        if (!id) return;
+
         var $li = $('<li>')
             .addClass('share-item')
             .data('share', share);
@@ -497,7 +500,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             .addClass('url')
             .text(share.path ?
                 share.path.replace('/apps/kityminder', minder.getLang('ui.mydocument')) :
-                buildShareUrl(share.id || share.shareMinder.id))
+                buildShareUrl(id))
             .appendTo($li);
 
         if (share.ctime) {

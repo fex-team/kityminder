@@ -1,4 +1,6 @@
+/* jshint -W079 */
 var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
+/* jshint +W079 */
 
     /**
      * 创建一个节点
@@ -120,8 +122,6 @@ var MinderNode = KityMinder.MinderNode = kity.createClass('MinderNode', {
      */
     getText: function(str2arr) {
         var text = this.getData('text') || '';
-
-        text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
 
         if(str2arr){
             text = text.split('\n');
