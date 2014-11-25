@@ -102,9 +102,13 @@ KityMinder.registerUI('topbar/title', function(minder) {
         var doc = $doc.current();
 
         function setTitle(title) {
+            if (setTitle.lastValue == title) return;
+
             title = title || minder.getLang('ui.untitleddoc');
-            $title.html('<span class="title-content">' + title + '</span>');
+            $title.empty().append($('<span class="title-content"></span>').text(title));
             document.title = title ? title + ' - 百度脑图' : '百度脑图';
+
+            setTitle.lastValue = title;
         }
 
         if (doc.saved) {
