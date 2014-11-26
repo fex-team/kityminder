@@ -51,7 +51,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
     var noteVisible = false;
 
-    $editor.on('keydown keyup keypress mouedown mouseup click contextmenu', function(e) {
+    $notePanel.on('keydown keyup keypress mouedown mouseup click contextmenu', function(e) {
         e.stopPropagation();
     });
 
@@ -84,6 +84,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
 
             if ($previewTab.hasClass(activeTabClass)) {
                 $preview.html(axss(marked(note)));
+                $preview.find('a').attr('target', '_blank');
             }
         }
     }
@@ -122,6 +123,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         $editor.hide();
         $editTab.removeClass(activeTabClass);
         $preview.html(axss(marked(editor.getValue()))).show();
+        $preview.find('a').attr('target', '_blank');
         $previewTab.addClass(activeTabClass);
     }
 
