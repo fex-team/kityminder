@@ -66,7 +66,7 @@
     "disallowSpacesInsideParentheses": true,
 
     // 行尾「MUST NOT」使用空格
-    "disallowTrailingWhitespace": false,
+    "disallowTrailingWhitespace": true,
 
     // 每行「MUST NOT」超过 120 个字符
     "maximumLineLength": 120,
