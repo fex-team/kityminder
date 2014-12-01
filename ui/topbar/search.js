@@ -60,13 +60,28 @@ KityMinder.registerUI('topbar/search', function(minder) {
                 doSearch.lastIndex = i;
                 break;
             }
+            var note = node.getData('note');
+            if (note && note.indexOf(keyword) != -1) {
+                setSearchResult(node, keyword);
+                doSearch.lastIndex = i;
+                break;
+            }
         }
 
-        function setSearchResult(node) {
+        function setSearchResult(node, previewKeyword) {
+            var $notepreview = minder.getUI('ribbon/idea/notepreview');
+            if ($notepreview) {
+                $notepreview.hide();
+            }
             minder.execCommand('camera', node, 50);
             setTimeout(function() {
                 minder.select(node, true);
                 if (!node.isExpanded()) minder.execCommand('expand', true);
+                if (previewKeyword) {
+                    if ($notepreview) {
+                        $notepreview.preview(node, previewKeyword);
+                    }
+                }
             }, 60);
         }
     }

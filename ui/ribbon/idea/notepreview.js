@@ -7,7 +7,7 @@
  * @copyright: Baidu FEX, 2014
  */
 /* global marked: true */
-KityMinder.registerUI('ribbon/idea/note', function(minder) {
+KityMinder.registerUI('ribbon/idea/notepreview', function(minder) {
     var axss = minder.getUI('axss');
 
     marked.setOptions({
@@ -23,7 +23,7 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     var previewTimer;
     minder.on('shownoterequest', function(e) {
         previewTimer = setTimeout(function() {
-            preview(e.icon, e.node);
+            preview(e.node);
         }, 300);
     });
     minder.on('hidenoterequest', function() {
@@ -38,13 +38,20 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
     });
 
     $previewer.hide();
-    function preview(icon, node) {
+
+    function preview(node, keyword) {
+        var icon = node.getRenderer('NoteIconRenderer').getRenderShape();
         var b = icon.getRenderBox('screen');
         var note = node.getData('note');
 
         $previewer[0].scrollTop = 0;
-        $previewer.html(axss(marked(note)));
-        
+
+        var html = marked(note);
+        if (keyword) {
+            html = html.replace(new RegExp('(' + keyword + ')', 'ig'), '<span class="highlight">$1</span>');
+        }
+        $previewer.html(axss(html));
+
         var cw = $('#content-wrapper').width();
         var ch = $('#content-wrapper').height();
         var pw = $previewer.outerWidth();
@@ -56,13 +63,18 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         if (x < 0) x = 10;
         if (x + pw > cw) x = cw - pw - 10;
         if (y + ph > ch) y = b.top - ph - 10;
-       
+
         $previewer.css({
             left: Math.round(x),
             top: Math.round(y)
         });
 
         $previewer.show();
+
+        var view = $previewer[0].querySelector('.highlight');
+        if (view) {
+            view.scrollIntoView();
+        }
         previewLive = true;
     }
 
@@ -74,4 +86,11 @@ KityMinder.registerUI('ribbon/idea/note', function(minder) {
         }
         e.preventDefault();
     });
+
+    return {
+        preview: preview,
+        hide: function() {
+            $previewer.hide();
+        }
+    };
 });
