@@ -69,7 +69,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 }).then(function() {
                     notice.info(minder.getLang('ui.share_sync_success', doc.title));
                 })['catch'](function(e) {
-                    notice.error('err_share_sync_failed', e);
+                    notice.error('err_share_sync_fail', e);
                 });
             });
         }

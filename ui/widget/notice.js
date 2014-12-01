@@ -7,15 +7,15 @@
  * @copyright: Baidu FEX, 2014
  */
 
-KityMinder.registerUI('widget/notice', function (minder) {
+KityMinder.registerUI('widget/notice', function(minder) {
     var errorMessage = minder.getLang('error_message');
     var memory = minder.getUI('memory');
 
     var $notice = $('<div>')
-            .addClass('notice-widget')
-            .appendTo('#content-wrapper');
+        .addClass('notice-widget')
+        .appendTo('#content-wrapper');
     var $mask = $('<div>')
-            .addClass('error-mask');
+        .addClass('error-mask');
 
     var $error = new FUI.Dialog({
         width: 500,
@@ -34,8 +34,8 @@ KityMinder.registerUI('widget/notice', function (minder) {
     var isBuilded = (function() {
         var scripts = [].slice.apply(document.getElementsByTagName('script'));
         var s, m;
-        while( (s = scripts.pop()) ) {
-            if ( (m = /kityminder.*\.min\.js/.exec(s.src))) return m[0];
+        while ((s = scripts.pop())) {
+            if ((m = /kityminder.*\.min\.js/.exec(s.src))) return m[0];
         }
         return false;
 
@@ -44,6 +44,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
     // concatMap: sperate files -> join file
     // minMap: join file -> min file
     var concatMap, minMap;
+
     function fixSourceSymbol($ta, $mask) {
 
         function fix() {
@@ -52,13 +53,19 @@ KityMinder.registerUI('widget/notice', function (minder) {
             var match;
 
             $ta.text(text.replace(pattern, function(match, $1, $2) {
-                var lookup = {line: +$1, column: +$2};
+                var lookup = {
+                    line: +$1,
+                    column: +$2
+                };
                 var info = minMap.originalPositionFor(lookup);
                 var name = info.name;
-                lookup = {line: info.line, column: info.column};
+                lookup = {
+                    line: info.line,
+                    column: info.column
+                };
                 info = concatMap.originalPositionFor(lookup);
                 name = name || '<Anonymous>';
-                var replaced = 'at ' + name + ' (' + 
+                var replaced = 'at ' + name + ' (' +
                     info.source.replace('../', '') + ':' + info.line + ':' + info.column + ')';
                 if (replaced.indexOf('promise') != -1) {
                     replaced = 'at <async> Promise.' + name;
@@ -84,7 +91,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
                     $.pajax({
                         url: isBuilded.replace('min.js', 'js.map'),
                         dataType: 'json'
-                    }), 
+                    }),
 
                     $.pajax({
                         url: isBuilded.replace('.js', '.map'),
@@ -120,7 +127,9 @@ KityMinder.registerUI('widget/notice', function (minder) {
         else $notice.removeClass('warn');
 
         $notice.css({
-            top: minder.getUI('menu/menu').isVisible() ? $('#main-menu .main-menu-level1').offset().top : $('#kityminder').offset().top + 20
+            top: minder.getUI('menu/menu').isVisible() ?
+                $('#main-menu .main-menu-level1').offset().top :
+                $('#kityminder').offset().top + 20
         });
         $notice.append($('<p>').text(msg));
         $notice.addClass('show');
@@ -159,9 +168,14 @@ KityMinder.registerUI('widget/notice', function (minder) {
             e.getDetail = function() {
                 return JSON.stringify(e, null, 4);
             };
-        } else if (e instanceof Error) {
+        }
+        
+        // jqXhr
+        else if ('readyState' in e) {
+            
+        } else {
             e.getDetail = function() {
-                return e.stack;
+                return e.stack || new Error().stack;
             };
         }
 
@@ -178,37 +192,37 @@ KityMinder.registerUI('widget/notice', function (minder) {
         e = descriptReason(e);
 
         var $content = $('<div>')
-                .addClass('error-content')
-                .appendTo($error_body);
+            .addClass('error-content')
+            .appendTo($error_body);
 
         var $msg = $('<h3>')
-                .text(errorMessage[name] || errorMessage.err_unknown)
-                .appendTo($content);
+            .text(errorMessage[name] || errorMessage.err_unknown)
+            .appendTo($content);
         var $reason = $('<p>')
-                .text(e.message || e.description || errorMessage.unknownreason)
-                .appendTo($content);
+            .text(e.message || e.description || errorMessage.unknownreason)
+            .appendTo($content);
 
         if (e.getDetail) {
             var $detail = $('<div>')
-                    .addClass('error-detail')
-                    .append($('<a class="expander"></a>').text(minder.getLang('ui.error_detail')))
-                    .appendTo($error_body);
+                .addClass('error-detail')
+                .append($('<a class="expander"></a>').text(minder.getLang('ui.error_detail')))
+                .appendTo($error_body);
 
             var $detailContent = $('<div>')
-                    .addClass('error-detail-wrapper')
-                    .appendTo($detail);
+                .addClass('error-detail-wrapper')
+                .appendTo($detail);
 
             var $textarea = $('<textarea>')
-                    .attr('id', 'error-detail-content')
-                    .text(e.getDetail() + '\n\n浏览器信息：' + navigator.userAgent)
-                    .appendTo($detailContent);
+                .attr('id', 'error-detail-content')
+                .text(e.getDetail() + '\n\n浏览器信息：' + navigator.userAgent)
+                .appendTo($detailContent);
 
             fixSourceSymbol($textarea, $detailContent);
 
             var $copy = $('<button>')
-                    .addClass('copy-and-feedback')
-                    .text(minder.getLang('ui.copy_and_feedback'))
-                    .appendTo($detailContent);
+                .addClass('copy-and-feedback')
+                .text(minder.getLang('ui.copy_and_feedback'))
+                .appendTo($detailContent);
 
             $copy.attr('data-clipboard-target', 'error-detail-content');
 
@@ -237,7 +251,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
                 activeClass: 'active'
             });
             var clip = new window.ZeroClipboard($target);
-            clip.on('ready', function () {
+            clip.on('ready', function() {
                 clip.on('aftercopy', function() {
                     $error.hide();
                     minder.getUI('topbar/feedback').click();
@@ -247,7 +261,7 @@ KityMinder.registerUI('widget/notice', function (minder) {
             $target.remove();
         }
     }
-    
+
     return {
         info: info,
         error: error,

@@ -146,8 +146,8 @@ KityMinder.LANG['zh-cn'] = {
         'copy_and_feedback': '复制并反馈',
         'move_file_confirm': '确定把 "{0}" 移动到 "{1}" 吗？',
         'rename': '重命名',
-        'rename_success': '<b>{0}</b> 重命名成功',
-        'move_success': '<b>{0}</b> 移动成功到 <b>{1}</b>',
+        'rename_success': '{0} 重命名成功',
+        'move_success': '{0} 移动成功到 {1}',
 
         'command': {
             'appendsiblingnode': '插入同级主题',
@@ -344,9 +344,9 @@ KityMinder.LANG['zh-cn'] = {
 
         'clipboardunsupported': '您的浏览器不支持剪贴板，请使用快捷键复制',
 
-        'load_success': '<b>{0}</b> 加载成功',
-        'save_success': '<b>{0}</b> 已保存于 {1}',
-        'autosave_success': '<b>{0}</b> 已自动保存于 {1}',
+        'load_success': '{0} 加载成功',
+        'save_success': '{0} 已保存于 {1}',
+        'autosave_success': '{0} 已自动保存于 {1}',
 
         'selectall': '全选',
         'selectrevert': '反选',

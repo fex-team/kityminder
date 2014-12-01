@@ -62,7 +62,15 @@
     $.ajaxSetup({ cache: false });
     $.extend($, {
         pajax: function() {
-            return Promise.resolve($.ajax.apply($, arguments));
+            var jqXHR = $.ajax.apply($, arguments);
+            return new Promise(function(resolve, reject) {
+                jqXHR.done(resolve);
+                jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+                    var e = new Error(textStatus);
+                    e.inner = errorThrown;
+                    reject(e);
+                });
+            });
         }
     });
 
