@@ -172,7 +172,8 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
     function save() {
         var ctx = getSaveContext();
 
-        if (ctx.match || !ctx.exist || ctx.duplicated && window.confirm(minder.getLang('ui.overrideconfirm', ctx.filename))) {
+        if (ctx.match || !ctx.exist ||
+            ctx.duplicated && window.confirm(minder.getLang('ui.overrideconfirm', ctx.filename))) {
             doSave(ctx.path, ctx.protocol.name, ctx.doc, $panel);
         }
     }
@@ -210,7 +211,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
 
             $doc.save(doc);
 
-            notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
+            //notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
 
             setTimeout(function() {
                 $finder.list($finder.pwd(), true);

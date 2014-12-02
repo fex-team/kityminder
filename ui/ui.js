@@ -67,7 +67,13 @@
                 jqXHR.done(resolve);
                 jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
                     var e = new Error(textStatus);
-                    e.inner = errorThrown;
+                    e.getDetail = function() {
+                        try {
+                            return 'jQuery XHR Error: \n' + JSON.stringify(errorThrown);
+                        } catch (e) {
+                            return errorThrown;
+                        }
+                    };
                     reject(e);
                 });
             });

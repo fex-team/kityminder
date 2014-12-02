@@ -23,7 +23,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     if (window.location.host == 'local.host') {
         BACKEND_URL = '/naotu/share.php'; // 测试环境
     }
-    
+
     var currentShare = null;
     var shareList = [];
 
@@ -67,7 +67,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                         record: doc.json
                     }
                 }).then(function() {
-                    notice.info(minder.getLang('ui.share_sync_success', doc.title));
+                    //notice.info(minder.getLang('ui.share_sync_success', doc.title));
                 })['catch'](function(e) {
                     notice.error('err_share_sync_fail', e);
                 });
@@ -83,7 +83,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         function preCommonLength(a, b) {
             var i = 0;
-            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            while ((i in a) && (i in b) && a[i] == b[i]) i++;
             return (i in b) ? 0 : i;
         }
 
@@ -123,7 +123,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
         var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec(window.location) || pattern.exec(document.referrer);
-        
+
         if (!match) return Promise.resolve(null);
 
         var shareId = match[1];
@@ -436,13 +436,14 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             height: 128,
             correctLevel : window.QRCode.CorrectLevel.M
         });
-        
+
         var shareConfig = window._bd_share_config && window._bd_share_config.common,
             resetShare = window._bd_share_main && window._bd_share_main.init;
 
         if (shareConfig && resetShare) {
             shareConfig.bdTitle = shareConfig.bdText = minder.getMinderTitle();
-            shareConfig.bdDesc = shareConfig.bdText = minder.getLang('ui.sns_share_text', minder.getMinderTitle(), shareUrl);
+            shareConfig.bdDesc = shareConfig.bdText = minder.getLang('ui.sns_share_text',
+                minder.getMinderTitle(), shareUrl);
             shareConfig.bdUrl = shareUrl;
             resetShare();
         }
@@ -558,7 +559,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
                 activeClass: 'active'
             });
             var clip = new window.ZeroClipboard($copy_url_btn);
-            clip.on('ready', function () {
+            clip.on('ready', function() {
                 clip.on('aftercopy', function() {
                     $copy_url_btn.text(minder.getLang('ui.copied')).attr('disabled', 'disabled');
                     setTimeout(function() {
