@@ -24,6 +24,10 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         }
     });
 
+    // 删除不稳定两种格式
+    delete supports['.mm'];
+    delete supports['.xmind'];
+
     /* 网盘面板 */
     var $panel = $($save.createSub('netdisk', true)).addClass('netdisk-save-panel');
 
