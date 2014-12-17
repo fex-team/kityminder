@@ -39,7 +39,6 @@ KityMinder.registerUI('menu/share/m-share', function (minder) {
 
             }).then(function(doc) {
                 var $title = minder.getUI('topbar/title');
-                $title.setTitle('[分享的] ' + $title.getTitle());
             });
         }
 

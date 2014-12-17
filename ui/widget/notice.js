@@ -126,8 +126,9 @@ KityMinder.registerUI('widget/notice', function(minder) {
         if (warn) $notice.addClass('warn');
         else $notice.removeClass('warn');
 
+        var $menu = minder.getUI('menu/menu');
         $notice.css({
-            top: minder.getUI('menu/menu').isVisible() ?
+            top: $menu && $menu.isVisible() ?
                 $('#main-menu .main-menu-level1').offset().top :
                 $('#kityminder').offset().top + 20
         });

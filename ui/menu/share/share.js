@@ -21,7 +21,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     var BACKEND_URL = 'http://naotu.baidu.com/share.php';
 
     if (window.location.host == 'local.host') {
-        BACKEND_URL = '/naotu/share.php'; // 测试环境
+        //BACKEND_URL = '/naotu/share.php'; // 测试环境
     }
 
     var currentShare = null;
@@ -42,13 +42,12 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     $doc.on('docload', function(doc) {
         if (doc.source != 'netdisk') {
             currentShare = null;
-            $('#public-share .share-body', $create_menu).hide();
             setShareType('none');
         }
-        var shared = getShareByPath(doc.path);
-        if (shared) {
+        shareListLoaded.then(function() {
+            var shared = getShareByPath(doc.path);
             setCurrentShare(shared);
-        }
+        });
     });
 
     $doc.on('docsave', function(doc) {
@@ -210,7 +209,10 @@ KityMinder.registerUI('menu/share/share', function(minder) {
 
     function setCurrentShare(share) {
         currentShare = share;
-        renderPublicShare(share);
+        if (share)
+            renderPublicShare(share);
+        else
+            setShareType('none');
     }
 
     function renderCreatePanel() {
@@ -331,9 +333,6 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     }
 
     function removeCurrentShareSelect() {
-        var $sbody = $('#public-share .share-body', $create_menu);
-        $sbody.hide();
-
         if (currentShare.$listItem) {
             currentShare.$listItem.remove();
         }
@@ -415,7 +414,12 @@ KityMinder.registerUI('menu/share/share', function(minder) {
     }
 
     function setShareType(value) {
-
+        var $sbody = $('#public-share .share-body', $create_menu);
+        if (value == 'public') {
+            $sbody.show();
+        } else {
+            $sbody.hide();
+        }
         $('#share-select input[name=sharetype][value=' + value + ']', $create_menu)
             .prop('checked', true);
     }
@@ -448,8 +452,6 @@ KityMinder.registerUI('menu/share/share', function(minder) {
             resetShare();
         }
         setShareType('public');
-
-        $sbody.show();
     }
 
     function loadShareList() {
@@ -480,7 +482,7 @@ KityMinder.registerUI('menu/share/share', function(minder) {
         if (!list) return;
         $share_list.empty();
         list.forEach(function(share) {
-            $share_list.append(buildShareItem(share));
+            $share_list.append(share.$listItem = buildShareItem(share));
         });
     }
 
