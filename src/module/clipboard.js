@@ -60,7 +60,7 @@ KityMinder.registerModule( "ClipboardModule", function () {
                 var node = km.getSelectedNode();
                 if (!node) return;
 
-                for(var i= 0, ni; (ni = _clipboardNodes[i]); i++) {
+                for (var i = 0, ni; (ni = _clipboardNodes[i]); i++) {
                     appendChildNode(node, ni.clone());
                 }
 

@@ -15,6 +15,12 @@ if ( empty( $file ) ) {
     die;
 }
 
+if (filesize( $file ) == 0) {
+    http_response_code(500);
+    echo "export failed.";
+    die;
+}
+
 Header ( "Content-type: application/octet-stream" );
 Header ( "Accept-Ranges: bytes" );
 Header ( "Accept-Length: " . filesize ( $file ) );
