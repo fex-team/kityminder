@@ -9,7 +9,7 @@ KityMinder.registerModule('ProgressModule', function() {
     var SHADOW_PATH = 'M10,3c4.418,0,8,3.582,8,8h1c0-5.523-3.477-10-9-10S1,5.477,1,11h1C2,6.582,5.582,3,10,3z';
     var SHADOW_COLOR = '#8E8E8E';
     var FRAME_PATH = 'M10,0C4.477,0,0,4.477,0,10c0,5.523,4.477,10,10,10s10-4.477,10-10C20,4.477,15.523,0,10,0zM10,18c-4.418,0-8-3.582-8-8s3.582-8,8-8s8,3.582,8,8S14.418,18,10,18z';
-    var FRAME_GRAD = new kity.LinearGradientBrush().pipe(function(g) {
+    var FRAME_GRAD = new kity.LinearGradient().pipe(function(g) {
         g.setStartPosition(0, 0);
         g.setEndPosition(0, 1);
         g.addStop(0, '#fff');

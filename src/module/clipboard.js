@@ -18,6 +18,9 @@ KityMinder.registerModule( "ClipboardModule", function () {
 
     function sendToClipboard(nodes) {
         if (!nodes.length) return;
+        nodes.sort(function(a, b) {
+            return a.getIndex() - b.getIndex();
+        });
         _clipboardNodes = nodes.map(function(node) {
             return node.clone();
         });
