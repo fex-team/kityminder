@@ -33,7 +33,7 @@ KityMinder.registerUI('menu/share/view', function (minder) {
 
         var pattern = /(?:shareId|share_id)=(\w+)([&#]|$)/;
         var match = pattern.exec(window.location) || pattern.exec(document.referrer);
-        
+
         if (!match) return Promise.resolve(null);
 
         shareId = match[1];
