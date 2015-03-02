@@ -34,8 +34,8 @@ KityMinder.registerModule('Resource', function() {
                 colorMapping[resource] = nextIndex;
             }
 
-            // 资源过多，找不到可用索引颜色，统一返回白色
-            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || RESOURCE_COLOR_OVERFLOW;
+            // 资源过多，找不到可用索引颜色时，返回随机颜色
+            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || kity.Color.createHSL(Math.floor(Math.random() * 256), 100, 85);
         },
 
         /**
