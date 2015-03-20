@@ -33,7 +33,7 @@ npm init;
 echo "请输入模块名字,默认(kityminder),如果不清楚,请留空";
 read moduleName;
 if [ -z "$moduleName" ]; then
-	moduleName='nityminder';
+	moduleName='kityminder';
 fi
 echo "使用模块名字$moduleName";
 sudo npm install $moduleName --save-dev;
@@ -56,7 +56,13 @@ sudo npm install -g grunt-cli;
 #初始化
 grunt;
 
-echo '项目已经初始化完毕 , 请完成以下操作:';
+echo '';
+echo '*************************';
+echo '恭喜!';
+echo '项目已经初始化完毕';
+echo '*************************';
+echo '';
+echo '为了让项目正式可以运行 , 你还需要完成以下操作:(假设你本地的域名为:www.youdomain.com)';
 echo '1) 用百度开发者账号登陆 , http://developer.baidu.com/; 找到开发者服务管理 , 点击创建工程; 进入新创建的工程 , 选择[其他api] ; 再选择[安全设置]; 在授权回调页面填写(不包括中括号)[http://www.youdomain.com/edit.html]; 在根域名绑定填写[youdomain.com]; 勾上限制访问OpenAPI的referer;然后确定';
 echo '2) 在新创建的工程的基本信息 , 找到API key, 并复制;编辑项目根目录的index.html , 在大概27行找到apiKey[这个是naotu.baidu.com的apikey],用复制后的apikey替换文件中的apikey';
 
