@@ -10,9 +10,9 @@
 KityMinder.registerUI('fiox', function(minder) {
     var eve = minder.getUI('eve');
     eve.setup(fio.user);
-    
+
     /* 初始化网盘使用的 APP 身份 */
     fio.user.init({
-        apiKey: 'wiE55BGOG8BkGnpPs6UNtPbb'
+        apiKey: 'zMSuveBXX6zUGyAR99N9h2ZU'
     });
 });

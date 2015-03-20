@@ -1,6 +1,8 @@
+
 KityMinder.LANG['zh-cn'] = {
     'template': {
         'default': '思维导图',
+        'tianpan': '天盘图',
         'structure': '组织结构图',
         'filetree': '目录组织图',
         'right': '逻辑结构图',

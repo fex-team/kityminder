@@ -10,10 +10,14 @@
 KityMinder.registerUI('ribbon/tabs', function(minder) {
     var memory = minder.getUI('memory');
 
+
+    var buttons = ['idea', 'appearence', 'view'].map(function(key) {
+        return minder.getLang('ui.tabs.' + key);
+    });
+
+    console.log(buttons)
     var $tab = new FUI.Tabs({
-        buttons: ['idea', 'appearence', 'view'].map(function(key) {
-            return minder.getLang('ui.tabs.' + key);
-        })
+        buttons:buttons
     });
     var $title = minder.getUI('topbar/title').$title;
 

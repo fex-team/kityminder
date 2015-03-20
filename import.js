@@ -89,6 +89,7 @@
 
         /* 模板 */
         { path: 'src/template/default.js',              pack: 'edit|share|m-share' },
+        { path: 'src/template/tianpan.js',              pack: 'edit|share|m-share' },
         { path: 'src/template/structure.js',            pack: 'edit|share|m-share' },
         { path: 'src/template/filetree.js',             pack: 'edit|share|m-share' },
         { path: 'src/template/right.js',                pack: 'edit|share|m-share' },

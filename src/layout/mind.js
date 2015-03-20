@@ -3,6 +3,7 @@ KityMinder.registerLayout('mind', kity.createClass({
     base: Layout,
 
     doLayout: function(node, children) {
+
         var layout = this;
         var half = Math.ceil(node.children.length / 2);
         var right = [];
