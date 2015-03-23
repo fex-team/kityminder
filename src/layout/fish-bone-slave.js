@@ -13,6 +13,7 @@ KityMinder.registerLayout('fish-bone-slave', kity.createClass('FishBoneSlaveLayo
 
     doLayout: function (parent, children, round) {
 
+        //debugger
         var layout = this;
         var abs = Math.abs;
         var GOLD_CUT = 1 - 0.618;

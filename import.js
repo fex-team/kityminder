@@ -67,6 +67,7 @@
 
         /* 布局 */
         { path: 'src/layout/mind.js',                   pack: 'edit|share|m-share' },
+        { path: 'src/layout/tianpan.js',                pack: 'edit|share|m-share' },
         { path: 'src/layout/filetree.js',               pack: 'edit|share|m-share' },
         { path: 'src/layout/btree.js',                  pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-master.js',       pack: 'edit|share|m-share' },
@@ -82,6 +83,7 @@
 
         /* 皮肤 */
         { path: 'src/theme/default.js',                 pack: 'edit|share|m-share' },
+        { path: 'src/theme/tianpan.js',                 pack: 'edit|share|m-share' },
         { path: 'src/theme/snow.js',                    pack: 'edit|share|m-share' },
         { path: 'src/theme/fresh.js',                   pack: 'edit|share|m-share' },
         { path: 'src/theme/fish.js',                    pack: 'edit|share|m-share' },

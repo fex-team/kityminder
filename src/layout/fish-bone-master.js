@@ -18,8 +18,11 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         var child = children[0];
         var pBox = parent.getContentBox();
 
-        parent.setVertexOut(new kity.Point(pBox.right, pBox.cy));
-        parent.setLayoutVectorOut(new kity.Vector(1, 0));
+        var point = new kity.Point(pBox.right, pBox.cy);
+        parent.setVertexOut(point);
+        var vector = new kity.Vector(1, 0);
+        parent.setLayoutVectorOut(vector);
+
 
         if (!child) return;
 
