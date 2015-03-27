@@ -77,6 +77,7 @@
         { path: 'src/connect/bezier.js',                pack: 'edit|share|m-share' },
         { path: 'src/connect/poly.js',                  pack: 'edit|share|m-share' },
         { path: 'src/connect/arc.js',                   pack: 'edit|share|m-share' },
+        { path: 'src/connect/arc_tp.js',                pack: 'edit|share|m-share' },
         { path: 'src/connect/under.js',                 pack: 'edit|share|m-share' },
         { path: 'src/connect/l.js',                     pack: 'edit|share|m-share' },
         { path: 'src/connect/fish-bone-master.js',      pack: 'edit|share|m-share' },

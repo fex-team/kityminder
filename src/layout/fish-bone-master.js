@@ -32,6 +32,7 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         var cMarginTop = child.getStyle('margin-top');
         var cMarginBottom = child.getStyle('margin-bottom');
 
+
         children.forEach(function(child, index) {
             child.setLayoutTransform(new kity.Matrix());
             var cBox = child.getContentBox();
@@ -46,8 +47,9 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
                 child.setVertexIn(new kity.Point(cBox.left, cBox.bottom));
                 child.setLayoutVectorIn(new kity.Vector(1, -1));
             }
-
         });
+
+
 
         this.stack(upPart, 'x');
         this.stack(downPart, 'x');
