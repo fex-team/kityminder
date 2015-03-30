@@ -26,7 +26,7 @@ KityMinder.registerUI('doc', function(minder) {
 
         function preCommonLength(a, b) {
             var i = 0;
-            while((i in a) && (i in b) && a[i] == b[i]) i++;
+            while ((i in a) && (i in b) && a[i] == b[i]) i++;
             return (i in b) ? 0 : i;
         }
 
@@ -40,6 +40,11 @@ KityMinder.registerUI('doc', function(minder) {
             ret.fire('docchange', current);
         }
     }
+
+    var locked = false;
+
+    ret.lock = function() { locked = true; };
+    ret.unlock = function() { locked = false; };
 
     /**
      * 加载文档
@@ -58,6 +63,8 @@ KityMinder.registerUI('doc', function(minder) {
      * @return {Promise<doc>} 返回解析完之后的文档对象，解析的结果为 doc.data
      */
     function load(doc) {
+        if (locked) return Promise.reject(new Error('doc was locked'));
+
         var restore = doc;
 
         current = doc;
@@ -84,7 +91,7 @@ KityMinder.registerUI('doc', function(minder) {
         }).then(function(doc) {
             loading = false;
             if (doc)
-                notice.info( minder.getLang('ui.load_success', doc.title ) );
+                notice.info(minder.getLang('ui.load_success', doc.title));
             return doc;
         });
     }
@@ -105,6 +112,7 @@ KityMinder.registerUI('doc', function(minder) {
 
     function checkSaved(noConfirm) {
         if (!fio.user.current()) return true;
+        if (locked) return false;
         if (noConfirm) return current.saved;
         return current.saved || window.confirm(minder.getLang('ui.unsavedcontent', '* ' + current.title));
     }
@@ -132,6 +140,6 @@ KityMinder.registerUI('doc', function(minder) {
     ret.save = save;
     ret.current = getCurrent;
     ret.checkSaved = checkSaved;
-    
+
     return ret;
 });

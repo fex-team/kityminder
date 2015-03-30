@@ -189,6 +189,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
         if (saving) return;
 
         saving = true;
+        $doc.lock();
 
         if ($mask) $mask.addClass('loading');
 
@@ -214,6 +215,7 @@ KityMinder.registerUI('menu/save/netdisk', function(minder) {
             doc.protocol = protocol;
 
             $doc.save(doc);
+            $doc.unlock();
 
             //notice.info(msg || minder.getLang('ui.save_success', doc.title, file.modifyTime.toLocaleTimeString()));
 
