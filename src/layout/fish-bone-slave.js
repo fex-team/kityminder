@@ -58,6 +58,7 @@ KityMinder.registerLayout('fish-bone-slave', kity.createClass('FishBoneSlaveLayo
         this.move(children, xAdjust, yAdjust);
 
         if (round == 2) {
+
             children.forEach(function(child) {
                 var m = child.getLayoutTransform();
                 var cbox = child.getContentBox();

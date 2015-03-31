@@ -34,6 +34,7 @@ KityMinder.registerConnectProvider('arc_tp', function(node, parent, connection, 
 
     node.getMinder().getPaper().addResource(connectMarker);
 
+
     start = new kity.Point(start_box.cx, start_box.cy);
     end = new kity.Point(end_box.cx, end_box.cy);
 

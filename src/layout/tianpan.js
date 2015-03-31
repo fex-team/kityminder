@@ -6,36 +6,74 @@
  * To change this template use File | Settings | File Templates.
  */
 /* global Layout:true */
+
+
+function aadsf(){
+
+
+
+}
+
+
 KityMinder.registerLayout('tianpan', kity.createClass({
     base: Layout,
 
-    doLayout: function(node, children) {
-        var child = children[0];
-        if (!child) return;
-
-        //console.log(node)
+    doLayout: function(parent, children) {
+        console.log(parent);
+        if(children.length==0) return;
         var layout = this;
-        var pbox = node.getContentBox();
+        var pbox = parent.getContentBox();
 
-        var x,y;
-        var _theta = 5;
-        var _r = pbox.width / Math.PI /1.5;
+        var x, y,alpha;
 
-        console.log('a')
+        var alpha = 10;
+        var _theta =  5;
+        var _r = Math.max(pbox.width,80) / 1.5 / Math.PI;
+
+        var g = KityMinder.Geometry;
+        var _tmp_rects=[],_tempchilds=[],_do = true, _cut_rect,_cover = false;
+        _tmp_rects.push(pbox);
+
         children.forEach(function(child, index) {
-            x = (_r) * (Math.cos(_theta) + Math.sin(_theta) * _theta);
-            y = (_r) * (Math.sin(_theta) - Math.cos(_theta) * _theta);
+//            x = _r * (Math.cos(alpha) + Math.sin(alpha)* alpha * Math.PI/180);
+//            y = _r * (Math.sin(alpha) - Math.cos(alpha)* alpha * Math.PI/180);
 
-            child.setLayoutTransform(new kity.Matrix());
-           // child.setLayoutVectorIn(
-           // new kity.Vector(1, 0));
-           // child.setVertexIn(new kity.Point(cBox.left, cBox.cy));
+           // while (_do) {
+                x = _r * (Math.cos(_theta) + Math.sin(_theta) * _theta);
+                y = _r * (Math.sin(_theta) - Math.cos(_theta) * _theta);
+                _theta += (0.9 - index * 0.02);
 
-            child.getLayoutTransform().translate(x, y);
-            _theta += 0.9;//+(-index*0.02);
+                console.log(child.getContentBox());
+
+                child.getContentBox().translate(x, y);
+                console.log(child.getContentBox());
+                debugger
+
+//                _cut_rect = layout.getTreeBox(child);
+//                _tmp_rects.forEach(function (tmpRect) {
+//                    debugger
+//                    if (g.getIntersectBox(tmpRect,_cut_rect)) {
+//                        _cover = true;
+//                    }
+//                })
+//
+//                if (_cover) {
+//                    _r += 2;
+//                    console.log('true')
+//                } else {
+//                    _do = false;
+//                    _tempchilds.push({child: child, r: _r, theta: _theta, area: _cut_rect})
+//                    _theta += 0.9;
+//                    _tmp_rects.push(_cut_rect);
+//                }
+          // }
         });
-        return;
 
+
+        console.log(_tmp_rects);
+        return;
+        //child.setLayoutTransform(new kity.Matrix());
+        //child.getLayoutTransform().translate(x, y);
 
         children.forEach(function(child) {
             x = (_r) * (Math.cos(_theta) + Math.sin(_theta) * _theta);
