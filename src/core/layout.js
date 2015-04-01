@@ -512,7 +512,10 @@ var Layout = kity.createClass('Layout', {
                 treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
             }
 
-            box = g.mergeBox(box, matrix.transformBox(treeBox));
+            debugger
+
+            var mbox = matrix.transformBox(treeBox);
+            box = g.mergeBox(box,mbox);
         }
 
         return box;
