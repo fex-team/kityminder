@@ -8,6 +8,7 @@
     margin: 0;
     display: block;
     position: relative;
+    -webkit-app-region: no-drag;
     
     &:after {
         content: ' ';
@@ -35,7 +36,8 @@
     }
     
     &.share {
-        
+        float: right;
+        margin-right: 5px;
         &:after {
             background-position: 0 -945px;
         }
@@ -52,7 +54,7 @@
     }
 
     &.editshare {
-        margin-right: 5px;
+         margin-right: 5px;
         float: right;
         &:after {
             top: 6.5px;

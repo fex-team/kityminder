@@ -7,14 +7,6 @@
  */
 /* global Layout:true */
 
-
-function aadsf(){
-
-
-
-}
-
-
 KityMinder.registerLayout('tianpan', kity.createClass({
     base: Layout,
 
@@ -27,21 +19,13 @@ KityMinder.registerLayout('tianpan', kity.createClass({
         var x, y;
         var _theta =  5;
         var _r = Math.max(pbox.width,50);
-
-        console.log('init:'+parent.getText());
-        console.log('start:'+_r);
         children.forEach(function(child, index) {
-            console.log(child.getLayout());
-            debugger
+            child.setLayoutTransform(new kity.Matrix());
             var box = layout.getTreeBox(child);
             var w = Math.max(box.width,box.height);
-            console.log(w);
             _r = Math.max(w,_r);
         })
-        console.log('end:'+_r) ;
-
          _r = _r / 1.5 / Math.PI;
-
 
         children.forEach(function(child, index) {
 //          x = _r * (Math.cos(alpha) + Math.sin(alpha)* alpha * Math.PI/180);

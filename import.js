@@ -165,7 +165,7 @@
         { path: 'ui/nav.js',                            pack: 'edit|share' },
 
         /* UI Top Bar */
-        { path: 'ui/topbar/moreservice.js',             pack: 'edit|share'},
+       { path: 'ui/topbar/moreservice.js',             pack: 'edit|share'},
 
         /* UI 菜单 */
         { path: 'ui/menu/menu.js',                      pack: 'edit|share' },
@@ -200,6 +200,7 @@
         { path: 'ui/topbar/quickvisit.js',              pack: 'edit|share' },
         { path: 'ui/topbar/history.js',                 pack: 'edit' },
         { path: 'ui/topbar/user.js',                    pack: 'edit' },
+        { path: 'ui/topbar/share.js',                   pack: 'edit|share' },
         { path: 'ui/topbar/feedback.js',                pack: 'edit|share' },
         { path: 'ui/topbar/search.js',                  pack: 'edit|share' },
         { path: 'ui/topbar/switch-view.js',             pack: 'm-share' },
