@@ -161,6 +161,7 @@ var TreeDragger = kity.createClass('TreeDragger', {
         } else {
             this._minder.fire('savescene');
         }
+
         this._minder.layout(300);
         this._leaveDragMode();
         this._minder.fire('contentchange');

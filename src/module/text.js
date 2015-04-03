@@ -14,8 +14,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
     },
 
     update: function(textGroup, node) {
-
-        function s(name) {
+        function style(name) {
             return node.getData(name) || node.getStyle(name);
         }
 
@@ -23,8 +22,8 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         var lineHeight = node.getStyle('line-height');
 
-        var fontSize = s('font-size');
-        var fontFamily = s('font-family') || 'default';
+        var fontSize = style('font-size');
+        var fontFamily = style('font-family') || 'default';
 
         var height = (lineHeight * fontSize) * textArr.length - (lineHeight - 1) * fontSize;
         var yStart = -height / 2;
@@ -68,9 +67,10 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         this.setTextStyle(node, textGroup);
 
-        var textHash = node.getText() + [s('font-size'), s('font-name'), s('font-weight'), s('font-style')].join('/');
+        var textHash = node.getText() + [style('font-size'), style('font-name'), style('font-weight'), style('font-style')].join('/');
 
-        if (node._currentTextHash == textHash && node._currentTextGroupBox) return node._currentTextGroupBox;
+        if (node._currentTextHash == textHash && node._currentTextGroupBox)
+            return node._currentTextGroupBox;
 
         node._currentTextHash = textHash;
 
@@ -83,7 +83,13 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
                 rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width || 1, fontSize));
             });
 
-            var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
+            //为了让文字在圆中垂直居中
+            var w = 0;
+            var shape = node.getStyle('shape');
+            if(shape && shape=='circle'){
+                w = Math.max(rBox.width,rBox.height)/2-rBox.height/2;
+            }
+            var nBox = new kity.Box(r(rBox.x), r(rBox.y-w), r(rBox.width), r(rBox.height));
 
             node._currentTextGroupBox = nBox;
             return nBox;

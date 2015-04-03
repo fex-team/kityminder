@@ -17,7 +17,6 @@ KityMinder.registerUI('ribbon/appearence/template', function(minder) {
         label: minder.getLang('panels.template')
     });
 
-
     var templateList = KityMinder.Utils.keys(KityMinder.getTemplateList());
     var $templateSelect = $commandselectmenu.generate('template', templateList, 2);
 

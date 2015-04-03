@@ -16,26 +16,35 @@ var connectMarker = new kity.Marker().pipe(function() {
     this.node.setAttribute('markerUnits', 'userSpaceOnUse');
 });
 
-KityMinder.registerConnectProvider('arc', function(node, parent, connection, width, color) {
+KityMinder.registerConnectProvider('arc_tp', function(node, parent, connection, width, color) {
+    var end_box = node.getLayoutBox(),
+        start_box = parent.getLayoutBox();
 
-    var box = node.getLayoutBox(),
-        pBox = parent.getLayoutBox();
+
+    if(node.getIndex()>0){
+       var index = node.getIndex();
+       start_box = parent.getChildren()[index-1].getLayoutBox();
+    }
+
 
     var start, end, vector;
     var abs = Math.abs;
     var pathData = [];
-    var side = box.x > pBox.x ? 'right' : 'left';
+    var side = end_box.x > start_box.x ? 'right' : 'left';
 
     node.getMinder().getPaper().addResource(connectMarker);
 
-    start = new kity.Point(pBox.cx, pBox.cy);
-    end = side == 'left' ?
-        new kity.Point(box.right + 2, box.cy) :
-        new kity.Point(box.left - 2, box.cy);
+
+    start = new kity.Point(start_box.cx, start_box.cy);
+    end = new kity.Point(end_box.cx, end_box.cy);
+
+    var jl = Math.sqrt(Math.abs(start.x -end.x) * Math.abs(start.x - end.x) + Math.abs(start.y -end.y) * Math.abs(start.y -end.y)); //两圆中心点距离
+
+   jl = node.getIndex()==0 ? jl *0.4 : jl;
 
     vector = kity.Vector.fromPoints(start, end);
     pathData.push('M', start);
-    pathData.push('A', abs(vector.x), abs(vector.y), 0, 0 , (vector.x * vector.y > 0 ? 0 : 1), end);
+    pathData.push('A', jl, jl, 0, 0 , 1, end);
 
     connection.setMarker(connectMarker);
     connectMarker.dot.fill(color);

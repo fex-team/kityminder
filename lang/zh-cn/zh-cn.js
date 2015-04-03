@@ -1,6 +1,8 @@
+
 KityMinder.LANG['zh-cn'] = {
     'template': {
         'default': '思维导图',
+        'tianpan': '天盘图',
         'structure': '组织结构图',
         'filetree': '目录组织图',
         'right': '逻辑结构图',
@@ -24,7 +26,9 @@ KityMinder.LANG['zh-cn'] = {
         'fresh-green-compat': '紧凑绿',
         'fresh-blue-compat': '紧凑蓝',
         'fresh-purple-compat': '紧凑紫',
-        'fresh-pink-compat': '紧凑粉'
+        'fresh-pink-compat': '紧凑粉',
+        'tianpan':'经典天盘',
+        'tianpan-compact': '紧凑天盘'
     },
     'maintopic': '中心主题',
     'topic': '分支主题',
