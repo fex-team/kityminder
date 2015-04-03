@@ -7,7 +7,9 @@
  * @copyright: Baidu FEX, 2014
  */
 KityMinder.registerUI('widget/commandbutton', function(minder) {
+
     return {
+
         generate: function(command, onclick) {
             var $button = new FUI.Button({
                 label: minder.getLang('ui.command.' + command) || minder.getLang('ui.' + command),

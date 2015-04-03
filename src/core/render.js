@@ -192,10 +192,7 @@ kity.extendClass(Minder, (function() {
                     // 更新渲染图形
                     latestBox = renderer.update(renderer.getRenderShape(), node, node._contentBox);
 
-                    if (typeof(latestBox) == 'function'){
-                        latestBox = latestBox();
-                    }
-
+                    if (typeof(latestBox) == 'function') latestBox = latestBox();
 
                     // 合并渲染区域
                     if (latestBox) {

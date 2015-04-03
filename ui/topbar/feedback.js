@@ -13,7 +13,7 @@ KityMinder.registerUI('topbar/feedback', function (minder) {
 
     function quickFeedback() {
         var $menu = minder.getUI('menu/menu');
-        $menu.$tabs.select(6);
+        $menu.$tabs.select(5);
         $menu.show();
     }
 

@@ -78,6 +78,7 @@ KityMinder.registerUI('topbar/user', function(minder) {
 
         menu.clearSelect();
         $userMenu.hide();
+
     });
 
     minder.on('uiready', function() {
@@ -132,15 +133,12 @@ KityMinder.registerUI('topbar/user', function(minder) {
     }
 
     function requireLogin($element) {
-
-        var $login_tip = $('<p class="login-tip"></p>').html(minder.getLang('ui.requirelogin'));
-
+        var $login_tip = $('<p class="login-tip"></p>')
+            .html(minder.getLang('ui.requirelogin'));
         $element.append($login_tip);
-
         fio.user.on('login', function() {
             $element.removeClass('login-required');
         });
-
         fio.user.on('logout', function() {
             $element.addClass('login-required');
         });

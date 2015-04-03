@@ -78,17 +78,6 @@ function updateCircle(outline, node, box){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 var ShadowRenderer = kity.createClass('ShadowRenderer', {
     base: Renderer,
 

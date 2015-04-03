@@ -14,7 +14,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
     },
 
     update: function(textGroup, node) {
-        function style(name) {
+        function s(name) {
             return node.getData(name) || node.getStyle(name);
         }
 
@@ -22,8 +22,8 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         var lineHeight = node.getStyle('line-height');
 
-        var fontSize = style('font-size');
-        var fontFamily = style('font-family') || 'default';
+        var fontSize = s('font-size');
+        var fontFamily = s('font-family') || 'default';
 
         var height = (lineHeight * fontSize) * textArr.length - (lineHeight - 1) * fontSize;
         var yStart = -height / 2;
@@ -67,7 +67,7 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
 
         this.setTextStyle(node, textGroup);
 
-        var textHash = node.getText() + [style('font-size'), style('font-name'), style('font-weight'), style('font-style')].join('/');
+        var textHash = node.getText() + [s('font-size'), s('font-name'), s('font-weight'), s('font-style')].join('/');
 
         if (node._currentTextHash == textHash && node._currentTextGroupBox)
             return node._currentTextGroupBox;
