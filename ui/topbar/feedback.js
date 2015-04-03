@@ -6,7 +6,7 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-KityMinder.registerUI('topbar/feedback', function (minder) {
+KityMinder.registerUI('topbar/feedback', function(minder) {
     var $quickvisit = minder.getUI('topbar/quickvisit');
 
     var $feedback = $quickvisit.add('feedback', 'right');
@@ -16,7 +16,6 @@ KityMinder.registerUI('topbar/feedback', function (minder) {
         $menu.$tabs.select(5);
         $menu.show();
     }
-
     $feedback.click(quickFeedback);
     minder.addShortcut('f1', quickFeedback);
 

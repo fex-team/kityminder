@@ -15,6 +15,7 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
     },
 
     update: function(outline, node, box) {
+        //增加圆形update、待更好解决方案
         var shape = node.getStyle('shape');
         if(shape){
             if(shape=='circle'){
@@ -35,7 +36,8 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
 
         var prefix = node.isSelected() ? 'selected-' : '';
 
-        outline.setPosition(outlineBox.x, outlineBox.y)
+        outline
+            .setPosition(outlineBox.x, outlineBox.y)
             .setSize(outlineBox.width, outlineBox.height)
             .setRadius(node.getStyle('radius'))
             .fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
@@ -68,7 +70,8 @@ function updateCircle(outline, node, box){
 
     width= Math.max(outlineBox.width,outlineBox.height);
 
-    outline.setPosition(outlineBox.x, outlineBox.y)
+    outline
+        .setPosition(outlineBox.x, outlineBox.y)
         .setSize(width, width)
         .setRadius(width/2)
         .fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
@@ -91,7 +94,9 @@ var ShadowRenderer = kity.createClass('ShadowRenderer', {
     },
 
     update: function(shadow, node, box) {
-        shadow.setPosition(box.x + 4, box.y + 5).fill(node.getStyle('shadow'));
+        shadow
+            .setPosition(box.x + 4, box.y + 5)
+            .fill(node.getStyle('shadow'));
 
         var shape = node.getStyle('shape');
         if(!shape){
