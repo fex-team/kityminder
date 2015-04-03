@@ -15,6 +15,7 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
     },
 
     update: function(outline, node, box) {
+
         //增加圆形update、待更好解决方案
         var shape = node.getStyle('shape');
         if(shape){
@@ -94,8 +95,7 @@ var ShadowRenderer = kity.createClass('ShadowRenderer', {
     },
 
     update: function(shadow, node, box) {
-        shadow
-            .setPosition(box.x + 4, box.y + 5)
+        shadow.setPosition(box.x + 4, box.y + 5)
             .fill(node.getStyle('shadow'));
 
         var shape = node.getStyle('shape');
