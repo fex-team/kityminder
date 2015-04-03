@@ -65,7 +65,7 @@ KityMinder.registerUI('topbar/quickvisit', function (minder) {
 
         minder.addShortcut('ctrl+alt+n', quickNew);
         minder.addShortcut('ctrl+s', quickSave);
-        minder.addShortcut('ctrl+shift+s', function() {
+        minder.addShortcut('ctrl+shift+s', function () {
             var $menu = minder.getUI('menu/menu');
             $menu.$tabs.select(2);
             $menu.show();

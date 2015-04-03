@@ -8,7 +8,7 @@
  */
 
 KityMinder.registerTemplate('tianpan', {
-    getLayout: function(node) {
+    getLayout: function (node) {
         if (node.getData('layout')) return node.getData('layout');
         var level = node.getLevel();
 
@@ -20,8 +20,7 @@ KityMinder.registerTemplate('tianpan', {
         return node.parent.getLayout();
     },
 
-    getConnect: function(node) {
-        if (node.getLevel() == 1) return 'arc_tp';
+    getConnect: function (node) {
         return 'arc_tp';
     }
 });

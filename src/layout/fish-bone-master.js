@@ -18,11 +18,8 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         var child = children[0];
         var pBox = parent.getContentBox();
 
-        var point = new kity.Point(pBox.right, pBox.cy);
-        parent.setVertexOut(point);
-        var vector = new kity.Vector(1, 0);
-        parent.setLayoutVectorOut(vector);
-
+        parent.setVertexOut(new kity.Point(pBox.right, pBox.cy));
+        parent.setLayoutVectorOut(new kity.Vector(1, 0));
 
         if (!child) return;
 
@@ -31,7 +28,6 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
         var cMarginLeft = child.getStyle('margin-left');
         var cMarginTop = child.getStyle('margin-top');
         var cMarginBottom = child.getStyle('margin-bottom');
-
 
         children.forEach(function(child, index) {
             child.setLayoutTransform(new kity.Matrix());
@@ -47,9 +43,8 @@ KityMinder.registerLayout('fish-bone-master', kity.createClass('FishBoneMasterLa
                 child.setVertexIn(new kity.Point(cBox.left, cBox.bottom));
                 child.setLayoutVectorIn(new kity.Vector(1, -1));
             }
+
         });
-
-
 
         this.stack(upPart, 'x');
         this.stack(downPart, 'x');

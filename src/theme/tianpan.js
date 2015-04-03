@@ -1,4 +1,4 @@
-['tianpan', 'tianpan-compact'].forEach(function(name) {
+['tianpan', 'tianpan-compact'].forEach(function (name) {
     var compact = name == 'tianpan-compact';
 
     KityMinder.registerTheme(name, {
@@ -13,7 +13,7 @@
         'root-radius': 30,
         'root-space': 10,
         'root-shadow': 'rgba(0, 0, 0, .25)',
-        'root-shape':'circle',
+        'root-shape': 'circle',
 
         'main-color': '#333',
         'main-background': '#a4c5c0',
@@ -24,7 +24,7 @@
         'main-radius': 10,
         'main-space': 5,
         'main-shadow': 'rgba(0, 0, 0, .25)',
-        'main-shape':'circle',
+        'main-shape': 'circle',
 
         'sub-color': '#333',
         'sub-background': '#99ca6a',
@@ -36,7 +36,7 @@
         'sub-radius': 5,
         'sub-space': 5,
         'sub-shadow': 'rgba(0, 0, 0, .25)',
-        'sub-shape':'circle',
+        'sub-shape': 'circle',
 
         'connect-color': 'white',
         'connect-width': 2,
@@ -60,6 +60,6 @@
         'order-hint-path-width': 1,
 
         'text-selection-color': 'rgb(27,171,255)',
-        'line-height':1.4
+        'line-height': 1.4
     });
 });
