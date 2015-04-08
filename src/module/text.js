@@ -83,7 +83,13 @@ var TextRenderer = KityMinder.TextRenderer = kity.createClass('TextRenderer', {
                 rBox = rBox.merge(new kity.Box(0, y, textShape.getBoundaryBox().width || 1, fontSize));
             });
 
-            var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
+            //为了让文字在圆中垂直居中
+            var w = 0;
+            var shape = node.getStyle('shape');
+            if(shape && shape=='circle'){
+                w = Math.max(rBox.width,rBox.height)/2-rBox.height/2;
+            }
+            var nBox = new kity.Box(r(rBox.x), r(rBox.y-w), r(rBox.width), r(rBox.height));
 
             node._currentTextGroupBox = nBox;
             return nBox;

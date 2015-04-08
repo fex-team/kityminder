@@ -61,6 +61,8 @@ html, body {
     position: relative;
     transition: transform .7s ease;
     z-index: 11;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
 
     h1 {
         font-size: 14px;
@@ -89,6 +91,8 @@ html, body {
             box-shadow: 0 0 3px black;
             padding: 3px 2px 3px 5px;
             background: white;
+           -webkit-user-select: text;
+           -webkit-app-region: no-drag;
         }
 
         &.rename-enabled{
@@ -130,4 +134,5 @@ html, body {
 
 .fui-widget {
     -webkit-font-smoothing: auto;
+    -webkit-app-region: no-drag;
 }

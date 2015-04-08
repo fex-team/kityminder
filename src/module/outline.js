@@ -16,6 +16,13 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
 
     update: function(outline, node, box) {
 
+        //增加圆形update、待更好解决方案
+        var shape = node.getStyle('shape');
+        if(shape){
+            if(shape=='circle'){
+                return updateCircle(outline, node, box);
+            }
+        }
         var paddingLeft = node.getStyle('padding-left'),
             paddingRight = node.getStyle('padding-right'),
             paddingTop = node.getStyle('padding-top'),
@@ -42,6 +49,39 @@ var OutlineRenderer = kity.createClass('OutlineRenderer', {
     }
 });
 
+
+//圆
+function updateCircle(outline, node, box){
+
+    var paddingLeft = node.getStyle('padding-left'),
+        paddingRight = node.getStyle('padding-right'),
+        paddingTop = node.getStyle('padding-top'),
+        paddingBottom = node.getStyle('padding-bottom');
+
+    var width= Math.max(box.width,box.height);
+
+    var outlineBox = {
+        x: box.x - paddingLeft,
+        y: box.y - paddingTop,
+        width: width + paddingLeft + paddingRight,
+        height: width + paddingTop + paddingBottom
+    };
+
+    var prefix = node.isSelected() ? 'selected-' : '';
+
+    width= Math.max(outlineBox.width,outlineBox.height);
+
+    outline
+        .setPosition(outlineBox.x, outlineBox.y)
+        .setSize(width, width)
+        .setRadius(width/2)
+        .fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
+        .stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
+            node.getStyle(prefix + 'stroke-width'));
+    return new kity.Box(outlineBox);
+}
+
+
 var ShadowRenderer = kity.createClass('ShadowRenderer', {
     base: Renderer,
 
@@ -56,11 +96,21 @@ var ShadowRenderer = kity.createClass('ShadowRenderer', {
 
     update: function(shadow, node, box) {
         shadow.setPosition(box.x + 4, box.y + 5)
-            .setSize(box.width, box.height)
-            .fill(node.getStyle('shadow'))
-            .setRadius(node.getStyle('radius'));
+            .fill(node.getStyle('shadow'));
+
+        var shape = node.getStyle('shape');
+        if(!shape){
+            shadow.setSize(box.width, box.height)
+            shadow.setRadius(node.getStyle('radius'));
+
+        }else if(shape=='circle'){
+            var width= Math.max(box.width,box.height);
+            shadow.setSize(width, width)
+            shadow.setRadius(width/2);
+        }
     }
 });
+
 
 var marker = new kity.Marker();
 

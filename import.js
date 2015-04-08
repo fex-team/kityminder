@@ -71,6 +71,7 @@
         { path: 'src/layout/btree.js',                  pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-master.js',       pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-slave.js',        pack: 'edit|share|m-share' },
+        { path: 'src/layout/tianpan.js',                 pack: 'edit|share|m-share' },
 
         /* 连线 */
         { path: 'src/connect/bezier.js',                pack: 'edit|share|m-share' },
@@ -79,6 +80,7 @@
         { path: 'src/connect/under.js',                 pack: 'edit|share|m-share' },
         { path: 'src/connect/l.js',                     pack: 'edit|share|m-share' },
         { path: 'src/connect/fish-bone-master.js',      pack: 'edit|share|m-share' },
+        { path: 'src/connect/arc_tp.js',                  pack: 'edit|share|m-share' },
 
         /* 皮肤 */
         { path: 'src/theme/default.js',                 pack: 'edit|share|m-share' },
@@ -86,6 +88,7 @@
         { path: 'src/theme/fresh.js',                   pack: 'edit|share|m-share' },
         { path: 'src/theme/fish.js',                    pack: 'edit|share|m-share' },
         { path: 'src/theme/wire.js',                    pack: 'edit|share|m-share' },
+        { path: 'src/theme/tianpan.js',                 pack: 'edit|share|m-share' },
 
         /* 模板 */
         { path: 'src/template/default.js',              pack: 'edit|share|m-share' },
@@ -93,6 +96,7 @@
         { path: 'src/template/filetree.js',             pack: 'edit|share|m-share' },
         { path: 'src/template/right.js',                pack: 'edit|share|m-share' },
         { path: 'src/template/fish-bone.js',            pack: 'edit|share|m-share' },
+        { path: 'src/template/tianpan.js',              pack: 'edit|share|m-share' },
 
         /* 模块 */
         { path: 'src/module/node.js',                   pack: 'edit|share|m-share' },
