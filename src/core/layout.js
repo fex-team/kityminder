@@ -507,10 +507,12 @@ var Layout = kity.createClass('Layout', {
             matrix = node.getLayoutTransform();
 
             treeBox = node.getContentBox();
+
             if (node.isExpanded() && node.children.length) {
                 treeBox = g.mergeBox(treeBox, this.getTreeBox(node.children));
             }
-            box = g.mergeBox(box,matrix.transformBox(treeBox));
+
+            box = g.mergeBox(box, matrix.transformBox(treeBox));
         }
 
         return box;
@@ -527,7 +529,6 @@ var LayoutCommand = kity.createClass('LayoutCommand', {
     execute: function(minder, name) {
         var nodes = minder.getSelectedNodes();
         nodes.forEach(function(node) {
-
             node.layout(name);
         });
     },

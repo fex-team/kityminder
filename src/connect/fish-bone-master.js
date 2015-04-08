@@ -8,6 +8,7 @@
  */
 
 KityMinder.registerConnectProvider('fish-bone-master', function(node, parent, connection) {
+
     var pout = parent.getLayoutVertexOut(),
         pin = node.getLayoutVertexIn();
 

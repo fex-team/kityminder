@@ -67,36 +67,36 @@
 
         /* 布局 */
         { path: 'src/layout/mind.js',                   pack: 'edit|share|m-share' },
-        { path: 'src/layout/tianpan.js',                pack: 'edit|share|m-share' },
         { path: 'src/layout/filetree.js',               pack: 'edit|share|m-share' },
         { path: 'src/layout/btree.js',                  pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-master.js',       pack: 'edit|share|m-share' },
         { path: 'src/layout/fish-bone-slave.js',        pack: 'edit|share|m-share' },
+        { path: 'src/layout/tianpan.js',                 pack: 'edit|share|m-share' },
 
         /* 连线 */
         { path: 'src/connect/bezier.js',                pack: 'edit|share|m-share' },
         { path: 'src/connect/poly.js',                  pack: 'edit|share|m-share' },
         { path: 'src/connect/arc.js',                   pack: 'edit|share|m-share' },
-        { path: 'src/connect/arc_tp.js',                pack: 'edit|share|m-share' },
         { path: 'src/connect/under.js',                 pack: 'edit|share|m-share' },
         { path: 'src/connect/l.js',                     pack: 'edit|share|m-share' },
         { path: 'src/connect/fish-bone-master.js',      pack: 'edit|share|m-share' },
+        { path: 'src/connect/arc_tp.js',                  pack: 'edit|share|m-share' },
 
         /* 皮肤 */
         { path: 'src/theme/default.js',                 pack: 'edit|share|m-share' },
-        { path: 'src/theme/tianpan.js',                 pack: 'edit|share|m-share' },
         { path: 'src/theme/snow.js',                    pack: 'edit|share|m-share' },
         { path: 'src/theme/fresh.js',                   pack: 'edit|share|m-share' },
         { path: 'src/theme/fish.js',                    pack: 'edit|share|m-share' },
         { path: 'src/theme/wire.js',                    pack: 'edit|share|m-share' },
+        { path: 'src/theme/tianpan.js',                 pack: 'edit|share|m-share' },
 
         /* 模板 */
         { path: 'src/template/default.js',              pack: 'edit|share|m-share' },
-        { path: 'src/template/tianpan.js',              pack: 'edit|share|m-share' },
         { path: 'src/template/structure.js',            pack: 'edit|share|m-share' },
         { path: 'src/template/filetree.js',             pack: 'edit|share|m-share' },
         { path: 'src/template/right.js',                pack: 'edit|share|m-share' },
         { path: 'src/template/fish-bone.js',            pack: 'edit|share|m-share' },
+        { path: 'src/template/tianpan.js',              pack: 'edit|share|m-share' },
 
         /* 模块 */
         { path: 'src/module/node.js',                   pack: 'edit|share|m-share' },
@@ -165,7 +165,7 @@
         { path: 'ui/nav.js',                            pack: 'edit|share' },
 
         /* UI Top Bar */
-       { path: 'ui/topbar/moreservice.js',             pack: 'edit|share'},
+        { path: 'ui/topbar/moreservice.js',             pack: 'edit|share'},
 
         /* UI 菜单 */
         { path: 'ui/menu/menu.js',                      pack: 'edit|share' },
@@ -200,7 +200,6 @@
         { path: 'ui/topbar/quickvisit.js',              pack: 'edit|share' },
         { path: 'ui/topbar/history.js',                 pack: 'edit' },
         { path: 'ui/topbar/user.js',                    pack: 'edit' },
-        { path: 'ui/topbar/share.js',                   pack: 'edit|share' },
         { path: 'ui/topbar/feedback.js',                pack: 'edit|share' },
         { path: 'ui/topbar/search.js',                  pack: 'edit|share' },
         { path: 'ui/topbar/switch-view.js',             pack: 'm-share' },
