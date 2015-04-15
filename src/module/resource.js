@@ -13,6 +13,21 @@ KityMinder.registerModule('Resource', function() {
      * 在 Minder 上拓展一些关于资源的支持接口
      */
     kity.extendClass(Minder, {
+        
+        /**
+         * 获取字符串的哈希值
+		 *
+         * @param {String} str
+         * @return {Number} hashCode
+         */
+        getHashCode: function(str) {
+            var hash = 1315423911, i, ch;
+            for (i = str.length - 1; i >= 0; i--) {
+                ch = str.charCodeAt(i);
+                hash ^= ((hash << 5) + ch + (hash >> 2));
+            }
+            return  (hash & 0x7FFFFFFF);
+        },
 
         /**
          * 获取脑图中某个资源对应的颜色
@@ -34,8 +49,8 @@ KityMinder.registerModule('Resource', function() {
                 colorMapping[resource] = nextIndex;
             }
 
-            // 资源过多，找不到可用索引颜色，统一返回白色
-            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || RESOURCE_COLOR_OVERFLOW;
+            // 资源过多，找不到可用索引颜色，统一返回哈希函数得到的颜色
+            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || kity.Color.createHSL(Math.floor(this.getHashCode(resource) / 0x7FFFFFFF * 256), 100, 85);
         },
 
         /**
