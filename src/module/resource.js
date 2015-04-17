@@ -50,7 +50,7 @@ KityMinder.registerModule('Resource', function() {
             }
 
             // 资源过多，找不到可用索引颜色，统一返回哈希函数得到的颜色
-            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || kity.Color.createHSL(Math.floor(this.getHashCode(resource) / 0x7FFFFFFF * 255), 100, 85);
+            return RESOURCE_COLOR_SERIES[colorMapping[resource]] || kity.Color.createHSL(Math.floor(this.getHashCode(resource) / 0x7FFFFFFF * 359), 100, 85);
         },
 
         /**
