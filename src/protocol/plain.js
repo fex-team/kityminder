@@ -40,8 +40,16 @@ KityMinder.registerProtocol('plain', function(minder) {
         };
     }
 
-    function decode(local) {
+    /**
+     * 文本解码
+     *
+     * @param {string} local 文本内容
+     * @param {=boolean} root 自动根节点
+     * @return {Object} 返回解析后节点
+     */
+    function decode(local, root) {
         var json,
+            offset,
             parentMap = {},
             lines = local.split(LINE_ENDING_SPLITER),
             line, level, node;
@@ -50,12 +58,18 @@ KityMinder.registerProtocol('plain', function(minder) {
             var children = parent.children || (parent.children = []);
             children.push(child);
         }
+        if (root) {
+            parentMap[0] = json = getNode('root');
+            offset = 1;
+        } else {
+            offset = 0;
+        }
 
         for (var i = 0; i < lines.length; i++) {
             line = lines[i];
             if (isEmpty(line)) continue;
 
-            level = getLevel(line);
+            level = getLevel(line) + offset;
             node = getNode(line);
 
             if (level === 0) {
@@ -84,8 +98,8 @@ KityMinder.registerProtocol('plain', function(minder) {
             return encode(json, 0);
         },
 
-        decode: function(local) {
-            return decode(local);
+        decode: function(local, root) {
+            return decode(local, root);
         },
 
         recognizePriority: -1

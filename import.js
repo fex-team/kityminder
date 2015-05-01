@@ -55,7 +55,7 @@
         { path: 'src/core/readonly.js',                 pack: 'edit|share|m-share' },
         { path: 'src/core/layout.js',                   pack: 'edit|share|m-share' },
         { path: 'src/core/theme.js',                    pack: 'edit|share|m-share' },
-        
+
         { path: 'src/core/compatibility.js',            pack: 'edit|share|m-share' },
         { path: 'src/core/render.js',                   pack: 'edit|share|m-share' },
         { path: 'src/core/connect.js',                  pack: 'edit|share|m-share' },
@@ -229,6 +229,7 @@
         { path: 'ui/ribbon/appearence/style.js',        pack: 'edit' },
         { path: 'ui/ribbon/appearence/font.js',         pack: 'edit' },
         { path: 'ui/ribbon/appearence/color.js',        pack: 'edit' },
+        { path: 'ui/ribbon/appearence/slide.js',        pack: 'edit' },
 
         /* UI Ribbon「视图」面板 */
         { path: 'ui/ribbon/view/fullscreen.js',         pack: 'edit' },
@@ -238,7 +239,7 @@
 
     if (typeof(module) === 'object' && module.exports) {
         module.exports = pathInfo;
-    } 
+    }
 
     else if (document) {
 
@@ -250,44 +251,44 @@
                 /***************************************************************************/
                 var scripts = document.getElementsByTagName('script');
                 document._currentScript = document.currentScript;
-         
+
                 // return script object based off of src
                 var getScriptFromURL = function(url) {
                     for (var i = 0; i < scripts.length; i++)
                         if (scripts[i].src === url)
                             return scripts[i];
-         
+
                     return undefined;
                 };
-         
+
                 var actualScript = document.actualScript = function() {
                     if (document._currentScript)
                         return document._currentScript;
-         
+
                     var stack;
                     try {
                         window.omgwtf();
                     } catch(e) {
                         stack = e.stack;
                     }
-         
+
                     if (!stack)
                         return undefined;
-         
+
                     var e = stack.indexOf(' at ') !== -1 ? ' at ' : '@';
                     while (stack.indexOf(e) !== -1)
                         stack = stack.substring(stack.indexOf(e) + e.length);
 
                     stack = stack.substring(stack.indexOf('http'), stack.indexOf(':', stack.indexOf(':')+1));
-         
+
                     return getScriptFromURL(stack);
                 };
                 if (document.__defineGetter__)
                     document.__defineGetter__('currentScript', actualScript);
-         
+
             })();
-         
-         
+
+
         }
         /* jshint browser:true */
         var script = document.currentScript || document.actualScript();

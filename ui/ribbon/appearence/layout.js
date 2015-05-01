@@ -10,7 +10,7 @@
 KityMinder.registerUI('ribbon/appearence/layout', function(minder) {
 
     var $tabs = minder.getUI('ribbon/tabs');
-    var $commandbuttonset = minder.getUI('widget/commandbuttonset');
+    // var $commandbuttonset = minder.getUI('widget/commandbuttonset');
     var $commandbutton = minder.getUI('widget/commandbutton');
 
     var $layoutPanel = new FUI.LabelPanel({

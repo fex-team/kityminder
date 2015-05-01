@@ -41,6 +41,7 @@ KityMinder.LANG['zh-cn'] = {
         'font': '字体',
         'color': '颜色',
         'background': '背景',
+        'slide': '演示',
         'insert': '插入',
         'arrange': '调整',
         'nodeop': '当前',
@@ -156,6 +157,8 @@ KityMinder.LANG['zh-cn'] = {
         'command': {
             'appendsiblingnode': '插入同级主题',
             'appendchildnode': '插入下级主题',
+            'importtextnode': '导入文本节点',
+            'exporttextnode': '导出文本节点',
             'removenode': '删除',
             'editnode': '编辑',
             'arrangeup': '上移',
@@ -326,6 +329,8 @@ KityMinder.LANG['zh-cn'] = {
         'removeimage': '移除已有图片',
         'removenote': '移除已有备注',
         'resetlayout': '整理',
+        'importtextnode': '导入文本节点',
+        'exporttextnode': '导出文本节点',
 
         'justnow': '刚刚',
         'minutesago': '{0} 分钟前',
