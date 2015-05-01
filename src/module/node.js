@@ -178,6 +178,7 @@ var ImportTextNode = kity.createClass('ImportTextNode', {
 
                 var selectedNode = km.getSelectedNode();
                 if (rootNode && rootNode.children && selectedNode) {
+                    selectedNode.expand();
                     rootNode.children.forEach(function(child) {
                         _selectedNodes.push(appendChild(selectedNode, child));
                     });
